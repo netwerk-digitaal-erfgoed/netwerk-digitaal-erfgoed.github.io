@@ -1,3 +1,7 @@
+---
+sidebar_position: 2
+---
+
 # Reconciliation API
 
 Use the [Reconciliation Service API](https://reconciliation-api.github.io/specs/latest/)

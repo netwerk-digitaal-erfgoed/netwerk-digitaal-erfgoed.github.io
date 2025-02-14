@@ -4,8 +4,7 @@ sidebar_position: 1
 
 # Introduction
 
-The Dutch Digital Heritage Network ([Netwerk Digitaal Erfgoed](https://netwerkdigitaalerfgoed.nl)) makes heritage
-accessible to all. 
+The Dutch Digital Heritage Network ([Netwerk Digitaal Erfgoed](https://netwerkdigitaalerfgoed.nl)) makes cultural heritage accessible to all. 
 
 It is a collaboration between heritage institutions, both large and small. NDE:
 

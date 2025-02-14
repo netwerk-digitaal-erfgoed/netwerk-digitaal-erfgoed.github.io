@@ -1,12 +1,20 @@
 ---
-sidebar_position: 6
+sidebar_position: 7
 ---
 
 # Glossary
 
+## Collection Manager
+
+Users of [Collection Management Systems](#collection-management-system) who manage collections of heritage objects.
+
 ## Collection Management System
 
 TODO
+
+## Data model
+
+Can be generic or domain-specific.
 
 ## Data Platform
 
@@ -20,9 +28,17 @@ Data owners are responsible for Data Platforms.
 
 An RDF document that documents a dataset. Formally defined in the [Requirements for Datasets](https://netwerk-digitaal-erfgoed.github.io/requirements-datasets/).
 
-## Data model
+## Dataset Register
 
-Can be generic or domain-specific.
+See the [Dataset Register service description](services/dataset-register/index.md).
+
+## NDE-compliant
+
+TODO
+
+## Network of Terms
+
+See the [Network of Terms service description](services/network-of-terms/index.md).
 
 ## Persistent HTTP URI
 
@@ -52,3 +68,6 @@ Yet a term is more than a word. Each term has an identifier, a so-called URI. A 
 
 In addition, a term can contain additional information, such as a definition or an alternative name. For example the term "painting" with the URI http://vocab.getty.edu/aat/300177435. The extra information about this term makes it clear that it has a synonym (in Dutch), 'schilderstuk'.
 
+## Terminology source
+
+## URI

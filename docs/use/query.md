@@ -1,1 +1,3 @@
-# Query datasets
+# Query
+
+Query datasets using SPARQL

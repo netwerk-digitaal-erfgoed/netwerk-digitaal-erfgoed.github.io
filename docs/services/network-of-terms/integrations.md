@@ -1,6 +1,9 @@
 # Integrations
 
-The Network of Terms is developed to be integrated in [collection management](/glossary.md#collection-management-system) and other systems. We try to keep track of the list of integrations. At the time of writing (August 2023) the following systems have integrated the GraphQL API:
+While the Network of Terms can be used as a [demonstrator website](https://termennetwerk.netwerkdigitaalerfgoed.nl),
+it’s primarily intended to be integrated in [collection management](../../glossary.md#collection-management-system) and other systems.
+
+A (possibly incomplete) list of integrations:
 
 * [Axiell - Collections](https://www.axiell.com/solutions/product/axiell-collections/)
 * [Deventit - Atlantis](https://atlantis.deventit.nl/)
@@ -14,4 +17,6 @@ The Network of Terms is developed to be integrated in [collection management](/g
 
 Please mail to tech@netwerkdigitaalerfgoed.nl for inquiries or updates on this list.
 
-<html><div align="right"><a href="./Main-components">Next section</a></div></html>
+If you want to use the Network of Terms in your system, please contact your software supplier.
+
+Software developers can consult the [GraphQL](graphql.md) and [Reconciliation](reconciliation.md) APIs. 
