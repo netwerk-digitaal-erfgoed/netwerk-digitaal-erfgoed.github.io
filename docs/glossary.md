@@ -18,11 +18,18 @@ Can be generic or domain-specific.
 
 ## Data Platform
 
-A software application that publishes datasets. 
+Data Platforms provide access to heritage data, which can then be consumed by [Service Platforms](#service-platform).
 
-It can be integrated in a [Collection Management System](#collection-management-system) or be a separate system.
+It can be integrated in a [Collection Management System](#collection-management-system) or be a separate system,
+such as a triple store or a IIIF image server.
 
 Data owners are responsible for Data Platforms.
+
+Defined in [DERA](https://dera.netwerkdigitaalerfgoed.nl/index.php/Platforms#Dataplatform) (Dutch).
+
+## Data Provider 
+
+(corresponds to Dutch ‘bronhouder’ as defined in the [DERA](https://dera.netwerkdigitaalerfgoed.nl/index.php/Rollen#Bronhouder)).
 
 ## Dataset Description
 
@@ -31,6 +38,10 @@ An RDF document that documents a dataset. Formally defined in the [Requirements 
 ## Dataset Register
 
 See the [Dataset Register service description](services/dataset-register/index.md).
+
+## Distribution
+
+TODO
 
 ## NDE-compliant
 
@@ -45,6 +56,10 @@ See the [Network of Terms service description](services/network-of-terms/index.m
 A URI that is resolvable over HTTP(S) and once available must remain to be accessible. 
 
 May contain a PID.
+
+## RDF
+
+TODO
 
 ## Service Platform
 

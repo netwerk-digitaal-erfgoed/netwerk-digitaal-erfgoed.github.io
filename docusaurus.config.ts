@@ -18,7 +18,7 @@ const config: Config = {
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
   organizationName: 'netwerk-digitaal-erfgoed',
-  projectName: 'docs', // Usually your repo name.
+  projectName: 'netwerk-digitaal-erfgoed.github.io', // Usually your repo name.
 
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
@@ -107,7 +107,7 @@ const config: Config = {
           items: [
             {
               label: 'Docs',
-              to: '/intro',
+              to: '/',
             },
           ],
         },

@@ -1,6 +1,6 @@
 ---
 sidebar_position: 1
-description: Including Collection Management Systems
+description: Provide access to heritage data
 ---
 
 # Data Platforms
