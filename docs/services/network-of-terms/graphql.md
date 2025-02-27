@@ -4,7 +4,11 @@ sidebar_position: 1
 
 # GraphQL API
 
-The GraphQL API is intended for software developers. 
+The GraphQL API is intended for software developers, 
+who may want to integrate it in 
+[Collection Management Systems](../../glossary.md#collection-management-system),
+[Service Platforms](../../glossary.md#service-platform) and other software.
+
 If you simply want to search for terms, you can use the [demonstrator](https://termennetwerk.netwerkdigitaalerfgoed.nl).
 
 ## Endpoint 
