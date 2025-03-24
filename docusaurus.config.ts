@@ -47,7 +47,7 @@ const config: Config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/netwerk-digitaal-erfgoed/docs/tree/main/',
+            'https://github.com/netwerk-digitaal-erfgoed/netwerk-digitaal-erfgoed.github.io/tree/main/',
         },
         blog: {
           showReadingTime: true,
@@ -57,8 +57,10 @@ const config: Config = {
           },
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
-          editUrl: 'https://github.com/netwerk-digitaal-erfgoed/docs/tree/main/',
+          editUrl: 'https://github.com/netwerk-digitaal-erfgoed/netwerk-digitaal-erfgoed.github.io/tree/main/',
           // Useful options to enforce blogging best practices
+          blogSidebarTitle: 'All posts',
+          blogSidebarCount: 'ALL',
           onInlineTags: 'warn',
           onInlineAuthors: 'warn',
           onUntruncatedBlogPosts: 'warn',
