@@ -20,7 +20,7 @@ When you search for ‘classicism’ in the English demonstrator, you’ll get [
 Switch to Dutch using the Language dropdown in the top right corner, and you get [terms in Dutch](https://termennetwerk.netwerkdigitaalerfgoed.nl/nl?q=classicism&datasets=http://vocab.getty.edu/aat).
 The terminology source information changes along with the chosen language.
 
-Note that not , for example the ‘Baroque Classicism’ term is still English.
+Note that some terms, such as ‘Baroque Classicism’ are still in English.
 This is because even for multilingual sources, not all terms are available in both languages.
 In that case, the Network of Terms will show the term in its original language.
 
