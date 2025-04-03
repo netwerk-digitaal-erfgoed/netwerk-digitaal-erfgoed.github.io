@@ -11,7 +11,6 @@ It is a collaboration between heritage institutions, both large and small. NDE:
 
 * publishes [Requirements](requirements.md) and best practices that improve interoperability   
 * offers [Services](services/index.md) that help you manage, use and share heritage data.
-* ... (TODO)
 
 ## Getting Started
 
@@ -21,7 +20,7 @@ It brings together information from various sources, pointing back to those sour
 The documentation approaches the heritage network from three perspectives:
 
 * [Users of heritage data](use/index.md)
-* [Managers of collection data](manage/index.md)
+* [Managers of heritage data](publish/index.md)
 * [Software developers](build/index.md).
 
 You’ll also find a [Glossary](glossary.md) where relevant concepts are explained.
