@@ -257,7 +257,7 @@ query {
       "http://data.bibliotheken.nl/id/dataset/persons"
     ],
     query: "Gogh",
-    languages: ["en", "nl"]
+    languages: [en, nl]
   ) {
     source {
       uri
