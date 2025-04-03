@@ -5,7 +5,7 @@ slug: /
 
 # Introduction
 
-The Dutch [Digital Heritage Network](https://netwerkdigitaalerfgoed.nl/en/nl) (NDE) makes cultural heritage accessible to all.
+The Dutch [Digital Heritage Network](https://netwerkdigitaalerfgoed.nl/en) (NDE) makes cultural heritage accessible to all.
 
 It is a collaboration between heritage institutions, both large and small. NDE:
 
