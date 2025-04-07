@@ -10,7 +10,13 @@ Users of [Collection Management Systems](#collection-management-system) who mana
 
 ## Collection Management System
 
+Also known as: Collection _Registration_ System (CRS).
+
 TODO
+
+## Consumer
+
+
 
 ## Data model
 
@@ -27,13 +33,13 @@ Data owners are responsible for Data Platforms.
 
 Defined in [DERA](https://dera.netwerkdigitaalerfgoed.nl/index.php/Platforms#Dataplatform) (Dutch).
 
-## Data Provider 
+## Data Provider
 
 (corresponds to Dutch ‘bronhouder’ as defined in the [DERA](https://dera.netwerkdigitaalerfgoed.nl/index.php/Rollen#Bronhouder)).
 
 ## Dataset Description
 
-An RDF document that documents a dataset. Formally defined in the [Requirements for Datasets](https://netwerk-digitaal-erfgoed.github.io/requirements-datasets/).
+An RDF document that documents a dataset. Formally defined in the [Requirements for Datasets](https://docs.nde.nl/requirements-datasets/).
 
 ## Dataset Register
 
@@ -42,6 +48,10 @@ See the [Dataset Register service description](services/dataset-register/index.m
 ## Distribution
 
 TODO
+
+## Machine-readable
+
+A way to publish data that can be automatically processed by computer programs.
 
 ## NDE-compliant
 
@@ -53,9 +63,11 @@ See the [Network of Terms service description](services/network-of-terms/index.m
 
 ## Persistent HTTP URI
 
-A URI that is resolvable over HTTP(S) and once available must remain to be accessible. 
+A URI that is resolvable over HTTP(S) and once made available must remain to be accessible.
+May contain a [Persistent Identifier](#persistent-identifier).
+For more information, see the [Publish datasets](publish/persistent-uris.md) chapter.
 
-May contain a PID.
+## Persistent Identifier
 
 ## RDF
 
@@ -82,6 +94,8 @@ Terms describe what heritage is about. Terms are, for example, subjects, persons
 Yet a term is more than a word. Each term has an identifier, a so-called URI. A URI is a unique address which makes it unambiguously clear which term is meant. For example, the (Dutch) term 'noodweer' could be a legal concept or really bad weather? The meaning becomes clear when you read the URI of the term, such as http://www.wikidata.org/entity/Q741507.
 
 In addition, a term can contain additional information, such as a definition or an alternative name. For example the term "painting" with the URI http://vocab.getty.edu/aat/300177435. The extra information about this term makes it clear that it has a synonym (in Dutch), 'schilderstuk'.
+
+(FROM https://termennetwerk.netwerkdigitaalerfgoed.nl/en/faq1)
 
 ## Terminology source
 
