@@ -1,7 +1,5 @@
 # SPARQL endpoint
 
-The Dataset Register SPARQL endpoint is available at
-
 You can retrieve dataset descriptions registered by yourself and others
 from our [triple store’s web interface](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?savedQueryName=Full%20dataset%20descriptions%20for%20publisher&owner=admin).
 

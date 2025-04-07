@@ -11,7 +11,7 @@ a set of JSON-LD RDF files that describe the sources, their SPARQL endpoints and
 
 ## Adding a terminology source
 
-Terminology sources must comply with the [Requirements for terminologiebronnen](https://netwerk-digitaal-erfgoed.github.io/requirements-terminologiebronnen/) (in Dutch).
+Terminology sources must comply with the [Requirements for terminologiebronnen](https://docs.nde.nl/requirements-terminologiebronnen/) (in Dutch).
 Most importantly:
 
 * the source must be available as a SPARQL endpoint
