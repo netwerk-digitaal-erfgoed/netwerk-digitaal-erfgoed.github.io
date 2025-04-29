@@ -53,7 +53,7 @@ TODO
 
 A way to publish data that can be automatically processed by computer programs.
 
-## NDE-compliant
+## NDE-compatible
 
 TODO
 
