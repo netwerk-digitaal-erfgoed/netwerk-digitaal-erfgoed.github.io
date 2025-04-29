@@ -40,6 +40,8 @@ Defined in [DERA](https://dera.netwerkdigitaalerfgoed.nl/index.php/Platforms#Dat
 ## Dataset Description
 
 An RDF document that documents a dataset. Formally defined in the [Requirements for Datasets](https://docs.nde.nl/requirements-datasets/).
+These Descriptions should be registered with the [Dataset Register](#dataset-register)
+so [Consumers](#consumer) can find them and use the datasets.
 
 ## Dataset Register
 
