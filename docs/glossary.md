@@ -51,6 +51,10 @@ See the [Dataset Register service description](services/dataset-register/index.m
 
 TODO
 
+## Linked Data
+
+[RDF](#rdf) data that is published according to the [Linked Data principles](https://www.w3.org/DesignIssues/LinkedData.html).
+
 ## Machine-readable
 
 A way to publish data that can be automatically processed by computer programs.
@@ -65,11 +69,19 @@ See the [Network of Terms service description](services/network-of-terms/index.m
 
 ## Persistent HTTP URI
 
-A URI that is resolvable over HTTP(S) and once made available must remain to be accessible.
+A URI that is resolvable over HTTP(S) and once made available must remain accessible, always pointing to the same resource.
+A persistent HTTP URI acts both as a URI, providing the resource’s identity, and as a URL, providing its location.
+
 May contain a [Persistent Identifier](#persistent-identifier).
 For more information, see the [Publish datasets](publish/persistent-uris.md) chapter.
 
+Example: `https://n2t.net/ark:/60537/b3KCns`.
+
 ## Persistent Identifier
+
+The part of a [Persistent HTTP URI](#persistent-http-uri) that uniquely identifies a resource.
+
+Example: `ark:/60537/b3KCns`.
 
 ## RDF
 

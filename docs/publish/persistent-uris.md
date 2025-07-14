@@ -7,14 +7,19 @@ slug: /persistent-uris
 
 Identify each data resource with its own [persistent HTTP URI](../glossary.md#persistent-http-uri).
 A persistent HTTP URI is a web address that is guaranteed to be stable and to resolve to the resource it identifies.
-This means that the URI always point to the same resource, even if:
+This means that the URI always points to the same resource, even if:
 
 - the resource is moved, updated or deleted
 - the [Data Provider](../glossary.md#data-provider)’s web address changes
-- the [Data Platform](../glossary.md#data-platform) hosting the data resources is updated or replaced.
+- the [Data Platform](../glossary.md#data-platform) software hosting the data resources is updated or replaced.
 
 Only with that guarantee can [data consumers](../glossary.md#consumer) trust the URI, 
 enabling them to link to it from their own datasets.
+
+At the URI, a valid [RDF](../glossary.md#rdf) document must be served.
+
+New persistent URIs must be HTTPS URIs (`https://...`).
+For previously coined URIs, HTTP (`http://...`) may continue to be used.
 
 ## Persistent identifiers
 
