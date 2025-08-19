@@ -317,7 +317,7 @@ query {
 
 ## Timeouts
 
-The default timeout is 5 seconds. You can raise this up till 60 seconds using the
+The default timeout is 10 seconds. You can raise this up till 60 seconds using the
 `timeoutMs` query parameter. For example, to wait a maximum of 15 seconds for each terminology source to respond:
 
 ```graphql
