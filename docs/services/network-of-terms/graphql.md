@@ -1,5 +1,6 @@
 ---
 sidebar_position: 1
+toc_max_heading_level: 4
 ---
 
 # GraphQL API
@@ -122,6 +123,22 @@ The `result` element is either:
 
 The list of terms is sorted by relevance, if supported by the terminology source,
 or simply alphabetically if not.
+Each result contains the terminology source and the terms found in it.
+
+#### Source
+
+A terminology source object has:
+
+* a [URI](../../glossary.md#persistent-http-uri) that identifies the source
+* `name`
+* `description` that explains in a single sentence the intended use of the source
+* `inLanguage` that shows in which languages the source is available, usually `nl` and/or `en`
+* `alternateName`: an optional, well-known short name for display purposes
+* `creators`: the publisher or the source, with its own `uri`, `name` and `alternateName` (short name)
+* `genres`: subjects that the source contains information about
+* `mainEntityOfPage`: a website that provides more information about the source.
+
+#### Terms
 
 A term object has:
 
@@ -135,6 +152,8 @@ A term object has:
 * `exactMatch`es that link to terms in other terminology sources.
 
 In [collection management systems](../../glossary.md#collection-management-system), the term’s URI is used to link data to the term.
+
+#### Source
 
 ### Query multiple sources
 
