@@ -14,7 +14,11 @@ If you simply want to search for terms, you can use the [demonstrator](https://t
 
 ## Endpoint 
 
-The GraphQL API is available at `https://termennetwerk-api.netwerkdigitaalerfgoed.nl/graphql`.
+The GraphQL API is available at: 
+```
+https://termennetwerk-api.netwerkdigitaalerfgoed.nl/graphql
+```
+
 For a web interface to try out queries, you can use https://termennetwerk-api.netwerkdigitaalerfgoed.nl.
 
 TODO: https://github.com/netwerk-digitaal-erfgoed/network-of-terms-tutorial/wiki/GraphQL-API
