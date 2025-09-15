@@ -1490,7 +1490,7 @@ Possible extra rowspan handling
 </style>
   <meta content="Bikeshed version 3f621ba99, updated Mon Jul 28 15:38:36 2025 -0700" name="generator">
   <link href="https://docs.nde.nl/requirements-datasets/" rel="canonical">
-  <meta content="32cb58f21fc77d632a941e2f464cdf8fc7cd9718" name="revision">
+  <meta content="ebda30280357f45008a0c719effebcc0001ebd4a" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
@@ -2256,7 +2256,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <p data-fill-with="logo"></p>
    <h1 class="p-name no-ref" id="title">Requirements for Datasets</h1>
    <h2 class="no-num no-toc no-ref heading settled" id="profile-and-date"><span class="content">Living Standard,
-    <time class="dt-updated" datetime="2025-09-11">11 September 2025</time></span></h2>
+    <time class="dt-updated" datetime="2025-09-15">15 September 2025</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -2274,7 +2274,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <p class="copyright" data-fill-with="copyright"><a href="http://creativecommons.org/publicdomain/zero/1.0/" rel="license"><img alt="CC0" height="15" src="https://licensebuttons.net/p/zero/1.0/80x15.png" width="80"></a>
 To the extent possible under law, the editors have waived all copyright
 and related or neighboring rights to this work.
-In addition, as of 11 September 2025,
+In addition, as of 15 September 2025,
 the editors have made this specification available under the
 <a href="https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0" rel="license">Open Web Foundation Agreement Version 1.0</a>,
 which is available at https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0.
@@ -2410,7 +2410,7 @@ improving findability, one of the main goals of publishing datasets on the web.<
     <dd data-md>
      <p>Metadata about the <a data-link-type="dfn" href="#dataset" id="ref-for-dataset①">dataset</a>, including the dataset’s name and <a data-link-type="dfn" href="#publisher" id="ref-for-publisher①">publisher</a>.
 This description must be distinguished from the metadata records themselves.</p>
-     <p>For example: imagine a dataset of Van Gogh paintings called <u class="property link-error" data-lt="Sunflowers" title="LINK ERROR: No &apos;property&apos; refs found for &apos;sunflowers&apos;.">Sunflowers</u>,
+     <p>For example: imagine a dataset of Van Gogh paintings called ‘Sunflowers’,
 which is published by the Van Gogh Museum under a specific license.
 The name, license and publisher are all part of the dataset description.
 The dataset description also tells us the URLs of distributions where we can download or query the data.
@@ -2962,8 +2962,8 @@ All distributions of a dataset <em>MUST</em> contain broadly the same data.</p>
    <p>Publishers <em>SHOULD</em> make known when the <a data-link-type="dfn" href="#distribution" id="ref-for-distribution③">distribution</a> was originally created and when it was last updated,
 so <a data-link-type="dfn" href="#consumer" id="ref-for-consumer⑧">consumers</a> can efficiently stay up-to-date with the latest changes.
 Please note that this is different from <a href="#dataset-date">dataset description’s dates</a>.
-Datetimes ('2019-08-15T08:05:00Z') are preferred because they offer greater precision,
-but simple dates (<u class="property link-error" data-lt="2019-04-14" title="LINK ERROR: No &apos;property&apos; refs found for &apos;2019-04-14&apos;.">2019-04-14</u>) are also allowed.</p>
+Datetimes (<code>2019-08-15T08:05:00Z</code>) are preferred because they offer greater precision,
+but simple dates (<code>2019-04-14</code>) are also allowed.</p>
    <div class="example" id="example-bec7408c">
     <a class="self-link" href="#example-bec7408c"></a>
     Specify distribution dates:
@@ -2978,7 +2978,7 @@ but simple dates (<u class="property link-error" data-lt="2019-04-14" title="LIN
 </pre>
    </div>
    <h4 class="heading settled" data-level="4.4.2" id="developer-docs"><span class="secno">4.4.2. </span><span class="content">Developer documentation</span><a class="self-link" href="#developer-docs"></a></h4>
-   <p>Publishers <em>SHOULD</em> link to documentation URLs via the <a href="https://schema.org/usageInfo">schema:usageInfo</a> attribute. For datadumps this should be documentation about the
+   <p>Publishers <em>SHOULD</em> link to documentation URLs via the <a href="https://schema.org/usageInfo">https://schema.org/usageInfo</a> attribute. For datadumps this should be documentation about the
 data model. For <a data-link-type="dfn" href="#web-api" id="ref-for-web-api①">web APIs</a> this should be documentation about the specific capabilities of the API (like content-type support) <em>AND</em> the generic specification of the
 protocol which also types the distribution such as OAI-PMH, SPARQL and REST.</p>
    <table>
@@ -3087,7 +3087,7 @@ even if that resource is the same on all pages.</p>
    <p>This is an overview of required and recommended attributes.</p>
    <h4 class="heading settled" data-level="4.6.1" id="dataset-attributes"><span class="secno">4.6.1. </span><span class="content">Dataset attributes</span><a class="self-link" href="#dataset-attributes"></a></h4>
    <table>
-    <caption><a href="https://schema.org/Dataset">schema:Dataset</a> properties</caption>
+    <caption><a href="https://schema.org/Dataset">https://schema.org/Dataset</a> properties</caption>
     <thead>
      <tr>
       <th>Property
@@ -3304,7 +3304,7 @@ even if that resource is the same on all pages.</p>
    </table>
    <h4 class="heading settled" data-level="4.6.2" id="organization-attributes"><span class="secno">4.6.2. </span><span class="content">Organization attributes</span><a class="self-link" href="#organization-attributes"></a></h4>
    <table>
-    <caption><a href="https://schema.org/Organization">schema:Organization</a> properties</caption>
+    <caption><a href="https://schema.org/Organization">https://schema.org/Organization</a> properties</caption>
     <thead>
      <tr>
       <th>Property
@@ -3371,7 +3371,7 @@ even if that resource is the same on all pages.</p>
    </table>
    <h4 class="heading settled" data-level="4.6.3" id="distribution-attributes"><span class="secno">4.6.3. </span><span class="content">Distribution attributes</span><a class="self-link" href="#distribution-attributes"></a></h4>
    <table>
-    <caption><a href="https://schema.org/DataDownload">schema:DataDownload</a> properties</caption>
+    <caption><a href="https://schema.org/DataDownload">https://schema.org/DataDownload</a> properties</caption>
     <thead>
      <tr>
       <th>Property
@@ -3480,7 +3480,7 @@ even if that resource is the same on all pages.</p>
    </table>
    <h4 class="heading settled" data-level="4.6.4" id="datacatalog-attributes"><span class="secno">4.6.4. </span><span class="content">DataCatalog attributes</span><a class="self-link" href="#datacatalog-attributes"></a></h4>
    <table>
-    <caption><a href="https://schema.org/DataCatalog">schema:DataCatalog</a> properties</caption>
+    <caption><a href="https://schema.org/DataCatalog">https://schema.org/DataCatalog</a> properties</caption>
     <thead>
      <tr>
       <th>Property
