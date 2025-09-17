@@ -1490,7 +1490,7 @@ Possible extra rowspan handling
 </style>
   <meta content="Bikeshed version 3f621ba99, updated Mon Jul 28 15:38:36 2025 -0700" name="generator">
   <link href="https://docs.nde.nl/requirements-datasets/" rel="canonical">
-  <meta content="772607c88dfecd7a3b456a12bd0b82b0589a2d47" name="revision">
+  <meta content="271c4043b42dfd50edcd92c877dd63a2afa74a79" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
@@ -2714,7 +2714,7 @@ This information answers user questions such as:</p>
 </pre>
    </div>
    <h4 class="heading settled" data-level="4.2.2" id="dataset-license"><span class="secno">4.2.2. </span><span class="content">License</span><a class="self-link" href="#dataset-license"></a></h4>
-   <p>Publishers <em>MUST</em> make known under which <a href="https://w3c.github.io/dwbp/bp.html#licenses">license</a> the dataset can be used.</p>
+   <p>Publishers <em>MUST</em> make known under which <a href="https://w3c.github.io/dwbp/bp.html#licenses">license</a> the dataset may be used.</p>
    <p>The value <em>MUST</em> be the canonical URI of a license.
         For example, use https://creativecommons.org/licenses/by/4.0/ instead
         of http://creativecommons.org/licenses/by/4.0/deed.nl.</p>
@@ -3330,7 +3330,7 @@ even if that resource is the same on all pages.</p>
       <th scope="row"><a href="https://schema.org/alternateName">schema:alternateName</a>
       <td>Alternative names such as an abbreviation that the organization is known under.
       <td>
-                0..n
+                0..1
                     
       <td>
                 Recommended
@@ -3381,7 +3381,7 @@ even if that resource is the same on all pages.</p>
     <tbody>
      <tr>
       <th scope="row"><a href="https://schema.org/contentUrl">schema:contentUrl</a>
-      <td>The URL where the distribution can be directly accessed.
+      <td>The URL where the distribution may be directly accessed.
       <td>
                 1
                     
@@ -3394,7 +3394,7 @@ even if that resource is the same on all pages.</p>
     or <code>application/ld+json</code> for a data dump serialized as JSON-LD.
     Use a value from the <a data-link-type="biblio" href="#biblio-iana-media-types" title="Media Types">[IANA-MEDIA-TYPES]</a> list.
     The value should indicate the Media type of the response of the schema:contentUrl when no Accept header is included in the request.
-    It is recommended to provide an URL of documentation via the schema:usageInfo property in which the supported encoding formats which can be requested via an Accept HTTP header are listed.
+    It is recommended to provide a documentation URL via the schema:usageInfo property that lists the supported encoding formats which may be requested via the Accept HTTP header.
     When the distribution is compressed, the compression format (e.g. zip, gzip) should be added to the <code>schema:encodingFormat</code> (e.g. <code>text/turtle+gzip</code>).
     
       <td>
@@ -3416,7 +3416,7 @@ even if that resource is the same on all pages.</p>
       <th scope="row"><a href="https://schema.org/description">schema:description</a>
       <td>A description of the distribution.
       <td>
-                1..n
+                1
                     
       <td>
                 Recommended
