@@ -1490,7 +1490,7 @@ Possible extra rowspan handling
 </style>
   <meta content="Bikeshed version 3f621ba99, updated Mon Jul 28 15:38:36 2025 -0700" name="generator">
   <link href="https://docs.nde.nl/requirements-datasets/" rel="canonical">
-  <meta content="dcae389476a25a6f1607e90624bddcbeb3d5d498" name="revision">
+  <meta content="d300d702e648e2105abe376311c39e1d4e4ef6ae" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
@@ -2256,7 +2256,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <p data-fill-with="logo"></p>
    <h1 class="p-name no-ref" id="title">Requirements for Datasets</h1>
    <h2 class="no-num no-toc no-ref heading settled" id="profile-and-date"><span class="content">Living Standard,
-    <time class="dt-updated" datetime="2025-09-17">17 September 2025</time></span></h2>
+    <time class="dt-updated" datetime="2025-09-18">18 September 2025</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -2274,7 +2274,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <p class="copyright" data-fill-with="copyright"><a href="http://creativecommons.org/publicdomain/zero/1.0/" rel="license"><img alt="CC0" height="15" src="https://licensebuttons.net/p/zero/1.0/80x15.png" width="80"></a>
 To the extent possible under law, the editors have waived all copyright
 and related or neighboring rights to this work.
-In addition, as of 17 September 2025,
+In addition, as of 18 September 2025,
 the editors have made this specification available under the
 <a href="https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0" rel="license">Open Web Foundation Agreement Version 1.0</a>,
 which is available at https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0.
@@ -3330,7 +3330,7 @@ even if that resource is the same on all pages.</p>
       <th scope="row"><a href="https://schema.org/alternateName">schema:alternateName</a>
       <td>Alternative names such as an abbreviation that the organization is known under.
       <td>
-                0..1
+                0..n
                     
       <td>
                 Recommended
@@ -3526,101 +3526,103 @@ even if that resource is the same on all pages.</p>
                     
    </table>
    <h4 class="heading settled" data-level="4.6.5" id="dataset-example"><span class="secno">4.6.5. </span><span class="content">Full example</span><a class="self-link" href="#dataset-example"></a></h4>
-   <div class="example" id="example-81595b57">
-    <a class="self-link" href="#example-81595b57"></a>
+   <div class="example" id="example-22ac5b6e">
+    <a class="self-link" href="#example-22ac5b6e"></a>
     A full <a data-link-type="dfn" href="#dataset-description" id="ref-for-dataset-description⑥">dataset description</a> that includes <a href="#dataset-attributes">required and recommended attributes</a>.
 
     
 <pre class="include-code highlight"><c- p>{</c->
-  <c- nd>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org/"</c-><c- p>,</c->
-  <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Dataset"</c-><c- p>,</c->
-  <c- nd>"@id"</c-><c- p>:</c-> <c- u>"http://data.bibliotheken.nl/id/dataset/rise-alba"</c-><c- p>,</c->
-  <c- f>"name"</c-><c- p>:</c-> <c- p>{</c->
-    <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Alba amicorum van de Koninklijke Bibliotheek"</c-><c- p>,</c->
-    <c- nd>"@language"</c-><c- p>:</c-> <c- u>"nl"</c->
-  <c- p>},</c->
-  <c- f>"description"</c-><c- p>:</c-> <c- p>{</c->
-    <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Alba amicorum van de Koninklijke Bibliotheek, een dataset gedefinieerd voor het Europeana Rise of Literacy project."</c-><c- p>,</c->
-    <c- nd>"@language"</c-><c- p>:</c-> <c- u>"nl"</c->
-  <c- p>},</c->
-  <c- f>"license"</c-><c- p>:</c-> <c- u>"http://creativecommons.org/publicdomain/zero/1.0/"</c-><c- p>,</c->
-  <c- f>"dateCreated"</c-><c- p>:</c-> <c- u>"2019-04-14"</c-><c- p>,</c->
-  <c- f>"datePublished"</c-><c- p>:</c-> <c- u>"2019-05-21"</c-><c- p>,</c->
-  <c- f>"dateModified"</c-><c- p>:</c-> <c- u>"2019-08-15"</c-><c- p>,</c->
-  <c- f>"keywords"</c-><c- p>:</c-> <c- p>[</c->
-    <c- u>"alba amicorum"</c->
-  <c- p>],</c->
-  <c- f>"includedInDataCatalog"</c-><c- p>:</c-> <c- u>"http://data.bibliotheken.nl/id/datacatalog"</c-><c- p>,</c->
-  <c- f>"inLanguage"</c-><c- p>:</c-> <c- p>[</c->
-    <c- u>"nl-NL"</c-><c- p>,</c->
-    <c- u>"en-US"</c->
-  <c- p>],</c->
-  <c- f>"mainEntityOfPage"</c-><c- p>:</c-> <c- u>"https://www.kb.nl/bronnen-zoekwijzers/kb-collecties/moderne-handschriften-vanaf-ca-1550/alba-amicorum"</c-><c- p>,</c->
-  <c- f>"publisher"</c-><c- p>:</c-> <c- p>{</c->
-    <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Organization"</c-><c- p>,</c->
-    <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://www.kb.nl"</c-><c- p>,</c->
-    <c- f>"identifier"</c-><c- p>:</c-> <c- u>"NL-HaKB"</c-><c- p>,</c->
-    <c- f>"name"</c-><c- p>:</c-> <c- p>{</c->
-      <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Koninklijke Bibliotheek"</c-><c- p>,</c->
-      <c- nd>"@language"</c-><c- p>:</c-> <c- u>"nl"</c->
-    <c- p>},</c->
-    <c- f>"alternateName"</c-><c- p>:</c-> <c- p>{</c->
-      <c- nd>"@value"</c-><c- p>:</c-> <c- u>"KB"</c-><c- p>,</c->
-      <c- nd>"@language"</c-><c- p>:</c-> <c- u>"nl"</c->
-    <c- p>},</c->
-    <c- f>"sameAs"</c-><c- p>:</c-> <c- u>"https://ror.org/02w4jbg70"</c-><c- p>,</c->
-    <c- f>"contactPoint"</c-><c- p>:</c-> <c- p>{</c->
-      <c- nd>"@type"</c-><c- p>:</c-> <c- u>"ContactPoint"</c-><c- p>,</c->
-      <c- f>"name"</c-><c- p>:</c-> <c- p>{</c->
-        <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Dataset manager's name"</c-><c- p>,</c->
+  <c- nd>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org"</c-><c- p>,</c->
+  <c- nd>"@graph"</c-><c- p>:</c-> <c- p>[</c->
+    <c- p>{</c->
+      <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Dataset"</c-><c- p>,</c->
+      <c- nd>"@id"</c-><c- p>:</c-> <c- u>"http://data.bibliotheken.nl/id/dataset/rise-alba"</c-><c- p>,</c->
+      <c- f>"name"</c-><c- p>:</c-> <c- p>[</c->
+        <c- p>{</c->
+          <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Alba amicorum van de Koninklijke Bibliotheek"</c-><c- p>,</c->
+          <c- nd>"@language"</c-><c- p>:</c-> <c- u>"nl"</c->
+        <c- p>},</c->
+        <c- p>{</c->
+          <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Alba amicorum of the Dutch Royal Library"</c-><c- p>,</c->
+          <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c->
+        <c- p>}</c->
+      <c- p>],</c->
+      <c- f>"description"</c-><c- p>:</c-> <c- p>{</c->
+        <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Description only in English"</c-><c- p>,</c->
         <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c->
       <c- p>},</c->
-      <c- f>"email"</c-><c- p>:</c-> <c- u>"datasets@kb.nl"</c-><c- p>,</c->
-      <c- f>"telephone"</c-><c- p>:</c-> <c- u>"+31 6 12345678"</c->
-    <c- p>}</c->
-  <c- p>},</c->
-  <c- f>"creator"</c-><c- p>:</c-> <c- p>{</c->
-    <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Organization"</c-><c- p>,</c->
-    <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://www.kb.nl"</c-><c- p>,</c->
-    <c- f>"identifier"</c-><c- p>:</c-> <c- u>"NL-HaKB"</c-><c- p>,</c->
-    <c- f>"name"</c-><c- p>:</c-> <c- p>{</c->
-      <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Koninklijke Bibliotheek"</c-><c- p>,</c->
-      <c- nd>"@language"</c-><c- p>:</c-> <c- u>"nl"</c->
-    <c- p>},</c->
-    <c- f>"alternateName"</c-><c- p>:</c-> <c- p>{</c->
-      <c- nd>"@value"</c-><c- p>:</c-> <c- u>"KB"</c-><c- p>,</c->
-      <c- nd>"@language"</c-><c- p>:</c-> <c- u>"nl"</c->
-    <c- p>},</c->
-    <c- f>"sameAs"</c-><c- p>:</c-> <c- u>"https://ror.org/02w4jbg70"</c-><c- p>,</c->
-    <c- f>"contactPoint"</c-><c- p>:</c-> <c- p>{</c->
-      <c- nd>"@type"</c-><c- p>:</c-> <c- u>"ContactPoint"</c-><c- p>,</c->
-      <c- f>"name"</c-><c- p>:</c-> <c- p>{</c->
-        <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Dataset manager's name"</c-><c- p>,</c->
-        <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c->
+      <c- f>"keywords"</c-><c- p>:</c-> <c- u>"alba amicorum"</c-><c- p>,</c->
+      <c- f>"genre"</c-><c- p>:</c-> <c- u>"Interesting data"</c-><c- p>,</c->
+      <c- f>"url"</c-><c- p>:</c-> <c- u>"https://www.kb.nl/bronnen-zoekwijzers/kb-collecties/moderne-handschriften-vanaf-ca-1550/alba-amicorum"</c-><c- p>,</c->
+      <c- f>"identifier"</c-><c- p>:</c-> <c- u>"http://data.bibliotheken.nl/id/dataset/rise-alba"</c-><c- p>,</c->
+      <c- f>"license"</c-><c- p>:</c-> <c- u>"http://creativecommons.org/publicdomain/zero/1.0/"</c-><c- p>,</c->
+      <c- f>"inLanguage"</c-><c- p>:</c-> <c- p>[</c->
+        <c- u>"nl-NL"</c-><c- p>,</c->
+        <c- u>"en-GB"</c->
+      <c- p>],</c->
+      <c- f>"spatialCoverage"</c-><c- p>:</c-> <c- p>{</c->
+        <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://sws.geonames.org/2750405/"</c->
       <c- p>},</c->
-      <c- f>"email"</c-><c- p>:</c-> <c- u>"datasets@kb.nl"</c-><c- p>,</c->
-      <c- f>"telephone"</c-><c- p>:</c-> <c- u>"+31 6 12345678"</c->
-    <c- p>}</c->
-  <c- p>},</c->
-  <c- f>"distribution"</c-><c- p>:</c-> <c- p>[</c->
-    <c- p>{</c->
-      <c- nd>"@type"</c-><c- p>:</c-> <c- u>"DataDownload"</c-><c- p>,</c->
-      <c- f>"encodingFormat"</c-><c- p>:</c-> <c- u>"application/sparql-query"</c-><c- p>,</c->
-      <c- f>"contentUrl"</c-><c- p>:</c-> <c- u>"http://data.bibliotheken.nl/sparql"</c-><c- p>,</c->
-      <c- f>"dateCreated"</c-><c- p>:</c-> <c- u>"2023-06-01T08:00:00+01:00"</c-><c- p>,</c->
-      <c- f>"dateModified"</c-><c- p>:</c-> <c- u>"2024-03-04T01:09:00+01:00"</c->
+      <c- f>"temporalCoverage"</c-><c- p>:</c-> <c- u>"1939/1945"</c-><c- p>,</c->
+      <c- f>"publisher"</c-><c- p>:</c-> <c- p>{</c->
+        <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com"</c->
+      <c- p>},</c->
+      <c- f>"creator"</c-><c- p>:</c-> <c- p>[</c->
+        <c- p>{</c->
+          <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Person"</c-><c- p>,</c->
+          <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com/creator1"</c-><c- p>,</c->
+          <c- f>"name"</c-><c- p>:</c-> <c- u>"Creator 1"</c->
+        <c- p>},</c->
+        <c- p>{</c->
+          <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Person"</c-><c- p>,</c->
+          <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com/creator2"</c-><c- p>,</c->
+          <c- f>"name"</c-><c- p>:</c-> <c- u>"Creator 2"</c->
+        <c- p>},</c->
+        <c- p>{</c->
+          <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com"</c->
+        <c- p>}</c->
+      <c- p>],</c->
+      <c- f>"dateModified"</c-><c- p>:</c-> <c- u>"2021-05-27T09:56:21.370767"</c-><c- p>,</c->
+      <c- f>"datePublished"</c-><c- p>:</c-> <c- u>"2021-05-28"</c-><c- p>,</c->
+      <c- f>"dateCreated"</c-><c- p>:</c-> <c- p>{</c->
+        <c- nd>"@type"</c-><c- p>:</c-> <c- u>"http://www.w3.org/2001/XMLSchema#date"</c-><c- p>,</c->
+        <c- nd>"@value"</c-><c- p>:</c-> <c- u>"2021-05-27"</c->
+      <c- p>},</c->
+      <c- f>"distribution"</c-><c- p>:</c-> <c- p>[</c->
+        <c- p>{</c->
+          <c- nd>"@type"</c-><c- p>:</c-> <c- u>"DataDownload"</c-><c- p>,</c->
+          <c- f>"encodingFormat"</c-><c- p>:</c-> <c- p>[</c->
+            <c- u>"application/rdf+xml"</c-><c- p>,</c->
+            <c- u>"text/turtle"</c->
+          <c- p>],</c->
+          <c- f>"contentUrl"</c-><c- p>:</c-> <c- u>"http://data.bibliotheken.nl/id/dataset/rise-alba.rdf"</c-><c- p>,</c->
+          <c- f>"description"</c-><c- p>:</c-> <c- u>"Turtle dump"</c->
+        <c- p>},</c->
+        <c- p>{</c->
+          <c- nd>"@type"</c-><c- p>:</c-> <c- u>"DataDownload"</c-><c- p>,</c->
+          <c- f>"encodingFormat"</c-><c- p>:</c-> <c- u>"application/ld+json"</c-><c- p>,</c->
+          <c- f>"contentUrl"</c-><c- p>:</c-> <c- u>"http://data.bibliotheken.nl/id/dataset/rise-alba.jsonld"</c-><c- p>,</c->
+          <c- f>"description"</c-><c- p>:</c-> <c- u>"JSON-LD dump"</c->
+        <c- p>},</c->
+        <c- p>{</c->
+          <c- nd>"@type"</c-><c- p>:</c-> <c- u>"DataDownload"</c-><c- p>,</c->
+          <c- f>"encodingFormat"</c-><c- p>:</c-> <c- u>"application/sparql-query"</c-><c- p>,</c->
+          <c- f>"contentUrl"</c-><c- p>:</c-> <c- u>"http://data.bibliotheken.nl/id/dataset/sparql"</c-><c- p>,</c->
+          <c- f>"description"</c-><c- p>:</c-> <c- u>"SPARQL endpoint"</c->
+        <c- p>}</c->
+      <c- p>]</c->
     <c- p>},</c->
     <c- p>{</c->
-      <c- nd>"@type"</c-><c- p>:</c-> <c- u>"DataDownload"</c-><c- p>,</c->
-      <c- f>"encodingFormat"</c-><c- p>:</c-> <c- u>"text/turtle"</c-><c- p>,</c->
-      <c- f>"contentUrl"</c-><c- p>:</c-> <c- u>"http://data.bibliotheken.nl/files/alba_20201016.ttl.gz"</c-><c- p>,</c->
-      <c- f>"name"</c-><c- p>:</c-> <c- p>{</c->
-        <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Datadump Alba Amicorum"</c-><c- p>,</c->
-        <c- nd>"@language"</c-><c- p>:</c-> <c- u>"nl"</c->
-      <c- p>},</c->
-      <c- f>"dateCreated"</c-><c- p>:</c-> <c- u>"2019-05-21"</c-><c- p>,</c->
-      <c- f>"dateModified"</c-><c- p>:</c-> <c- u>"2019-08-15"</c-><c- p>,</c->
-      <c- f>"contentSize"</c-><c- p>:</c-> <c- u>"614K"</c->
+      <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Organization"</c-><c- p>,</c->
+      <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com"</c-><c- p>,</c->
+      <c- f>"identifier"</c-><c- p>:</c-> <c- u>"test"</c-><c- p>,</c->
+      <c- f>"name"</c-><c- p>:</c-> <c- u>"Koninklijke Bibliotheek"</c-><c- p>,</c->
+      <c- f>"sameAs"</c-><c- p>:</c-> <c- u>"https://ror.org/02w4jbg70"</c-><c- p>,</c->
+      <c- f>"contactPoint"</c-><c- p>:</c-> <c- p>{</c->
+        <c- nd>"@type"</c-><c- p>:</c-> <c- u>"ContactPoint"</c-><c- p>,</c->
+        <c- f>"name"</c-><c- p>:</c-> <c- u>"Datasets Manager"</c-><c- p>,</c->
+        <c- f>"email"</c-><c- p>:</c-> <c- u>"datasets@example.com"</c->
+      <c- p>}</c->
     <c- p>}</c->
   <c- p>]</c->
 <c- p>}</c->
