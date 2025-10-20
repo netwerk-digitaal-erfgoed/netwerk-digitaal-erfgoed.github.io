@@ -23,4 +23,4 @@ The documentation approaches the heritage network from three perspectives:
 * [Managers of heritage data](publish/index.md)
 * [Software developers](build/index.md).
 
-You’ll also find a [testplan for NDE-compatability](test.md) (in Dutch) and [glossary](glossary.md) where relevant concepts are explained.
+You’ll also find a [Glossary](glossary.md) where relevant concepts are explained.

@@ -1,10 +1,10 @@
 ---
-sidebar_position: 7
+description: Testing for NDE compatibility
 ---
 
 # Testen op NDE-compatibiliteit
 
-![alt_text](../static/img/test-cover.png "Cover image")
+![alt_text](/img/test-cover.png "Cover image")
 
 ## Inleiding
 
@@ -34,7 +34,7 @@ Wanneer de leverancier heeft aangegeven dat de implementatie van het CBS is afge
 
 Dit document beschrijft alleen hoe de NDE compatibiliteit van het opgeleverde systeem getest kan worden. De tests worden op een zodanige wijze beschreven dat deze met een webbrowser uitgevoerd kunnen worden, zonder andere technische hulpmiddelen. Elke teststap start ter inleiding met informatie over het te testen onderwerp.
 
-![alt_text](../static/img/test-stappen.png "Test stappen")
+![alt_text](/img/test-stappen.png "Test stappen")
 
 Over de volgorde van de teststappen is nagedacht. Als een teststap niet slaagt, dan kan het lastig zijn om met de vervolgstappen aan de slag te gaan.Meld het issue bij de leverancier, vermeld daarbij precies hoe en wat je hebt getest, bij voorkeur met URI van erfgoedobjecten of URL's van collectie pagina's. Als de leverancier een issue heeft opgelost of het toch geen issue blijkt te zijn, dan kan de teststap herhaald worden. Als een teststap niet slaagt, probeer toch de vervolgstappen van het testplan te zetten.
 
@@ -66,7 +66,7 @@ Net als een object uit de collectie dient de dataset goed beschreven te zijn voo
 
 De datasetbeschrijving is valide (de verplichte velden zijn aanwezig), want deze is opgenomen in het Dataset Register. Maar de validatiefunctie geeft ook adviezen over toe te voegen waarden en waarschuwing omtrent waarden die in de toekomst verplicht worden!
 
-![alt_text](../static/img/test-datasetregister-validatie.png "Validatie via het Dataset Register")
+![alt_text](/img/test-datasetregister-validatie.png "Validatie via het Dataset Register")
 
 Een dataset bevat één of meer zogenaamde distributies. Dit zijn de links naar een datadump of een API waarmee de dataset daadwerkelijk gedownload of op een machineleesbare wijze geraadpleegd kan worden. 
 
@@ -98,7 +98,7 @@ In de voorgaande stap is er linked data gedownload. Het testen van een complete 
 
 ➡️ Open het de datadump uit de vorige stap in een programma als Kladblok/Notepad (of een [online variant](https://onlinenotepad.org/notepad)).
 
-![alt_text](../static/img/test-notepad-turtle.png "image_tooltip")
+![alt_text](/img/test-notepad-turtle.png "image_tooltip")
 
 ➡️ Voor de steekproef dien je een stuk of 5 persistente HTTP URI's te verzamelen van erfgoedobjecten, archieftoegangen of werken. Noteer de URI's in het werkdocument.
 
@@ -139,15 +139,15 @@ Met opvragen van URI's via de browser in stap 2 zijn verzoek gedaan om inhoud te
 
 [Reqbin.com](https://reqbin.com) is een gratis service, inloggen is niet nodig, maar geeft wel extra functionaliteiten. Met deze online service kun je via de browser HTTP requests doen en de HTTP response bekijken. Om een HTTP request te doen, vul je naast de URI ook een *Accept header* in met de waarde `text/turtle`*` (zie onderstaande screenshots). Na het klikken op de Send knop zie je onder het HTTP request (de vraag) de HTTP response (het antwoord). Als het goed is het de informatie over het object in Turtle formaat! Alternatieve te testen formaten: `application/ld+json`, `application/n-triples` (de linked data van de erfgoedorganisatie dient in minimaal één RDF representatie beschikbaar te zijn).
 
-![alt_text](../static/img/test-reqbin.png "ReqBin 1")
+![alt_text](/img/test-reqbin.png "ReqBin 1")
 
-![alt_text](../static/img/test-reqbin2.png "ReqBin 2")
+![alt_text](/img/test-reqbin2.png "ReqBin 2")
 
 Of de ontvangen linked data geldig is qua syntax kun je controleren met de RDF converter van Zazuko.
 
 ➡️ Ga naar [RDF converter van Zazuko](https://converter.zazuko.com) en plak de inhoud van de in bestanden opgeslagen linked data in het Input vlak. Kies in het linker paneel het juiste input formaat (waarschijnlijk `text/turtle`). Als de syntax ok is verschijnt er in het Output vlak de omgezette linked data naar JSON-LD, TriG, … Als de syntax niet ok is, dan verschijnt naast Input de rode tekst Parsing failed (zet de muis op de eerste regel in het input vlak dat rood is onderstreept en je ziet informatie over de fout). Noteer de resultaten van de controles in het werkdocument.
 
-![alt_text](../static/img/test-converter.png "Zazuko's Converver")
+![alt_text](/img/test-converter.png "Zazuko's Converver")
 
 Het is een vereist dat de linked data (de RDF) gebruik maakt van het [schema.org](https://schema.org/) vocabulaire. Dit kun je eenvoudig zien in de datadump: worden er classes en properties gebruikt die beginnen met https://schema.org. Bij voorkeur wordt hierbij het Schema.org NDE applicatie profiel ([SCHEMA-AP-NDE](https://docs.nde.nl/schema-profile/)) gebruikt, waarin keuzes zijn gemaakt voor eenduidig gebruik en betere vindbaarheid. In de toekomst wordt gebruik van [SCHEMA-AP-NDE](https://docs.nde.nl/schema-profile/) een requirement. Daarnaast kan er de linked data in een domeinspecifiek model worden gepubliceerd, zoals Records-in-Context ([RIC-O](https://www.ica.org/resource/records-in-contexts-ontology/)), [Linked.Art](https://linked.art/) en Resource Description and Access ([RDA](https://www.rdaregistry.info/)).
 
@@ -155,7 +155,7 @@ Een vervolgtest controleert of de linked data voldoet aan het applicatie profiel
 
 ➡️ Ga naar [SHACL Play!](https://shacl-play.sparna.fr/play/validate) en plak de RDF (uit een opgeslagen bestand) als Input Data bij het veld 'Copy/paste RDF content'. Selecteer bij de Shapes sectie 'Schema.org Application Profile for NDE' uit de Shapes catalog. Click op de 'Validate' knop om een validatierapport te krijgen. Herhaal dit voor alle opgeslagen linked data bestanden, pas het werkdocument aan met resultaten.
 
-![alt_text](../static/img/test-shacl-play.png "SHACL Play - Validate RDF data")
+![alt_text](/img/test-shacl-play.png "SHACL Play - Validate RDF data")
 
 
 De NDE requirements vereisen voor het publiceren van linked data dat URI's zijn te resolven (nivo 1) en dat er een datadump is (nivo 2). Nivo 3 - een SPARQL endpoint - is niet verplicht en dus ook geen voorwaarde voor een NDE-compatible systeem. Als je stap 1 in de datasetbeschrijving een SPARQL-endpoint bent tegengekomen, dan moet deze wel goed werken (anders slaagt de test niet). We kunnen dit testen met behulp van Yasgui.
@@ -171,7 +171,7 @@ ORDER BY DESC(?count)
 
 Als het goed is zie je onder het query vlak resultaten verschijnen. Deze specifieke query vraagt naar de gebruikte classes. Naast het controleren van de technische werking van het SPARQL-endpoint kun je ook inhoudelijk controleren of je de verwachte classes (van schema.org!) terug ziet.
 
-![alt_text](../static/img/test-yasgui-classes.png "List class via YASGUI")
+![alt_text](/img/test-yasgui-classes.png "List class via YASGUI")
 
 **Tip**: via het Deel ikoontje kun je een verkorte URL krijgen van de SPARQL-query op het geselecteerde  SPARQL-endpoint, die je eenvoudig kunt delen met collega's en leverancier. Via [http://yasgui.org/short/Bnnq2X1w2F](http://yasgui.org/short/Bnnq2X1w2F) kom je op de hierboven getoonde SPARQL pagina.
 
@@ -217,12 +217,12 @@ Wanneer je een IIIF Manifest bekijkt in een IIIF Viewer zoals de [Theseus Viewer
 
 ➡️ Zoek in de steekproef linked data bestanden IIIF URI's. Ga naar [Theseus Viewer](https://theseusviewer.org/) en plak daar elke IIIF URI in om het resultaat te bekijken (zie je de afbeeldingen, is de metadata goed > klik hiervoor op (i) in de linker balk). Neem in het werkdocument de IIIF URI's en resultaten op.
 
-![alt_text](../static/img/test-iiif.png "image_tooltip")
+![alt_text](/img/test-iiif.png "image_tooltip")
 
 
 Idealiter wordt het IIIF manifest ook beschikbaar gesteld op de collectiewebsite. Het is gebruikelijk om hiervoor het IIIF logo op te nemen en te linken naar het manifest.
 
-![alt_text](../static/img/test-iiif2.png "image_tooltip")
+![alt_text](/img/test-iiif2.png "image_tooltip")
 
 **✅ Als de afbeeldingen en de hieraan gekoppelde informatie zichtbaar is in een IIIF viewer, dan is deze test geslaagd.**
 
