@@ -1,4 +1,8 @@
-# **Testen op NDE-compatibiliteit**
+---
+sidebar_position: 7
+---
+
+# Testen op NDE-compatibiliteit
 
 ![alt_text](../static/img/test-cover.png "Cover image")
 
@@ -151,8 +155,6 @@ Een vervolgtest controleert of de linked data voldoet aan het applicatie profiel
 
 ➡️ Ga naar [SHACL Play!](https://shacl-play.sparna.fr/play/validate) en plak de RDF (uit een opgeslagen bestand) als Input Data bij het veld 'Copy/paste RDF content'. Selecteer bij de Shapes sectie 'Schema.org Application Profile for NDE' uit de Shapes catalog. Click op de 'Validate' knop om een validatierapport te krijgen. Herhaal dit voor alle opgeslagen linked data bestanden, pas het werkdocument aan met resultaten.
 
-**TODO**: De shapes voor 'Schema.org Application Profile for NDE' zijn **nog niet** opgenomen in de Shapes catalog, er is een [pull request](https://github.com/sparna-git/SHACL-Catalog/pull/1) gedaan. Tot dan dient de URL optie gebruikt te worden. Vul hierbij de volgende URL in: [https://raw.githubusercontent.com/netwerk-digitaal-erfgoed/schema-profile/refs/heads/main/shacl.ttl](https://raw.githubusercontent.com/netwerk-digitaal-erfgoed/schema-profile/refs/heads/main/shacl.ttl).
-
 ![alt_text](../static/img/test-shacl-play.png "SHACL Play - Validate RDF data")
 
 
@@ -211,17 +213,20 @@ De IIIF Image API beschrijft de wijze waarop een afbeelding kan worden opgehaald
 
 De IIIF Presentatie API beschrijft meer de structuur van een werk, wat één foto kan zijn, maar ook meerdere scans van een boek of register. Het manifest biedt een IIIF viewer alle informatie om het werk te tonen. Een vaste structuur voor de URI van een manifest is er niet, maar veelal herken je IIIF (versie 2 of 3) en het woord manifest, zoals [https://www.goudatijdmachine.nl/omeka/iiif/2/98632/manifest](https://www.goudatijdmachine.nl/omeka/iiif/2/98632/manifest)  Een validator specifiek voor de IIIF Presentation API wordt door de IIIF community beschikbaar gesteld via [https://presentation-validator.iiif.io/](https://presentation-validator.iiif.io/) (let op dat je de juiste API versie instelt, 2 of 3). 
 
-Wanneer je een IIIF Manifest bekijkt in een IIIF Viewer zoals Theseus, Mirador of Universal Viewer, valideer je daarmee de IIIF bestanden!
+Wanneer je een IIIF Manifest bekijkt in een IIIF Viewer zoals de [Theseus Viewer](https://theseusviewer.org/), [Mirador](https://projectmirador.org/) of [Universal Viewer](https://universalviewer.io/), valideer je daarmee de IIIF bestanden!
 
-➡️ Zoek in de steekproef linked data bestanden IIIF URI's. Ga naar [https://theseusviewer.org/](https://theseusviewer.org/) en plak daar elke IIIF URI's in om het resultaat te bekijken (zie je de afbeeldingen, is de metadata goed > klik hiervoor op (i) in de linker balk). Neem in het werkdocument de IIIF URI's en resultaten op.
+➡️ Zoek in de steekproef linked data bestanden IIIF URI's. Ga naar [Theseus Viewer](https://theseusviewer.org/) en plak daar elke IIIF URI in om het resultaat te bekijken (zie je de afbeeldingen, is de metadata goed > klik hiervoor op (i) in de linker balk). Neem in het werkdocument de IIIF URI's en resultaten op.
 
 ![alt_text](../static/img/test-iiif.png "image_tooltip")
 
 
-Idealiter wordt het IIIF manifest ook beschikbaar gesteld op de collectiewebsite. Het is gebruikelijk om hiervoor het IIIF logo op te nemen en te linken naar het manifest. Wellicht ook met uitleg wat je daarmee kan, denk aan [https://liiive.now/](https://liiive.now/) en [https://allmaps.org/](https://allmaps.org/).
+Idealiter wordt het IIIF manifest ook beschikbaar gesteld op de collectiewebsite. Het is gebruikelijk om hiervoor het IIIF logo op te nemen en te linken naar het manifest.
+
+![alt_text](../static/img/test-iiif2.png "image_tooltip")
 
 **✅ Als de afbeeldingen en de hieraan gekoppelde informatie zichtbaar is in een IIIF viewer, dan is deze test geslaagd.**
 
+Als je op dit punt gekomen bent heb je de 5 stappen om NDE-compatabiliteit te testen voltooid!
 
 ## Bijlage: werkdocument
 
