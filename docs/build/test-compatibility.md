@@ -20,10 +20,10 @@ Vanuit het NDE is er goed contact met leveranciers en wordt er gekeken naar éé
 
 De 5 eisen die worden gesteld in het kader van NDE compatibiliteit komen voort uit de doelstellingen van de Nationale Strategie Digitaal Erfgoed en zijn in lijn met de Digitale Erfgoed Referentie Architectuur ([DERA](https://dera.netwerkdigitaalerfgoed.nl/index.php/Hoofdpagina)):
 
-✅ Datasets vindbaar via het Datasetregister 
-✅ Gebruik van duurzame identifiers
-✅ Publiceert linked open data
-✅ Linkt naar URI's van gestandaardiseerde termen via het Termennetwerk
+✅ Datasets vindbaar via het Datasetregister \
+✅ Gebruik van duurzame identifiers \
+✅ Publiceert linked open data \
+✅ Linkt naar URI's van gestandaardiseerde termen via het Termennetwerk \
 ✅ Gebruik IIIF voor toegang tot beeldcollecties
 
 ## Acceptatietesten
