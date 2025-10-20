@@ -92,7 +92,7 @@ Als API zijn veel voorkomend SPARQL, GraphQL en OAI-PMH. Dat datasets via dergel
 
 Tijdens de implementatie van het CBS heeft de leverancier wellicht gevraagd naar het duurzaamheidsbeleid en het gewenste persistent identifier (PID) systeem. Veelal wordt er gekozen voor ARK (via [Arks.org](https://arks.org/)) of Handle (via [SURF](https://www.surf.nl/diensten/publiceren/persistent-identifiers)), maar gebruik van een generieke domeinnaam als [data.bibliotheek.nl](http://data.bibliotheek.nl) met per object een GUID, kan ook voldoen. In het algemeen geldt dat duurzame identifiers een **belofte** zijn van de erfgoedorganisatie: het object is ook in de toekomst op te vragen via een persistent webadres. Deze belofte is deels beleid & organisatie en deels techniek. In deze stap wordt alleen naar het techniek deel gekeken.
 
-Een belangrijk aspect van linked data is dat alles een HTTP URI (internetadres) heeft. We willen het gebruik van termen en het aan elkaar verbinden van collecties duurzaam vormgeven. Dus de HTTP URI's van erfgoedobjecten (en termen) dienen ook persistent te zijn. Om deze reden spreken we in plaats van PID's (dat de vorm `ark:60537/b3xVzO` kan hebben) liever over persistente HTTP URI's (zoals bijv. [https://n2t.net/ark:/60537/b3xVzO](https://n2t.net/ark:/60537/b3xVzO)). In een persistente HTTP URI staat dus veelal een globale resolver als [n2t.net](n2t.net), [arks.org](arks.org) of [handle.net](handle.net) waarmee de PID een echt, duurzaam internetadres wordt.
+Een belangrijk aspect van linked data is dat alles een HTTP URI (internetadres) heeft. We willen het gebruik van termen en het aan elkaar verbinden van collecties duurzaam vormgeven. Dus de HTTP URI's van erfgoedobjecten (en termen) dienen ook persistent te zijn. Om deze reden spreken we in plaats van PID's (dat de vorm `ark:60537/b3xVzO` kan hebben) liever over persistente HTTP URI's (zoals bijv. [https://n2t.net/ark:/60537/b3xVzO](https://n2t.net/ark:/60537/b3xVzO)). In een persistente HTTP URI staat dus veelal een globale resolver als [n2t.net](https://n2t.net), [arks.org](https://arks.org) of [handle.net](https://handle.net) waarmee de PID een echt, duurzaam internetadres wordt.
 
 In de voorgaande stap is er linked data gedownload. Het testen van een complete RDF datadump via online tooling is lastig: veelal zijn de datadumps te groot en alleen via offline tools in z'n geheel te testen. De testen in stap 2 tot en met 5 zullen we steekproefsgewijs aanpakken.
 
@@ -104,7 +104,7 @@ In de voorgaande stap is er linked data gedownload. Het testen van een complete 
 
 Als je een Turtle bestand hebt, zijn URI's te herkennen door de internetadressen tussen haakjes &lt;>. Selecteer willekeurige persistente HTTP URI's (uit heel de datadump) van de eigen organisaties en niet "externe" URI's van bijvoorbeeld termen (deze nemen we in stap 4 onder de loep). Noteer de 5 persistente HTTP URI's in een tabel in een werkdocument (dat je ook kunt gebruiken voor een eventuele acceptatietestrapport).
 
-Indien de persistente HTTP URI's werken op basis van het ARK systeem kan de registratie van de gecontroleerd worden. Het nummer achter "ark:" is de zogenaamde NAAN (Name Assigning Authority Number), het nummer specifiek voor de eigen erfgoedorganisatie. Door de URL [https://arks.org/ark:{NAAN](https://arks.org/ark:{NAAN)} op te vragen (bijv. [https://arks.org/ark:60537](https://arks.org/ark:60537)) krijg je de metadata te zien die aan deze registratie is gekoppeld,
+Indien de persistente HTTP URI's werken op basis van het ARK systeem kan de registratie van de gecontroleerd worden. Het nummer achter "ark:" is de zogenaamde NAAN (Name Assigning Authority Number), het nummer specifiek voor de eigen erfgoedorganisatie. Door de URL https://arks.org/ark:{NAAN} op te vragen (bijv. [https://arks.org/ark:60537](https://arks.org/ark:60537)) krijg je de metadata te zien die aan deze registratie is gekoppeld,
 
 ➡️ Vraag de pagina die de ARK registratie van je organisatie beschrijft op in de webbrowser en controleer dat het inderdaad de eigen organisatie is (en niet van een aggregatieplatform of CBS leverancier).
 
@@ -135,9 +135,9 @@ Elke erfgoedobject URI moet "resolvable" zijn, oftewel elke erfgoedobject moet z
 
 Met opvragen van URI's via de browser in stap 2 zijn verzoek gedaan om inhoud te leveren in HTML formaat (onder water geeft de browser de request header `Accept: text/html` mee). Dit vragen om inhoud in een bepaald formaat heet *content-negotiation*. Laten we kijken of de URI's ook voor machine leesbare linked data leveren.
 
-➡️ Controleer elke persistente HTTP URI via [reqbin.com](http://reqbin.com) en sla het resultaat op in een bestand. Noteer de URI en bestandsnamen in het werkdocument. 
+➡️ Controleer elke persistente HTTP URI via [reqbin.com](https://reqbin.com) en sla het resultaat op in een bestand. Noteer de URI en bestandsnamen in het werkdocument.
 
-[Reqbin.com](Reqbin.com) is een gratis service, inloggen is niet nodig, maar geeft wel extra functionaliteiten. Met deze online service kun je via de browser HTTP requests doen en de HTTP response bekijken. Om een HTTP request te doen, vul je naast de URI ook een *Accept header* in met de waarde `text/turtle`*` (zie onderstaande screenshots). Na het klikken op de Send knop zie je onder het HTTP request (de vraag) de HTTP response (het antwoord). Als het goed is het de informatie over het object in Turtle formaat! Alternatieve te testen formaten: `application/ld+json`, `application/n-triples` (de linked data van de erfgoedorganisatie dient in minimaal één RDF representatie beschikbaar te zijn).
+[Reqbin.com](https://reqbin.com) is een gratis service, inloggen is niet nodig, maar geeft wel extra functionaliteiten. Met deze online service kun je via de browser HTTP requests doen en de HTTP response bekijken. Om een HTTP request te doen, vul je naast de URI ook een *Accept header* in met de waarde `text/turtle`*` (zie onderstaande screenshots). Na het klikken op de Send knop zie je onder het HTTP request (de vraag) de HTTP response (het antwoord). Als het goed is het de informatie over het object in Turtle formaat! Alternatieve te testen formaten: `application/ld+json`, `application/n-triples` (de linked data van de erfgoedorganisatie dient in minimaal één RDF representatie beschikbaar te zijn).
 
 ![alt_text](../static/img/test-reqbin.png "ReqBin 1")
 
@@ -203,7 +203,7 @@ Deze test hangt af van de eigen data in je CBS, is deze al gekoppeld aan termen?
 
 > ***Wat is IIIF?***
 >
-> *IIIF staat voor International Image Interoperability Framework. Het is een set open standaarden die het makkelijker maakt om gedigitaliseerde schilderijen, kaarten, aktes, middeleeuwse handschriften, foto's en andere afbeeldingen, samen met de bijbehorende informatie, online toegankelijk te maken. IIIF is ontwikkeld door en voor de internationale erfgoedwereld. Het wordt ondersteund door een community van bibliotheken, archieven, musea, universiteiten, softwarebedrijven en ontwikkelaars die samen de standaarden schrijven, ontwikkelen, testen en promoten. De communitysite [iiif.io](iiif.io) biedt veel achtergrondinformatie, gidsen en trainingen om je op weg te helpen met IIIF.*
+> *IIIF staat voor International Image Interoperability Framework. Het is een set open standaarden die het makkelijker maakt om gedigitaliseerde schilderijen, kaarten, aktes, middeleeuwse handschriften, foto's en andere afbeeldingen, samen met de bijbehorende informatie, online toegankelijk te maken. IIIF is ontwikkeld door en voor de internationale erfgoedwereld. Het wordt ondersteund door een community van bibliotheken, archieven, musea, universiteiten, softwarebedrijven en ontwikkelaars die samen de standaarden schrijven, ontwikkelen, testen en promoten. De communitysite [iiif.io](https://iiif.io) biedt veel achtergrondinformatie, gidsen en trainingen om je op weg te helpen met IIIF.*
 >
 > **Bron**: [https://netwerkdigitaalerfgoed.nl/activiteiten/iiif/](https://netwerkdigitaalerfgoed.nl/activiteiten/iiif/)
 
@@ -240,28 +240,20 @@ Lijst van URI's van de geteste datasets en het validatie resultaat, inclusief wa
 
 <table class="table">
   <tr>
-   <td><strong>Dataset URI</strong>
-   </td>
-   <td><strong>Validatie resultaat </strong>
-   </td>
+   <td><strong>Dataset URI</strong></td>
+   <td><strong>Validatie resultaat </strong></td>
   </tr>
   <tr>
-   <td>&nbsp;
-   </td>
-   <td>&nbsp;
-   </td>
+   <td></td>
+   <td></td>
   </tr>
   <tr>
-   <td>&nbsp;
-   </td>
-   <td>&nbsp;
-   </td>
+   <td></td>
+   <td></td>
   </tr>
   <tr>
-   <td>&nbsp;
-   </td>
-   <td>&nbsp;
-   </td>
+   <td></td>
+   <td></td>
   </tr>
 </table>
 
@@ -269,28 +261,20 @@ Lijst van URI's van de gedownloade datadumps en bestandsnaam op je computer (wat
 
 <table class="table">
   <tr>
-   <td><strong>Distributie URI (AccessURL van datadump)</strong>
-   </td>
-   <td><strong>Lokaal bestand</strong>
-   </td>
+   <td><strong>Distributie URI (AccessURL van datadump)</strong></td>
+   <td><strong>Lokaal bestand</strong></td>
   </tr>
   <tr>
-   <td>
-   </td>
-   <td>
-   </td>
+   <td></td>
+   <td></td>
   </tr>
   <tr>
-   <td>
-   </td>
-   <td>
-   </td>
+   <td></td>
+   <td></td>
   </tr>
   <tr>
-   <td>
-   </td>
-   <td>
-   </td>
+   <td></td>
+   <td></td>
   </tr>
 </table>
 
@@ -315,40 +299,28 @@ Lijst van persistente HTTP URI's van erfgoed objecten (en of je "beeld" krijgt a
 
 <table class="table">
   <tr>
-   <td><strong>Persistente HTTP URI</strong>
-   </td>
-   <td><strong>Beeld in browser</strong>
-   </td>
+   <td><strong>Persistente HTTP URI</strong></td>
+   <td><strong>Beeld in browser</strong></td>
   </tr>
   <tr>
-   <td>
-   </td>
-   <td>
-   </td>
+   <td></td>
+   <td></td>
   </tr>
   <tr>
-   <td>
-   </td>
-   <td>
-   </td>
+   <td></td>
+   <td></td>
   </tr>
   <tr>
-   <td>
-   </td>
-   <td>
-   </td>
+   <td></td>
+   <td></td>
   </tr>
   <tr>
-   <td>
-   </td>
-   <td>
-   </td>
+   <td></td>
+   <td></td>
   </tr>
   <tr>
-   <td>
-   </td>
-   <td>
-   </td>
+   <td></td>
+   <td></td>
   </tr>
 </table>
 
@@ -358,56 +330,38 @@ Gevonden / opgeloste issues:
 
 #### 3. Controleren van de linked data
 
-Lijst van persistente HTTP URI's van erfgoed objecten, de bestandsnaam op je computer (van de linked data die via [reqbin.com](reqbin.com) is opgehaald), of ze valide zijn en voldoen aan schema.org AP NDE.
+Lijst van persistente HTTP URI's van erfgoed objecten, de bestandsnaam op je computer (van de linked data die via [reqbin.com](https://reqbin.com) is opgehaald), of ze valide zijn en voldoen aan schema.org AP NDE.
 
 <table class="table">
   <tr>
-   <td><strong>Persistente HTTP URI</strong>
-   </td>
-   <td><strong>Valide syntax</strong>
-   </td>
-   <td><strong>Schema.org AP NDE</strong>
-   </td>
+   <td><strong>Persistente HTTP URI</strong></td>
+   <td><strong>Valide syntax</strong></td>
+   <td><strong>Schema.org AP NDE</strong></td>
   </tr>
   <tr>
-   <td>
-   </td>
-   <td>
-   </td>
-   <td>
-   </td>
+   <td></td>
+   <td></td>
+   <td></td>
   </tr>
   <tr>
-   <td>
-   </td>
-   <td>
-   </td>
-   <td>
-   </td>
+   <td></td>
+   <td></td>
+   <td></td>
   </tr>
   <tr>
-   <td>
-   </td>
-   <td>
-   </td>
-   <td>
-   </td>
+   <td></td>
+   <td></td>
+   <td></td>
   </tr>
   <tr>
-   <td>
-   </td>
-   <td>
-   </td>
-   <td>
-   </td>
+   <td></td>
+   <td></td>
+   <td></td>
   </tr>
   <tr>
-   <td>
-   </td>
-   <td>
-   </td>
-   <td>
-   </td>
+   <td></td>
+   <td></td>
+   <td></td>
   </tr>
 </table>
 
@@ -429,52 +383,34 @@ Lijst van URI's van termen en of je "beeld" krijgt als je deze URI's in de brows
 
 <table class="table">
   <tr>
-   <td><strong>URI term</strong>
-   </td>
-   <td><strong>Term</strong>
-   </td>
-   <td><strong>Beeld in browser</strong>
-   </td>
+   <td><strong>URI term</strong></td>
+   <td><strong>Term</strong></td>
+   <td><strong>Beeld in browser</strong></td>
   </tr>
   <tr>
-   <td>
-   </td>
-   <td>
-   </td>
-   <td>
-   </td>
+   <td></td>
+   <td></td>
+   <td></td>
   </tr>
   <tr>
-   <td>
-   </td>
-   <td>
-   </td>
-   <td>
-   </td>
+   <td></td>
+   <td></td>
+   <td></td>
   </tr>
   <tr>
-   <td>
-   </td>
-   <td>
-   </td>
-   <td>
-   </td>
+   <td></td>
+   <td></td>
+   <td></td>
   </tr>
   <tr>
-   <td>
-   </td>
-   <td>
-   </td>
-   <td>
-   </td>
+   <td></td>
+   <td></td>
+   <td></td>
   </tr>
   <tr>
-   <td>
-   </td>
-   <td>
-   </td>
-   <td>
-   </td>
+   <td></td>
+   <td></td>
+   <td></td>
   </tr>
 </table>
 
@@ -482,52 +418,34 @@ Lijst van URL's van collectiepagina's en of je hier termen worden getoond.
 
 <table class="table">
   <tr>
-   <td><strong>URL collectiepagina</strong>
-   </td>
-   <td><strong>Term</strong>
-   </td>
-   <td><strong>Getoond op collectiepagina</strong>
-   </td>
+   <td><strong>URL collectiepagina</strong></td>
+   <td><strong>Term</strong></td>
+   <td><strong>Getoond op collectiepagina</strong></td>
   </tr>
   <tr>
-   <td>
-   </td>
-   <td>
-   </td>
-   <td>
-   </td>
+   <td></td>
+   <td></td>
+   <td></td>
   </tr>
   <tr>
-   <td>
-   </td>
-   <td>
-   </td>
-   <td>
-   </td>
+   <td></td>
+   <td></td>
+   <td></td>
   </tr>
   <tr>
-   <td>
-   </td>
-   <td>
-   </td>
-   <td>
-   </td>
+   <td></td>
+   <td></td>
+   <td></td>
   </tr>
   <tr>
-   <td>
-   </td>
-   <td>
-   </td>
-   <td>
-   </td>
+   <td></td>
+   <td></td>
+   <td></td>
   </tr>
   <tr>
-   <td>
-   </td>
-   <td>
-   </td>
-   <td>
-   </td>
+   <td></td>
+   <td></td>
+   <td></td>
   </tr>
 </table>
 
@@ -543,40 +461,28 @@ Lijstje van IIIF URI's en of ze goed worden getoond in Theseus.
 
 <table class="table">
   <tr>
-   <td><strong>IIIF URI</strong>
-   </td>
-   <td><strong>Beeld in Theseus</strong>
-   </td>
+   <td><strong>IIIF URI</strong></td>
+   <td><strong>Beeld in Theseus</strong></td>
   </tr>
   <tr>
-   <td>
-   </td>
-   <td>
-   </td>
+   <td></td>
+   <td></td>
   </tr>
   <tr>
-   <td>
-   </td>
-   <td>
-   </td>
+   <td></td>
+   <td></td>
   </tr>
   <tr>
-   <td>
-   </td>
-   <td>
-   </td>
+   <td></td>
+   <td></td>
   </tr>
   <tr>
-   <td>
-   </td>
-   <td>
-   </td>
+   <td></td>
+   <td></td>
   </tr>
   <tr>
-   <td>
-   </td>
-   <td>
-   </td>
+   <td></td>
+   <td></td>
   </tr>
 </table>
 
@@ -590,40 +496,27 @@ Gevonden / opgeloste issues:
 
 <table class="table">
   <tr>
-  <tr>
-   <td><strong>Aspect</strong>
-   </td>
-   <td><strong>Voldoet wel / niet</strong>
-   </td>
+   <td><strong>Aspect</strong></td>
+   <td><strong>Voldoet wel / niet</strong></td>
   </tr>
   <tr>
-   <td>✅ Datasets vindbaar via het Datasetregister 
-   </td>
-   <td>👍👎
-   </td>
+   <td>✅ Datasets vindbaar via het Datasetregister</td>
+   <td>👍👎</td>
   </tr>
   <tr>
-   <td>✅ Gebruik van duurzame identifiers
-   </td>
-   <td>👍👎
-   </td>
+   <td>✅ Gebruik van duurzame identifiers</td>
+   <td>👍👎</td>
   </tr>
   <tr>
-   <td>✅ Publiceert linked open data
-   </td>
-   <td>👍👎
-   </td>
+   <td>✅ Publiceert linked open data</td>
+   <td>👍👎</td>
   </tr>
   <tr>
-   <td>✅ Linkt naar URI's van gestandaardiseerde termen via het Termennetwerk
-   </td>
-   <td>👍👎
-   </td>
+   <td>✅ Linkt naar URI's van gestandaardiseerde termen via het Termennetwerk</td>
+   <td>👍👎</td>
   </tr>
   <tr>
-   <td>✅ Gebruik IIIF voor toegang tot beeldcollecties
-   </td>
-   <td>👍👎
-   </td>
+   <td>✅ Gebruik IIIF voor toegang tot beeldcollecties</td>
+   <td>👍👎</td>
   </tr>
 </table>
