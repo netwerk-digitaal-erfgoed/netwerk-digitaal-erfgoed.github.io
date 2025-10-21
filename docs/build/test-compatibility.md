@@ -8,13 +8,13 @@ description: Testing for NDE compatibility
 
 ## Inleiding
 
-Wanneer een leverancier een collectiebeheersysteem (CBS) oplevert, is het aan de klant om te bepalen of het systeem voldoet aan de gestelde eisen en wensen. Vanuit het Netwerk Digitaal Erfgoed (NDE) zijn de volgende eisen van belang:
+Wanneer een leverancier een collectieinformatiesysteem (CIS) oplevert, is het aan de klant om te bepalen of het systeem voldoet aan de gestelde eisen en wensen. Vanuit het Netwerk Digitaal Erfgoed (NDE) zijn de volgende eisen van belang:
 
-* [Requirements for Collection Management Systems](https://docs.nde.nl/requirements-collection-management-systems/) die specificeert hoe een aan welke eisen een collectiebeheersysteem (CBS) moet voldoen.
+* [Requirements for Collection Management Systems](https://docs.nde.nl/requirements-collection-management-systems/) die specificeert hoe een aan welke eisen een collectieinformatiesysteem moet voldoen.
 * [Requirements for Datasets](https://docs.nde.nl/requirements-datasets/) die specificeert het formaat van datasetbeschrijvingen;
 * [Schema.org Application Profile](https://docs.nde.nl/schema-profile/) die specificeert het formaat van de te publiceren erfgoeddata;
 
-Vanuit het NDE is er goed contact met leveranciers en wordt er gekeken naar één implementatie om de NDE compatibiliteit vast te stellen. Dit document geeft een handvat hoe je je, als erfgoedinstelling, leverancier, digitaal erfgoedcoach, datawerkplaats of zelfstandig erfgoed specialist - kunt bepalen of de specifieke implementatie van een CBS bij een erfgoedinstelling leidt tot een NDE-compatibel geheel. Datawerkplaatsen, digitaal erfgoedcoaches en zelfstandige erfgoed specialisten kunnen hierin een ondersteunende rol spelen. Het blijft echter de verantwoordelijkheid van de erfgoedinstelling om te bepalen dat hetgeen ze hebben aangeschaft voldoet aan de wensen en eisen.
+Vanuit het NDE is er goed contact met leveranciers en wordt er gekeken naar één implementatie om de NDE compatibiliteit vast te stellen. Dit document geeft een handvat hoe je je, als erfgoedinstelling, leverancier, digitaal erfgoedcoach, datawerkplaats of zelfstandig erfgoed specialist - kunt bepalen of de specifieke implementatie van een CIS bij een erfgoedinstelling leidt tot een NDE-compatibel geheel. Datawerkplaatsen, digitaal erfgoedcoaches en zelfstandige erfgoed specialisten kunnen hierin een ondersteunende rol spelen. Het blijft echter de verantwoordelijkheid van de erfgoedinstelling om te bepalen dat hetgeen ze hebben aangeschaft voldoet aan de wensen en eisen.
 
 ## NDE compatibiliteit
 
@@ -28,7 +28,7 @@ De 5 eisen die worden gesteld in het kader van NDE compatibiliteit komen voort u
 
 ## Acceptatie- en regressietesten
 
-Wanneer de leverancier heeft aangegeven dat de implementatie van het CBS is afgerond (wat hen betreft), is het moment aangebroken om deze implementatie goed te bekijken en te testen. Pas na een "acceptatietest" en eventuele opgeloste bevindingen, is er sprake van een afgeronde implementatie (wat veelal gepaard gaat met betaling van een laatste factuur deel). De testaanpak dient te kijken naar alle aspecten van het systeem, van functies naar datamodel, van helpteksten naar look-and-feel, van domeinnaam tot API.
+Wanneer de leverancier heeft aangegeven dat de implementatie van het CIS is afgerond (wat hen betreft), is het moment aangebroken om deze implementatie goed te bekijken en te testen. Pas na een "acceptatietest" en eventuele opgeloste bevindingen, is er sprake van een afgeronde implementatie (wat veelal gepaard gaat met betaling van een laatste factuur deel). De testaanpak dient te kijken naar alle aspecten van het systeem, van functies naar datamodel, van helpteksten naar look-and-feel, van domeinnaam tot API.
 
 Een regressietest is een test die controleert of bestaande functionaliteit nog steeds correct werkt nadat er wijzigingen zijn aangebracht, zoals configuratiewijzigingen, code-updates, bugfixes of nieuwe functies. Het doel is om onbedoelde fouten (regressies) in reeds goedgekeurde delen van het systeem te voorkomen. Geadviseerd wordt om dit testplan ook te gebruiken om er zeker van te zijn dat het systeem nog steeds NDE-compatibel is. 
 
@@ -46,19 +46,19 @@ Om informatie bij te houden wordt er in de bijlage een sjabloon gegeven voor een
 
 > ***Wat is een dataset?***
 >
-> *Een dataset (of gegevensverzameling) is een verzameling van gegevens (data of metadata). In de context van erfgoedinstellingen kun je hierbij denken aan de data van/over erfgoedobjecten, zoals een catalogus, een set museumobjecten of een collectie van archieven of nadere toegangen. Deze (meta)data wordt veelal in een archiefbeheer- of collectieregistratiesysteem beheerd en in de een of andere vorm via de eigen website toegankelijk gemaakt aan haar gebruikers. De data kan ook worden gedeeld voor hergebruik, door een dienstenportaal of aggregator. Het systeem van de erfgoedinstelling dient hiervoor de data via een datadump (export) of API beschikbaar te stellen.*
+> *Een dataset (of gegevensverzameling) is een verzameling van gegevens (data of metadata). In de context van erfgoedinstellingen kun je hierbij denken aan de data van/over erfgoedobjecten, zoals een catalogus, een set museumobjecten of een collectie van archieven of nadere toegangen. Deze (meta)data wordt veelal in een archiefbeheer- of collectieinformatiesysteem beheerd en in de een of andere vorm via de eigen website toegankelijk gemaakt aan haar gebruikers. De data kan ook worden gedeeld voor hergebruik, door een dienstenportaal of aggregator. Het systeem van de erfgoedinstelling dient hiervoor de data via een datadump (export) of API beschikbaar te stellen.*
 >
 > **Bron**: [Veelgestelde vragen over het Datasetregister door dataset beheerders bij erfgoedinstellingen](https://datasetregister.netwerkdigitaalerfgoed.nl/faq-beheerders.php)
 
-Het testen op NDE-compatabiliteit van het CBS begint bij het NDE Datasetregister. Het datasetregister geeft inzicht in de beschikbaarheid van datasets in het erfgoedveld en stimuleert daarmee het gebruik van deze datasets.
+Het testen op NDE-compatabiliteit van het CIS begint bij het NDE Datasetregister. Het datasetregister geeft inzicht in de beschikbaarheid van datasets in het erfgoedveld en stimuleert daarmee het gebruik van deze datasets.
 
 ➡️ Open het [NDE Datasetregister](https://datasetregister.netwerkdigitaalerfgoed.nl/) in je browser. Ga naar de zoekpagina en zoek de dataset(s) van de erfgoedorganisatie op. 
 
 Kan er geen enkele dataset van erfgoedorganisatie gevonden worden, dan geeft dat de eerste bevinding die bij de leverancier gemeld dient te worden.
 
-Als er wel één of meerdere zoekresultaten zijn, dan betekent dit dat de datasetbeschrijvingen die door de erfgoedorganisatie online worden gepubliceerd (veelal via het CBS) bij het NDE Datasetregister zijn aangemeld en dat deze **valide** zijn. Oftewel, de datasetbeschrijving voldoet qua syntax geheel aan de eisen in [Requirements for Datasets](https://docs.nde.nl/requirements-datasets/).
+Als er wel één of meerdere zoekresultaten zijn, dan betekent dit dat de datasetbeschrijvingen die door de erfgoedorganisatie online worden gepubliceerd (veelal via het CIS) bij het NDE Datasetregister zijn aangemeld en dat deze **valide** zijn. Oftewel, de datasetbeschrijving voldoet qua syntax geheel aan de eisen in [Requirements for Datasets](https://docs.nde.nl/requirements-datasets/).
 
-Bij de zoekresultaten dient gelijk de vraag beantwoord te worden of de naam van de dataset en de naam van de organisatie correct en duidelijk is. Het zijn de "producten" die "in de etalage staan" en dus aantrekkelijk moeten zijn voor hergebruikers van de datasets. Wanneer de naam van de dataset of naam van de organisatie niet naar wens is, dient dit aangepast te worden. Dit kan veelal binnen je CBS of via een bericht aan de leverancier die het kan aanpassen.
+Bij de zoekresultaten dient gelijk de vraag beantwoord te worden of de naam van de dataset en de naam van de organisatie correct en duidelijk is. Het zijn de "producten" die "in de etalage staan" en dus aantrekkelijk moeten zijn voor hergebruikers van de datasets. Wanneer de naam van de dataset of naam van de organisatie niet naar wens is, dient dit aangepast te worden. Dit kan veelal binnen je CIS of via een bericht aan de leverancier die het kan aanpassen.
 
 ➡️ Klik op elke zoekresultaat om de complete datasetbeschrijving te bekijken. Neem de URI van de dataset op in het werkdocument.
 
@@ -92,7 +92,7 @@ Als API zijn veel voorkomend SPARQL, GraphQL en OAI-PMH. Dat datasets via dergel
 >
 > **Bron**: [Veelgestelde vragen Persistent Identifier Wijzer](https://www.pidwijzer.nl/veelgestelde-vragen)
 
-Tijdens de implementatie van het CBS heeft de leverancier wellicht gevraagd naar het duurzaamheidsbeleid en het gewenste persistent identifier (PID) systeem. Veelal wordt er gekozen voor ARK (via [Arks.org](https://arks.org/)) of Handle (via [SURF](https://www.surf.nl/diensten/publiceren/persistent-identifiers)), maar gebruik van een generieke domeinnaam als [data.bibliotheek.nl](http://data.bibliotheek.nl) met per object een GUID, kan ook voldoen. In het algemeen geldt dat duurzame identifiers een **belofte** zijn van de erfgoedorganisatie: het object is ook in de toekomst op te vragen via een persistent webadres. Deze belofte is deels beleid & organisatie en deels techniek. In deze stap wordt alleen naar het techniek deel gekeken.
+Tijdens de implementatie van het CIS heeft de leverancier wellicht gevraagd naar het duurzaamheidsbeleid en het gewenste persistent identifier (PID) systeem. Veelal wordt er gekozen voor ARK (via [Arks.org](https://arks.org/)) of Handle (via [SURF](https://www.surf.nl/diensten/publiceren/persistent-identifiers)), maar gebruik van een generieke domeinnaam als [data.bibliotheek.nl](http://data.bibliotheek.nl) met per object een GUID, kan ook voldoen. In het algemeen geldt dat duurzame identifiers een **belofte** zijn van de erfgoedorganisatie: het object is ook in de toekomst op te vragen via een persistent webadres. Deze belofte is deels beleid & organisatie en deels techniek. In deze stap wordt alleen naar het techniek deel gekeken.
 
 Een belangrijk aspect van linked data is dat alles een HTTP URI (internetadres) heeft. We willen het gebruik van termen en het aan elkaar verbinden van collecties duurzaam vormgeven. Dus de HTTP URI's van erfgoedobjecten (en termen) dienen ook persistent te zijn. Om deze reden spreken we in plaats van PID's (dat de vorm `ark:60537/b3xVzO` kan hebben) liever over persistente HTTP URI's (zoals bijv. [https://n2t.net/ark:/60537/b3xVzO](https://n2t.net/ark:/60537/b3xVzO)). In een persistente HTTP URI staat dus veelal een globale resolver als [n2t.net](https://n2t.net), [arks.org](https://arks.org) of [handle.net](https://handle.net) waarmee de PID een echt, duurzaam internetadres wordt.
 
@@ -108,7 +108,7 @@ Als je een Turtle bestand hebt, zijn URI's te herkennen door de internetadressen
 
 Indien de persistente HTTP URI's werken op basis van het ARK systeem kan de registratie van de gecontroleerd worden. Het nummer achter "ark:" is de zogenaamde NAAN (Name Assigning Authority Number), het nummer specifiek voor de eigen erfgoedorganisatie. Door de URL https://arks.org/ark:{NAAN} op te vragen (bijv. [https://arks.org/ark:60537](https://arks.org/ark:60537)) krijg je de metadata te zien die aan deze registratie is gekoppeld,
 
-➡️ Vraag de pagina die de ARK registratie van je organisatie beschrijft op in de webbrowser en controleer dat het inderdaad de eigen organisatie is (en niet van een aggregatieplatform of CBS leverancier).
+➡️ Vraag de pagina die de ARK registratie van je organisatie beschrijft op in de webbrowser en controleer dat het inderdaad de eigen organisatie is (en niet van een aggregatieplatform of CIS leverancier).
 
 ➡️ Plak elke persistente HTTP URI in de adresbalk van je browser en controleer de inhoud: kom je op een collectiepagina (in HTML) die het erfgoedobject beschrijft? Werk de resultaten bij in het werkdocument.
 
@@ -166,7 +166,7 @@ Een vervolgtest controleert of de linked data voldoet aan het applicatie profiel
 ![alt_text](/img/test-shacl-play.png "SHACL Play - Validate RDF data")
 
 
-De NDE requirements vereisen voor het publiceren van linked data dat URI's zijn te resolven (nivo 1) en dat er een datadump is (nivo 2). Nivo 3 - een SPARQL endpoint - is niet verplicht en dus ook geen voorwaarde voor een NDE-compatible systeem. Als je stap 1 in de datasetbeschrijving een SPARQL-endpoint bent tegengekomen, dan moet deze wel goed werken (anders slaagt de test niet). We kunnen dit testen met behulp van Yasgui.
+De NDE requirements vereisen voor het publiceren van linked data dat URI's zijn te resolven (nivo 1) en dat er een datadump is (nivo 2). Nivo 3 - een SPARQL endpoint - is niet verplicht en dus ook geen voorwaarde voor een NDE-compatibele systeem. Als je stap 1 in de datasetbeschrijving een SPARQL-endpoint bent tegengekomen, dan moet deze wel goed werken (anders slaagt de test niet). We kunnen dit testen met behulp van Yasgui.
 
 ➡️ Ga naar [Yasgui](https://yasgui.org/) en vul de URL van het SPARQL-endpoint in (gevolgd door Enter). Voer de volgende SPARQL query in en klik op de 'Play' knop:  
 ```
@@ -198,13 +198,13 @@ Als het goed is zie je onder het query vlak resultaten verschijnen. Deze specifi
 >
 > **Bron**: [https://termennetwerk.netwerkdigitaalerfgoed.nl/nl/faq1](https://termennetwerk.netwerkdigitaalerfgoed.nl/nl/faq1) *
 
-Deze test hangt af van de eigen data in je CBS, is deze al gekoppeld aan termen? Heb je dit als organisatie nog niet gedaan, vraag dan aan de leverancier om een uitleg hoe de eigen data aan termen is te koppelen. De leverancier zal vragen welke velden aan welke terminologiebronnen gekoppeld moeten worden. Bij een goede implementatie van het NDE Termennetwerk staan de terminologiebronnen ter beschikking zoals deze in de [lijst van terminologiebronnen](https://termennetwerk.netwerkdigitaalerfgoed.nl/nl/sources) opgesomd staan. Het is aan te raden om voor de afronding van de implementatie van het CBS enkele objecten voorzien te hebben van (URI's van) termen. Deze URI's moeten namelijk ook door het CBS gepubliceerd worden in de linked data, waarmee de hierboven beschreven test uitgevoerd kan worden.
+Deze test hangt af van de eigen data in je CIS, is deze al gekoppeld aan termen? Heb je dit als organisatie nog niet gedaan, vraag dan aan de leverancier om een uitleg hoe de eigen data aan termen is te koppelen. De leverancier zal vragen welke velden aan welke terminologiebronnen gekoppeld moeten worden. Bij een goede implementatie van het NDE Termennetwerk staan de terminologiebronnen ter beschikking zoals deze in de [lijst van terminologiebronnen](https://termennetwerk.netwerkdigitaalerfgoed.nl/nl/sources) opgesomd staan. Het is aan te raden om voor de afronding van de implementatie van het CIS enkele objecten voorzien te hebben van (URI's van) termen. Deze URI's moeten namelijk ook door het CIS gepubliceerd worden in de linked data, waarmee de hierboven beschreven test uitgevoerd kan worden.
 
 ➡️ Zoek in de RDF URI's op van termen. Veelal zie je URI's van de [AAT](https://www.getty.edu/research/tools/vocabularies/aat/), de [CHT](https://kennis.cultureelerfgoed.nl/index.php/Thesauri_bij_de_RCE_-_Cultuurhistorische_Thesaurus), [WO2 thesaurus](https://www.niod.nl/collections/ww2-thesaurus), [Geonames](https://www.geonames.org/), enz. bij velden als onderwerp, steekwoord, plaats, auteur,... Plak de gevonden URI's van termen in de browser: krijg je meer informatie over de term of een "pagina niet gevonden"? Noteer de URI's en resultaten in het werkdocument.
 
 ➡️ Vraag de steekproef objecten op in de browser en controleer of de termen ook op de publiekspagina worden getoond. Minimaal moet het label van de term getoond worden, idealiter wordt er ook een beschrijving gegeven van de term, bijvoorbeeld in een tooltip. Noteer de URL's van de publiekspagina's en de resultaten in het werkdocument.
 
-**✅ Wanneer er in het CBS - via het NDE Termennetwerk - velden voorzien zijn en kunnen worden met termen en deze ook in de gepubliceerde linked data voorkomen is deze test geslaagd.**
+**✅ Wanneer er in het CIS - via het NDE Termennetwerk - velden voorzien zijn en kunnen worden met termen en deze ook in de gepubliceerde linked data voorkomen is deze test geslaagd.**
 
 
 ## 5. Controle van de media en metadata via IIIF
