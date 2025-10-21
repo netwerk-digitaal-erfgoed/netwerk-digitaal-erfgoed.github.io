@@ -238,7 +238,7 @@ Als je op dit punt gekomen bent heb je de 5 stappen om NDE-compatabiliteit te te
 
 ## Bijlage: werkdocument
 
-Het is aan te raden om tijdens de test op NDE compatabiliteit informatie vast te leggen in een werkdocument. Handig voor jezelf, collega's en leverancier en kan gebruikt worden in een acceptatietestrapport. Deze bijlage biedt een sjabloon voor zo'n werkdocument.
+Het is aan te raden om tijdens de test op NDE compatabiliteit informatie vast te leggen in een werkdocument. Handig voor jezelf, collega's en leverancier en kan gebruikt worden in een acceptatietestrapport. Deze bijlage - ook beschikbaar in [Word document](../../static/doc/BijlageTestenOpNdeCompatibiliteit.docx) - biedt een sjabloon voor zo'n werkdocument.
 
 
 #### 1. Dataset(s) opzoeken via het Datasetregister 
