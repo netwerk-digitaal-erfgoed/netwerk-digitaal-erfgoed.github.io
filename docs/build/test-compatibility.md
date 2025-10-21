@@ -26,9 +26,11 @@ De 5 eisen die worden gesteld in het kader van NDE compatibiliteit komen voort u
 ✅ Linkt naar URI's van gestandaardiseerde termen via het Termennetwerk \
 ✅ Gebruik IIIF voor toegang tot beeldcollecties
 
-## Acceptatietesten
+## Acceptatie- en regressietesten
 
-Wanneer de leverancier heeft aangegeven dat de implementatie van het CBS is afgerond (wat hen betreft), is het moment aangebroken om deze implementatie goed te bekijken en te testen. Pas na een "acceptatietest" en eventuele opgeloste bevindingen, is er sprake van een afgeronde implementatie (wat veelal gepaard gaat met betaling van een laatste factuur deel). De testaanpak dient te kijken naar alle aspecten van het systeem, van functies naar datamodel, van helpteksten naar look-and-feel, van domeinnaam tot API. 
+Wanneer de leverancier heeft aangegeven dat de implementatie van het CBS is afgerond (wat hen betreft), is het moment aangebroken om deze implementatie goed te bekijken en te testen. Pas na een "acceptatietest" en eventuele opgeloste bevindingen, is er sprake van een afgeronde implementatie (wat veelal gepaard gaat met betaling van een laatste factuur deel). De testaanpak dient te kijken naar alle aspecten van het systeem, van functies naar datamodel, van helpteksten naar look-and-feel, van domeinnaam tot API.
+
+Een regressietest is een test die controleert of bestaande functionaliteit nog steeds correct werkt nadat er wijzigingen zijn aangebracht, zoals configuratiewijzigingen, code-updates, bugfixes of nieuwe functies. Het doel is om onbedoelde fouten (regressies) in reeds goedgekeurde delen van het systeem te voorkomen. Geadviseerd wordt om dit testplan ook te gebruiken om er zeker van te zijn dat het systeem nog steeds NDE-compatibel is. 
 
 ## Stappenplan
 
@@ -145,11 +147,17 @@ Met opvragen van URI's via de browser in stap 2 zijn verzoek gedaan om inhoud te
 
 Of de ontvangen linked data geldig is qua syntax kun je controleren met de RDF converter van Zazuko.
 
-➡️ Ga naar [RDF converter van Zazuko](https://converter.zazuko.com) en plak de inhoud van de in bestanden opgeslagen linked data in het Input vlak. Kies in het linker paneel het juiste input formaat (waarschijnlijk `text/turtle`). Als de syntax ok is verschijnt er in het Output vlak de omgezette linked data naar JSON-LD, TriG, … Als de syntax niet ok is, dan verschijnt naast Input de rode tekst Parsing failed (zet de muis op de eerste regel in het input vlak dat rood is onderstreept en je ziet informatie over de fout). Noteer de resultaten van de controles in het werkdocument.
+➡️ Ga naar [RDF converter van Zazuko](https://converter.zazuko.com) en plak de inhoud van de in bestanden opgeslagen linked data in het Input vlak. Kies in het linker paneel het juiste input formaat (waarschijnlijk `text/turtle`). Als de syntax ok is verschijnt er in het Output vlak de omgezette linked data naar JSON-LD, TriG, enz. Als de syntax niet ok is, dan verschijnt naast Input de rode tekst Parsing failed (zet de muis op de eerste regel in het input vlak dat rood is onderstreept en je ziet informatie over de fout). Noteer de resultaten van de controles in het werkdocument.
 
 ![alt_text](/img/test-converter.png "Zazuko's Converver")
 
 Het is een vereist dat de linked data (de RDF) gebruik maakt van het [schema.org](https://schema.org/) vocabulaire. Dit kun je eenvoudig zien in de datadump: worden er classes en properties gebruikt die beginnen met https://schema.org. Bij voorkeur wordt hierbij het Schema.org NDE applicatie profiel ([SCHEMA-AP-NDE](https://docs.nde.nl/schema-profile/)) gebruikt, waarin keuzes zijn gemaakt voor eenduidig gebruik en betere vindbaarheid. In de toekomst wordt gebruik van [SCHEMA-AP-NDE](https://docs.nde.nl/schema-profile/) een requirement. Daarnaast kan er de linked data in een domeinspecifiek model worden gepubliceerd, zoals Records-in-Context ([RIC-O](https://www.ica.org/resource/records-in-contexts-ontology/)), [Linked.Art](https://linked.art/) en Resource Description and Access ([RDA](https://www.rdaregistry.info/)).
+
+Als er een datadump beschikbaar is (online of één die gedownload kan worden), dan kun je deze ook inspecteren met de tool RDF Glance. Naast statistieken, gebruikten classes, kun je ook de relaties van resources en 'meta graph' bekijken. 
+
+![alt_text](/img/test-rdfglance.gif "Alba Amicorum van de KB - nationale bibliotheek geladen in RDF Glance")
+
+➡️ Ga naar [RDF Glance](https://xdobry.github.io/rdfglance/) en kies in het menu 'Import RDF File' of 'Import RDF File from URL' om de RDF te laden en te inspecteren.
 
 Een vervolgtest controleert of de linked data voldoet aan het applicatie profiel Schema.org AP NDE zoals beschreven op [https://docs.nde.nl/schema-profile/](https://docs.nde.nl/schema-profile/). Voor deze test maken we gebruik van SHACL Play! van het Franse Sparna.
 
