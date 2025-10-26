@@ -139,7 +139,7 @@ Met opvragen van URI's via de browser in stap 2 zijn verzoek gedaan om inhoud te
 
 ➡️ Controleer elke persistente HTTP URI via [reqbin.com](https://reqbin.com) en sla het resultaat op in een bestand. Noteer de URI en bestandsnamen in het werkdocument.
 
-[Reqbin.com](https://reqbin.com) is een gratis service, inloggen is niet nodig, maar geeft wel extra functionaliteiten. Met deze online service kun je via de browser HTTP requests doen en de HTTP response bekijken. Om een HTTP request te doen, vul je naast de URI ook een *Accept header* in met de waarde `text/turtle`*` (zie onderstaande screenshots). Na het klikken op de Send knop zie je onder het HTTP request (de vraag) de HTTP response (het antwoord). Als het goed is het de informatie over het object in Turtle formaat! Alternatieve te testen formaten: `application/ld+json`, `application/n-triples` (de linked data van de erfgoedorganisatie dient in minimaal één RDF representatie beschikbaar te zijn).
+[Reqbin.com](https://reqbin.com) is een gratis service, inloggen is niet nodig, maar geeft wel extra functionaliteiten. Met deze online service kun je via de browser HTTP requests doen en de HTTP response bekijken. Om een HTTP request te doen, vul je naast de URI ook op het 'tabblad' *Headers* een *Accept* key in met de waarde `text/turtle` (zie onderstaande screenshot). Na het klikken op de Send knop zie je onder het HTTP request (de vraag) de HTTP response (het antwoord). Als het goed is het de informatie over het object in Turtle formaat! Alternatieve te testen formaten: `application/ld+json`, `application/n-triples` (de linked data van de erfgoedorganisatie dient in minimaal één RDF representatie beschikbaar te zijn).
 
 ![alt_text](/img/test-reqbin.png "ReqBin 1")
 
