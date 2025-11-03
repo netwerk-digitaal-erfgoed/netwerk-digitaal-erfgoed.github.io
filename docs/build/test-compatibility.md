@@ -30,7 +30,7 @@ De 5 eisen die worden gesteld in het kader van NDE compatibiliteit komen voort u
 
 Wanneer de leverancier heeft aangegeven dat de implementatie van het CIS is afgerond (wat hen betreft), is het moment aangebroken om deze implementatie goed te bekijken en te testen. Pas na een "acceptatietest" en eventuele opgeloste bevindingen, is er sprake van een afgeronde implementatie (wat veelal gepaard gaat met betaling van een laatste factuur deel). De testaanpak dient te kijken naar alle aspecten van het systeem, van functies naar datamodel, van helpteksten naar look-and-feel, van domeinnaam tot API.
 
-Een regressietest is een test die controleert of bestaande functionaliteit nog steeds correct werkt nadat er wijzigingen zijn aangebracht, zoals configuratiewijzigingen, code-updates, bugfixes of nieuwe functies. Het doel is om onbedoelde fouten (regressies) in reeds goedgekeurde delen van het systeem te voorkomen. Geadviseerd wordt om dit testplan ook te gebruiken om er zeker van te zijn dat het systeem nog steeds NDE-compatibel is. 
+Een regressietest is een test die controleert of bestaande functionaliteit nog steeds correct werkt nadat er wijzigingen zijn aangebracht, zoals configuratiewijzigingen, code-updates, bugfixes of nieuwe functies. Het doel is om onbedoelde fouten (regressies) in reeds goedgekeurde delen van het systeem te voorkomen. Geadviseerd wordt om dit testplan óók te gebruiken om er zeker van te zijn dat het systeem nog steeds NDE-compatibel is. 
 
 ## Stappenplan
 
@@ -38,9 +38,9 @@ Dit document beschrijft alleen hoe de NDE compatibiliteit van het opgeleverde sy
 
 ![alt_text](/img/test-stappen.png "Test stappen")
 
-Over de volgorde van de teststappen is nagedacht. Als een teststap niet slaagt, dan kan het lastig zijn om met de vervolgstappen aan de slag te gaan.Meld het issue bij de leverancier, vermeld daarbij precies hoe en wat je hebt getest, bij voorkeur met URI van erfgoedobjecten of URL's van collectie pagina's. Als de leverancier een issue heeft opgelost of het toch geen issue blijkt te zijn, dan kan de teststap herhaald worden. Als een teststap niet slaagt, probeer toch de vervolgstappen van het testplan te zetten.
+Over de volgorde van de teststappen is nagedacht. Als een teststap niet slaagt, dan kan het lastig zijn om met de vervolgstappen aan de slag te gaan. Meld het issue bij de leverancier, vermeld daarbij precies hoe en wat je hebt getest, bij voorkeur met URI van erfgoedobjecten of URL's van collectie pagina's. Als de leverancier een issue heeft opgelost of het toch geen issue blijkt te zijn, dan kan de teststap herhaald worden. Als een teststap niet slaagt, probeer toch de vervolgstappen van het testplan te zetten.
 
-Om informatie bij te houden wordt er in de bijlage een sjabloon gegeven voor een werkdocument.
+Om informatie bij te houden wordt er in de bijlage een sjabloon gegeven voor een werkdocument. Het testrapport is voor de erfgoedinstelling, communiceer met de leverancier via de door hen ingestelde communicatiemiddelen over specifieke issues.
 
 ## 1. Dataset(s) opzoeken via het Datasetregister 
 
@@ -139,11 +139,15 @@ Met opvragen van URI's via de browser in stap 2 zijn verzoek gedaan om inhoud te
 
 ➡️ Controleer elke persistente HTTP URI via [reqbin.com](https://reqbin.com) en sla het resultaat op in een bestand. Noteer de URI en bestandsnamen in het werkdocument.
 
-[Reqbin.com](https://reqbin.com) is een gratis service, inloggen is niet nodig, maar geeft wel extra functionaliteiten. Met deze online service kun je via de browser HTTP requests doen en de HTTP response bekijken. Om een HTTP request te doen, vul je naast de URI ook op het 'tabblad' *Headers* een *Accept* key in met de waarde `text/turtle` (zie onderstaande screenshot). Na het klikken op de Send knop zie je onder het HTTP request (de vraag) de HTTP response (het antwoord). Als het goed is het de informatie over het object in Turtle formaat! Alternatieve te testen formaten: `application/ld+json`, `application/n-triples` (de linked data van de erfgoedorganisatie dient in minimaal één RDF representatie beschikbaar te zijn).
+[Reqbin.com](https://reqbin.com) is een gratis service, inloggen is niet nodig, maar geeft wel extra functionaliteiten. Met deze online service kun je via de browser HTTP requests doen en de HTTP response bekijken. Om een HTTP request te doen, vul je naast de URI ook op het 'tabblad' *Headers* een `Accept` key in met de waarde `text/turtle` (zie onderstaande screenshot). Na het klikken op de Send knop zie je onder het HTTP request (de vraag) de HTTP response (het antwoord). Als het goed is het de informatie over het object in Turtle formaat! 
 
 ![alt_text](/img/test-reqbin.png "ReqBin 1")
 
 ![alt_text](/img/test-reqbin2.png "ReqBin 2")
+
+Als je in de *Body* van de response alleen HTML ziet: heb je de `Accept` key op het *Headers* tabblad ingevuld met een geldige waarde voor de RDF representatie? Zo ja, het kan zijn dat dee gevraagde RDF representatie niet wordt ondersteund door het systeem. Probeer andere formaten (want de verplichting is dat er minimaal één van dee RDF representatie wordt ondersteund): `text/turtle`, `application/ld+json`, `application/n-triples`, `application/n-quads`.
+
+Zie je in *Body* van de response rare tekens als `��V�n�6}�...` dan in het response hoogstwaarschijnlijk in gecomprimeerd formaat (Gzip) ontvangen. Op zich is dit erg goed, want er hoeft een kleinere hoeveelheid informatie getransporteerd te worden, dus een 'groenere' oplossing. Wil je liever ongecomprimeerde RDF terug hebben, voeg dan in het *Headers* tabje ook de *Key* `Accept-Encoding` met als waarde `identity` toe. 
 
 Of de ontvangen linked data geldig is qua syntax kun je controleren met de RDF converter van Zazuko.
 
