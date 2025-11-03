@@ -145,7 +145,7 @@ Met opvragen van URI's via de browser in stap 2 zijn verzoek gedaan om inhoud te
 
 ![alt_text](/img/test-reqbin2.png "ReqBin 2")
 
-Als je in de *Body* van de response alleen HTML ziet: heb je de `Accept` key op het *Headers* tabblad ingevuld met een geldige waarde voor de RDF representatie? Zo ja, het kan zijn dat dee gevraagde RDF representatie niet wordt ondersteund door het systeem. Probeer andere formaten (want de verplichting is dat er minimaal één van dee RDF representatie wordt ondersteund): `text/turtle`, `application/ld+json`, `application/n-triples`, `application/n-quads`.
+Als je in de *Body* van de response alleen HTML ziet: heb je de `Accept` key op het *Headers* tabblad ingevuld met een geldige waarde voor de RDF representatie? Zo ja, het kan zijn dat de gevraagde RDF representatie niet wordt ondersteund door het systeem. Probeer andere formaten (want de verplichting is dat er minimaal één van de RDF representatie wordt ondersteund): `text/turtle`, `application/ld+json`, `application/n-triples`, `application/n-quads`.
 
 Zie je in *Body* van de response rare tekens als `��V�n�6}�...` dan in het response hoogstwaarschijnlijk in gecomprimeerd formaat (Gzip) ontvangen. Op zich is dit erg goed, want er hoeft een kleinere hoeveelheid informatie getransporteerd te worden, dus een 'groenere' oplossing. Wil je liever ongecomprimeerde RDF terug hebben, voeg dan in het *Headers* tabje ook de *Key* `Accept-Encoding` met als waarde `identity` toe. 
 
