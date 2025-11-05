@@ -1488,9 +1488,9 @@ Possible extra rowspan handling
 		}
 	}
 </style>
-  <meta content="Bikeshed version 3f621ba99, updated Mon Jul 28 15:38:36 2025 -0700" name="generator">
+  <meta content="Bikeshed version cca139221, updated Tue Nov 4 20:24:37 2025 +0000" name="generator">
   <link href="https://docs.nde.nl/requirements-datasets/" rel="canonical">
-  <meta content="62e5307e78b5c4c5b602fc457f792d2bc2187f7b" name="revision">
+  <meta content="882bf17461e2c9183304014bf44c204d008853f8" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
@@ -1802,7 +1802,7 @@ body {
 }
 .invalid.example:not(.no-marker)::before,
 .illegal.example:not(.no-marker)::before {
-    content: "Invalid Example" counter(example);
+    content: "Invalid Example " counter(example);
 }
 
 figcaption {
@@ -2254,9 +2254,9 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
  <body class="h-entry">
   <div class="head">
    <p data-fill-with="logo"></p>
-   <h1 class="p-name no-ref" id="title">Requirements for Datasets</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="profile-and-date"><span class="content">Living Standard,
-    <time class="dt-updated" datetime="2025-11-03">3 November 2025</time></span></h2>
+   <h1 class="no-ref p-name" id="title">Requirements for Datasets</h1>
+   <h2 class="heading no-num no-ref no-toc settled" id="profile-and-date"><span class="content">Living Standard,
+    <time class="dt-updated" datetime="2025-11-05">5 November 2025</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -2265,16 +2265,16 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
      <dd><a href="https://github.com/netwerk-digitaal-erfgoed/dataset-register/issues/">GitHub</a>
      <dd><a href="#issues-index">Inline In Spec</a>
      <dt class="editor">Editors:
-     <dd class="editor p-author h-card vcard"><span class="p-name fn"></span>
-     <dd class="editor p-author h-card vcard"><a class="p-name fn u-url url" href="https://github.com/ddeboer">David de Boer</a> (<a class="p-org org" href="https://www.netwerkdigitaalerfgoed.nl">Netwerk Digitaal Erfgoed</a>) <a class="u-email email" href="mailto:david@ddeboer.nl">david@ddeboer.nl</a>
-     <dd class="editor p-author h-card vcard"><a class="p-name fn u-url url" href="https://twitter.com/coret">Bob Coret</a> (<a class="p-org org" href="https://netwerkdigitaalerfgoed.nl">Netwerk Digitaal Erfgoed</a>) <a class="u-email email" href="mailto:bob.coret@netwerkdigitaalerfgoed.nl">bob.coret@netwerkdigitaalerfgoed.nl</a>
+     <dd class="editor h-card p-author vcard"><span class="fn p-name"></span>
+     <dd class="editor h-card p-author vcard"><a class="fn p-name u-url url" href="https://github.com/ddeboer">David de Boer</a> (<a class="org p-org" href="https://www.netwerkdigitaalerfgoed.nl">Netwerk Digitaal Erfgoed</a>) <a class="email u-email" href="mailto:david@ddeboer.nl">david@ddeboer.nl</a>
+     <dd class="editor h-card p-author vcard"><a class="fn p-name u-url url" href="https://twitter.com/coret">Bob Coret</a> (<a class="org p-org" href="https://netwerkdigitaalerfgoed.nl">Netwerk Digitaal Erfgoed</a>) <a class="email u-email" href="mailto:bob.coret@netwerkdigitaalerfgoed.nl">bob.coret@netwerkdigitaalerfgoed.nl</a>
     </dl>
    </div>
    <div data-fill-with="warning"></div>
    <p class="copyright" data-fill-with="copyright"><a href="http://creativecommons.org/publicdomain/zero/1.0/" rel="license"><img alt="CC0" height="15" src="https://licensebuttons.net/p/zero/1.0/80x15.png" width="80"></a>
 To the extent possible under law, the editors have waived all copyright
 and related or neighboring rights to this work.
-In addition, as of 3 November 2025,
+In addition, as of 5 November 2025,
 the editors have made this specification available under the
 <a href="https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0" rel="license">Open Web Foundation Agreement Version 1.0</a>,
 which is available at https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0.
@@ -2283,13 +2283,13 @@ Parts of this work may be from another specification document.  If so, those par
    <hr title="Separator for header">
   </div>
   <div class="p-summary" data-fill-with="abstract">
-   <h2 class="no-num no-toc no-ref heading settled" id="abstract"><span class="content">Abstract</span></h2>
+   <h2 class="heading no-num no-ref no-toc settled" id="abstract"><span class="content">Abstract</span></h2>
    <p>This document describes requirements for publishing dataset descriptions.
 By following these requirements, publishers enable users to find and use their datasets.</p>
   </div>
   <div data-fill-with="at-risk"></div>
   <nav data-fill-with="table-of-contents" id="toc">
-   <h2 class="no-num no-toc no-ref" id="contents">Table of Contents</h2>
+   <h2 class="no-num no-ref no-toc" id="contents">Table of Contents</h2>
    <ol class="toc" role="directory">
     <li>
      <a href="#introduction"><span class="secno">1</span> <span class="content">Introduction</span></a>
@@ -2434,7 +2434,7 @@ or for querying (such as a <a data-link-type="biblio" href="#biblio-sparql11-ove
     <dt data-md><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="publisher">Publisher</dfn>
     <dd data-md>
      <p>An individual or organization that provides one or more <a data-link-type="dfn" href="#dataset" id="ref-for-dataset③">datasets</a>.</p>
-     <p class="issue" id="issue-a46aa0c8"><a class="self-link" href="#issue-a46aa0c8"></a> is this a good translation for <u class="property link-error" data-lt="bronhouder" title="LINK ERROR: No &apos;property&apos; refs found for &apos;bronhouder&apos;.">bronhouder</u>? And add examples.
+     <p class="issue" id="issue-a46aa0c8"><a class="self-link" href="#issue-a46aa0c8"></a> is this a good translation for <u class="link-error property" data-lt="bronhouder" title="LINK ERROR: No &apos;property&apos; refs found for &apos;bronhouder&apos;.">bronhouder</u>? And add examples.
 This would probably be 'heritage institution' in <a href="https://www.netwerkdigitaalerfgoed.nl/wp-content/uploads/2019/05/190513-DERA2.0-ENG.pdf">DERA</a>.</p>
     <dt data-md><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="consumer">Consumer</dfn>
     <dd data-md>
@@ -2846,7 +2846,7 @@ The e-mail address <em>SHOULD</em> be an organizational or departmental address 
     A publisher with contact information.
 
     
-<pre class="highlight line-numbered"><span class="line-no" data-line="1"></span><span class="line"><c- p>{</c-></span><span class="line-no" data-line="2"></span><span class="line">  <c- nd>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org/"</c-><c- p>,</c-></span><span class="line-no" data-line="3"></span><span class="line">  <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Dataset"</c-><c- p>,</c-></span><span class="line-no" data-line="4"></span><span class="line">  <c- f>"publisher"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="5"></span><span class="line">    <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Organization"</c-><c- p>,</c-></span><span class="line-no" data-line="6"></span><span class="line">    <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://www.kb.nl"</c-><c- p>,</c-></span><span class="line-no" data-line="7"></span><span class="line">    <c- f>"name"</c-><c- p>:</c-> <c- u>"Koninklijke Bibliotheek"</c-><c- p>,</c-></span><span class="line-no" data-line="8"></span><span class="line">    <c- f>"alternateName"</c-><c- p>:</c-> <c- u>"KB"</c-><c- p>,</c-></span><span class="line-no highlight-line" data-line="9"></span><span class="line highlight-line">    <c- f>"contactPoint"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no highlight-line" data-line="10"></span><span class="line highlight-line">      <c- nd>"@type"</c-><c- p>:</c-> <c- u>"ContactPoint"</c-><c- p>,</c-></span><span class="line-no highlight-line" data-line="11"></span><span class="line highlight-line">      <c- f>"name"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no highlight-line" data-line="12"></span><span class="line highlight-line">        <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Datasets Department"</c-><c- p>,</c-></span><span class="line-no highlight-line" data-line="13"></span><span class="line highlight-line">        <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c-></span><span class="line-no highlight-line" data-line="14"></span><span class="line highlight-line">      <c- p>},</c-></span><span class="line-no highlight-line" data-line="15"></span><span class="line highlight-line">      <c- f>"email"</c-><c- p>:</c-> <c- u>"datasets@kb.nl"</c-><c- p>,</c-></span><span class="line-no highlight-line" data-line="16"></span><span class="line highlight-line">      <c- f>"telephone"</c-><c- p>:</c-> <c- u>"+31 6 12345678"</c-></span><span class="line-no highlight-line" data-line="17"></span><span class="line highlight-line">    <c- p>}</c-></span><span class="line-no" data-line="18"></span><span class="line">  <c- p>}</c-></span><span class="line-no" data-line="19"></span><span class="line"><c- p>}</c-></span></pre>
+<pre class="highlight line-numbered"><span class="line-no" data-line="1"></span><span class="line"><c- p>{</c-></span><span class="line-no" data-line="2"></span><span class="line">  <c- nd>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org/"</c-><c- p>,</c-></span><span class="line-no" data-line="3"></span><span class="line">  <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Dataset"</c-><c- p>,</c-></span><span class="line-no" data-line="4"></span><span class="line">  <c- f>"publisher"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="5"></span><span class="line">    <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Organization"</c-><c- p>,</c-></span><span class="line-no" data-line="6"></span><span class="line">    <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://www.kb.nl"</c-><c- p>,</c-></span><span class="line-no" data-line="7"></span><span class="line">    <c- f>"name"</c-><c- p>:</c-> <c- u>"Koninklijke Bibliotheek"</c-><c- p>,</c-></span><span class="line-no" data-line="8"></span><span class="line">    <c- f>"alternateName"</c-><c- p>:</c-> <c- u>"KB"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="9"></span><span class="highlight-line line">    <c- f>"contactPoint"</c-><c- p>:</c-> <c- p>{</c-></span><span class="highlight-line line-no" data-line="10"></span><span class="highlight-line line">      <c- nd>"@type"</c-><c- p>:</c-> <c- u>"ContactPoint"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="11"></span><span class="highlight-line line">      <c- f>"name"</c-><c- p>:</c-> <c- p>{</c-></span><span class="highlight-line line-no" data-line="12"></span><span class="highlight-line line">        <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Datasets Department"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="13"></span><span class="highlight-line line">        <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c-></span><span class="highlight-line line-no" data-line="14"></span><span class="highlight-line line">      <c- p>},</c-></span><span class="highlight-line line-no" data-line="15"></span><span class="highlight-line line">      <c- f>"email"</c-><c- p>:</c-> <c- u>"datasets@kb.nl"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="16"></span><span class="highlight-line line">      <c- f>"telephone"</c-><c- p>:</c-> <c- u>"+31 6 12345678"</c-></span><span class="highlight-line line-no" data-line="17"></span><span class="highlight-line line">    <c- p>}</c-></span><span class="line-no" data-line="18"></span><span class="line">  <c- p>}</c-></span><span class="line-no" data-line="19"></span><span class="line"><c- p>}</c-></span></pre>
    </div>
    <h4 class="heading settled" data-level="4.3.3" id="dataset-publisher"><span class="secno">4.3.3. </span><span class="content">Dataset publisher</span><a class="self-link" href="#dataset-publisher"></a></h4>
    <p>The person/organization data is then included as the dataset’s publisher:</p>
@@ -3081,7 +3081,7 @@ even if that resource is the same on all pages.</p>
     A paginated catalog:
 
     
-<pre class="highlight line-numbered"><span class="line-no" data-line="1"></span><span class="line"><c- p>{</c-></span><span class="line-no" data-line="2"></span><span class="line">  <c- nd>"@context"</c-><c- p>:</c-> <c- p>[</c-></span><span class="line-no" data-line="3"></span><span class="line">    <c- u>"https://schema.org/"</c-><c- p>,</c-></span><span class="line-no highlight-line" data-line="4"></span><span class="line highlight-line">    <c- p>{</c-><c- f>"hydra"</c-><c- p>:</c-> <c- u>"http://www.w3.org/ns/hydra/core#"</c-><c- p>}</c-></span><span class="line-no" data-line="5"></span><span class="line">  <c- p>],</c-></span><span class="line-no highlight-line" data-line="6"></span><span class="line highlight-line">  <c- nd>"@type"</c-><c- p>:</c-> <c- p>[</c-><c- u>"DataCatalog"</c-><c- p>,</c-> <c- u>"hydra:Collection"</c-><c- p>],</c-></span><span class="line-no" data-line="7"></span><span class="line">  <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com/catalog"</c-><c- p>,</c-></span><span class="line-no" data-line="8"></span><span class="line">  <c- f>"name"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="9"></span><span class="line">    <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Paginated catalog of datasets"</c-><c- p>,</c-></span><span class="line-no" data-line="10"></span><span class="line">    <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c-></span><span class="line-no" data-line="11"></span><span class="line">  <c- p>},</c-></span><span class="line-no" data-line="12"></span><span class="line">  <c- f>"description"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="13"></span><span class="line">    <c- nd>"@value"</c-><c- p>:</c-> <c- u>"This catalog is paginated using the Hydra Core Vocabulary."</c-><c- p>,</c-></span><span class="line-no" data-line="14"></span><span class="line">    <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c-></span><span class="line-no" data-line="15"></span><span class="line">  <c- p>},</c-></span><span class="line-no highlight-line" data-line="16"></span><span class="line highlight-line">  <c- f>"publisher"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no highlight-line" data-line="17"></span><span class="line highlight-line">    <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Organization"</c-><c- p>,</c-></span><span class="line-no highlight-line" data-line="18"></span><span class="line highlight-line">    <c- nd>"@id"</c-><c- p>:</c-> <c- u>"/publisher"</c-><c- p>,</c-></span><span class="line-no highlight-line" data-line="19"></span><span class="line highlight-line">    <c- f>"name"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no highlight-line" data-line="20"></span><span class="line highlight-line">      <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Example Publisher"</c-><c- p>,</c-></span><span class="line-no highlight-line" data-line="21"></span><span class="line highlight-line">      <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c-></span><span class="line-no highlight-line" data-line="22"></span><span class="line highlight-line">    <c- p>}</c-></span><span class="line-no highlight-line" data-line="23"></span><span class="line highlight-line">  <c- p>},</c-></span><span class="line-no" data-line="24"></span><span class="line">  <c- f>"hydra:view"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="25"></span><span class="line">    <c- nd>"@id"</c-><c- p>:</c-> <c- u>"/catalog?page=1"</c-><c- p>,</c-></span><span class="line-no" data-line="26"></span><span class="line">    <c- nd>"@type"</c-><c- p>:</c-> <c- u>"hydra:PartialCollectionView"</c-><c- p>,</c-></span><span class="line-no" data-line="27"></span><span class="line">    <c- f>"hydra:first"</c-><c- p>:</c-> <c- p>{</c-><c- nd>"@id"</c-><c- p>:</c-> <c- u>"/catalog?page=1"</c-><c- p>},</c-></span><span class="line-no" data-line="28"></span><span class="line">    <c- f>"hydra:next"</c-><c- p>:</c-> <c- p>{</c-><c- nd>"@id"</c-><c- p>:</c-> <c- u>"/catalog?page=2"</c-><c- p>},</c-></span><span class="line-no" data-line="29"></span><span class="line">    <c- f>"hydra:last"</c-><c- p>:</c-> <c- p>{</c-><c- nd>"@id"</c-><c- p>:</c-> <c- u>"/catalog?page=498"</c-><c- p>}</c-></span><span class="line-no" data-line="30"></span><span class="line">  <c- p>},</c-></span><span class="line-no" data-line="31"></span><span class="line">  <c- f>"dataset"</c-><c- p>:</c-> <c- p>[</c-></span><span class="line-no" data-line="32"></span><span class="line">    <c- p>{</c-></span><span class="line-no" data-line="33"></span><span class="line">      <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Dataset"</c-><c- p>,</c-></span><span class="line-no" data-line="34"></span><span class="line">      <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com/dataset/1"</c-><c- p>,</c-></span><span class="line-no" data-line="35"></span><span class="line">      ...</span><span class="line-no" data-line="36"></span><span class="line">    <c- p>},</c-></span><span class="line-no" data-line="37"></span><span class="line">    <c- p>{</c-></span><span class="line-no" data-line="38"></span><span class="line">      <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Dataset"</c-><c- p>,</c-></span><span class="line-no" data-line="39"></span><span class="line">      <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com/dataset/2"</c-><c- p>,</c-></span><span class="line-no" data-line="40"></span><span class="line">      ...</span><span class="line-no" data-line="41"></span><span class="line">    <c- p>},</c-></span><span class="line-no" data-line="42"></span><span class="line">    ...</span><span class="line-no" data-line="43"></span><span class="line">  <c- p>]</c-></span><span class="line-no" data-line="44"></span><span class="line"><c- p>}</c-></span></pre>
+<pre class="highlight line-numbered"><span class="line-no" data-line="1"></span><span class="line"><c- p>{</c-></span><span class="line-no" data-line="2"></span><span class="line">  <c- nd>"@context"</c-><c- p>:</c-> <c- p>[</c-></span><span class="line-no" data-line="3"></span><span class="line">    <c- u>"https://schema.org/"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="4"></span><span class="highlight-line line">    <c- p>{</c-><c- f>"hydra"</c-><c- p>:</c-> <c- u>"http://www.w3.org/ns/hydra/core#"</c-><c- p>}</c-></span><span class="line-no" data-line="5"></span><span class="line">  <c- p>],</c-></span><span class="highlight-line line-no" data-line="6"></span><span class="highlight-line line">  <c- nd>"@type"</c-><c- p>:</c-> <c- p>[</c-><c- u>"DataCatalog"</c-><c- p>,</c-> <c- u>"hydra:Collection"</c-><c- p>],</c-></span><span class="line-no" data-line="7"></span><span class="line">  <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com/catalog"</c-><c- p>,</c-></span><span class="line-no" data-line="8"></span><span class="line">  <c- f>"name"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="9"></span><span class="line">    <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Paginated catalog of datasets"</c-><c- p>,</c-></span><span class="line-no" data-line="10"></span><span class="line">    <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c-></span><span class="line-no" data-line="11"></span><span class="line">  <c- p>},</c-></span><span class="line-no" data-line="12"></span><span class="line">  <c- f>"description"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="13"></span><span class="line">    <c- nd>"@value"</c-><c- p>:</c-> <c- u>"This catalog is paginated using the Hydra Core Vocabulary."</c-><c- p>,</c-></span><span class="line-no" data-line="14"></span><span class="line">    <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c-></span><span class="line-no" data-line="15"></span><span class="line">  <c- p>},</c-></span><span class="highlight-line line-no" data-line="16"></span><span class="highlight-line line">  <c- f>"publisher"</c-><c- p>:</c-> <c- p>{</c-></span><span class="highlight-line line-no" data-line="17"></span><span class="highlight-line line">    <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Organization"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="18"></span><span class="highlight-line line">    <c- nd>"@id"</c-><c- p>:</c-> <c- u>"/publisher"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="19"></span><span class="highlight-line line">    <c- f>"name"</c-><c- p>:</c-> <c- p>{</c-></span><span class="highlight-line line-no" data-line="20"></span><span class="highlight-line line">      <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Example Publisher"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="21"></span><span class="highlight-line line">      <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c-></span><span class="highlight-line line-no" data-line="22"></span><span class="highlight-line line">    <c- p>}</c-></span><span class="highlight-line line-no" data-line="23"></span><span class="highlight-line line">  <c- p>},</c-></span><span class="line-no" data-line="24"></span><span class="line">  <c- f>"hydra:view"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="25"></span><span class="line">    <c- nd>"@id"</c-><c- p>:</c-> <c- u>"/catalog?page=1"</c-><c- p>,</c-></span><span class="line-no" data-line="26"></span><span class="line">    <c- nd>"@type"</c-><c- p>:</c-> <c- u>"hydra:PartialCollectionView"</c-><c- p>,</c-></span><span class="line-no" data-line="27"></span><span class="line">    <c- f>"hydra:first"</c-><c- p>:</c-> <c- p>{</c-><c- nd>"@id"</c-><c- p>:</c-> <c- u>"/catalog?page=1"</c-><c- p>},</c-></span><span class="line-no" data-line="28"></span><span class="line">    <c- f>"hydra:next"</c-><c- p>:</c-> <c- p>{</c-><c- nd>"@id"</c-><c- p>:</c-> <c- u>"/catalog?page=2"</c-><c- p>},</c-></span><span class="line-no" data-line="29"></span><span class="line">    <c- f>"hydra:last"</c-><c- p>:</c-> <c- p>{</c-><c- nd>"@id"</c-><c- p>:</c-> <c- u>"/catalog?page=498"</c-><c- p>}</c-></span><span class="line-no" data-line="30"></span><span class="line">  <c- p>},</c-></span><span class="line-no" data-line="31"></span><span class="line">  <c- f>"dataset"</c-><c- p>:</c-> <c- p>[</c-></span><span class="line-no" data-line="32"></span><span class="line">    <c- p>{</c-></span><span class="line-no" data-line="33"></span><span class="line">      <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Dataset"</c-><c- p>,</c-></span><span class="line-no" data-line="34"></span><span class="line">      <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com/dataset/1"</c-><c- p>,</c-></span><span class="line-no" data-line="35"></span><span class="line">      ...</span><span class="line-no" data-line="36"></span><span class="line">    <c- p>},</c-></span><span class="line-no" data-line="37"></span><span class="line">    <c- p>{</c-></span><span class="line-no" data-line="38"></span><span class="line">      <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Dataset"</c-><c- p>,</c-></span><span class="line-no" data-line="39"></span><span class="line">      <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com/dataset/2"</c-><c- p>,</c-></span><span class="line-no" data-line="40"></span><span class="line">      ...</span><span class="line-no" data-line="41"></span><span class="line">    <c- p>},</c-></span><span class="line-no" data-line="42"></span><span class="line">    ...</span><span class="line-no" data-line="43"></span><span class="line">  <c- p>]</c-></span><span class="line-no" data-line="44"></span><span class="line"><c- p>}</c-></span></pre>
    </div>
    <h3 class="heading settled" data-level="4.6" id="overview"><span class="secno">4.6. </span><span class="content">Overview of attributes</span><a class="self-link" href="#overview"></a></h3>
    <p>This is an overview of required and recommended attributes.</p>
@@ -3531,7 +3531,7 @@ even if that resource is the same on all pages.</p>
     A full <a data-link-type="dfn" href="#dataset-description" id="ref-for-dataset-description⑥">dataset description</a> that includes <a href="#dataset-attributes">required and recommended attributes</a>.
 
     
-<pre class="include-code highlight"><c- p>{</c->
+<pre class="highlight include-code"><c- p>{</c->
   <c- nd>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org"</c-><c- p>,</c->
   <c- nd>"@graph"</c-><c- p>:</c-> <c- p>[</c->
     <c- p>{</c->
@@ -3636,7 +3636,7 @@ The <a data-link-type="biblio" href="#biblio-shacl" title="Shapes Constraint Lan
 can help with testing RDF metadata in general.</p>
   </main>
   <div data-fill-with="conformance">
-   <h2 class="no-ref no-num heading settled" id="conformance"><span class="content">
+   <h2 class="heading no-num no-ref settled" id="conformance"><span class="content">
     Conformance</span><a class="self-link" href="#conformance"></a></h2>
    <p>
             Conformance requirements are expressed with a combination of descriptive assertions and RFC 2119 terminology.
@@ -3797,8 +3797,8 @@ can help with testing RDF metadata in general.</p>
 
 })();
 </script>
-  <h2 class="no-num no-ref heading settled" id="index"><span class="content">Index</span><a class="self-link" href="#index"></a></h2>
-  <h3 class="no-num no-ref heading settled" id="index-defined-here"><span class="content">Terms defined by this specification</span><a class="self-link" href="#index-defined-here"></a></h3>
+  <h2 class="heading no-num no-ref settled" id="index"><span class="content">Index</span><a class="self-link" href="#index"></a></h2>
+  <h3 class="heading no-num no-ref settled" id="index-defined-here"><span class="content">Terms defined by this specification</span><a class="self-link" href="#index-defined-here"></a></h3>
   <ul class="index">
    <li><a href="#consumer">Consumer</a><span>, in § 2</span>
    <li><a href="#data-catalog">Data catalog</a><span>, in § 2</span>
@@ -3809,8 +3809,8 @@ can help with testing RDF metadata in general.</p>
    <li><a href="#publisher">Publisher</a><span>, in § 2</span>
    <li><a href="#web-api">Web API</a><span>, in § 2</span>
   </ul>
-  <h2 class="no-num no-ref heading settled" id="references"><span class="content">References</span><a class="self-link" href="#references"></a></h2>
-  <h3 class="no-num no-ref heading settled" id="normative"><span class="content">Normative References</span><a class="self-link" href="#normative"></a></h3>
+  <h2 class="heading no-num no-ref settled" id="references"><span class="content">References</span><a class="self-link" href="#references"></a></h2>
+  <h3 class="heading no-num no-ref settled" id="normative"><span class="content">Normative References</span><a class="self-link" href="#normative"></a></h3>
   <dl>
    <dt id="biblio-dwbp">[DWBP]
    <dd>Bernadette Farias Loscio; Caroline Burle; Newton Calegari. <a href="https://w3c.github.io/dwbp/bp.html"><cite>Data on the Web Best Practices</cite></a>. URL: <a href="https://w3c.github.io/dwbp/bp.html">https://w3c.github.io/dwbp/bp.html</a>
@@ -3823,7 +3823,7 @@ can help with testing RDF metadata in general.</p>
    <dt id="biblio-rfc2119">[RFC2119]
    <dd>S. Bradner. <a href="https://datatracker.ietf.org/doc/html/rfc2119"><cite>Key words for use in RFCs to Indicate Requirement Levels</cite></a>. March 1997. Best Current Practice. URL: <a href="https://datatracker.ietf.org/doc/html/rfc2119">https://datatracker.ietf.org/doc/html/rfc2119</a>
   </dl>
-  <h3 class="no-num no-ref heading settled" id="informative"><span class="content">Informative References</span><a class="self-link" href="#informative"></a></h3>
+  <h3 class="heading no-num no-ref settled" id="informative"><span class="content">Informative References</span><a class="self-link" href="#informative"></a></h3>
   <dl>
    <dt id="biblio-bcp47">[BCP47]
    <dd>A. Phillips, Ed.; M. Davis, Ed.. <a href="https://www.rfc-editor.org/rfc/rfc5646"><cite>Tags for Identifying Languages</cite></a>. September 2009. Best Current Practice. URL: <a href="https://www.rfc-editor.org/rfc/rfc5646">https://www.rfc-editor.org/rfc/rfc5646</a>
@@ -3848,10 +3848,10 @@ can help with testing RDF metadata in general.</p>
    <dt id="biblio-vocab-dcat-3">[VOCAB-DCAT-3]
    <dd>Simon Cox; et al. <a href="https://w3c.github.io/dxwg/dcat/"><cite>Data Catalog Vocabulary (DCAT) - Version 3</cite></a>. URL: <a href="https://w3c.github.io/dxwg/dcat/">https://w3c.github.io/dxwg/dcat/</a>
   </dl>
-  <h2 class="no-num no-ref heading settled" id="issues-index"><span class="content">Issues Index</span><a class="self-link" href="#issues-index"></a></h2>
+  <h2 class="heading no-num no-ref settled" id="issues-index"><span class="content">Issues Index</span><a class="self-link" href="#issues-index"></a></h2>
   <div style="counter-reset:issue">
    <div class="issue"> TODO <a class="issue-return" href="#issue-b7b1e314" title="Jump to section">↵</a></div>
-   <div class="issue"> is this a good translation for <u class="property link-error" data-lt="bronhouder" title="LINK ERROR: No &apos;property&apos; refs found for &apos;bronhouder&apos;.">bronhouder</u>? And add examples.
+   <div class="issue"> is this a good translation for <u class="link-error property" data-lt="bronhouder" title="LINK ERROR: No &apos;property&apos; refs found for &apos;bronhouder&apos;.">bronhouder</u>? And add examples.
 This would probably be 'heritage institution' in <a href="https://www.netwerkdigitaalerfgoed.nl/wp-content/uploads/2019/05/190513-DERA2.0-ENG.pdf">DERA</a>. <a class="issue-return" href="#issue-a46aa0c8" title="Jump to section">↵</a></div>
   </div>
 <script>/* Boilerplate: script-dom-helper */
