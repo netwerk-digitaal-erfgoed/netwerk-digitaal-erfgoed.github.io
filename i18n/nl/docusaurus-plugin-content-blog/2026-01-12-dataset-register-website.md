@@ -4,7 +4,7 @@ authors: ddeboer
 tags: [Datasetregister]
 ---
 
-We verbeteren de website van het Datasetregister om het makkelijker te maken voor gebruikers om de relevante datasets te vinden.
+We verbeteren de website van het Datasetregister om het vinden van datasets sneller en intuïtiever te maken.
 
 <!-- truncate -->
 
@@ -25,7 +25,7 @@ Daarnaast voor fijnproevers een SPARQL-knop, om inspiratie op te doen voor het b
 
 ## Detailpagina
 
-De detailpagina (bijvoorbeeld [deze](https://datasetregister.netwerkdigitaalerfgoed.nl/en/datasets/https://lod.uba.uva.nl/Cinema-Context/Cinema-Context)) 
+De detailpagina (bijvoorbeeld [deze](https://datasetregister.netwerkdigitaalerfgoed.nl/datasets/https://lod.uba.uva.nl/Cinema-Context/Cinema-Context)) 
 biedt **meer informatie én overzicht**.
 
 De door de uitgever aangeleverde datasetbeschrijving wordt netter gegroepeerd en weergegeven.
@@ -67,8 +67,9 @@ wat haar een logische kandidaat maakt voor de volgende verbetering.
 Voor het realiseren van dit soort functionaliteit wordt vaak een zoekindex (zoals Elasticsearch) geïntroduceerd.
 Die index wordt dan periodiek gevuld vanuit de databron en kan vervolgens zoekvragen van gebruikers snel beantwoorden.
 
-Hier hebben we **expres niet zo'n index gebruikt**. 
-Een nevendoel van de vernieuwing is te toetsen of het mogelijk is deze functionaliteit direct op SPARQL-endpoints te draaien, zonder tussenkomst van een index.
+Hier hebben we **expres niet zo'n index gebruikt** om de architectuur eenvoudig te houden:
+geen synchronisatieproces om te onderhouden en één component minder om te draaien.
+Een nevendoel van deze vernieuwing is daarom te toetsen of het mogelijk is deze functionaliteit direct op SPARQL-endpoints te draaien, zonder tussenkomst van een index.
 
 Dat is hier extra ingewikkeld omdat we een **gefedereerde SPARQL-query** doen: 
 we halen data op uit het Datasetregister zelf, maar ook verrijkingen uit de [Dataset Knowledge Graph](/services/dataset-knowledge-graph/).
