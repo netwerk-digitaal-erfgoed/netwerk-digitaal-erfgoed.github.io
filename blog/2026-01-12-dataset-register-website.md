@@ -14,7 +14,7 @@ The improvements are being rolled out **page by page**, starting with the search
 
 The redesigned [search page](https://datasetregister.netwerkdigitaalerfgoed.nl/en/datasets) offers **extensive facets for precise searching**,
 such as publisher, terminology sources used, and size. Each facet now shows the number of results.
-It's now much simpler to find, for example, all datasets that [have linked data](https://datasetregister.netwerkdigitaalerfgoed.nl/en/datasets?format=group%3Ardf%2Cgroup%3Asparql),
+It’s now much simpler to find, for example, all datasets that [have linked data](https://datasetregister.netwerkdigitaalerfgoed.nl/en/datasets?format=group%3Ardf%2Cgroup%3Asparql),
 [contain creative works](https://datasetregister.netwerkdigitaalerfgoed.nl/en/datasets?class=group%3Acreative-work),
 [link to the RKDartists terminology source](https://datasetregister.netwerkdigitaalerfgoed.nl/en/datasets?terminologySource=https%3A%2F%2Fdata.rkd.nl%2Frkdartists)
 or are [larger than 10 million triples](https://datasetregister.netwerkdigitaalerfgoed.nl/en/datasets?size=10000000-).
@@ -37,7 +37,7 @@ The dataset description provided by the publisher is grouped and displayed more 
 This description is enriched with insights from the Dataset Knowledge Graph.
 Distributions that have been verified are marked as such.
 
-Under '**Linked Data summary**' you'll find an overview of the empirical shape of the dataset:
+Under ‘**Linked Data summary**’ you’ll find an overview of the empirical shape of the dataset:
 the counts of facts (RDF triples), subjects, predicates, and objects, split into literals and URIs.
 
 An interactive widget enables high-level browsing of the dataset to **answer questions** like:
@@ -73,7 +73,7 @@ That index is then periodically populated from the data source and can quickly a
 
 Here, we **deliberately did not use such an index** to keep the architecture simple: 
 no synchronization process to maintain and one less component to run.
-A secondary goal of this redesign, therefore, is to test whether it's possible to run this functionality directly on SPARQL endpoints, without an intermediary index.
+A secondary goal of this redesign, therefore, is to test whether it’s possible to run this functionality directly on SPARQL endpoints, without an intermediary index.
 
 This is particularly challenging here because we run a **federated SPARQL query**:
 we retrieve data from the Dataset Register itself, but also enrichments from the [Dataset Knowledge Graph](/services/dataset-knowledge-graph/).
@@ -82,4 +82,4 @@ With a fast SPARQL server ([QLever](https://github.com/ad-freiburg/qlever)), sma
 Optimizations include removing a `FILTER NOT EXISTS`
 and making the data model more explicit, such as adding a `schema:additionalType` for the dataset status.
 
-Still, there's plenty of room for improvement. It's coming.
+Still, there’s plenty of room for improvement. It’s coming.
