@@ -101,7 +101,12 @@ const config: Config = {
         {to: '/blog', label: 'Blog', position: 'left'},
         {to: '/showcase', label: 'Showcase', position: 'left'},
         {
-          href: 'https://github.com/netwerk-digitaal-erfgoed/docs',
+          href: 'https://status.netwerkdigitaalerfgoed.nl',
+          label: 'Status',
+          position: 'right',
+        },
+        {
+          href: 'https://github.com/netwerk-digitaal-erfgoed/netwerk-digitaal-erfgoed.github.io',
           label: 'GitHub',
           position: 'right',
         },
