@@ -20,6 +20,7 @@
     "@docusaurus/preset-classic": "^3.9.2",
     "@docusaurus/theme-mermaid": "^3.9.2",
     "@mdx-js/react": "^3.1.1",
+    "@whitespace-se/docusaurus-plugin-matomo": "^1.1.0",
     "clsx": "^2.0.0",
     "graphiql": "^5.2.2",
     "prism-react-renderer": "^2.3.0",
