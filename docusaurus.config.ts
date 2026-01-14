@@ -29,6 +29,16 @@ const config: Config = {
 
   themes: ['@docusaurus/theme-mermaid'],
 
+  plugins: [
+    [
+      '@whitespace-se/docusaurus-plugin-matomo',
+      {
+        siteId: '4',
+        matomoUrl: 'https://stats.nde.nl',
+      },
+    ],
+  ],
+
   // Even if you don't use internationalization, you can use this field to set
   // useful metadata like html lang. For example, if your site is Chinese, you
   // may want to replace "en" with "zh-Hans".
