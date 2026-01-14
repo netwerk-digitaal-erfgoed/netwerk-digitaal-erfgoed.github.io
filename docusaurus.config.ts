@@ -34,7 +34,7 @@ const config: Config = {
       '@whitespace-se/docusaurus-plugin-matomo',
       {
         siteId: '4',
-        matomoUrl: 'https://stats.nde.nl',
+        matomoUrl: 'https://matomo.netwerkdigitaalerfgoed.nl',
       },
     ],
   ],
