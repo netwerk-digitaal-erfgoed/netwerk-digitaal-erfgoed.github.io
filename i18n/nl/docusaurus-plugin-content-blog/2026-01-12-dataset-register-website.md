@@ -1,7 +1,7 @@
 ---
 title: Nieuwe website Datasetregister
 authors: ddeboer
-tags: [Datasetregister]
+tags: [dataset-register]
 ---
 
 We verbeteren de website van het Datasetregister om het vinden van datasets sneller en intuïtiever te maken.

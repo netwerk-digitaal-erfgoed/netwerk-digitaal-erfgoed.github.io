@@ -1,7 +1,7 @@
 ---
 title: Termennetwerk biedt nu meertalige zoekresultaten
 authors: ddeboer
-tags: [Termennetwerk, GraphQL]
+tags: [network-of-terms, graphql]
 image: https://i.imgur.com/mErPwqL.png
 ---
 

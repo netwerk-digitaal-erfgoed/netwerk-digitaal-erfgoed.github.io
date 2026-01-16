@@ -1,7 +1,7 @@
 ---
 title: New Dataset Register website
 authors: ddeboer
-tags: [Dataset Register]
+tags: [dataset-register]
 ---
 
 We are improving the Dataset Register website to make dataset discovery faster and more intuitive.

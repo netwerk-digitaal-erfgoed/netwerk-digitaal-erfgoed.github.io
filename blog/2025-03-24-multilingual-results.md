@@ -1,7 +1,7 @@
 ---
 title: Network of Terms now returns multilingual results
 authors: ddeboer
-tags: [Network of Terms, GraphQL]
+tags: [network-of-terms, graphql]
 image: https://i.imgur.com/mErPwqL.png
 ---
 
