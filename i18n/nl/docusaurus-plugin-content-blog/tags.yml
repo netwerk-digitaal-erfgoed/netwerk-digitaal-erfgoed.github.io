@@ -1,0 +1,11 @@
+network-of-terms:
+  label: "Termennetwerk"
+  permalink: /network-of-terms
+
+graphql:
+  label: "GraphQL"
+  permalink: /graphql
+
+dataset-register:
+  label: "Datasetregister"
+  permalink: /dataset-register
