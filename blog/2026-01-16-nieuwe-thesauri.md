@@ -1,6 +1,6 @@
 ---
 title: Nieuwe thesauri toegevoegd aan het termennetwerk
-authors: jvanderheiden
+authors: ddeboer
 tags: [network-of-terms]
 ---
 
