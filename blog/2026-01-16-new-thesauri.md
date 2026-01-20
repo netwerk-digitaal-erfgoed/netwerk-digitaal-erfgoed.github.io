@@ -12,12 +12,12 @@ The Network of Terms brings together terms and concepts from multiple sources. W
 
 ## Thesaurus Kamp Westerbork
 
-The thesaurus of **:contentReference[oaicite:0]{index=0}** describes concepts related to the history of Kamp Westerbork.  
+The thesaurus of Kamp Westerbork describes concepts related to the history of Kamp Westerbork.  
 The source contains terms for places, events, and organisations in the context of persecution, deportation, and remembrance in the period 1933–1945.
 
 ## Vrouwenthesaurus van Atria
 
-The Vrouwenthesaurus was developed by **:contentReference[oaicite:1]{index=1}**.  
+The Vrouwenthesaurus was developed by Atria.  
 The thesaurus contains terms about women, gender, emancipation, and feminism and defines relationships between synonyms and broader, narrower, and related terms.
 
 The terms describe topics connected to the position and lived experience of women in society, such as economic independence, domestic violence, informal care, migration, political participation, and stereotyping. Historical topics are also included, such as the first feminist wave, women’s suffrage, witch persecutions, and Black women’s history.
@@ -26,7 +26,7 @@ In addition, the thesaurus includes concepts from women’s studies and feminist
 
 ## Regiotermen Fryslân
 
-**:contentReference[oaicite:2]{index=2}** is a regional thesaurus for Frisian heritage.  
+Regiotermen Fryslân is a regional thesaurus for Frisian heritage.  
 The source mainly contains persons who are locally or regionally significant and who are often absent from national or international thesauri.
 
 The terms are managed and moderated at the regional level and are provided with persistent identifiers. This makes it possible to link region-specific persons unambiguously to collections.
