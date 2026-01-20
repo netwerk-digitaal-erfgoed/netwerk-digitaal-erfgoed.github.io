@@ -1,6 +1,6 @@
 ---
 title: New thesauri added to the Network of Terms
-authors: jvanderheiden
+authors: ddeboer
 tags: [network-of-terms]
 ---
 
