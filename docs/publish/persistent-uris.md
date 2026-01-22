@@ -30,10 +30,15 @@ By making the PIDs part of persistent URIs, their stability is guaranteed.
 
 Common PID systems are:
 
-* [ARK](https://arks.org), for example `https://example.org/ark:/12345/x54xz321/s3/f8.05v.tiff`
-* [DOI](https://www.doi.org/)
+* [ARK](https://arks.org), for example `https://n2t.net/ark:/12345/x54xz321/s3/f8.05v.tiff`
+* [DOI](https://www.doi.org/), for example `https://doi.org/10.1234/example.5678`
 
+## Infrastructure-independent identifiers
 
-# Further reading
+PIDs should not contain infrastructural details, such as the Data Platform's name or version.
+The Data Provider is identified with a prefix, allowing for web address or name changes.
+Because of this, the PIDs can remain stable regardless of infrastructural changes.
+
+## Further reading
 
 * [Requirements for Collection Management Systems](https://docs.nde.nl/requirements-collection-management-systems/)
