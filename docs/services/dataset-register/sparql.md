@@ -26,7 +26,8 @@ You can get some help building queries at the [Dataset Register website](https:/
 using the ‘SPARQL’ button.
 
 You probably only want to view currently valid datasets.
-For this, follow the link from dataset to registration URL and check whether that URL is valid:
+For this, follow the link from dataset to registration URL and 
+<a href="https://qlever.netwerkdigitaalerfgoed.nl/datasetregister/0BQB8d?exec=true" target="_blank">check whether that URL is valid</a>:
 
 ```sparql
 PREFIX dcat: <http://www.w3.org/ns/dcat#>
