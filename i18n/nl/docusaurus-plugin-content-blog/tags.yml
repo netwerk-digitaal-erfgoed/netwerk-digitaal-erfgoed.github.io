@@ -9,3 +9,7 @@ graphql:
 dataset-register:
   label: "Datasetregister"
   permalink: /dataset-register
+
+persistent-http-uris:
+  label: "Persistente HTTP URI's"
+  permalink: /persistent-http-uris
