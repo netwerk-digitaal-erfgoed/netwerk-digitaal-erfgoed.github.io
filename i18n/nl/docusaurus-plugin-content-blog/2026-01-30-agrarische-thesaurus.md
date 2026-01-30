@@ -16,4 +16,4 @@ De thesaurus is bedoeld voor collectiebeheerders en erfgoedprofessionals die agr
 
 De thesaurus agrarisch erfgoed is ontwikkeld door het Netwerk Landbouwcollecties, met een bijdrage van European Research Infrastructure for Heritage Science (E-RIHS). Erfgoed Gelderland was penvoerder van het project. De betrokken partijen blijven beschikbaar om de thesaurus actueel te houden en waar nodig aan te vullen.
 
-De [thesaurus](https://digitaalerfgoed.poolparty.biz/agrarischethesaurus) is vanaf vandaag te raadplegen via het Termennetwerk. Zodra deze online staat, kan de link worden gedeeld met gebruikers en samenwerkingspartners.
+De [thesaurus](https://digitaalerfgoed.poolparty.biz/agrarischethesaurus) is vanaf vandaag te raadplegen via het Termennetwerk.
