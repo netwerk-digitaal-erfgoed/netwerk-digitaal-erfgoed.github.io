@@ -13,3 +13,7 @@ dataset-register:
 persistent-http-uris:
   label: "Persistent HTTP uris"
   permalink: /persistent-http-uris
+
+services:
+  label: "Services"
+  permalink: /services
