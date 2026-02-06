@@ -1490,7 +1490,7 @@ Possible extra rowspan handling
 </style>
   <meta content="Bikeshed version 3c53a5b02, updated Thu Nov 27 17:03:30 2025 +0000" name="generator">
   <link href="https://docs.nde.nl/requirements-datasets/" rel="canonical">
-  <meta content="62cfe3b2140d33e4f5abd7b90e4383436114561d" name="revision">
+  <meta content="50f9769dffbb7264487b3233ca4f6bd5cb6a9cee" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
@@ -2781,7 +2781,8 @@ Providing information about the person/organization behind the dataset answers u
    </ul>
    <blockquote>
     <p>Therefore, publishers <em>MUST</em> publish basic information about the person/organization.
-At the least, the organization’s name and HTTP IRI must be provided.</p>
+At the least, the organization’s name and HTTP IRI must be provided.
+The organization’s name <em>SHOULD</em> be a language-tagged string.</p>
    </blockquote>
    <div class="example" id="example-fa1cad2d">
     <a class="self-link" href="#example-fa1cad2d"></a>
@@ -3524,8 +3525,8 @@ even if that resource is the same on all pages.</p>
                     
    </table>
    <h4 class="heading settled" data-level="4.6.5" id="dataset-example"><span class="secno">4.6.5. </span><span class="content">Full example</span><a class="self-link" href="#dataset-example"></a></h4>
-   <div class="example" id="example-ac154ca0">
-    <a class="self-link" href="#example-ac154ca0"></a>
+   <div class="example" id="example-e254d67b">
+    <a class="self-link" href="#example-e254d67b"></a>
     A full <a data-link-type="dfn" href="#dataset-description" id="ref-for-dataset-description⑥">dataset description</a> that includes <a href="#dataset-attributes">required and recommended attributes</a>.
 
     
@@ -3569,12 +3570,18 @@ even if that resource is the same on all pages.</p>
         <c- p>{</c->
           <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Person"</c-><c- p>,</c->
           <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com/creator1"</c-><c- p>,</c->
-          <c- f>"name"</c-><c- p>:</c-> <c- u>"Creator 1"</c->
+          <c- f>"name"</c-><c- p>:</c-> <c- p>{</c->
+            <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Creator 1"</c-><c- p>,</c->
+            <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c->
+          <c- p>}</c->
         <c- p>},</c->
         <c- p>{</c->
           <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Person"</c-><c- p>,</c->
           <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com/creator2"</c-><c- p>,</c->
-          <c- f>"name"</c-><c- p>:</c-> <c- u>"Creator 2"</c->
+          <c- f>"name"</c-><c- p>:</c-> <c- p>{</c->
+            <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Creator 2"</c-><c- p>,</c->
+            <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c->
+          <c- p>}</c->
         <c- p>},</c->
         <c- p>{</c->
           <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com"</c->
@@ -3615,7 +3622,10 @@ even if that resource is the same on all pages.</p>
       <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Organization"</c-><c- p>,</c->
       <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com"</c-><c- p>,</c->
       <c- f>"identifier"</c-><c- p>:</c-> <c- u>"test"</c-><c- p>,</c->
-      <c- f>"name"</c-><c- p>:</c-> <c- u>"Koninklijke Bibliotheek"</c-><c- p>,</c->
+      <c- f>"name"</c-><c- p>:</c-> <c- p>{</c->
+        <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Koninklijke Bibliotheek"</c-><c- p>,</c->
+        <c- nd>"@language"</c-><c- p>:</c-> <c- u>"nl"</c->
+      <c- p>},</c->
       <c- f>"sameAs"</c-><c- p>:</c-> <c- u>"https://ror.org/02w4jbg70"</c-><c- p>,</c->
       <c- f>"contactPoint"</c-><c- p>:</c-> <c- p>{</c->
         <c- nd>"@type"</c-><c- p>:</c-> <c- u>"ContactPoint"</c-><c- p>,</c->
