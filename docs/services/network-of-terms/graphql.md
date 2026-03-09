@@ -54,7 +54,27 @@ query Sources {
 }
 ```
 
-Terminology source information is available in both English and Dutch. 
+### Filter sources by subject
+
+The `sources` query accepts an optional `genres` parameter to filter sources by subject.
+Genre URIs can be discovered from the `genres` field on each source (shown in the query above).
+
+```graphql title="List only sources about ‘periodes’"
+query Sources {
+  sources(genres: ["https://data.cultureelerfgoed.nl/termennetwerk/onderwerpen/Periodes"]) {
+    uri
+    name
+    genres {
+      uri
+      name
+    }
+  }
+}
+```
+
+### Source language
+
+Terminology source information is available in both English and Dutch.
 To get a specific language, use the `Accept-Language` HTTP request header, for example:
 
 ```http request
@@ -140,6 +160,7 @@ A terminology source object has:
 * `alternateName`: an optional, well-known short name for display purposes
 * `creators`: the publisher or the source, with its own `uri`, `name` and `alternateName` (short name)
 * `genres`: subjects that the source contains information about
+* `features`: capabilities supported by the source (e.g. `GENRE_FILTER`)
 * `mainEntityOfPage`: a website that provides more information about the source.
 
 #### Terms
@@ -157,7 +178,53 @@ A term object has:
 
 In [collection management systems](../../glossary.md#collection-management-system), the term’s URI is used to link data to the term.
 
-#### Source
+### Filter by subject
+
+Some terminology sources cover multiple subjects. You can narrow search results to specific subjects
+using the `genres` parameter with a list of genre URIs.
+
+Genre URIs can be discovered from the `genres` field when [listing sources](#list-terminology-sources).
+Genre filtering is only available for sources that declare the `GENRE_FILTER` feature,
+which is visible via the `features` field on each source.
+
+```graphql title="Search CHT for ‘steen’, filtered to ‘Periodes’"
+query {
+  terms(
+    sources: ["https://data.cultureelerfgoed.nl/term/id/cht"],
+    query: "steen",
+    // highlight-start
+    genres: ["https://data.cultureelerfgoed.nl/termennetwerk/onderwerpen/Periodes"]
+    // highlight-end
+  ) {
+    source {
+      uri
+      name
+    }
+    result {
+      __typename
+      ... on Terms {
+        terms {
+          uri
+          prefLabel
+          altLabel
+          definition
+          scopeNote
+        }
+      }
+      ... on Error {
+        message
+      }
+    }
+  }
+}
+```
+
+:::tip
+
+Sources that currently support genre filtering include the Art & Architecture Thesaurus (AAT),
+Cultuurhistorische Thesaurus (CHT), and Wikidata.
+
+:::
 
 ### Query multiple sources
 
@@ -314,9 +381,7 @@ Note that not all terminology sources are available in all languages.
 Inspect the `inLanguage` [response parameter](#list-terminology-sources)
 to see which languages are available for each source.
 
-
 :::
-
 
 ## Response times
 
