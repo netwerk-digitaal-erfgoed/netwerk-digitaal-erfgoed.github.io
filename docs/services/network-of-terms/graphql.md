@@ -50,6 +50,10 @@ query Sources {
       type
       url
     }
+    status {
+      isAvailable
+      lastChecked
+    }
   }
 }
 ```
@@ -161,7 +165,8 @@ A terminology source object has:
 * `creators`: the publisher or the source, with its own `uri`, `name` and `alternateName` (short name)
 * `genres`: subjects that the source contains information about
 * `features`: capabilities supported by the source (e.g. `GENRE_FILTER`)
-* `mainEntityOfPage`: a website that provides more information about the source.
+* `mainEntityOfPage`: a website that provides more information about the source
+* `status`: availability of the source’s endpoint, with sub-fields `isAvailable` (boolean) and `lastChecked` (ISO 8601 timestamp).
 
 #### Terms
 
@@ -249,6 +254,10 @@ query {
         name
         alternateName
       }
+      status {
+        isAvailable
+        lastChecked
+      }
     }
     result {
       __typename
@@ -258,7 +267,7 @@ query {
           prefLabel
           altLabel
           hiddenLabel
-          definition 
+          definition
           scopeNote
           seeAlso
         }
