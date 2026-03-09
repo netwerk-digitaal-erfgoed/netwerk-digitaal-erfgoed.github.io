@@ -10,6 +10,10 @@ dataset-register:
   label: "Dataset Register"
   permalink: /dataset-register
 
+rdf:
+  label: "RDF"
+  permalink: /rdf
+
 persistent-http-uris:
   label: "Persistent HTTP uris"
   permalink: /persistent-http-uris
