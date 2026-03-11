@@ -74,6 +74,7 @@ const config: Config = {
           onInlineTags: 'warn',
           onInlineAuthors: 'warn',
           onUntruncatedBlogPosts: 'warn',
+          showLastUpdateTime: true,
         },
         theme: {
           customCss: './src/css/custom.css',
