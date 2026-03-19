@@ -1490,7 +1490,7 @@ Possible extra rowspan handling
 </style>
   <meta content="Bikeshed version 0ef803fdf, updated Tue Jan 6 11:59:39 2026 -0800" name="generator">
   <link href="https://docs.nde.nl/requirements-datasets/" rel="canonical">
-  <meta content="d212166c76156ba1422f3ee30ea9cf96cef55e6d" name="revision">
+  <meta content="a80d47d8884612313067dfc2fde099c4cf50cfd6" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
@@ -2256,7 +2256,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <p data-fill-with="logo"></p>
    <h1 class="no-ref p-name" id="title">Requirements for Datasets</h1>
    <h2 class="heading no-num no-ref no-toc settled" id="profile-and-date"><span class="content">Living Standard,
-    <time class="dt-updated" datetime="2026-03-04">4 March 2026</time></span></h2>
+    <time class="dt-updated" datetime="2026-03-18">18 March 2026</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -2268,13 +2268,15 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
      <dd class="editor h-card p-author vcard"><span class="fn p-name"></span>
      <dd class="editor h-card p-author vcard"><a class="fn p-name u-url url" href="https://github.com/ddeboer">David de Boer</a> (<a class="org p-org" href="https://www.netwerkdigitaalerfgoed.nl">Netwerk Digitaal Erfgoed</a>) <a class="email u-email" href="mailto:david@ddeboer.nl">david@ddeboer.nl</a>
      <dd class="editor h-card p-author vcard"><a class="fn p-name u-url url" href="https://twitter.com/coret">Bob Coret</a> (<a class="org p-org" href="https://netwerkdigitaalerfgoed.nl">Netwerk Digitaal Erfgoed</a>) <a class="email u-email" href="mailto:bob.coret@netwerkdigitaalerfgoed.nl">bob.coret@netwerkdigitaalerfgoed.nl</a>
+     <dt>Version:
+     <dd>1.0.0
     </dl>
    </div>
    <div data-fill-with="warning"></div>
    <p class="copyright" data-fill-with="copyright"><a href="http://creativecommons.org/publicdomain/zero/1.0/" rel="license"><img alt="CC0" height="15" src="https://licensebuttons.net/p/zero/1.0/80x15.png" width="80"></a>
 To the extent possible under law, the editors have waived all copyright
 and related or neighboring rights to this work.
-In addition, as of 4 March 2026,
+In addition, as of 18 March 2026,
 the editors have made this specification available under the
 <a href="https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0" rel="license">Open Web Foundation Agreement Version 1.0</a>,
 which is available at https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0.
@@ -2347,6 +2349,7 @@ By following these requirements, publishers enable users to find and use their d
        </ol>
      </ol>
     <li><a href="#tools"><span class="secno">5</span> <span class="content">Tools</span></a>
+    <li><a href="#changes"><span class="secno">6</span> <span class="content">Changes</span></a>
     <li><a href="#conformance"><span class="secno"></span> <span class="content">
     Conformance</span></a>
     <li>
@@ -3529,8 +3532,8 @@ even if that resource is the same on all pages.</p>
                     
    </table>
    <h4 class="heading settled" data-level="4.6.5" id="dataset-example"><span class="secno">4.6.5. </span><span class="content">Full example</span><a class="self-link" href="#dataset-example"></a></h4>
-   <div class="example" id="example-e254d67b">
-    <a class="self-link" href="#example-e254d67b"></a>
+   <div class="example" id="example-1cefafb6">
+    <a class="self-link" href="#example-1cefafb6"></a>
     A full <a data-link-type="dfn" href="#dataset-description" id="ref-for-dataset-description⑥">dataset description</a> that includes <a href="#dataset-attributes">required and recommended attributes</a>.
 
     
@@ -3558,7 +3561,7 @@ even if that resource is the same on all pages.</p>
       <c- f>"genre"</c-><c- p>:</c-> <c- u>"Interesting data"</c-><c- p>,</c->
       <c- f>"url"</c-><c- p>:</c-> <c- u>"https://www.kb.nl/bronnen-zoekwijzers/kb-collecties/moderne-handschriften-vanaf-ca-1550/alba-amicorum"</c-><c- p>,</c->
       <c- f>"identifier"</c-><c- p>:</c-> <c- u>"http://data.bibliotheken.nl/id/dataset/rise-alba"</c-><c- p>,</c->
-      <c- f>"license"</c-><c- p>:</c-> <c- u>"http://creativecommons.org/publicdomain/zero/1.0/"</c-><c- p>,</c->
+      <c- f>"license"</c-><c- p>:</c-> <c- u>"https://creativecommons.org/publicdomain/zero/1.0/"</c-><c- p>,</c->
       <c- f>"inLanguage"</c-><c- p>:</c-> <c- p>[</c->
         <c- u>"nl-NL"</c-><c- p>,</c->
         <c- u>"en-GB"</c->
@@ -3647,6 +3650,8 @@ even if that resource is the same on all pages.</p>
 The <a data-link-type="biblio" href="#biblio-shacl" title="Shapes Constraint Language (SHACL)">[SHACL]</a> shape graph used to validate datasets and catalogs is available at <a href="https://demo.netwerkdigitaalerfgoed.nl/register-api/shacl">/shacl</a>.</p>
    <p>Google’s <a href="https://search.google.com/test/rich-results">Rich Results Test</a> (previously Structured Data Testing Tool)
 can help with testing RDF metadata in general.</p>
+   <h2 class="heading settled" data-level="6" id="changes"><span class="secno">6. </span><span class="content">Changes</span><a class="self-link" href="#changes"></a></h2>
+   <p>This section lists notable changes to this specification.</p>
   </main>
   <div data-fill-with="conformance">
    <h2 class="heading no-num no-ref settled" id="conformance"><span class="content">
