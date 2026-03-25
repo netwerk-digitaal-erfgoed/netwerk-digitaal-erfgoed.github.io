@@ -1490,7 +1490,7 @@ Possible extra rowspan handling
 </style>
   <meta content="Bikeshed version 0ef803fdf, updated Tue Jan 6 11:59:39 2026 -0800" name="generator">
   <link href="https://docs.nde.nl/requirements-datasets/" rel="canonical">
-  <meta content="53b28ac1dd0e74ce1fe003017f4c58161d4c7207" name="revision">
+  <meta content="510a43c23179b28b211ebd52bd6e1246e49e943e" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
@@ -2719,7 +2719,8 @@ This information answers user questions such as:</p>
 </pre>
    </div>
    <h4 class="heading settled" data-level="4.2.2" id="dataset-license"><span class="secno">4.2.2. </span><span class="content">License</span><a class="self-link" href="#dataset-license"></a></h4>
-   <p>Publishers <em>MUST</em> make known under which <a href="https://w3c.github.io/dwbp/bp.html#licenses">license</a> the dataset may be used.</p>
+   <p>License applicable to the dataset. As a convenience, this license is inherited by all distributions
+                that do not specify their own license. Publishers <em>MUST</em> make known under which <a href="https://w3c.github.io/dwbp/bp.html#licenses">license</a> the dataset may be used.</p>
    <p>This license specifies the conditions under which the metadata in the <a data-link-type="dfn" href="#dataset" id="ref-for-dataset⑧">dataset</a> may be accessed and reused.
                 It does not cover the heritage objects (either physical or digital) that the metadata describes.
                 Access conditions for these objects should be specified in their own descriptions within the dataset.</p>
@@ -3132,7 +3133,7 @@ even if that resource is the same on all pages.</p>
                 1..n
                     
       <td>
-                Recommended
+                Required
                     
      <tr>
       <th scope="row"><a href="https://schema.org/publisher">schema:publisher</a>
@@ -3147,11 +3148,9 @@ even if that resource is the same on all pages.</p>
       <th scope="row"><a href="https://schema.org/license">schema:license</a>
       <td>See <a href="#dataset-license">§ 4.2.2 License</a>.
       <td>
-                1
-                    
       <td>
-                Required
-                    
+                Recommended
+                
      <tr>
       <th scope="row"><a href="https://schema.org/distribution">schema:distribution</a>
       <td>See <a href="#dataset-distributions">§ 4.4 Distributions</a>.
@@ -3168,7 +3167,7 @@ even if that resource is the same on all pages.</p>
                 1..n
                     
       <td>
-                Recommended
+                Required
                     
      <tr>
       <th scope="row"><a href="https://schema.org/datePublished">schema:datePublished</a>
@@ -3445,7 +3444,7 @@ even if that resource is the same on all pages.</p>
                 1..n
                     
       <td>
-                Recommended
+                Required
                     
      <tr>
       <th scope="row"><a href="https://schema.org/datePublished">schema:datePublished</a>
@@ -3478,7 +3477,9 @@ even if that resource is the same on all pages.</p>
                 
      <tr>
       <th scope="row"><a href="https://schema.org/license">schema:license</a>
-      <td>License applicable to the dataset distribution.
+      <td>License applicable to the distribution.
+        If the distribution has no license of its own, the license of the parent dataset is inherited.
+        A license must always be available, either on the distribution or on the dataset.
       <td>
                 0..1
                     
@@ -3530,7 +3531,7 @@ even if that resource is the same on all pages.</p>
                 1..n
                     
       <td>
-                Recommended
+                Required
                     
      <tr>
       <th scope="row"><a href="https://schema.org/publisher">schema:publisher</a>
