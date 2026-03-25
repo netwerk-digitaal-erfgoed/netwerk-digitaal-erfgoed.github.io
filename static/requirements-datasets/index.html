@@ -1490,7 +1490,7 @@ Possible extra rowspan handling
 </style>
   <meta content="Bikeshed version 0ef803fdf, updated Tue Jan 6 11:59:39 2026 -0800" name="generator">
   <link href="https://docs.nde.nl/requirements-datasets/" rel="canonical">
-  <meta content="3c3fbb70926aacf2662db7ca21c865e751de2b46" name="revision">
+  <meta content="2a552e555be7ccfb3b7670f9b4c8033bb436bf6c" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
@@ -2717,16 +2717,16 @@ This information answers user questions such as:</p>
    <h4 class="heading settled" data-level="4.2.2" id="dataset-license"><span class="secno">4.2.2. </span><span class="content">License</span><a class="self-link" href="#dataset-license"></a></h4>
    <p>Publishers <em>MUST</em> make known under which <a href="https://w3c.github.io/dwbp/bp.html#licenses">license</a> the dataset may be used.</p>
    <p>This license specifies the conditions under which the metadata in the <a data-link-type="dfn" href="#dataset" id="ref-for-dataset⑧">dataset</a> may be accessed and reused.
-        It does not cover the heritage objects (either physical or digital) that the metadata describes.
-        Access conditions for these objects should be specified in their own descriptions within the dataset.</p>
+                It does not cover the heritage objects (either physical or digital) that the metadata describes.
+                Access conditions for these objects should be specified in their own descriptions within the dataset.</p>
    <p>The <a data-link-type="biblio" href="#biblio-dera" title="Digital Heritage Reference Architecture">[DERA]</a> requires metadata to be published openly,
-        so this value <em>SHOULD</em> be an open license that allows <a data-link-type="dfn" href="#consumer" id="ref-for-consumer④">consumers</a> to reuse the data,
-        for example one of the <a href="https://creativecommons.org/choose/">Creative Commons</a> licenses.
-        Adopting a non-open license will severely limit reuse and does not comply
-        with the DERA principles.</p>
+                so this value <em>SHOULD</em> be an open license that allows <a data-link-type="dfn" href="#consumer" id="ref-for-consumer④">consumers</a> to reuse the data,
+                for example one of the <a href="https://creativecommons.org/choose/">Creative Commons</a> licenses.
+                Adopting a non-open license will severely limit reuse and does not comply
+                with the DERA principles.</p>
    <p>The value <em>MUST</em> be the canonical URI of a license.
-        For example, use https://creativecommons.org/publicdomain/zero/1.0/ instead
-        of https://creativecommons.org/publicdomain/zero/1.0/deed.nl.</p>
+                For example, use https://creativecommons.org/publicdomain/zero/1.0/ instead
+                of https://creativecommons.org/publicdomain/zero/1.0/deed.nl.</p>
    <div class="example" id="example-c3bca005">
     <a class="self-link" href="#example-c3bca005"></a>
     Specify a license for the dataset:
@@ -3248,8 +3248,8 @@ even if that resource is the same on all pages.</p>
      <tr>
       <th scope="row"><a href="https://schema.org/genre">schema:genre</a>
       <td>
-        The genre or genres which describe the dataset.
-    
+                The genre or genres which describe the dataset.
+            
       <td>
                 1..n
                     
@@ -3259,8 +3259,8 @@ even if that resource is the same on all pages.</p>
      <tr>
       <th scope="row"><a href="https://schema.org/keywords">schema:keywords</a>
       <td>
-        The keyword or keywords which describe the dataset.
-    
+                The keyword or keywords which describe the dataset.
+            
       <td>
                 1..n
                     
@@ -3270,8 +3270,8 @@ even if that resource is the same on all pages.</p>
      <tr>
       <th scope="row"><a href="https://schema.org/spatialCoverage">schema:spatialCoverage</a>
       <td>
-        Indicates the place(s) which are the focus of the dataset.
-    
+                Indicates the place(s) which are the focus of the dataset.
+            
       <td>
                 1..n
                     
@@ -3281,8 +3281,8 @@ even if that resource is the same on all pages.</p>
      <tr>
       <th scope="row"><a href="https://schema.org/temporalCoverage">schema:temporalCoverage</a>
       <td>
-        Indicates the period that the dataset applies to.
-    
+                Indicates the period that the dataset applies to.
+            
       <td>
                 1..n
                     
@@ -3413,12 +3413,12 @@ even if that resource is the same on all pages.</p>
      <tr>
       <th scope="row"><a href="https://schema.org/encodingFormat">schema:encodingFormat</a>
       <td>The distribution’s MIME format, for example <code>application/sparql-query</code> for a SPARQL endpoint
-    or <code>application/ld+json</code> for a data dump serialized as JSON-LD.
-    Use a value from the <a data-link-type="biblio" href="#biblio-iana-media-types" title="Media Types">[IANA-MEDIA-TYPES]</a> list.
-    The value should indicate the Media type of the response of the schema:contentUrl when no Accept header is included in the request.
-    It is recommended to provide a documentation URL via the schema:usageInfo property that lists the supported encoding formats which may be requested via the Accept HTTP header.
-    When the distribution is compressed, the compression format (e.g. zip, gzip) should be added to the <code>schema:encodingFormat</code> (e.g. <code>text/turtle+gzip</code>).
-    
+            or <code>application/ld+json</code> for a data dump serialized as JSON-LD.
+            Use a value from the <a data-link-type="biblio" href="#biblio-iana-media-types" title="Media Types">[IANA-MEDIA-TYPES]</a> list.
+            The value should indicate the Media type of the response of the schema:contentUrl when no Accept header is included in the request.
+            It is recommended to provide a documentation URL via the schema:usageInfo property that lists the supported encoding formats which may be requested via the Accept HTTP header.
+            When the distribution is compressed, the compression format (e.g. zip, gzip) should be added to the <code>schema:encodingFormat</code> (e.g. <code>text/turtle+gzip</code>).
+            
       <td>
                 1..n
                     
