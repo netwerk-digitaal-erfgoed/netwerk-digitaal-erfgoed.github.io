@@ -1490,7 +1490,7 @@ Possible extra rowspan handling
 </style>
   <meta content="Bikeshed version 0ef803fdf, updated Tue Jan 6 11:59:39 2026 -0800" name="generator">
   <link href="https://docs.nde.nl/requirements-datasets/" rel="canonical">
-  <meta content="ad62e59946ba5ce9a4edade67268edaace991209" name="revision">
+  <meta content="3c3fbb70926aacf2662db7ca21c865e751de2b46" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
@@ -2966,6 +2966,10 @@ All distributions of a dataset <em>MUST</em> contain broadly the same data.</p>
 </pre>
    </div>
    <p>See <a href="#distribution-attributes">§ 4.6.3 Distribution attributes</a> for a full overview.</p>
+   <div class="advisement">
+    In v2.0 of this specification, <code>contentUrl</code> <em>MUST</em> be an <code>xsd:anyURI</code> literal.
+    IRIs will no longer be accepted.
+</div>
    <h4 class="heading settled" data-level="4.4.1" id="distribution-date"><span class="secno">4.4.1. </span><span class="content">Creation and modification dates</span><a class="self-link" href="#distribution-date"></a></h4>
    <p>Publishers <em>SHOULD</em> make known when the <a data-link-type="dfn" href="#distribution" id="ref-for-distribution③">distribution</a> was originally created and when it was last updated,
 so <a data-link-type="dfn" href="#consumer" id="ref-for-consumer⑧">consumers</a> can efficiently stay up-to-date with the latest changes.
