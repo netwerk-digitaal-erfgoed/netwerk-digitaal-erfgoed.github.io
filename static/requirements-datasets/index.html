@@ -1490,7 +1490,7 @@ Possible extra rowspan handling
 </style>
   <meta content="Bikeshed version 0ef803fdf, updated Tue Jan 6 11:59:39 2026 -0800" name="generator">
   <link href="https://docs.nde.nl/requirements-datasets/" rel="canonical">
-  <meta content="2468b8bddf111c39ab04db6940caba5f3cbaff83" name="revision">
+  <meta content="cbf1932741db10d3aab784114a87383cd003d1b9" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
@@ -2256,7 +2256,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <p data-fill-with="logo"></p>
    <h1 class="no-ref p-name" id="title">Requirements for Datasets</h1>
    <h2 class="heading no-num no-ref no-toc settled" id="profile-and-date"><span class="content">Living Standard,
-    <time class="dt-updated" datetime="2026-03-25">25 March 2026</time></span></h2>
+    <time class="dt-updated" datetime="2026-03-26">26 March 2026</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -2276,7 +2276,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <p class="copyright" data-fill-with="copyright"><a href="http://creativecommons.org/publicdomain/zero/1.0/" rel="license"><img alt="CC0" height="15" src="https://licensebuttons.net/p/zero/1.0/80x15.png" width="80"></a>
 To the extent possible under law, the editors have waived all copyright
 and related or neighboring rights to this work.
-In addition, as of 25 March 2026,
+In addition, as of 26 March 2026,
 the editors have made this specification available under the
 <a href="https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0" rel="license">Open Web Foundation Agreement Version 1.0</a>,
 which is available at https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0.
@@ -3135,7 +3135,10 @@ even if that resource is the same on all pages.</p>
                     
       <td>
                 Required
-                    
+                    <br><small>v2.0:
+                    becomes required
+                    </small>
+                
      <tr>
       <th scope="row"><a href="https://schema.org/publisher">schema:publisher</a>
       <td>Person or organization that published the dataset. See <a href="#creator-publisher-information">§ 4.3 Creator/publisher information</a>.
@@ -3151,6 +3154,9 @@ even if that resource is the same on all pages.</p>
       <td>
       <td>
                 Recommended
+                <br><small>v2.0:
+                    must be IRI
+                    </small>
                 
      <tr>
       <th scope="row"><a href="https://schema.org/distribution">schema:distribution</a>
@@ -3169,10 +3175,13 @@ even if that resource is the same on all pages.</p>
                     
       <td>
                 Required
-                    
+                    <br><small>v2.0:
+                    becomes required
+                    </small>
+                
      <tr>
       <th scope="row"><a href="https://schema.org/datePublished">schema:datePublished</a>
-      <td>See <a href="#dataset-date">§ 4.2.3 Creation, publication and modification dates</a>.
+      <td>
       <td>
                 1
                     
@@ -3181,7 +3190,7 @@ even if that resource is the same on all pages.</p>
                     
      <tr>
       <th scope="row"><a href="https://schema.org/dateCreated">schema:dateCreated</a>
-      <td>See <a href="#dataset-date">§ 4.2.3 Creation, publication and modification dates</a>.
+      <td>
       <td>
                 1
                     
@@ -3190,7 +3199,7 @@ even if that resource is the same on all pages.</p>
                     
      <tr>
       <th scope="row"><a href="https://schema.org/dateModified">schema:dateModified</a>
-      <td>See <a href="#dataset-date">§ 4.2.3 Creation, publication and modification dates</a>.
+      <td>
       <td>
                 1
                     
@@ -3209,13 +3218,16 @@ even if that resource is the same on all pages.</p>
      <tr>
       <th scope="row"><a href="https://schema.org/inLanguage">schema:inLanguage</a>
       <td>
-                Language or languages in which the dataset is available. Use one of the language codes from the <a data-link-type="biblio" href="#biblio-bcp47" title="Tags for Identifying Languages">[BCP47]</a>, such as "nl-NL".
+                Language or languages in which the dataset is available. Use one of the language codes from the <a data-link-type="biblio" href="#biblio-bcp47" title="Tags for Identifying Languages">[BCP47]</a>, such as <u class="link-error property" data-lt="nl-NL" title="LINK ERROR: No &apos;property&apos; refs found for &apos;nl-nl&apos;.">nl-NL</u>.
             
       <td>
                 0..n
                     
       <td>
                 Recommended
+                <br><small>v2.0:
+                    must match <code>^[a-zA-Z]{2,3}(-[a-zA-Z0-9]+)*$</code>
+                    </small>
                 
      <tr>
       <th scope="row"><a href="https://schema.org/mainEntityOfPage">schema:mainEntityOfPage</a>
@@ -3371,7 +3383,10 @@ even if that resource is the same on all pages.</p>
                     
       <td>
                 Required
-                    
+                    <br><small>v2.0:
+                    becomes required
+                    </small>
+                
      <tr>
       <th scope="row"><a href="https://schema.org/identifier">schema:identifier</a>
       <td>
@@ -3382,7 +3397,10 @@ even if that resource is the same on all pages.</p>
                     
       <td>
                 Required
-                    
+                    <br><small>v2.0:
+                    becomes required
+                    </small>
+                
      <tr>
       <th scope="row"><a href="https://schema.org/sameAs">schema:sameAs</a>
       <td>
@@ -3413,7 +3431,10 @@ even if that resource is the same on all pages.</p>
                     
       <td>
                 Required
-                    
+                    <br><small>v2.0:
+                    must be xsd:anyURI
+                    </small>
+                
      <tr>
       <th scope="row"><a href="https://schema.org/encodingFormat">schema:encodingFormat</a>
       <td>The distribution’s MIME format, for example <code>application/sparql-query</code> for a SPARQL endpoint
@@ -3446,10 +3467,13 @@ even if that resource is the same on all pages.</p>
                     
       <td>
                 Required
-                    
+                    <br><small>v2.0:
+                    becomes required
+                    </small>
+                
      <tr>
       <th scope="row"><a href="https://schema.org/datePublished">schema:datePublished</a>
-      <td>See <a href="#dataset-date">§ 4.2.3 Creation, publication and modification dates</a>.
+      <td>Date (or datetime) the distribution was published
       <td>
                 0..1
                     
@@ -3458,7 +3482,7 @@ even if that resource is the same on all pages.</p>
                 
      <tr>
       <th scope="row"><a href="https://schema.org/dateModified">schema:dateModified</a>
-      <td>See <a href="#dataset-date">§ 4.2.3 Creation, publication and modification dates</a>.
+      <td>Date (or datetime) the distribution was last modified
       <td>
                 0..1
                     
@@ -3468,13 +3492,16 @@ even if that resource is the same on all pages.</p>
      <tr>
       <th scope="row"><a href="https://schema.org/inLanguage">schema:inLanguage</a>
       <td>
-                Language or languages in which the distribution is available. Use one of the language codes from the <a data-link-type="biblio" href="#biblio-bcp47" title="Tags for Identifying Languages">[BCP47]</a>, such as "nl-NL".
+                Language or languages in which the distribution is available. Use one of the language codes from the <a data-link-type="biblio" href="#biblio-bcp47" title="Tags for Identifying Languages">[BCP47]</a>, such as <u class="link-error property" data-lt="nl-NL" title="LINK ERROR: No &apos;property&apos; refs found for &apos;nl-nl&apos;.">nl-NL</u>.
             
       <td>
                 0..n
                     
       <td>
                 Recommended
+                <br><small>v2.0:
+                    must match <code>^[a-zA-Z]{2,3}(-[a-zA-Z0-9]+)*$</code>
+                    </small>
                 
      <tr>
       <th scope="row"><a href="https://schema.org/license">schema:license</a>
@@ -3486,6 +3513,9 @@ even if that resource is the same on all pages.</p>
                     
       <td>
                 Recommended
+                <br><small>v2.0:
+                    becomes required
+                    </small>
                 
      <tr>
       <th scope="row"><a href="https://schema.org/contentSize">schema:contentSize</a>
@@ -3533,7 +3563,10 @@ even if that resource is the same on all pages.</p>
                     
       <td>
                 Required
-                    
+                    <br><small>v2.0:
+                    becomes required
+                    </small>
+                
      <tr>
       <th scope="row"><a href="https://schema.org/publisher">schema:publisher</a>
       <td>Person or organization that published the data catalog. See <a href="#creator-publisher-information">§ 4.3 Creator/publisher information</a>.
