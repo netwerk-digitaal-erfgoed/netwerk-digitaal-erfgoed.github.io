@@ -1490,7 +1490,7 @@ Possible extra rowspan handling
 </style>
   <meta content="Bikeshed version 0ef803fdf, updated Tue Jan 6 11:59:39 2026 -0800" name="generator">
   <link href="https://docs.nde.nl/requirements-datasets/" rel="canonical">
-  <meta content="f2fca84c09b7f25b96ef065d291203215b0c0e21" name="revision">
+  <meta content="668bc2c0f389eb8800ceec7c5e9a31427b401291" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
@@ -2996,11 +2996,13 @@ but simple dates (<code>2019-04-14</code>) are also allowed.</p>
 </pre>
    </div>
    <h4 class="heading settled" data-level="4.4.2" id="developer-docs"><span class="secno">4.4.2. </span><span class="content">Developer documentation</span><a class="self-link" href="#developer-docs"></a></h4>
-   <p>Publishers <em>SHOULD</em> link to documentation URLs via the <a href="https://schema.org/usageInfo">https://schema.org/usageInfo</a> attribute. For datadumps this should be documentation about the
-data model. For <a data-link-type="dfn" href="#web-api" id="ref-for-web-api①">web APIs</a> this should be documentation about the specific capabilities of the API (like content-type support) <em>AND</em> the generic specification of the
-protocol which also types the distribution such as OAI-PMH, SPARQL and REST.</p>
+   <p>Publishers <em>SHOULD</em> link to documentation URLs via the <a href="https://schema.org/usageInfo">https://schema.org/usageInfo</a> attribute.</p>
+   <p>For downloads, this <em>SHOULD</em> be documentation about the data model,
+such as the application profile, vocabulary or ontology that the data conforms to.</p>
+   <p>For <a data-link-type="dfn" href="#web-api" id="ref-for-web-api①">web APIs</a>, this <em>SHOULD</em> be documentation about the specific capabilities of the API (like content-type support) <em>AND</em> the generic specification of the
+protocol which also types the distribution as an API (such as OAI-PMH, SPARQL and REST).</p>
    <table>
-    <caption>Recommended URIs for typing</caption>
+    <caption>Recommended URIs for typing API distributions</caption>
     <thead>
      <tr>
       <th>Protocol
@@ -3020,22 +3022,38 @@ protocol which also types the distribution such as OAI-PMH, SPARQL and REST.</p>
       <td>https://developers.arcgis.com/rest/
      <tr>
       <th scope="row">WMS
-      <td>http://www.opengeospatial.org/standards/wms
+      <td>https://www.ogc.org/standards/wms/
+     <tr>
+      <th scope="row">OpenAPI
+      <td>https://spec.openapis.org/oas/v3.2.0.html
      <tr>
       <th scope="row">GraphQL
       <td>https://spec.graphql.org/
    </table>
-   <div class="example" id="example-9fe6c2dd">
-    <a class="self-link" href="#example-9fe6c2dd"></a>
-    A distribution with a link to the generic documentation and the protocol specification (typing the distribution as SPARQL-endpoint).
+   <div class="example" id="example-d91171d1">
+    <a class="self-link" href="#example-d91171d1"></a>
+    A download distribution that conforms to the NDE Schema.org Application Profile:
 
     
 <pre class="highlight"><c- p>{</c->
   <c- nd>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org/"</c-><c- p>,</c->
   <c- nd>"@type"</c-><c- p>:</c-> <c- u>"DataDownload"</c-><c- p>,</c->
-  <c- f>"encodingFormat"</c-><c- p>:</c-> <c- u>"application/sparql-results+json"</c-><c- p>,</c->
-  <c- f>"contentUrl"</c-><c- p>:</c-> <c- u>"http://vocab.getty.edu/sparql"</c-><c- p>,</c->
-  <c- f>"usageInfo"</c-><c- p>:</c-> <c- p>[</c-> <c- u>"https://www.w3.org/TR/sparql11-protocol/"</c-><c- p>,</c-> <c- u>"https://vocab.getty.edu/"</c-> <c- p>]</c->
+  <c- f>"encodingFormat"</c-><c- p>:</c-> <c- u>"application/ld+json"</c-><c- p>,</c->
+  <c- f>"contentUrl"</c-><c- p>:</c-> <c- u>"https://example.com/data.jsonld"</c-><c- p>,</c->
+  <c- f>"usageInfo"</c-><c- p>:</c-> <c- u>"https://docs.nde.nl/schema-profile/"</c->
+<c- p>}</c->
+</pre>
+   </div>
+   <div class="example" id="example-f52f2113">
+    <a class="self-link" href="#example-f52f2113"></a>
+    A SPARQL distribution that returns RDF in the NDE Schema.org Application Profile:
+
+    
+<pre class="highlight"><c- p>{</c->
+  <c- nd>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org/"</c-><c- p>,</c->
+  <c- nd>"@type"</c-><c- p>:</c-> <c- u>"DataDownload"</c-><c- p>,</c->
+  <c- f>"contentUrl"</c-><c- p>:</c-> <c- u>"https://example.com/sparql"</c-><c- p>,</c->
+  <c- f>"usageInfo"</c-><c- p>:</c-> <c- p>[</c-> <c- u>"https://www.w3.org/TR/sparql11-protocol/"</c-><c- p>,</c-> <c- u>"https://docs.nde.nl/schema-profile/"</c-> <c- p>]</c->
 <c- p>}</c->
 </pre>
    </div>
@@ -3522,7 +3540,7 @@ even if that resource is the same on all pages.</p>
                 
      <tr>
       <th scope="row"><a href="https://schema.org/usageInfo">schema:usageInfo</a>
-      <td>A link to the <a data-link-type="dfn" href="#web-api" id="ref-for-web-api②">web API</a> documentation; see <a href="#developer-docs">§ 4.4.2 Developer documentation</a>.
+      <td>A link to the documentation: for downloads, the application profile, vocabulary or ontology; for <a data-link-type="dfn" href="#web-api" id="ref-for-web-api②">web APIs</a>, the protocol specification. See <a href="#developer-docs">§ 4.4.2 Developer documentation</a>.
       <td>
                 0..n
                     
@@ -3584,8 +3602,8 @@ even if that resource is the same on all pages.</p>
                     
    </table>
    <h4 class="heading settled" data-level="4.6.5" id="dataset-example"><span class="secno">4.6.5. </span><span class="content">Full example</span><a class="self-link" href="#dataset-example"></a></h4>
-   <div class="example" id="example-f506e482">
-    <a class="self-link" href="#example-f506e482"></a>
+   <div class="example" id="example-9d596134">
+    <a class="self-link" href="#example-9d596134"></a>
     A full <a data-link-type="dfn" href="#dataset-description" id="ref-for-dataset-description⑥">dataset description</a> that includes <a href="#dataset-attributes">required and recommended attributes</a>.
 
     
@@ -3667,6 +3685,7 @@ even if that resource is the same on all pages.</p>
           <c- nd>"@type"</c-><c- p>:</c-> <c- u>"DataDownload"</c-><c- p>,</c->
           <c- f>"encodingFormat"</c-><c- p>:</c-> <c- u>"application/ld+json"</c-><c- p>,</c->
           <c- f>"contentUrl"</c-><c- p>:</c-> <c- u>"http://data.bibliotheken.nl/id/dataset/rise-alba.jsonld"</c-><c- p>,</c->
+          <c- f>"usageInfo"</c-><c- p>:</c-> <c- u>"https://docs.nde.nl/schema-profile/"</c-><c- p>,</c->
           <c- f>"description"</c-><c- p>:</c-> <c- u>"JSON-LD dump"</c->
         <c- p>},</c->
         <c- p>{</c->
