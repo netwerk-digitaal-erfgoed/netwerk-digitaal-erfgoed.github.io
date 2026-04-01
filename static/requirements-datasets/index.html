@@ -1490,8 +1490,13 @@ Possible extra rowspan handling
 </style>
   <meta content="Bikeshed version 0ef803fdf, updated Tue Jan 6 11:59:39 2026 -0800" name="generator">
   <link href="https://docs.nde.nl/requirements-datasets/" rel="canonical">
-  <meta content="d957e4410f2243d85714c832d89eaf2bf281339a" name="revision">
+  <meta content="ad5c22c42b5b6e50dfae662137e2af635622287e" name="revision">
   <meta content="dark light" name="color-scheme">
+<style>
+td, th {
+    vertical-align: top;
+}
+</style>
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
     color: var(--a-normal-text);
@@ -2331,7 +2336,7 @@ By following these requirements, publishers enable users to find and use their d
        <a href="#dataset-distributions"><span class="secno">4.4</span> <span class="content">Distributions</span></a>
        <ol class="toc">
         <li><a href="#distribution-date"><span class="secno">4.4.1</span> <span class="content">Creation and modification dates</span></a>
-        <li><a href="#developer-docs"><span class="secno">4.4.2</span> <span class="content">Developer documentation</span></a>
+        <li><a href="#usage-information"><span class="secno">4.4.2</span> <span class="content">Usage information</span></a>
        </ol>
       <li>
        <a href="#data-catalog-info"><span class="secno">4.5</span> <span class="content">Data catalog</span></a>
@@ -2996,40 +3001,56 @@ but simple dates (<code>2019-04-14</code>) are also allowed.</p>
 <c- p>}</c->
 </pre>
    </div>
-   <h4 class="heading settled" data-level="4.4.2" id="developer-docs"><span class="secno">4.4.2. </span><span class="content">Developer documentation</span><a class="self-link" href="#developer-docs"></a></h4>
-   <p>Publishers <em>SHOULD</em> link to documentation URLs via the <a href="https://schema.org/usageInfo">https://schema.org/usageInfo</a> attribute.</p>
-   <p>For downloads, this <em>SHOULD</em> be documentation about the data model,
-such as the application profile, vocabulary or ontology that the data conforms to.</p>
-   <p>For <a data-link-type="dfn" href="#web-api" id="ref-for-web-api①">web APIs</a>, this <em>SHOULD</em> be documentation about the specific capabilities of the API (like content-type support) <em>AND</em> the generic specification of the
-protocol which also types the distribution as an API (such as OAI-PMH, SPARQL and REST).</p>
+   <h4 class="heading settled" data-level="4.4.2" id="usage-information"><span class="secno">4.4.2. </span><span class="content">Usage information</span><a class="self-link" href="#usage-information"></a></h4>
+   <p>Each distribution <em>SHOULD</em> include one or more <a href="https://schema.org/usageInfo">schema:usageInfo</a> URIs
+that describe what the distribution provides.</p>
+   <p>For <a data-link-type="dfn" href="#web-api" id="ref-for-web-api①">web APIs</a>, this <em>MUST</em> be the URI of the protocol specification (such as SPARQL or OAI-PMH).
+The Dataset Register uses this URI to identify the distribution as an API.</p>
+   <p>For downloads as well as APIs, this <em>MUST</em> be the URI of the application profile(s) that the data conforms to.</p>
    <table>
-    <caption>Recommended URIs for typing API distributions</caption>
+    <caption>Recommended URIs for typing distributions</caption>
     <thead>
      <tr>
-      <th>Protocol
-      <th>URL specification
+      <th>Item
+      <th>Type
+      <th>Applies to
+      <th>URI
     <tbody>
      <tr>
+      <th scope="row">GraphQL
+      <td>Protocol
+      <td>API
+      <td>https://spec.graphql.org/
+     <tr>
       <th scope="row">OAI-PMH
+      <td>Protocol
+      <td>API
       <td>http://www.openarchives.org/pmh/
      <tr>
+      <th scope="row">OpenAPI REST
+      <td>Protocol
+      <td>API
+      <td>https://spec.openapis.org/oas/v3.2.0.html
+     <tr>
+      <th scope="row"><a data-link-type="biblio" href="#biblio-schema-ap-nde" title="Schema.org Application Profile for Datasets">[SCHEMA-AP-NDE]</a>
+      <td>Application profile
+      <td>API, download
+      <td>https://docs.nde.nl/schema-profile/
+     <tr>
       <th scope="row">SPARQL
+      <td>Protocol
+      <td>API
       <td>https://www.w3.org/TR/sparql11-protocol/
      <tr>
       <th scope="row">TPF
+      <td>Protocol
+      <td>API
       <td>https://linkeddatafragments.org/specification/triple-pattern-fragments/
      <tr>
-      <th scope="row">REST
-      <td>https://developers.arcgis.com/rest/
-     <tr>
       <th scope="row">WMS
+      <td>Protocol
+      <td>API
       <td>https://www.ogc.org/standards/wms/
-     <tr>
-      <th scope="row">OpenAPI
-      <td>https://spec.openapis.org/oas/v3.2.0.html
-     <tr>
-      <th scope="row">GraphQL
-      <td>https://spec.graphql.org/
    </table>
    <div class="example" id="example-50d92e51">
     <a class="self-link" href="#example-50d92e51"></a>
@@ -3532,7 +3553,7 @@ even if that resource is the same on all pages.</p>
                 
      <tr>
       <th scope="row"><a href="https://schema.org/usageInfo">schema:usageInfo</a>
-      <td>A link to the documentation: for downloads, the application profile, vocabulary or ontology; for <a data-link-type="dfn" href="#web-api" id="ref-for-web-api②">web APIs</a>, the protocol specification. See <a href="#developer-docs">§ 4.4.2 Developer documentation</a>.
+      <td>A link to the documentation: for downloads, the application profile, vocabulary or ontology; for <a data-link-type="dfn" href="#web-api" id="ref-for-web-api②">web APIs</a>, the protocol specification. See <a href="#usage-information">§ 4.4.2 Usage information</a>.
       <td>
                 0..n
                     
@@ -4166,7 +4187,7 @@ let dfnPanelData = {
 "distribution": {"dfnID":"distribution","dfnText":"Distribution","external":false,"refSections":[{"refs":[{"id":"ref-for-distribution"}],"title":"2. Definitions"},{"refs":[{"id":"ref-for-distribution\u2460"}],"title":"3. Conceptual model"},{"refs":[{"id":"ref-for-distribution\u2461"}],"title":"4.4. Distributions"},{"refs":[{"id":"ref-for-distribution\u2462"}],"title":"4.4.1. Creation and modification dates"}],"url":"#distribution"},
 "machine-readability": {"dfnID":"machine-readability","dfnText":"Machine-readability","external":false,"refSections":[{"refs":[{"id":"ref-for-machine-readability"}],"title":"1. Introduction"},{"refs":[{"id":"ref-for-machine-readability\u2460"}],"title":"4.1. Available in RDF"}],"url":"#machine-readability"},
 "publisher": {"dfnID":"publisher","dfnText":"Publisher","external":false,"refSections":[{"refs":[{"id":"ref-for-publisher"}],"title":"1. Introduction"},{"refs":[{"id":"ref-for-publisher\u2460"},{"id":"ref-for-publisher\u2461"}],"title":"2. Definitions"},{"refs":[{"id":"ref-for-publisher\u2462"}],"title":"3. Conceptual model"},{"refs":[{"id":"ref-for-publisher\u2463"}],"title":"4.1. Available in RDF"},{"refs":[{"id":"ref-for-publisher\u2464"}],"title":"4.2.4. Versions"},{"refs":[{"id":"ref-for-publisher\u2465"}],"title":"4.3. Creator/publisher information"},{"refs":[{"id":"ref-for-publisher\u2466"}],"title":"4.5.1. Pagination"}],"url":"#publisher"},
-"web-api": {"dfnID":"web-api","dfnText":"Web API","external":false,"refSections":[{"refs":[{"id":"ref-for-web-api"}],"title":"4.4. Distributions"},{"refs":[{"id":"ref-for-web-api\u2460"}],"title":"4.4.2. Developer documentation"},{"refs":[{"id":"ref-for-web-api\u2461"}],"title":"4.6.3. Distribution attributes"}],"url":"#web-api"},
+"web-api": {"dfnID":"web-api","dfnText":"Web API","external":false,"refSections":[{"refs":[{"id":"ref-for-web-api"}],"title":"4.4. Distributions"},{"refs":[{"id":"ref-for-web-api\u2460"}],"title":"4.4.2. Usage information"},{"refs":[{"id":"ref-for-web-api\u2461"}],"title":"4.6.3. Distribution attributes"}],"url":"#web-api"},
 };
 
 document.addEventListener("DOMContentLoaded", ()=>{
