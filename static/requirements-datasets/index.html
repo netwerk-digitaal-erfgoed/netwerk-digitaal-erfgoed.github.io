@@ -1490,7 +1490,7 @@ Possible extra rowspan handling
 </style>
   <meta content="Bikeshed version 0ef803fdf, updated Tue Jan 6 11:59:39 2026 -0800" name="generator">
   <link href="https://docs.nde.nl/requirements-datasets/" rel="canonical">
-  <meta content="3272402c0b73ef95fa4b82984326a3f6b52642c3" name="revision">
+  <meta content="68d5de2029c10b9d84c7fb803e6d0bae24fb7dfb" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
@@ -2443,7 +2443,7 @@ or for querying (such as a <a data-link-type="biblio" href="#biblio-sparql11-ove
     <dt data-md><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="publisher">Publisher</dfn>
     <dd data-md>
      <p>An individual or organization that provides one or more <a data-link-type="dfn" href="#dataset" id="ref-for-dataset③">datasets</a>.</p>
-     <p class="issue" id="issue-a46aa0c8"><a class="self-link" href="#issue-a46aa0c8"></a> is this a good translation for <u class="link-error property" data-lt="bronhouder" title="LINK ERROR: No &apos;property&apos; refs found for &apos;bronhouder&apos;.">bronhouder</u>? And add examples.
+     <p class="issue" id="issue-4dbc011e"><a class="self-link" href="#issue-4dbc011e"></a> is this a good translation for ‘bronhouder’? And add examples.
 This would probably be 'heritage institution' in <a href="https://www.netwerkdigitaalerfgoed.nl/wp-content/uploads/2019/05/190513-DERA2.0-ENG.pdf">DERA</a>.</p>
     <dt data-md><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="consumer">Consumer</dfn>
     <dd data-md>
@@ -2943,9 +2943,9 @@ All distributions of a dataset <em>MUST</em> contain broadly the same data.</p>
 </pre>
    </div>
    <p>The distributions are then included under the <code>distribution</code> attribute with the dataset.</p>
-   <div class="example" id="example-14ad2ae3">
-    <a class="self-link" href="#example-14ad2ae3"></a>
-    A dataset with two distributions.
+   <div class="example" id="example-eb78b38e">
+    <a class="self-link" href="#example-eb78b38e"></a>
+    A dataset with one SPARQL and two download distributions.
 
     
 <pre class="highlight"><c- p>{</c->
@@ -3031,9 +3031,9 @@ protocol which also types the distribution as an API (such as OAI-PMH, SPARQL an
       <th scope="row">GraphQL
       <td>https://spec.graphql.org/
    </table>
-   <div class="example" id="example-d91171d1">
-    <a class="self-link" href="#example-d91171d1"></a>
-    A download distribution that conforms to the NDE Schema.org Application Profile:
+   <div class="example" id="example-50d92e51">
+    <a class="self-link" href="#example-50d92e51"></a>
+    A download distribution that conforms to <a data-link-type="biblio" href="#biblio-schema-ap-nde" title="Schema.org Application Profile for Datasets">[SCHEMA-AP-NDE]</a>:
 
     
 <pre class="highlight"><c- p>{</c->
@@ -3045,9 +3045,9 @@ protocol which also types the distribution as an API (such as OAI-PMH, SPARQL an
 <c- p>}</c->
 </pre>
    </div>
-   <div class="example" id="example-f52f2113">
-    <a class="self-link" href="#example-f52f2113"></a>
-    A SPARQL distribution that returns RDF in the NDE Schema.org Application Profile:
+   <div class="example" id="example-6ead3d38">
+    <a class="self-link" href="#example-6ead3d38"></a>
+    A SPARQL distribution that returns RDF conforming to <a data-link-type="biblio" href="#biblio-schema-ap-nde" title="Schema.org Application Profile for Datasets">[SCHEMA-AP-NDE]</a>:
 
     
 <pre class="highlight"><c- p>{</c->
@@ -3237,7 +3237,7 @@ even if that resource is the same on all pages.</p>
      <tr>
       <th scope="row"><a href="https://schema.org/inLanguage">schema:inLanguage</a>
       <td>
-                Language or languages in which the dataset is available. Use one of the language codes from the <a data-link-type="biblio" href="#biblio-bcp47" title="Tags for Identifying Languages">[BCP47]</a>, such as <u class="link-error property" data-lt="nl-NL" title="LINK ERROR: No &apos;property&apos; refs found for &apos;nl-nl&apos;.">nl-NL</u>.
+                Language or languages in which the dataset is available. Use one of the language codes from the <a data-link-type="biblio" href="#biblio-bcp47" title="Tags for Identifying Languages">[BCP47]</a>, such as <code>nl-NL</code>.
             
       <td>
                 0..n
@@ -3505,7 +3505,7 @@ even if that resource is the same on all pages.</p>
      <tr>
       <th scope="row"><a href="https://schema.org/inLanguage">schema:inLanguage</a>
       <td>
-                Language or languages in which the distribution is available. Use one of the language codes from the <a data-link-type="biblio" href="#biblio-bcp47" title="Tags for Identifying Languages">[BCP47]</a>, such as <u class="link-error property" data-lt="nl-NL" title="LINK ERROR: No &apos;property&apos; refs found for &apos;nl-nl&apos;.">nl-NL</u>.
+                Language or languages in which the distribution is available. Use one of the language codes from the <a data-link-type="biblio" href="#biblio-bcp47" title="Tags for Identifying Languages">[BCP47]</a>, such as <code>nl-NL</code>.
             
       <td>
                 0..n
@@ -3949,6 +3949,8 @@ can help with testing RDF metadata in general.</p>
    <dd>Bernadette Hyland; Ghislain Auguste Atemezing; Boris Villazón-Terrazas. <a href="https://www.w3.org/TR/ld-bp/"><cite>Best Practices for Publishing Linked Data</cite></a>. 9 January 2014. NOTE. URL: <a href="https://www.w3.org/TR/ld-bp/">https://www.w3.org/TR/ld-bp/</a>
    <dt id="biblio-n3">[N3]
    <dd>Tim Berners-Lee; Dan Connolly. <a href="https://www.w3.org/TeamSubmission/2008/SUBM-n3-20080114/"><cite>Notation3 (N3): A readable RDF syntax</cite></a>. 14 January 2008. W3C Team Submission. URL: <a href="https://www.w3.org/TeamSubmission/2008/SUBM-n3-20080114/">https://www.w3.org/TeamSubmission/2008/SUBM-n3-20080114/</a>
+   <dt id="biblio-schema-ap-nde">[SCHEMA-AP-NDE]
+   <dd>David de Boer. <a href="https://docs.nde.nl/schema-profile/"><cite>Schema.org Application Profile for Datasets</cite></a>. Living Specification. URL: <a href="https://docs.nde.nl/schema-profile/">https://docs.nde.nl/schema-profile/</a>
    <dt id="biblio-schema-org">[SCHEMA-ORG]
    <dd>W3C Schema.org Community Group. <a href="https://schema.org/"><cite>Schema.org</cite></a>. 6.0. URL: <a href="https://schema.org/">https://schema.org/</a>
    <dt id="biblio-shacl">[SHACL]
@@ -3963,8 +3965,8 @@ can help with testing RDF metadata in general.</p>
   <h2 class="heading no-num no-ref settled" id="issues-index"><span class="content">Issues Index</span><a class="self-link" href="#issues-index"></a></h2>
   <div style="counter-reset:issue">
    <div class="issue"> TODO <a class="issue-return" href="#issue-b7b1e314" title="Jump to section">↵</a></div>
-   <div class="issue"> is this a good translation for <u class="link-error property" data-lt="bronhouder" title="LINK ERROR: No &apos;property&apos; refs found for &apos;bronhouder&apos;.">bronhouder</u>? And add examples.
-This would probably be 'heritage institution' in <a href="https://www.netwerkdigitaalerfgoed.nl/wp-content/uploads/2019/05/190513-DERA2.0-ENG.pdf">DERA</a>. <a class="issue-return" href="#issue-a46aa0c8" title="Jump to section">↵</a></div>
+   <div class="issue"> is this a good translation for ‘bronhouder’? And add examples.
+This would probably be 'heritage institution' in <a href="https://www.netwerkdigitaalerfgoed.nl/wp-content/uploads/2019/05/190513-DERA2.0-ENG.pdf">DERA</a>. <a class="issue-return" href="#issue-4dbc011e" title="Jump to section">↵</a></div>
   </div>
 <script>/* Boilerplate: script-dom-helper */
 "use strict";
