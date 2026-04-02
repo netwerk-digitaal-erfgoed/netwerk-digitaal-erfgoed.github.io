@@ -1490,7 +1490,7 @@ Possible extra rowspan handling
 </style>
   <meta content="Bikeshed version 0ef803fdf, updated Tue Jan 6 11:59:39 2026 -0800" name="generator">
   <link href="https://docs.nde.nl/requirements-datasets/" rel="canonical">
-  <meta content="524dc42e3ba7f75e0ac1d0b2f994c0c703190ec0" name="revision">
+  <meta content="ec38c3ac4c5ebdcdded7d816e4490156a399ee35" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>
 td, th {
@@ -2261,7 +2261,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <p data-fill-with="logo"></p>
    <h1 class="no-ref p-name" id="title">Requirements for Datasets</h1>
    <h2 class="heading no-num no-ref no-toc settled" id="profile-and-date"><span class="content">Living Standard,
-    <time class="dt-updated" datetime="2026-04-01">1 April 2026</time></span></h2>
+    <time class="dt-updated" datetime="2026-04-02">2 April 2026</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -2274,14 +2274,14 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
      <dd class="editor h-card p-author vcard"><a class="fn p-name u-url url" href="https://github.com/ddeboer">David de Boer</a> (<a class="org p-org" href="https://www.netwerkdigitaalerfgoed.nl">Netwerk Digitaal Erfgoed</a>) <a class="email u-email" href="mailto:david@ddeboer.nl">david@ddeboer.nl</a>
      <dd class="editor h-card p-author vcard"><a class="fn p-name u-url url" href="https://twitter.com/coret">Bob Coret</a> (<a class="org p-org" href="https://netwerkdigitaalerfgoed.nl">Netwerk Digitaal Erfgoed</a>) <a class="email u-email" href="mailto:bob.coret@netwerkdigitaalerfgoed.nl">bob.coret@netwerkdigitaalerfgoed.nl</a>
      <dt>Version:
-     <dd><a href="#v1.3.0">1.3.0</a>
+     <dd><a href="#v1.4.0">1.4.0</a>
     </dl>
    </div>
    <div data-fill-with="warning"></div>
    <p class="copyright" data-fill-with="copyright"><a href="http://creativecommons.org/publicdomain/zero/1.0/" rel="license"><img alt="CC0" height="15" src="https://licensebuttons.net/p/zero/1.0/80x15.png" width="80"></a>
 To the extent possible under law, the editors have waived all copyright
 and related or neighboring rights to this work.
-In addition, as of 1 April 2026,
+In addition, as of 2 April 2026,
 the editors have made this specification available under the
 <a href="https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0" rel="license">Open Web Foundation Agreement Version 1.0</a>,
 which is available at https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0.
@@ -2358,9 +2358,10 @@ By following these requirements, publishers enable users to find and use their d
     <li>
      <a href="#changes"><span class="secno">6</span> <span class="content">Changes</span></a>
      <ol class="toc">
-      <li><a href="#v1.3.0"><span class="secno">6.1</span> <span class="content">Version 1.3.0 (2026-04-01)</span></a>
-      <li><a href="#v1.2.0"><span class="secno">6.2</span> <span class="content">Version 1.2.0 (2026-03-25)</span></a>
-      <li><a href="#v1.1.0"><span class="secno">6.3</span> <span class="content">Version 1.1.0 (2026-03-25)</span></a>
+      <li><a href="#v1.4.0"><span class="secno">6.1</span> <span class="content">Version 1.4.0 (2026-04-01)</span></a>
+      <li><a href="#v1.3.0"><span class="secno">6.2</span> <span class="content">Version 1.3.0 (2026-04-01)</span></a>
+      <li><a href="#v1.2.0"><span class="secno">6.3</span> <span class="content">Version 1.2.0 (2026-03-25)</span></a>
+      <li><a href="#v1.1.0"><span class="secno">6.4</span> <span class="content">Version 1.1.0 (2026-03-25)</span></a>
      </ol>
     <li><a href="#conformance"><span class="secno"></span> <span class="content">
     Conformance</span></a>
@@ -2762,6 +2763,36 @@ This information answers user questions such as:</p>
 <c- p>}</c->
 </pre>
    </div>
+   <p><a href="https://docs.geostandaarden.nl/dcat/dcat-ap-nl30/">DCAT-AP-NL 3.0</a> requires the use of Creative Commons licences
+and defines a <a href="https://definities.geostandaarden.nl/dcat-ap-nl/id/waardelijst/licenties/">value list</a> for licences.
+The default <em>SHOULD</em> be <a href="https://creativecommons.org/publicdomain/zero/1.0/">CC0</a> (<code>https://creativecommons.org/publicdomain/zero/1.0/</code>).
+The following table lists the recommended canonical license URIs.
+Creative Commons URIs <em>MUST</em> use <code>https://</code> and end with a trailing slash.</p>
+   <table class="data">
+    <thead>
+     <tr>
+      <th>Canonical URI
+    <tbody>
+     <tr>
+      <td><code>https://creativecommons.org/publicdomain/zero/1.0/</code>
+     <tr>
+      <td><code>https://creativecommons.org/publicdomain/mark/1.0/</code>
+     <tr>
+      <td><code>https://creativecommons.org/licenses/by/4.0/</code>
+     <tr>
+      <td><code>https://creativecommons.org/licenses/by-sa/4.0/</code>
+     <tr>
+      <td><code>https://creativecommons.org/licenses/by-nc/4.0/</code>
+     <tr>
+      <td><code>https://creativecommons.org/licenses/by-nc-sa/4.0/</code>
+     <tr>
+      <td><code>https://creativecommons.org/licenses/by-nd/4.0/</code>
+     <tr>
+      <td><code>https://creativecommons.org/licenses/by-nc-nd/4.0/</code>
+   </table>
+   <div class="advisement">
+    In v2.0 of this specification, the license <em>MUST</em> be one of the URIs listed above.
+</div>
    <p>See also <a href="https://w3c.github.io/dwbp/usecasesv1.html#R-LicenseAvailable">Data on the Web Best Practices Use Cases &amp; Requirements § R-LicenseAvailable</a>.</p>
    <h4 class="heading settled" data-level="4.2.3" id="dataset-date"><span class="secno">4.2.3. </span><span class="content">Creation, publication and modification dates</span><a class="self-link" href="#dataset-date"></a></h4>
    <p>Publishers <em>SHOULD</em> make known when the <a data-link-type="dfn" href="#dataset-description" id="ref-for-dataset-description⑥">dataset description</a> was originally created, published and when it was last updated.
@@ -3777,7 +3808,30 @@ The <a data-link-type="biblio" href="#biblio-shacl" title="Shapes Constraint Lan
 can help with testing RDF metadata in general.</p>
    <h2 class="heading settled" data-level="6" id="changes"><span class="secno">6. </span><span class="content">Changes</span><a class="self-link" href="#changes"></a></h2>
    <p>This section lists notable changes to this specification.</p>
-   <h3 class="heading settled" data-level="6.1" id="v1.3.0"><span class="secno">6.1. </span><span class="content">Version 1.3.0 (2026-04-01)</span><a class="self-link" href="#v1.3.0"></a></h3>
+   <h3 class="heading settled" data-level="6.1" id="v1.4.0"><span class="secno">6.1. </span><span class="content">Version 1.4.0 (2026-04-01)</span><a class="self-link" href="#v1.4.0"></a></h3>
+   <ul>
+    <li data-md>
+     <p>Add Content-Type requirement for registration URLs (<a href="https://github.com/netwerk-digitaal-erfgoed/dataset-register/commit/524dc42e3ba7f75e0ac1d0b2f994c0c703190ec0">524dc42</a>).</p>
+    <li data-md>
+     <p>Add dct:accrualPeriodicity support for datasets (<a href="https://github.com/netwerk-digitaal-erfgoed/dataset-register/commit/8eebd71cb674a344016808a723ad89de33e4ccbb">8eebd71</a>).</p>
+    <li data-md>
+     <p>Add maxCount 1 as future change for encodingFormat and mediaType (<a href="https://github.com/netwerk-digitaal-erfgoed/dataset-register/commit/9364133edc05b6f4c2a437bf40bb0321e50238d2">9364133</a>).</p>
+    <li data-md>
+     <p>Preserve user-provided dcat:theme from DCAT input (<a href="https://github.com/netwerk-digitaal-erfgoed/dataset-register/commit/343b176b3ebad609e88ef3f33501196e95bf3c98">343b176</a>).</p>
+    <li data-md>
+     <p>Remove dct:title from Distribution (<a href="https://github.com/netwerk-digitaal-erfgoed/dataset-register/commit/d957e4410f2243d85714c832d89eaf2bf281339a">d957e44</a>).</p>
+    <li data-md>
+     <p>Validate includedInDataCatalog as HTTP IRI (<a href="https://github.com/netwerk-digitaal-erfgoed/dataset-register/commit/08484c6c0e98dcb5afd17186187ef9dddd5b5527">08484c6</a>).</p>
+    <li data-md>
+     <p>Validate language tags on title, description, and name properties (<a href="https://github.com/netwerk-digitaal-erfgoed/dataset-register/commit/d99f2fbc1662b7ccb09def714257ae6ec3c11e7c">d99f2fb</a>).</p>
+    <li data-md>
+     <p>Validate spatialCoverage and dct:spatial as HTTP IRI (<a href="https://github.com/netwerk-digitaal-erfgoed/dataset-register/commit/bbc02b57d3a47276a4c4e564988b60777c71b8e1">bbc02b5</a>).</p>
+    <li data-md>
+     <p>Skip SHACL validation of inline DataCatalog references (<a href="https://github.com/netwerk-digitaal-erfgoed/dataset-register/commit/37c9437f5abfe2c6d859ca84939634fa104be7c4">37c9437</a>).</p>
+    <li data-md>
+     <p>Rewrite ‘Developer documentation’ section as ‘Usage information’ (<a href="https://github.com/netwerk-digitaal-erfgoed/dataset-register/commit/ad5c22c42b5b6e50dfae662137e2af635622287e">ad5c22c</a>).</p>
+   </ul>
+   <h3 class="heading settled" data-level="6.2" id="v1.3.0"><span class="secno">6.2. </span><span class="content">Version 1.3.0 (2026-04-01)</span><a class="self-link" href="#v1.3.0"></a></h3>
    <ul>
     <li data-md>
      <p>Differentiate API and download distributions per DCAT-AP-NL (<a href="https://github.com/netwerk-digitaal-erfgoed/dataset-register/commit/ba22143eb73aa8fb711b5b8892e15a080e7df398">ba22143</a>).</p>
@@ -3786,12 +3840,12 @@ can help with testing RDF metadata in general.</p>
     <li data-md>
      <p>Add Person to conceptual model diagram (<a href="https://github.com/netwerk-digitaal-erfgoed/dataset-register/commit/cd0b42909f6811bd1c6f3d450f46a06b4c024078">cd0b429</a>).</p>
    </ul>
-   <h3 class="heading settled" data-level="6.2" id="v1.2.0"><span class="secno">6.2. </span><span class="content">Version 1.2.0 (2026-03-25)</span><a class="self-link" href="#v1.2.0"></a></h3>
+   <h3 class="heading settled" data-level="6.3" id="v1.2.0"><span class="secno">6.3. </span><span class="content">Version 1.2.0 (2026-03-25)</span><a class="self-link" href="#v1.2.0"></a></h3>
    <ul>
     <li data-md>
      <p>Add DCAT-AP-NL 3.0 requirements (<a href="https://github.com/netwerk-digitaal-erfgoed/dataset-register/commit/510a43c23179b28b211ebd52bd6e1246e49e943e">510a43c</a>).</p>
    </ul>
-   <h3 class="heading settled" data-level="6.3" id="v1.1.0"><span class="secno">6.3. </span><span class="content">Version 1.1.0 (2026-03-25)</span><a class="self-link" href="#v1.1.0"></a></h3>
+   <h3 class="heading settled" data-level="6.4" id="v1.1.0"><span class="secno">6.4. </span><span class="content">Version 1.1.0 (2026-03-25)</span><a class="self-link" href="#v1.1.0"></a></h3>
    <ul>
     <li data-md>
      <p>Express future requirement changes in SHACL and spec (<a href="https://github.com/netwerk-digitaal-erfgoed/dataset-register/commit/3c3fbb70926aacf2662db7ca21c865e751de2b46">3c3fbb7</a>).</p>
