@@ -21,3 +21,7 @@ persistent-http-uris:
 services:
   label: "Services"
   permalink: /services
+
+requirements:
+  label: "Requirements"
+  permalink: /requirements
