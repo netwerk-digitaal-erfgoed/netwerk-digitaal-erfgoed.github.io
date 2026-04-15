@@ -50,7 +50,7 @@ The Dataset Register’s SHACL shapes already flag all of these as warnings. In 
 The following properties move from *recommended* to *required*:
 
 - `schema:creator` (`dct:creator`) – the person or organisation that created the dataset.
-- `schema:publisher` (`dct:publisher`) – the publisher of the dataset and of the catalogue.
+- `schema:publisher` (`dct:publisher`) – the publisher of the catalogue (already required on datasets in v1).
 - `schema:contactPoint` (`dcat:contactPoint`) – a contact point on the publishing organisation, both on datasets and on catalogues.
 - `schema:description` (`dct:description`) – a free-text description becomes mandatory on datasets, distributions, and catalogues. The discoverability of a dataset depends in large part on the quality of its description, so this isn’t just a formality: a missing or perfunctory description means the dataset is harder to find, evaluate, and reuse.
 - `schema:license` (`dct:license`) on each distribution – inherited from the dataset when not specified, to keep Schema.org publishers unaffected.
