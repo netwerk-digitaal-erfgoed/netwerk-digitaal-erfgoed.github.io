@@ -1490,7 +1490,7 @@ Possible extra rowspan handling
 </style>
   <meta content="Bikeshed version 0ef803fdf, updated Tue Jan 6 11:59:39 2026 -0800" name="generator">
   <link href="https://docs.nde.nl/requirements-datasets/" rel="canonical">
-  <meta content="cbf140abb4a365acc9addc36fac72fd1ff4b5117" name="revision">
+  <meta content="bdbd78973b533f1ed7cddb0ef6e5e5118d77b85f" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>
 td, th {
@@ -3388,9 +3388,16 @@ even if that resource is the same on all pages.</p>
                 
      <tr>
       <th scope="row"><a href="schema:genre">schema:genre</a>
+      <td><code>schema:genre</code> is deprecated. Use <code>schema:about</code> with a URI (e.g. from AAT or GTAA via the Network of Terms) for both subject and material type.
       <td>
-                The genre or genres which describe the dataset.
-            
+      <td>
+                Recommended
+                <br><small>v2.0: becomes required</small>
+                    
+     <tr>
+      <th scope="row"><a href="schema:about">schema:about</a>
+      <td>The subject matter of the dataset, covering both topical themes (such as ‘post-war reconstruction’ or ‘colonial history’) and material types (such as ‘photographs’ or ‘architectural drawings’).
+                Use a URI from a controlled vocabulary (e.g. AAT, GTAA, or Brinkman via the <a href="https://termennetwerk.netwerkdigitaalerfgoed.nl/en">Network of Terms</a>).
       <td>
                 1..n
                     
@@ -3409,8 +3416,7 @@ even if that resource is the same on all pages.</p>
      <tr>
       <th scope="row"><a href="schema:spatialCoverage">schema:spatialCoverage</a>
       <td>The geographical area to which the data in the dataset pertains.
-                Use a URI from a controlled vocabulary such as <a href="https://www.geonames.org/">GeoNames</a>.
-                Find place URIs via the <a href="https://termennetwerk.netwerkdigitaalerfgoed.nl/en">Network of Terms</a>.
+                Use a URI from a controlled vocabulary such as <a href="https://www.geonames.org/">GeoNames</a> via the <a href="https://termennetwerk.netwerkdigitaalerfgoed.nl/en">Network of Terms</a>.
       <td>
                 1..n
                     
@@ -3693,8 +3699,8 @@ even if that resource is the same on all pages.</p>
                         
    </table>
    <h4 class="heading settled" data-level="4.6.5" id="dataset-example"><span class="secno">4.6.5. </span><span class="content">Full example</span><a class="self-link" href="#dataset-example"></a></h4>
-   <div class="example" id="example-3f47699b">
-    <a class="self-link" href="#example-3f47699b"></a>
+   <div class="example" id="example-cf01c372">
+    <a class="self-link" href="#example-cf01c372"></a>
     A full <a data-link-type="dfn" href="#dataset-description" id="ref-for-dataset-description①①">dataset description</a> that includes <a href="#dataset-attributes">required and recommended attributes</a>.
 
     
@@ -3719,7 +3725,7 @@ even if that resource is the same on all pages.</p>
         <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c->
       <c- p>},</c->
       <c- f>"keywords"</c-><c- p>:</c-> <c- u>"alba amicorum"</c-><c- p>,</c->
-      <c- f>"genre"</c-><c- p>:</c-> <c- u>"Interesting data"</c-><c- p>,</c->
+      <c- f>"about"</c-><c- p>:</c-> <c- p>{</c-> <c- nd>"@id"</c-><c- p>:</c-> <c- u>"http://vocab.getty.edu/aat/300026680"</c-> <c- p>},</c->
       <c- f>"url"</c-><c- p>:</c-> <c- u>"https://www.kb.nl/bronnen-zoekwijzers/kb-collecties/moderne-handschriften-vanaf-ca-1550/alba-amicorum"</c-><c- p>,</c->
       <c- f>"identifier"</c-><c- p>:</c-> <c- u>"http://data.bibliotheken.nl/id/dataset/rise-alba"</c-><c- p>,</c->
       <c- f>"license"</c-><c- p>:</c-> <c- u>"https://creativecommons.org/publicdomain/zero/1.0/"</c-><c- p>,</c->
