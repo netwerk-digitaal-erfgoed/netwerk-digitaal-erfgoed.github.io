@@ -50,11 +50,10 @@ The Dataset Register’s SHACL shapes already flag all of these as warnings. In 
 The following properties move from *recommended* to *required*:
 
 - `schema:creator` (`dct:creator`) – the person or organisation that created the dataset.
-- `schema:publisher` (`dct:publisher`) – the publisher of the catalogue (already required on datasets in v1). Exactly one publisher is allowed, per DCAT-AP-NL 3.0’s 1..1 cardinality on both datasets and catalogues.
+- `schema:publisher` (`dct:publisher`) – the publisher of the catalogue (already required on datasets in v1). Exactly one publisher is allowed on both datasets and catalogues.
 - `schema:contactPoint` (`dcat:contactPoint`) – a contact point on the publishing organisation, both on datasets and on catalogues.
-- `schema:description` (`dct:description`) – a free-text description becomes mandatory on datasets and catalogues. The discoverability of a dataset depends in large part on the quality of its description, so this isn’t just a formality: a missing or perfunctory description means the dataset is harder to find, evaluate, and reuse. On distributions the description stays *recommended* (not mandatory), in line with DCAT-AP-NL 3.0 §4.2.8.
+- `schema:description` (`dct:description`) – a free-text description becomes mandatory on datasets and catalogues. The discoverability of a dataset depends in large part on the quality of its description, so this isn’t just a formality: a missing or perfunctory description means the dataset is harder to find, evaluate, and reuse. On distributions the description stays *recommended*, not mandatory.
 - `schema:license` (`dct:license`) on each distribution – inherited from the dataset when not specified, to keep Schema.org publishers unaffected.
-- `schema:about` (`dcat:theme`) – at least one subject or material-type IRI. `schema:genre` is deprecated: use `schema:about` with a URI from a controlled vocabulary (for example AAT or GTAA via the [Network of Terms](https://termennetwerk.netwerkdigitaalerfgoed.nl/en)) for both topical themes and material types. `schema:genre` values will be rejected in v2.0.
 
 ### Typed values
 
@@ -66,6 +65,7 @@ The following properties move from *recommended* to *required*:
 - **HTTPS content URLs as IRIs.** `schema:contentUrl` on distributions must be an HTTPS IRI (not a plain string or an `xsd:anyURI` literal). This reflects that the Schema.org JSON-LD context declares `contentUrl` with `"@type": "@id"`, so conforming submissions already produce IRI nodes.
 - **ISO-8601 dates.** All date properties – `schema:datePublished`, `schema:dateCreated`, `schema:dateModified` (and the DCAT equivalents `dct:issued`, `dct:created`, `dct:modified`) – must be valid ISO-8601 (`YYYY-MM-DD` or `YYYY-MM-DDTHH:MM:SS` with optional timezone).
 - **ISO-8601 temporal coverage.** `schema:temporalCoverage` (`dct:temporal`) must be either an ISO-8601 date, a date interval (such as `2011/2012`), an open-ended interval (`1440/..`), a BCE interval (`-0431/-0404`), or an IRI. The Register rewrites conforming literals to a `dct:PeriodOfTime` blank node with typed `dcat:startDate` and `dcat:endDate` in the DCAT output.
+- **`schema:genre` deprecated, replaced by `schema:about`.** Any `schema:genre` value will be rejected in v2.0. Use `schema:about` instead – with a URI from a controlled vocabulary (for example AAT or GTAA via the [Network of Terms](https://termennetwerk.netwerkdigitaalerfgoed.nl/en)) – for both topical themes and material types.
 
 ### Download vs. API distributions
 
