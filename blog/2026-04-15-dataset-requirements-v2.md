@@ -43,7 +43,7 @@ Language tags belong to the same family. A title like `"Middeleeuwse handschrift
 
 ## What changes in v2.0
 
-The Dataset Register’s SHACL shapes already flag all of these as warnings. In v2.0 they become violations – meaning the Dataset Register will reject descriptions that don’t comply.
+The Dataset Register’s SHACL shapes already flag all of these as warnings. In v2.0 they become violations – meaning the Dataset Register will reject descriptions that don’t comply. Every upcoming change listed below is also annotated in the [Requirements for Datasets](https://docs.nde.nl/requirements-datasets/) attribute tables (as "becomes required in v2.0" or "must be an IRI in v2.0"), generated directly from the same SHACL shapes, so the spec and the validator stay in lockstep.
 
 ### Required properties
 
