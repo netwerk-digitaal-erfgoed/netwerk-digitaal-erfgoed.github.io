@@ -96,5 +96,6 @@ Until that date, the current warnings remain warnings: the Dataset Register cont
 ## What to do now
 
 1. **Check your dataset descriptions** with the [validator](https://datasetregister.netwerkdigitaalerfgoed.nl/validate.php?lang=en). The validation report already flags every v2.0 item as a warning.
-2. **Talk to your vendor** if you use a collection management system. Ask whether they are tracking the [Requirements for Dataset Register Implementations](https://docs.nde.nl/requirements-dataset-register-implementations/) and how they plan to surface v2.0 warnings in their forms.
-3. **Follow this blog** for further updates as the deadline approaches.
+2. **Read the [Requirements for Datasets](https://docs.nde.nl/requirements-datasets/)**. Every upcoming v2.0 change is annotated inline in the attribute tables (“becomes required in v2.0”, “must be an IRI in v2.0”), so you can see each rule in its full context alongside the properties it applies to.
+3. **Talk to your vendor** if you use a collection management system. Ask whether they are tracking the [Requirements for Dataset Register Implementations](https://docs.nde.nl/requirements-dataset-register-implementations/) and how they plan to surface v2.0 warnings in their forms.
+4. **Follow this blog** for further updates as the deadline approaches.
