@@ -18,7 +18,7 @@ A short orientation: [**DCAT**](https://www.w3.org/TR/vocab-dcat-3/) is the W3C 
 
 The Dataset Register is fully prepared to output [DCAT-AP-NL 3.0](https://docs.geostandaarden.nl/dcat/dcat-ap-nl30/) data: it has adopted DCAT-AP-NL as its internal model and converts incoming Schema.org descriptions to DCAT on ingest. But the output can only be as complete as the input. Without a publisher, a contact point, a license on each distribution, or controlled vocabularies for language and spatial coverage, the Register cannot emit a fully conformant description. Version 2.0 closes that gap by asking publishers and their collection management system vendors to supply these properties.
 
-This matters beyond government. DCAT-AP-NL started life as a profile for Dutch public-sector data, but it has become the lingua franca for any dataset catalogued by a Dutch data portal. The [EU Data Portal](https://data.europa.eu/) harvests national portals across Europe, and national portals in turn harvest sources like the Dataset Register. When a heritage institution’s dataset description conforms to DCAT-AP-NL, it flows through that chain automatically: it shows up alongside government data, research data, and data from other EU member states, discoverable in the same searches and usable by the same tools. Heritage collections are not government data, but they share the same audience of researchers, journalists, educators, and developers who increasingly expect to find everything in one place.
+This matters beyond government. DCAT-AP-NL started life as a profile for Dutch public-sector data, but it has become the lingua franca for any dataset catalogued by a Dutch data portal. Research data repositories are moving in the same direction: [DANS](https://dans.knaw.nl/), the Dutch national research data archive, is preparing its [Dataverse](https://dataverse.org/)-based platforms (Data Station SSH and the ODISSEI Portal) to export DCAT-AP-NL 3.0. The [EU Data Portal](https://data.europa.eu/) harvests national portals across Europe, and national portals in turn harvest sources like the Dataset Register. When a heritage institution’s dataset description conforms to DCAT-AP-NL, it flows through that chain automatically: it shows up alongside government data, research data, and data from other EU member states, discoverable in the same searches and usable by the same tools. Heritage collections are not government data, but they share the same audience of researchers, journalists, educators, and developers who increasingly expect to find everything in one place.
 
 Conformance also protects publishers from having to maintain multiple flavours of the same metadata. Publishing once, in a single format that satisfies DCAT, DCAT-AP, and DCAT-AP-NL, is less work than maintaining bespoke exports for each consumer.
 
@@ -43,16 +43,16 @@ Language tags belong to the same family. A title like `"Middeleeuwse handschrift
 
 ## What changes in v2.0
 
-The Dataset Register’s SHACL shapes already flag all of these as warnings. In v2.0 they become violations – meaning the Dataset Register will reject descriptions that don’t comply.
+The Dataset Register’s SHACL shapes already flag all of these as warnings. In v2.0 they become violations – meaning the Dataset Register will reject descriptions that don’t comply. Every upcoming change listed below is also annotated in the [Requirements for Datasets](https://docs.nde.nl/requirements-datasets/) attribute tables (as "becomes required in v2.0" or "must be an IRI in v2.0"), generated directly from the same SHACL shapes, so the spec and the validator stay in lockstep.
 
 ### Required properties
 
 The following properties move from *recommended* to *required*:
 
 - `schema:creator` (`dct:creator`) – the person or organisation that created the dataset.
-- `schema:publisher` (`dct:publisher`) – the publisher of the catalogue (already required on datasets in v1).
+- `schema:publisher` (`dct:publisher`) – the publisher of the catalogue (already required on datasets in v1). Exactly one publisher is allowed on both datasets and catalogues.
 - `schema:contactPoint` (`dcat:contactPoint`) – a contact point on the publishing organisation, both on datasets and on catalogues.
-- `schema:description` (`dct:description`) – a free-text description becomes mandatory on datasets, distributions, and catalogues. The discoverability of a dataset depends in large part on the quality of its description, so this isn’t just a formality: a missing or perfunctory description means the dataset is harder to find, evaluate, and reuse.
+- `schema:description` (`dct:description`) – a free-text description becomes mandatory on datasets and catalogues. The discoverability of a dataset depends in large part on the quality of its description, so this isn’t just a formality: a missing or perfunctory description means the dataset is harder to find, evaluate, and reuse. On distributions the description stays *recommended*, not mandatory.
 - `schema:license` (`dct:license`) on each distribution – inherited from the dataset when not specified, to keep Schema.org publishers unaffected.
 
 ### Typed values
@@ -62,15 +62,18 @@ The following properties move from *recommended* to *required*:
 - **Canonical license URIs.** `schema:license` (`dct:license`) must be an IRI (no literals), and must be one of the canonical Creative Commons URIs from the [DCAT-AP-NL license waardelijst](https://definities.geostandaarden.nl/dcat-ap-nl/id/waardelijst/licenties).
 - **BCP 47 languages.** `schema:inLanguage` must use a BCP 47 code (on the DCAT side, `dct:language` becomes an EU Language Authority IRI).
 - **Single media type.** `schema:encodingFormat` (`dcat:mediaType`) is restricted to one value per distribution.
-- **Typed content URLs.** `schema:contentUrl` on distributions must be an `xsd:anyURI` literal.
+- **HTTPS content URLs as IRIs.** `schema:contentUrl` on distributions must be an HTTPS IRI (not a plain string or an `xsd:anyURI` literal). This reflects that the Schema.org JSON-LD context declares `contentUrl` with `"@type": "@id"`, so conforming submissions already produce IRI nodes.
 - **ISO-8601 dates.** All date properties – `schema:datePublished`, `schema:dateCreated`, `schema:dateModified` (and the DCAT equivalents `dct:issued`, `dct:created`, `dct:modified`) – must be valid ISO-8601 (`YYYY-MM-DD` or `YYYY-MM-DDTHH:MM:SS` with optional timezone).
+- **ISO-8601 temporal coverage.** `schema:temporalCoverage` (`dct:temporal`) must be either an ISO-8601 date, a date interval (such as `2011/2012`), an open-ended interval (`1440/..`), a BCE interval (`-0431/-0404`), or an IRI. The Register rewrites conforming literals to a `dct:PeriodOfTime` blank node with typed `dcat:startDate` and `dcat:endDate` in the DCAT output.
+- **`schema:genre` deprecated, replaced by `schema:about`.** Any `schema:genre` value will be rejected in v2.0. Use `schema:about` instead – with a URI from a controlled vocabulary (for example AAT or GTAA via the [Network of Terms](https://termennetwerk.netwerkdigitaalerfgoed.nl/en)) – for both topical themes and material types.
 
 ### Download vs. API distributions
 
 Version 2.0 distinguishes downloads from APIs more clearly:
 
-- A **download distribution** (an RDF dump, CSV, ZIP, etc.) *must* carry `schema:encodingFormat` (a single MIME type from [IANA](https://www.iana.org/assignments/media-types/), e.g. `application/n-triples`) and *may* carry `schema:usageInfo` pointing to the application profile, vocabulary, or ontology that the data conforms to.
+- A **download distribution** (an RDF dump, CSV, ZIP, etc.) *must* carry `schema:encodingFormat` (a single MIME type from [IANA](https://www.iana.org/assignments/media-types/), e.g. `application/n-triples`) and *may* carry `schema:usageInfo` pointing to the application profile, vocabulary, or ontology that the data conforms to. Compressed distributions append the compression suffix (`+gzip` or `+zip`), e.g. `text/turtle+gzip`.
 - An **API distribution** (SPARQL endpoint, OAI-PMH, REST) *must* carry `schema:usageInfo` linking to the protocol specification – the response media type varies per request, so a single `schema:encodingFormat` is meaningless. `schema:usageInfo` here typically links to the API spec URI and, if relevant, to the data model the API exposes.
+- **SPARQL endpoints** are classified strictly by the protocol URI: `schema:usageInfo` (or `dct:conformsTo` on the DCAT side) must include `https://www.w3.org/TR/sparql11-protocol/`. Conversely, SPARQL MIME types (`application/sparql-query`, `application/sparql-results+json`, …) must be removed from `schema:encodingFormat` / `dcat:mediaType`, since they describe request/response payloads rather than a downloadable file. Until 3 May 2027 the Register continues to infer an API distribution from a SPARQL MIME type for backward compatibility; that fallback will be dropped when these rules become violations.
 
 ### What this means for publishers
 
@@ -82,7 +85,7 @@ Most publishers will find the work concentrated in a few places: adding language
 
 Collection management system vendors have a specific role to play. The new [Requirements for Dataset Register Implementations](https://docs.nde.nl/requirements-dataset-register-implementations/) ask vendors to [surface SHACL warnings](https://docs.nde.nl/requirements-dataset-register-implementations/#validate-dataset-descriptions) to collection managers ahead of time and to add form fields for upcoming requirements as soon as they are announced – so that users of those systems can prepare without ever seeing a validation failure. This is the [migration path for new requirements](https://docs.nde.nl/requirements-collection-management-systems/#staying-up-to-date) described in the broader Requirements for Collection Management Systems. Version 2.0 is the first major version since those requirements were published; it is also the first test of that migration path.
 
-Several of the v2.0 rules can’t be met by collection managers alone – they require system-level support from the vendor. The clearest example is language tags: a collection manager typing a title into a text field has no way to attach `@nl` or `@en` to the value unless the system provides it. Vendors will need to either offer multilingual input (a tab or toggle per language), or, at minimum, tag all outgoing values with a default language derived from the organisation’s settings or the interface locale. The same applies to IRI-valued properties like `schema:spatialCoverage` and `schema:includedInDataCatalog`: the system needs to offer a picker (e.g. against GeoNames or the Network of Terms) rather than a free-text field. Canonical license URIs, single-value constraints on media type, and typed `xsd:anyURI` content URLs likewise depend on form design and output serialisation that only the vendor can control.
+Several of the v2.0 rules can’t be met by collection managers alone – they require system-level support from the vendor. The clearest example is language tags: a collection manager typing a title into a text field has no way to attach `@nl` or `@en` to the value unless the system provides it. Vendors will need to either offer multilingual input (a tab or toggle per language), or, at minimum, tag all outgoing values with a default language derived from the organisation’s settings or the interface locale. The same applies to IRI-valued properties like `schema:spatialCoverage` and `schema:includedInDataCatalog`: the system needs to offer a picker (e.g. against GeoNames or the Network of Terms) rather than a free-text field. Canonical license URIs, single-value constraints on media type, and HTTPS IRI content URLs likewise depend on form design and output serialisation that only the vendor can control.
 
 ## The migration window
 
@@ -93,5 +96,6 @@ Until that date, the current warnings remain warnings: the Dataset Register cont
 ## What to do now
 
 1. **Check your dataset descriptions** with the [validator](https://datasetregister.netwerkdigitaalerfgoed.nl/validate.php?lang=en). The validation report already flags every v2.0 item as a warning.
-2. **Talk to your vendor** if you use a collection management system. Ask whether they are tracking the [Requirements for Dataset Register Implementations](https://docs.nde.nl/requirements-dataset-register-implementations/) and how they plan to surface v2.0 warnings in their forms.
-3. **Follow this blog** for further updates as the deadline approaches.
+2. **Read the [Requirements for Datasets](https://docs.nde.nl/requirements-datasets/)**. Every upcoming v2.0 change is annotated inline in the attribute tables (“becomes required in v2.0”, “must be an IRI in v2.0”), so you can see each rule in its full context alongside the properties it applies to.
+3. **Talk to your vendor** if you use a collection management system. Ask whether they are tracking the [Requirements for Dataset Register Implementations](https://docs.nde.nl/requirements-dataset-register-implementations/) and how they plan to surface v2.0 warnings in their forms.
+4. **Follow this blog** for further updates as the deadline approaches.
