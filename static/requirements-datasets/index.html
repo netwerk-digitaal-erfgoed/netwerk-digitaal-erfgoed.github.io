@@ -1490,7 +1490,7 @@ Possible extra rowspan handling
 </style>
   <meta content="Bikeshed version 5d4d5b9a8, updated Fri Apr 17 13:49:40 2026 -0700" name="generator">
   <link href="https://docs.nde.nl/requirements-datasets/" rel="canonical">
-  <meta content="28198fed8159e184dbed77e53fe8d5bd5bf7e4c9" name="revision">
+  <meta content="8e30b051098439d6fe79b417dd89b7c661b96365" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>
 td, th {
@@ -3010,11 +3010,14 @@ The e-mail address <em>SHOULD</em> be an organizational or departmental address 
 <a data-link-type="dfn" href="#distribution" id="ref-for-distribution②">Distributions</a> tell consumers where and how they can get the data.</p>
    <blockquote>
     <p>Therefore, publishers <em>SHOULD</em> add at least one distribution.
-Each distribution <em>MUST</em> have at least a MIME format and the URL where the distribution can be accessed.</p>
+Each distribution <em>MUST</em> have at least a MIME format and the URL where the distribution can be directly accessed.</p>
    </blockquote>
    <p>Examples of distributions are data dumps in one or more RDF serializations, such as JSON-LD and Turtle,
 CSV files, SPARQL endpoints, OAI-PMH endpoints or other <a data-link-type="dfn" href="#web-api" id="ref-for-web-api">web APIs</a>.
 All distributions of a dataset <em>MUST</em> contain broadly the same data.</p>
+   <p><code>schema:contentUrl</code> is the URL of the distribution itself: the data file, or the endpoint of the <a data-link-type="dfn" href="#web-api" id="ref-for-web-api①">web API</a>.
+If a documentation page describes or provides access to the distribution alongside it – for example a SPARQL query editor for the endpoint, or a download landing page –
+add it on the distribution with <code>schema:documentation</code>.</p>
    <div class="example" id="example-fadf5ed9">
     <a class="self-link" href="#example-fadf5ed9"></a>
     A minimal definition of a SPARQL endpoint distribution.
@@ -3031,9 +3034,10 @@ All distributions of a dataset <em>MUST</em> contain broadly the same data.</p>
 </pre>
    </div>
    <p>The distributions are then included under the <code>distribution</code> attribute with the dataset.</p>
-   <div class="example" id="example-eb78b38e">
-    <a class="self-link" href="#example-eb78b38e"></a>
+   <div class="example" id="example-5eb27f5c">
+    <a class="self-link" href="#example-5eb27f5c"></a>
     A dataset with one SPARQL and two download distributions.
+    The SPARQL endpoint separates the endpoint URL (<code>contentUrl</code>) from its query UI (<code>documentation</code>).
 
     
 <pre class="highlight"><c- p>{</c->
@@ -3041,9 +3045,9 @@ All distributions of a dataset <em>MUST</em> contain broadly the same data.</p>
   <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Dataset"</c-><c- p>,</c->
   <c- f>"distribution"</c-><c- p>:</c-> <c- p>[</c->
     <c- p>{</c->
-      <c- nd>"@id"</c-><c- p>:</c-> <c- u>"http://vocab.getty.edu/aat/sparql"</c-><c- p>,</c->
       <c- nd>"@type"</c-><c- p>:</c-> <c- u>"DataDownload"</c-><c- p>,</c->
-      <c- f>"contentUrl"</c-><c- p>:</c-> <c- u>"http://vocab.getty.edu/sparql"</c-><c- p>,</c->
+      <c- f>"contentUrl"</c-><c- p>:</c-> <c- u>"https://service.archief.nl/sparql"</c-><c- p>,</c->
+      <c- f>"documentation"</c-><c- p>:</c-> <c- u>"https://www.nationaalarchief.nl/onderzoeken/sparql"</c-><c- p>,</c->
       <c- f>"usageInfo"</c-><c- p>:</c-> <c- u>"https://www.w3.org/TR/sparql11-protocol/"</c->
     <c- p>},</c->
     <c- p>{</c->
@@ -3087,7 +3091,7 @@ but simple dates (<code>2019-04-14</code>) are also allowed.</p>
    <h4 class="heading settled" data-level="4.4.2" id="usage-information"><span class="secno">4.4.2. </span><span class="content">Usage information</span><a class="self-link" href="#usage-information"></a></h4>
    <p>Each distribution <em>SHOULD</em> include one or more <a href="https://schema.org/usageInfo">schema:usageInfo</a> IRIs
 that describe what the distribution provides.</p>
-   <p>For <a data-link-type="dfn" href="#web-api" id="ref-for-web-api①">web APIs</a>, this <em>MUST</em> be the IRI of the protocol specification (such as SPARQL or OAI-PMH).
+   <p>For <a data-link-type="dfn" href="#web-api" id="ref-for-web-api②">web APIs</a>, this <em>MUST</em> be the IRI of the protocol specification (such as SPARQL or OAI-PMH).
 The Dataset Register uses this IRI to identify the distribution as an API.</p>
    <p>For downloads as well as APIs, this <em>MUST</em> be the IRI of the application profile(s) that the data conforms to.</p>
    <table>
@@ -3551,7 +3555,8 @@ even if that resource is the same on all pages.</p>
     <tbody>
      <tr>
       <th scope="row"><a href="schema:contentUrl">schema:contentUrl</a>
-      <td>The URL where the distribution can be directly accessed.
+      <td>The URL that provides direct access to the distribution itself: the data file or the <a data-link-type="dfn" href="#web-api" id="ref-for-web-api③">web API</a> endpoint.
+                Use <code>schema:documentation</code> if there is also a documentation page that describes or provides access to the distribution (such as a SPARQL UI or a download landing page).
       <td>
                 1
                     
@@ -3636,6 +3641,16 @@ even if that resource is the same on all pages.</p>
                 Recommended
                 <br><small>v2.0: must be IRI</small>
                     
+     <tr>
+      <th scope="row"><a href="schema:documentation">schema:documentation</a>
+      <td>A documentation page that describes or provides access to this distribution, such as a SPARQL UI or a download landing page.
+                <code>schema:contentUrl</code> points to the distribution itself (the data file or the API endpoint).
+      <td>
+                0..n
+                    
+      <td>
+                Recommended
+                
    </table>
    <h4 class="heading settled" data-level="4.6.4" id="datacatalog-attributes"><span class="secno">4.6.4. </span><span class="content">DataCatalog attributes</span><a class="self-link" href="#datacatalog-attributes"></a></h4>
    <table>
@@ -3696,8 +3711,8 @@ even if that resource is the same on all pages.</p>
                         
    </table>
    <h4 class="heading settled" data-level="4.6.5" id="dataset-example"><span class="secno">4.6.5. </span><span class="content">Full example</span><a class="self-link" href="#dataset-example"></a></h4>
-   <div class="example" id="example-a30954e0">
-    <a class="self-link" href="#example-a30954e0"></a>
+   <div class="example" id="example-7149d3c9">
+    <a class="self-link" href="#example-7149d3c9"></a>
     A full <a data-link-type="dfn" href="#dataset-description" id="ref-for-dataset-description①①">dataset description</a> that includes <a href="#dataset-attributes">required and recommended attributes</a>.
 
     
@@ -3785,6 +3800,7 @@ even if that resource is the same on all pages.</p>
         <c- p>{</c->
           <c- nd>"@type"</c-><c- p>:</c-> <c- u>"DataDownload"</c-><c- p>,</c->
           <c- f>"contentUrl"</c-><c- p>:</c-> <c- u>"https://data.bibliotheken.nl/id/dataset/sparql"</c-><c- p>,</c->
+          <c- f>"documentation"</c-><c- p>:</c-> <c- u>"https://data.bibliotheken.nl/KB/Production/sparql"</c-><c- p>,</c->
           <c- f>"usageInfo"</c-><c- p>:</c-> <c- u>"https://www.w3.org/TR/sparql11-protocol/"</c-><c- p>,</c->
           <c- f>"description"</c-><c- p>:</c-> <c- u>"SPARQL endpoint"</c->
         <c- p>}</c->
@@ -4354,7 +4370,7 @@ let dfnPanelData = {
 "distribution": {"dfnID":"distribution","dfnText":"Distribution","external":false,"refSections":[{"refs":[{"id":"ref-for-distribution"}],"title":"2. Definitions"},{"refs":[{"id":"ref-for-distribution\u2460"}],"title":"3. Conceptual model"},{"refs":[{"id":"ref-for-distribution\u2461"}],"title":"4.4. Distributions"},{"refs":[{"id":"ref-for-distribution\u2462"}],"title":"4.4.1. Creation and modification dates"}],"url":"#distribution"},
 "machine-readability": {"dfnID":"machine-readability","dfnText":"Machine-readability","external":false,"refSections":[{"refs":[{"id":"ref-for-machine-readability"}],"title":"1. Introduction"},{"refs":[{"id":"ref-for-machine-readability\u2460"}],"title":"4.1. Available in RDF"}],"url":"#machine-readability"},
 "publisher": {"dfnID":"publisher","dfnText":"Publisher","external":false,"refSections":[{"refs":[{"id":"ref-for-publisher"}],"title":"1. Introduction"},{"refs":[{"id":"ref-for-publisher\u2460"},{"id":"ref-for-publisher\u2461"}],"title":"2. Definitions"},{"refs":[{"id":"ref-for-publisher\u2462"}],"title":"3. Conceptual model"},{"refs":[{"id":"ref-for-publisher\u2463"}],"title":"4.1. Available in RDF"},{"refs":[{"id":"ref-for-publisher\u2464"}],"title":"4.2.4. Versions"},{"refs":[{"id":"ref-for-publisher\u2465"}],"title":"4.3. Creator/publisher information"},{"refs":[{"id":"ref-for-publisher\u2466"}],"title":"4.5.1. Pagination"}],"url":"#publisher"},
-"web-api": {"dfnID":"web-api","dfnText":"Web API","external":false,"refSections":[{"refs":[{"id":"ref-for-web-api"}],"title":"4.4. Distributions"},{"refs":[{"id":"ref-for-web-api\u2460"}],"title":"4.4.2. Usage information"}],"url":"#web-api"},
+"web-api": {"dfnID":"web-api","dfnText":"Web API","external":false,"refSections":[{"refs":[{"id":"ref-for-web-api"},{"id":"ref-for-web-api\u2460"}],"title":"4.4. Distributions"},{"refs":[{"id":"ref-for-web-api\u2461"}],"title":"4.4.2. Usage information"},{"refs":[{"id":"ref-for-web-api\u2462"}],"title":"4.6.3. Distribution attributes"}],"url":"#web-api"},
 };
 
 document.addEventListener("DOMContentLoaded", ()=>{
