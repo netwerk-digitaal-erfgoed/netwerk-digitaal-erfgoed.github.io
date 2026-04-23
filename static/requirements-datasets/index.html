@@ -1490,7 +1490,7 @@ Possible extra rowspan handling
 </style>
   <meta content="Bikeshed version 5d4d5b9a8, updated Fri Apr 17 13:49:40 2026 -0700" name="generator">
   <link href="https://docs.nde.nl/requirements-datasets/" rel="canonical">
-  <meta content="8e30b051098439d6fe79b417dd89b7c661b96365" name="revision">
+  <meta content="da07e07c3af11a2c0c8e80edd9073b81ca4f0435" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>
 td, th {
@@ -2305,7 +2305,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
      <dd class="editor h-card p-author vcard"><a class="fn p-name u-url url" href="https://github.com/ddeboer">David de Boer</a> (<a class="org p-org" href="https://www.netwerkdigitaalerfgoed.nl">Netwerk Digitaal Erfgoed</a>) <a class="email u-email" href="mailto:david@ddeboer.nl">david@ddeboer.nl</a>
      <dd class="editor h-card p-author vcard"><a class="fn p-name u-url url" href="https://twitter.com/coret">Bob Coret</a> (<a class="org p-org" href="https://netwerkdigitaalerfgoed.nl">Netwerk Digitaal Erfgoed</a>) <a class="email u-email" href="mailto:bob.coret@netwerkdigitaalerfgoed.nl">bob.coret@netwerkdigitaalerfgoed.nl</a>
      <dt>Version:
-     <dd><a href="#v1.9.0">1.9.0</a>
+     <dd><a href="#v1.10.0">1.10.0</a>
     </dl>
    </div>
    <div data-fill-with="warning"></div>
@@ -2390,18 +2390,19 @@ By following these requirements, publishers enable users to find and use their d
     <li>
      <a href="#changes"><span class="secno">6</span> <span class="content">Changes</span></a>
      <ol class="toc">
-      <li><a href="#v1.9.0"><span class="secno">6.1</span> <span class="content">Version 1.9.0 (2026-04-22)</span></a>
-      <li><a href="#v1.8.0"><span class="secno">6.2</span> <span class="content">Version 1.8.0 (2026-04-20)</span></a>
-      <li><a href="#v1.7.0"><span class="secno">6.3</span> <span class="content">Version 1.7.0 (2026-04-20)</span></a>
-      <li><a href="#v1.6.0"><span class="secno">6.4</span> <span class="content">Version 1.6.0 (2026-04-16)</span></a>
-      <li><a href="#v1.5.3"><span class="secno">6.5</span> <span class="content">Version 1.5.3 (2026-04-15)</span></a>
-      <li><a href="#v1.5.2"><span class="secno">6.6</span> <span class="content">Version 1.5.2 (2026-04-13)</span></a>
-      <li><a href="#v1.5.1"><span class="secno">6.7</span> <span class="content">Version 1.5.1 (2026-04-10)</span></a>
-      <li><a href="#v1.5.0"><span class="secno">6.8</span> <span class="content">Version 1.5.0 (2026-04-02)</span></a>
-      <li><a href="#v1.4.0"><span class="secno">6.9</span> <span class="content">Version 1.4.0 (2026-04-01)</span></a>
-      <li><a href="#v1.3.0"><span class="secno">6.10</span> <span class="content">Version 1.3.0 (2026-04-01)</span></a>
-      <li><a href="#v1.2.0"><span class="secno">6.11</span> <span class="content">Version 1.2.0 (2026-03-25)</span></a>
-      <li><a href="#v1.1.0"><span class="secno">6.12</span> <span class="content">Version 1.1.0 (2026-03-25)</span></a>
+      <li><a href="#v1.10.0"><span class="secno">6.1</span> <span class="content">Version 1.10.0 (2026-04-23)</span></a>
+      <li><a href="#v1.9.0"><span class="secno">6.2</span> <span class="content">Version 1.9.0 (2026-04-22)</span></a>
+      <li><a href="#v1.8.0"><span class="secno">6.3</span> <span class="content">Version 1.8.0 (2026-04-20)</span></a>
+      <li><a href="#v1.7.0"><span class="secno">6.4</span> <span class="content">Version 1.7.0 (2026-04-20)</span></a>
+      <li><a href="#v1.6.0"><span class="secno">6.5</span> <span class="content">Version 1.6.0 (2026-04-16)</span></a>
+      <li><a href="#v1.5.3"><span class="secno">6.6</span> <span class="content">Version 1.5.3 (2026-04-15)</span></a>
+      <li><a href="#v1.5.2"><span class="secno">6.7</span> <span class="content">Version 1.5.2 (2026-04-13)</span></a>
+      <li><a href="#v1.5.1"><span class="secno">6.8</span> <span class="content">Version 1.5.1 (2026-04-10)</span></a>
+      <li><a href="#v1.5.0"><span class="secno">6.9</span> <span class="content">Version 1.5.0 (2026-04-02)</span></a>
+      <li><a href="#v1.4.0"><span class="secno">6.10</span> <span class="content">Version 1.4.0 (2026-04-01)</span></a>
+      <li><a href="#v1.3.0"><span class="secno">6.11</span> <span class="content">Version 1.3.0 (2026-04-01)</span></a>
+      <li><a href="#v1.2.0"><span class="secno">6.12</span> <span class="content">Version 1.2.0 (2026-03-25)</span></a>
+      <li><a href="#v1.1.0"><span class="secno">6.13</span> <span class="content">Version 1.1.0 (2026-03-25)</span></a>
      </ol>
     <li><a href="#conformance"><span class="secno"></span> <span class="content">
     Conformance</span></a>
@@ -3833,7 +3834,18 @@ The <a data-link-type="biblio" href="#biblio-shacl" title="Shapes Constraint Lan
 can help with testing RDF metadata in general.</p>
    <h2 class="heading settled" data-level="6" id="changes"><span class="secno">6. </span><span class="content">Changes</span><a class="self-link" href="#changes"></a></h2>
    <p>This section lists notable changes to this specification.</p>
-   <h3 class="heading settled" data-level="6.1" id="v1.9.0"><span class="secno">6.1. </span><span class="content">Version 1.9.0 (2026-04-22)</span><a class="self-link" href="#v1.9.0"></a></h3>
+   <h3 class="heading settled" data-level="6.1" id="v1.10.0"><span class="secno">6.1. </span><span class="content">Version 1.10.0 (2026-04-23)</span><a class="self-link" href="#v1.10.0"></a></h3>
+   <ul>
+    <li data-md>
+     <p>Add schema:documentation to distribution for documentation page URL (<a href="https://github.com/netwerk-digitaal-erfgoed/dataset-register/commit/8e30b051098439d6fe79b417dd89b7c661b96365">8e30b05</a>).</p>
+    <li data-md>
+     <p>Plain-HTML sh:description, spec-side Bikeshed expansion, drop sh:name (<a href="https://github.com/netwerk-digitaal-erfgoed/dataset-register/commit/28198fed8159e184dbed77e53fe8d5bd5bf7e4c9">28198fe</a>).</p>
+    <li data-md>
+     <p>Use HTML anchors for links in sh:description (<a href="https://github.com/netwerk-digitaal-erfgoed/dataset-register/commit/49642a73c527516682048f66b829aeca2f8d4e88">49642a7</a>).</p>
+    <li data-md>
+     <p>Render maxCount 0 and ‘becomes forbidden’ in attribute tables (<a href="https://github.com/netwerk-digitaal-erfgoed/dataset-register/commit/47af7cee78b0d4fe771b48e44f45bbd5cda51d4e">47af7ce</a>).</p>
+   </ul>
+   <h3 class="heading settled" data-level="6.2" id="v1.9.0"><span class="secno">6.2. </span><span class="content">Version 1.9.0 (2026-04-22)</span><a class="self-link" href="#v1.9.0"></a></h3>
    <ul>
     <li data-md>
      <p>Downgrade missing organisation identifier to sh:Info (<a href="https://github.com/netwerk-digitaal-erfgoed/dataset-register/commit/6624d71d903bdc4928e6abccd77e138a5ee558b4">6624d71</a>).</p>
@@ -3842,7 +3854,7 @@ can help with testing RDF metadata in general.</p>
     <li data-md>
      <p>Consolidate publisher/creator shapes (<a href="https://github.com/netwerk-digitaal-erfgoed/dataset-register/commit/b533f0a4cff82e1f5c94973ece8c84e6f793fa5a">b533f0a</a>).</p>
    </ul>
-   <h3 class="heading settled" data-level="6.2" id="v1.8.0"><span class="secno">6.2. </span><span class="content">Version 1.8.0 (2026-04-20)</span><a class="self-link" href="#v1.8.0"></a></h3>
+   <h3 class="heading settled" data-level="6.3" id="v1.8.0"><span class="secno">6.3. </span><span class="content">Version 1.8.0 (2026-04-20)</span><a class="self-link" href="#v1.8.0"></a></h3>
    <ul>
     <li data-md>
      <p>Require SPARQL protocol URI in usageInfo for SPARQL mediaType (<a href="https://github.com/netwerk-digitaal-erfgoed/dataset-register/commit/0dfc6c620a47a234ae5951a35e637d5a0cb7981f">0dfc6c6</a>).</p>
@@ -3851,26 +3863,26 @@ can help with testing RDF metadata in general.</p>
     <li data-md>
      <p>Split publisher min/max-count constraints into separate shapes (<a href="https://github.com/netwerk-digitaal-erfgoed/dataset-register/commit/2e060e4d6fef18890daa95374cf3818b78c02bff">2e060e4</a>).</p>
    </ul>
-   <h3 class="heading settled" data-level="6.3" id="v1.7.0"><span class="secno">6.3. </span><span class="content">Version 1.7.0 (2026-04-20)</span><a class="self-link" href="#v1.7.0"></a></h3>
+   <h3 class="heading settled" data-level="6.4" id="v1.7.0"><span class="secno">6.4. </span><span class="content">Version 1.7.0 (2026-04-20)</span><a class="self-link" href="#v1.7.0"></a></h3>
    <ul>
     <li data-md>
      <p>Map schema:temporalCoverage to dct:PeriodOfTime (<a href="https://github.com/netwerk-digitaal-erfgoed/dataset-register/commit/a700556f29831d19d0780f43de0658639833c179">a700556</a>).</p>
     <li data-md>
      <p>Accept ISO 8601 shortened-end intervals in temporalCoverage (<a href="https://github.com/netwerk-digitaal-erfgoed/dataset-register/commit/61ffdf7c4a302ad2795f16217d3fc44c03f3f378">61ffdf7</a>).</p>
    </ul>
-   <h3 class="heading settled" data-level="6.4" id="v1.6.0"><span class="secno">6.4. </span><span class="content">Version 1.6.0 (2026-04-16)</span><a class="self-link" href="#v1.6.0"></a></h3>
+   <h3 class="heading settled" data-level="6.5" id="v1.6.0"><span class="secno">6.5. </span><span class="content">Version 1.6.0 (2026-04-16)</span><a class="self-link" href="#v1.6.0"></a></h3>
    <ul>
     <li data-md>
      <p>Deprecate schema:genre; make schema:about canonical for dcat:theme (<a href="https://github.com/netwerk-digitaal-erfgoed/dataset-register/commit/bdbd78973b533f1ed7cddb0ef6e5e5118d77b85f">bdbd789</a>).</p>
     <li data-md>
      <p>Target sh:nodeKind sh:IRI for contentUrl in v2, not xsd:anyURI (<a href="https://github.com/netwerk-digitaal-erfgoed/dataset-register/commit/1e86b9fa0df1b0f3e61b325c6c6e7d9954c185e1">1e86b9f</a>).</p>
    </ul>
-   <h3 class="heading settled" data-level="6.5" id="v1.5.3"><span class="secno">6.5. </span><span class="content">Version 1.5.3 (2026-04-15)</span><a class="self-link" href="#v1.5.3"></a></h3>
+   <h3 class="heading settled" data-level="6.6" id="v1.5.3"><span class="secno">6.6. </span><span class="content">Version 1.5.3 (2026-04-15)</span><a class="self-link" href="#v1.5.3"></a></h3>
    <ul>
     <li data-md>
      <p>Add Linked Art profile to distribution IRI table (<a href="https://github.com/netwerk-digitaal-erfgoed/dataset-register/commit/3c01ad56526dc1582f0609a504188cde1541178b">3c01ad5</a>).</p>
    </ul>
-   <h3 class="heading settled" data-level="6.6" id="v1.5.2"><span class="secno">6.6. </span><span class="content">Version 1.5.2 (2026-04-13)</span><a class="self-link" href="#v1.5.2"></a></h3>
+   <h3 class="heading settled" data-level="6.7" id="v1.5.2"><span class="secno">6.7. </span><span class="content">Version 1.5.2 (2026-04-13)</span><a class="self-link" href="#v1.5.2"></a></h3>
    <ul>
     <li data-md>
      <p>Align publisher cardinality with DCAT-AP-NL 3.0 (<a href="https://github.com/netwerk-digitaal-erfgoed/dataset-register/commit/6af64c73d26b7fe28dcf33244c92454f7814037c">6af64c7</a>).</p>
@@ -3881,7 +3893,7 @@ can help with testing RDF metadata in general.</p>
     <li data-md>
      <p>Validate ISO-8601 dates on DCAT date properties (<a href="https://github.com/netwerk-digitaal-erfgoed/dataset-register/commit/ee09aec487d8997ef50dc7ec807cda9f634b7c85">ee09aec</a>).</p>
    </ul>
-   <h3 class="heading settled" data-level="6.7" id="v1.5.1"><span class="secno">6.7. </span><span class="content">Version 1.5.1 (2026-04-10)</span><a class="self-link" href="#v1.5.1"></a></h3>
+   <h3 class="heading settled" data-level="6.8" id="v1.5.1"><span class="secno">6.8. </span><span class="content">Version 1.5.1 (2026-04-10)</span><a class="self-link" href="#v1.5.1"></a></h3>
    <ul>
     <li data-md>
      <p>Correct v2.0 annotation for IRI-constrained properties in spec (<a href="https://github.com/netwerk-digitaal-erfgoed/dataset-register/commit/63e694a7256b3666dbe3e2d64cc3207c65ddb81c">63e694a</a>).</p>
@@ -3890,12 +3902,12 @@ can help with testing RDF metadata in general.</p>
     <li data-md>
      <p>Add resolvable dataset URI requirement and update mainEntityOfPage (<a href="https://github.com/netwerk-digitaal-erfgoed/dataset-register/commit/59f995ded5d4ae48f4b60160fc0e5a75e7901a61">59f995d</a>).</p>
    </ul>
-   <h3 class="heading settled" data-level="6.8" id="v1.5.0"><span class="secno">6.8. </span><span class="content">Version 1.5.0 (2026-04-02)</span><a class="self-link" href="#v1.5.0"></a></h3>
+   <h3 class="heading settled" data-level="6.9" id="v1.5.0"><span class="secno">6.9. </span><span class="content">Version 1.5.0 (2026-04-02)</span><a class="self-link" href="#v1.5.0"></a></h3>
    <ul>
     <li data-md>
      <p>Recommended a set of canonical license URIs (<a href="https://github.com/netwerk-digitaal-erfgoed/dataset-register/commit/ec38c3ac4c5ebdcdded7d816e4490156a399ee35">ec38c3a</a>).</p>
    </ul>
-   <h3 class="heading settled" data-level="6.9" id="v1.4.0"><span class="secno">6.9. </span><span class="content">Version 1.4.0 (2026-04-01)</span><a class="self-link" href="#v1.4.0"></a></h3>
+   <h3 class="heading settled" data-level="6.10" id="v1.4.0"><span class="secno">6.10. </span><span class="content">Version 1.4.0 (2026-04-01)</span><a class="self-link" href="#v1.4.0"></a></h3>
    <ul>
     <li data-md>
      <p>Add Content-Type requirement for registration URLs (<a href="https://github.com/netwerk-digitaal-erfgoed/dataset-register/commit/524dc42e3ba7f75e0ac1d0b2f994c0c703190ec0">524dc42</a>).</p>
@@ -3918,7 +3930,7 @@ can help with testing RDF metadata in general.</p>
     <li data-md>
      <p>Rewrite ‘Developer documentation’ section as ‘Usage information’ (<a href="https://github.com/netwerk-digitaal-erfgoed/dataset-register/commit/ad5c22c42b5b6e50dfae662137e2af635622287e">ad5c22c</a>).</p>
    </ul>
-   <h3 class="heading settled" data-level="6.10" id="v1.3.0"><span class="secno">6.10. </span><span class="content">Version 1.3.0 (2026-04-01)</span><a class="self-link" href="#v1.3.0"></a></h3>
+   <h3 class="heading settled" data-level="6.11" id="v1.3.0"><span class="secno">6.11. </span><span class="content">Version 1.3.0 (2026-04-01)</span><a class="self-link" href="#v1.3.0"></a></h3>
    <ul>
     <li data-md>
      <p>Differentiate API and download distributions per DCAT-AP-NL (<a href="https://github.com/netwerk-digitaal-erfgoed/dataset-register/commit/ba22143eb73aa8fb711b5b8892e15a080e7df398">ba22143</a>).</p>
@@ -3927,12 +3939,12 @@ can help with testing RDF metadata in general.</p>
     <li data-md>
      <p>Add Person to conceptual model diagram (<a href="https://github.com/netwerk-digitaal-erfgoed/dataset-register/commit/cd0b42909f6811bd1c6f3d450f46a06b4c024078">cd0b429</a>).</p>
    </ul>
-   <h3 class="heading settled" data-level="6.11" id="v1.2.0"><span class="secno">6.11. </span><span class="content">Version 1.2.0 (2026-03-25)</span><a class="self-link" href="#v1.2.0"></a></h3>
+   <h3 class="heading settled" data-level="6.12" id="v1.2.0"><span class="secno">6.12. </span><span class="content">Version 1.2.0 (2026-03-25)</span><a class="self-link" href="#v1.2.0"></a></h3>
    <ul>
     <li data-md>
      <p>Add DCAT-AP-NL 3.0 requirements (<a href="https://github.com/netwerk-digitaal-erfgoed/dataset-register/commit/510a43c23179b28b211ebd52bd6e1246e49e943e">510a43c</a>).</p>
    </ul>
-   <h3 class="heading settled" data-level="6.12" id="v1.1.0"><span class="secno">6.12. </span><span class="content">Version 1.1.0 (2026-03-25)</span><a class="self-link" href="#v1.1.0"></a></h3>
+   <h3 class="heading settled" data-level="6.13" id="v1.1.0"><span class="secno">6.13. </span><span class="content">Version 1.1.0 (2026-03-25)</span><a class="self-link" href="#v1.1.0"></a></h3>
    <ul>
     <li data-md>
      <p>Express future requirement changes in SHACL and spec (<a href="https://github.com/netwerk-digitaal-erfgoed/dataset-register/commit/3c3fbb70926aacf2662db7ca21c865e751de2b46">3c3fbb7</a>).</p>
