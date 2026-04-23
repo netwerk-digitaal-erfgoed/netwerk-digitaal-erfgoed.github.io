@@ -26,24 +26,24 @@ Conformance also protects publishers from having to maintain multiple flavours o
 
 Heritage publishers overwhelmingly use [Schema.org](https://schema.org) – for example as JSON-LD embedded in their web pages – because it is what search engines understand and what their content management systems already produce. We want to keep it that way. The Dataset Register converts Schema.org input to DCAT internally, filling in sensible defaults (access rights, EU themes, language URIs) so that publishers get a fully DCAT-AP-NL-compliant description without having to learn DCAT themselves.
 
-Version 2.0 sharpens this contract. The Schema.org side stays familiar, but we ask for a little more structure at the edges – language tags on names and descriptions, IRIs instead of plain strings for places and catalogues – so that the generated DCAT is unambiguous and complete.
+Version 2.0 sharpens this contract. The Schema.org side stays familiar, but we ask for a little more structure at the edges – language tags on names and descriptions, URIs instead of plain strings for places and catalogues – so that the generated DCAT is unambiguous and complete.
 
 Where the Register *can* fill in a DCAT-AP-NL-mandatory property without publisher input, it does. Two examples illustrate how much compliance burden the Register absorbs on behalf of vendors and publishers:
 
-- **`dct:identifier`** is mandatory in DCAT-AP-NL, but we auto-derive it from the dataset IRI during conversion. Since every dataset already has a resolvable IRI (which the Dataset Register requires), asking publishers to repeat it as a separate triple would be pure ceremony.
-- **`dct:accessRights`** is likewise mandatory. Publishers don’t have to supply it; we default to `PUBLIC` on ingest. When they *do* supply it, the SHACL validates that the value is one of the three EU Access Rights vocabulary IRIs (`PUBLIC`, `RESTRICTED`, `NON_PUBLIC`).
+- **`dct:identifier`** is mandatory in DCAT-AP-NL, but we auto-derive it from the dataset URI during conversion. Since every dataset already has a resolvable URI (which the Dataset Register requires), asking publishers to repeat it as a separate triple would be pure ceremony.
+- **`dct:accessRights`** is likewise mandatory. Publishers don’t have to supply it; we default to `PUBLIC` on ingest. When they *do* supply it, the SHACL validates that the value is one of the three EU Access Rights vocabulary URIs (`PUBLIC`, `RESTRICTED`, `NON_PUBLIC`).
 
 The pattern here is deliberate: we tighten input validation only where the publisher must supply information that the Register genuinely cannot derive. Everything derivable, we derive.
 
 ### Linked data quality
 
-Most of the other changes are about turning strings into links (terms). A place name typed as text tells a human something; an IRI to [GeoNames](https://www.geonames.org/) tells a machine how to federate, aggregate, translate, and visualise. The same goes for catalogues, update frequencies, access rights, and documentation URLs. Each IRI we require today makes a dataset description a first-class citizen of the web of data rather than a self-contained document.
+Most of the other changes are about turning strings into links (terms). A place name typed as text tells a human something; a URI to [GeoNames](https://www.geonames.org/) tells a machine how to federate, aggregate, translate, and visualise. The same goes for catalogues, update frequencies, access rights, and documentation URLs. Each URI we require today makes a dataset description a first-class citizen of the web of data rather than a self-contained document.
 
 Language tags belong to the same family. A title like `"Middeleeuwse handschriften"` without a language tag forces consumers to guess. A tag like `@nl` removes the guesswork, enables multilingual display, and makes it possible to add an English or Frisian translation later without breaking anything.
 
 ## What changes in v2.0
 
-The Dataset Register’s SHACL shapes already flag all of these as warnings. In v2.0 they become violations – meaning the Dataset Register will reject descriptions that don’t comply. Every upcoming change listed below is also annotated in the [Requirements for Datasets](https://docs.nde.nl/requirements-datasets/) attribute tables (as "becomes required in v2.0" or "must be an IRI in v2.0"), generated directly from the same SHACL shapes, so the spec and the validator stay in lockstep.
+The Dataset Register’s SHACL shapes already flag all of these as warnings. In v2.0 they become violations – meaning the Dataset Register will reject descriptions that don’t comply. Every upcoming change listed below is also annotated in the [Requirements for Datasets](https://docs.nde.nl/requirements-datasets/) attribute tables (as "becomes required in v2.0" or "must be a URI in v2.0"), generated directly from the same SHACL shapes, so the spec and the validator stay in lockstep.
 
 ### Required properties
 
@@ -58,13 +58,16 @@ The following properties move from *recommended* to *required*:
 ### Typed values
 
 - **Language tags.** `schema:name` and `schema:description` (and the DCAT equivalents `dct:title`, `dct:description`, `foaf:name`) must be `rdf:langString` (i.e. carry a language tag like `@nl` or `@en`).
-- **IRIs, not strings.** `schema:spatialCoverage` (`dct:spatial`), `schema:includedInDataCatalog`, and `schema:usageInfo` must be HTTP(S) IRIs.
-- **Canonical license URIs.** `schema:license` (`dct:license`) must be an IRI (no literals), and must be one of the canonical Creative Commons URIs from the [DCAT-AP-NL license waardelijst](https://definities.geostandaarden.nl/dcat-ap-nl/id/waardelijst/licenties).
-- **BCP 47 languages.** `schema:inLanguage` must use a BCP 47 code (on the DCAT side, `dct:language` becomes an EU Language Authority IRI).
+- **URIs, not strings.** `schema:spatialCoverage` (`dct:spatial`), `schema:includedInDataCatalog`, and `schema:usageInfo` must be HTTP(S) URIs.
+- **Canonical license URIs.** `schema:license` (`dct:license`) must be a URI (no literals), and must be one of the canonical Creative Commons URIs from the [DCAT-AP-NL license waardelijst](https://definities.geostandaarden.nl/dcat-ap-nl/id/waardelijst/licenties).
+- **BCP 47 languages.** `schema:inLanguage` must use a BCP 47 code (on the DCAT side, `dct:language` becomes an EU Language Authority URI).
 - **Single media type.** `schema:encodingFormat` (`dcat:mediaType`) is restricted to one value per distribution.
-- **HTTPS content URLs as IRIs.** `schema:contentUrl` on distributions must be an HTTPS IRI (not a plain string or an `xsd:anyURI` literal). This reflects that the Schema.org JSON-LD context declares `contentUrl` with `"@type": "@id"`, so conforming submissions already produce IRI nodes.
+- **HTTPS content URLs as URIs.** `schema:contentUrl` on distributions must be an HTTPS URI (not a plain string or an `xsd:anyURI` literal). This reflects that the Schema.org JSON-LD context declares `contentUrl` with `"@type": "@id"`, so conforming submissions already produce URI nodes.
 - **ISO-8601 dates.** All date properties – `schema:datePublished`, `schema:dateCreated`, `schema:dateModified` (and the DCAT equivalents `dct:issued`, `dct:created`, `dct:modified`) – must be valid ISO-8601 (`YYYY-MM-DD` or `YYYY-MM-DDTHH:MM:SS` with optional timezone).
-- **ISO-8601 temporal coverage.** `schema:temporalCoverage` (`dct:temporal`) must be either an ISO-8601 date, a date interval (such as `2011/2012`), an open-ended interval (`1440/..`), a BCE interval (`-0431/-0404`), or an IRI. The Register rewrites conforming literals to a `dct:PeriodOfTime` blank node with typed `dcat:startDate` and `dcat:endDate` in the DCAT output.
+- **ISO-8601 temporal coverage.** `schema:temporalCoverage` (`dct:temporal`) must be either an ISO-8601 date, a date interval (such as `2011/2012`), an open-ended interval (`1440/..`), a BCE interval (`-0431/-0404`), or a URI. The Register rewrites conforming literals to a `dct:PeriodOfTime` blank node with typed `dcat:startDate` and `dcat:endDate` in the DCAT output.
+- **`schema:keywords` is for free-text tags only.** Any HTTP(S) URI in `schema:keywords` becomes a violation in v2.0 – route it to the appropriate typed property instead:
+    - Terms for subjects and material types → `schema:about` (`dcat:theme`), with a URI from a controlled vocabulary such as AAT or GTAA via the [Network of Terms](https://termennetwerk.netwerkdigitaalerfgoed.nl/en).
+    - Terms for places → `schema:spatialCoverage` (`dct:spatial`), which already requires a URI (see above).
 - **`schema:genre` deprecated, replaced by `schema:about`.** Any `schema:genre` value will be rejected in v2.0. Use `schema:about` instead – with a URI from a controlled vocabulary (for example AAT or GTAA via the [Network of Terms](https://termennetwerk.netwerkdigitaalerfgoed.nl/en)) – for both topical themes and material types.
 
 ### Download vs. API distributions
@@ -79,13 +82,13 @@ Version 2.0 distinguishes downloads from APIs more clearly:
 
 If your dataset descriptions are already free of Dataset Register validation *warnings*, you are already compliant with v2.0 – nothing to do. If you see warnings in your validation report, those are exactly the items that will become blocking on 3 May 2027. Version 2.0 introduces no new rules that aren’t already announced as warnings today.
 
-Most publishers will find the work concentrated in a few places: adding language tags to titles and descriptions, swapping place-name strings for GeoNames IRIs, and making sure every distribution carries a canonical license URI. The Dataset Register’s validation report lists each item with a plain-language message and a link to the relevant section of the requirements.
+Most publishers will find the work concentrated in a few places: adding language tags to titles and descriptions, swapping place-name strings for GeoNames URIs, and making sure every distribution carries a canonical license URI. The Dataset Register’s validation report lists each item with a plain-language message and a link to the relevant section of the requirements.
 
 ### What this means for vendors
 
 Collection management system vendors have a specific role to play. The new [Requirements for Dataset Register Implementations](https://docs.nde.nl/requirements-dataset-register-implementations/) ask vendors to [surface SHACL warnings](https://docs.nde.nl/requirements-dataset-register-implementations/#validate-dataset-descriptions) to collection managers ahead of time and to add form fields for upcoming requirements as soon as they are announced – so that users of those systems can prepare without ever seeing a validation failure. This is the [migration path for new requirements](https://docs.nde.nl/requirements-collection-management-systems/#staying-up-to-date) described in the broader Requirements for Collection Management Systems. Version 2.0 is the first major version since those requirements were published; it is also the first test of that migration path.
 
-Several of the v2.0 rules can’t be met by collection managers alone – they require system-level support from the vendor. The clearest example is language tags: a collection manager typing a title into a text field has no way to attach `@nl` or `@en` to the value unless the system provides it. Vendors will need to either offer multilingual input (a tab or toggle per language), or, at minimum, tag all outgoing values with a default language derived from the organisation’s settings or the interface locale. The same applies to IRI-valued properties like `schema:spatialCoverage` and `schema:includedInDataCatalog`: the system needs to offer a picker (e.g. against GeoNames or the Network of Terms) rather than a free-text field. Canonical license URIs, single-value constraints on media type, and HTTPS IRI content URLs likewise depend on form design and output serialisation that only the vendor can control.
+Several of the v2.0 rules can’t be met by collection managers alone – they require system-level support from the vendor. The clearest example is language tags: a collection manager typing a title into a text field has no way to attach `@nl` or `@en` to the value unless the system provides it. Vendors will need to either offer multilingual input (a tab or toggle per language), or, at minimum, tag all outgoing values with a default language derived from the organisation’s settings or the interface locale. The same applies to URI-valued properties like `schema:spatialCoverage` and `schema:includedInDataCatalog`: the system needs to offer a picker (e.g. against GeoNames or the Network of Terms) rather than a free-text field. Canonical license URIs, single-value constraints on media type, and HTTPS URI content URLs likewise depend on form design and output serialisation that only the vendor can control.
 
 ## The migration window
 
@@ -96,6 +99,6 @@ Until that date, the current warnings remain warnings: the Dataset Register cont
 ## What to do now
 
 1. **Check your dataset descriptions** with the [validator](https://datasetregister.netwerkdigitaalerfgoed.nl/validate.php?lang=en). The validation report already flags every v2.0 item as a warning.
-2. **Read the [Requirements for Datasets](https://docs.nde.nl/requirements-datasets/)**. Every upcoming v2.0 change is annotated inline in the attribute tables (“becomes required in v2.0”, “must be an IRI in v2.0”), so you can see each rule in its full context alongside the properties it applies to.
+2. **Read the [Requirements for Datasets](https://docs.nde.nl/requirements-datasets/)**. Every upcoming v2.0 change is annotated inline in the attribute tables (“becomes required in v2.0”, “must be a URI in v2.0”), so you can see each rule in its full context alongside the properties it applies to.
 3. **Talk to your vendor** if you use a collection management system. Ask whether they are tracking the [Requirements for Dataset Register Implementations](https://docs.nde.nl/requirements-dataset-register-implementations/) and how they plan to surface v2.0 warnings in their forms.
 4. **Follow this blog** for further updates as the deadline approaches.
