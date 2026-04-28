@@ -1,0 +1,14 @@
+{
+  "link.title.Services": {
+    "message": "Diensten"
+  },
+  "link.title.More": {
+    "message": "Meer"
+  },
+  "link.item.label.Dataset Register": {
+    "message": "Datasetregister"
+  },
+  "link.item.label.Network of Terms": {
+    "message": "Termennetwerk"
+  }
+}

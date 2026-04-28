@@ -1,0 +1,14 @@
+{
+  "title": {
+    "message": "Netwerk Digitaal Erfgoed"
+  },
+  "logo.alt": {
+    "message": "NDE Logo"
+  },
+  "item.label.Documentation": {
+    "message": "Documentatie"
+  },
+  "item.label.News": {
+    "message": "Nieuws"
+  }
+}

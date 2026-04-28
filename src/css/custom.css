@@ -4,23 +4,29 @@
  * work well for content-centric websites.
  */
 
+@import "@fontsource/poppins/400.css";
+@import "@fontsource/poppins/600.css";
+@import "@fontsource/poppins/700.css";
+
 /* You can override the default Infima variables here. */
 :root {
-  --ifm-color-primary: #2e8555;
-  --ifm-color-primary-dark: #29784c;
+  --ifm-color-primary: #0a3dfa;
+  --ifm-color-primary-dark: #172a59;
   --ifm-color-primary-darker: #277148;
   --ifm-color-primary-darkest: #205d3b;
   --ifm-color-primary-light: #33925d;
   --ifm-color-primary-lighter: #359962;
   --ifm-color-primary-lightest: #3cad6e;
+  --ifm-font-family-base: 'Poppins', system-ui, -apple-system, sans-serif;
   --ifm-code-font-size: 95%;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  --ifm-breadcrumb-item-background-active: oklch(.953 .0266 233.96);
 }
 
 /* For readability concerns, you should choose a lighter palette in dark mode. */
 [data-theme='dark'] {
-  --ifm-color-primary: #25c2a0;
-  --ifm-color-primary-dark: #21af90;
+  --ifm-color-primary: #fa5200;
+  --ifm-color-primary-dark: #be2c00;
   --ifm-color-primary-darker: #1fa588;
   --ifm-color-primary-darkest: #1a8870;
   --ifm-color-primary-light: #29d5b0;
@@ -32,4 +38,51 @@
 /* External link indicator */
 main a[target="_blank"]::after {
   content: " ↗";
+}
+
+.footer {
+  background-color:#182a5a;
+}
+
+.footer a:hover {
+  color: #ffffff;
+}
+
+.tag_zVej, .card, .pagination-nav__link {
+  background-color: #0a3dfa;
+  color: #ffffff;
+  border-radius:0;
+  transition: background-color .3s;
+  padding: 8px;
+}
+
+.tag_zVej:hover, .card:hover,.pagination-nav__link:hover {
+  background-color: #182a5a;
+  color: #ffffff;
+}
+
+.pagination-nav__sublabel {
+  color: #ffffff;
+}
+
+.noPrint_WFHX {
+  display: none; /* Hide the "Edit this page" link all together */
+}
+
+main .avatar__name a { padding-right:2em}
+main .avatar__name a[target="_blank"]::after {
+    content: "";
+}
+
+.authorDetails_lV9A {
+    flex-direction: row!important;
+    justify-content: unset!important;
+}
+
+.authorSocials_rSDt {
+    padding-left: 1em;
+}
+
+h2.title_f1Hy a {
+  color:#000;
 }

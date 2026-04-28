@@ -86,9 +86,9 @@ const config: Config = {
     // Replace with your project's social card
     image: 'img/docusaurus-social-card.jpg',
     navbar: {
-      title: 'Netwerk Digitaal Erfgoed',
+      title: 'Dutch Digital Heritage Network',
       logo: {
-        alt: 'My Site Logo',
+        alt: 'NDE Logo',
         src: 'img/logo.svg',
       },
       items: [
@@ -96,20 +96,9 @@ const config: Config = {
           type: 'docSidebar',
           sidebarId: 'tutorialSidebar',
           position: 'left',
-          label: 'Docs',
+          label: 'Documentation',
         },
-        {to: '/blog', label: 'Blog', position: 'left'},
-        {to: '/showcase', label: 'Showcase', position: 'left'},
-        {
-          href: 'https://status.netwerkdigitaalerfgoed.nl',
-          label: 'Status',
-          position: 'right',
-        },
-        {
-          href: 'https://github.com/netwerk-digitaal-erfgoed/netwerk-digitaal-erfgoed.github.io',
-          label: 'GitHub',
-          position: 'right',
-        },
+        {to: '/blog', label: 'News', position: 'left'},
         {
           type: 'localeDropdown',
           position: 'right',
@@ -120,29 +109,24 @@ const config: Config = {
       style: 'dark',
       links: [
         {
-          title: 'Docs',
+          title: 'Services',
           items: [
             {
-              label: 'Docs',
-              to: '/',
+              label: 'Dataset Register',
+              to: 'https://datasetregister.netwerkdigitaalerfgoed.nl/',
             },
-          ],
-        },
-        {
-          title: 'Community',
-          items: [
             {
-              label: 'Website',
-              href: 'https://netwerkdigitaalerfgoed.nl',
-            }
+              label: 'Network of Terms',
+              to: 'https://network-of-terms.netwerkdigitaalerfgoed.nl/',
+            },
           ],
         },
         {
           title: 'More',
           items: [
             {
-              label: 'Blog',
-              to: '/blog',
+              label: 'Status',
+              to: 'https://status.netwerkdigitaalerfgoed.nl/',
             },
             {
               label: 'GitHub',
@@ -150,8 +134,21 @@ const config: Config = {
             },
           ],
         },
-      ],
-      copyright: `Copyright? © ${new Date().getFullYear()} NDE`,
+        {
+          title: 'Contact',
+          items: [
+            {
+              label: 'tech@netwerkdigitaalerfgoed.nl',
+              href: 'mailto:tech@netwerkdigitaalerfgoed.nl',
+            },
+            {
+              label: '@NetwerkDigitaalErfgoed@mastodon.nl',
+              href: 'https://mastodon.nl/@NetwerkDigitaalErfg@',
+            }
+          ],
+        },
+
+      ]
     },
     prism: {
       theme: prismThemes.github,

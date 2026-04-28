@@ -2,177 +2,175 @@
 description: Testing for NDE compatibility
 ---
 
-# Testen op NDE-compatibiliteit
+# Testing for NDE compatibility
 
 ![alt_text](/img/test-cover.png "Cover image")
 
-## Inleiding
+## Introduction
 
-Wanneer een leverancier een collectieinformatiesysteem (CIS) oplevert, is het aan de klant om te bepalen of het systeem voldoet aan de gestelde eisen en wensen. Vanuit het Netwerk Digitaal Erfgoed (NDE) zijn de volgende eisen van belang:
+When a supplier delivers a collection management system (CMS), it is up to the client to determine whether the system meets the stated requirements and expectations. From the perspective of the Dutch Digital Heritage Network (NDE), the following requirements are relevant:
 
-* [Requirements for Collection Management Systems](https://docs.nde.nl/requirements-collection-management-systems/) die specificeert hoe een aan welke eisen een collectieinformatiesysteem moet voldoen.
-* [Requirements for Datasets](https://docs.nde.nl/requirements-datasets/) die specificeert het formaat van datasetbeschrijvingen;
-* [Schema.org Application Profile](https://docs.nde.nl/schema-profile/) die specificeert het formaat van de te publiceren erfgoeddata;
+* [Requirements for Collection Management Systems](https://docs.nde.nl/requirements-collection-management-systems/) specifying what requirements a collection management system must meet;
+* [Requirements for Datasets](https://docs.nde.nl/requirements-datasets/) specifying the format of dataset descriptions;
+* [Schema.org Application Profile](https://docs.nde.nl/schema-profile/) specifying the format of the heritage data to be published.
 
-Vanuit het NDE is er goed contact met leveranciers en wordt er gekeken naar één implementatie om de NDE compatibiliteit vast te stellen. Dit document geeft een handvat hoe je je, als erfgoedinstelling, leverancier, digitaal erfgoedcoach, datawerkplaats of zelfstandig erfgoed specialist - kunt bepalen of de specifieke implementatie van een CIS bij een erfgoedinstelling leidt tot een NDE-compatibel geheel. Datawerkplaatsen, digitaal erfgoedcoaches en zelfstandige erfgoed specialisten kunnen hierin een ondersteunende rol spelen. Het blijft echter de verantwoordelijkheid van de erfgoedinstelling om te bepalen dat hetgeen ze hebben aangeschaft voldoet aan de wensen en eisen.
+NDE maintains close contact with suppliers and focuses on individual implementations to determine NDE compatibility. This document provides guidance for heritage institutions, suppliers, digital heritage coaches, data workshops and independent heritage specialists to assess whether a specific CMS implementation at a heritage institution results in an NDE-compatible system. Data workshops, digital heritage coaches and independent heritage specialists can play a supporting role. However, it remains the responsibility of the heritage institution to determine that what they have procured meets their requirements and expectations.
 
-## NDE compatibiliteit
+## NDE compatibility
 
-De 5 eisen die worden gesteld in het kader van NDE compatibiliteit komen voort uit de doelstellingen van de Nationale Strategie Digitaal Erfgoed en zijn in lijn met de Digitale Erfgoed Referentie Architectuur ([DERA](https://dera.netwerkdigitaalerfgoed.nl/index.php/Hoofdpagina)):
+The 5 requirements for NDE compatibility stem from the objectives of the National Strategy for Digital Heritage and are in line with the Digital Heritage Reference Architecture ([DERA](https://dera.netwerkdigitaalerfgoed.nl/index.php/Hoofdpagina)):
 
-✅ Datasets vindbaar via het Datasetregister \
-✅ Gebruik van duurzame identifiers \
-✅ Publiceert linked open data \
-✅ Linkt naar URI's van gestandaardiseerde termen via het Termennetwerk \
-✅ Gebruik IIIF voor toegang tot beeldcollecties
+✅ Datasets findable via the Dataset Register \
+✅ Use of persistent identifiers \
+✅ Publishes linked open data \
+✅ Links to URIs of standardised terms via the Network of Terms \
+✅ Uses IIIF for access to image collections
 
-## Acceptatie- en regressietesten
+## Acceptance and regression testing
 
-Wanneer de leverancier heeft aangegeven dat de implementatie van het CIS is afgerond (wat hen betreft), is het moment aangebroken om deze implementatie goed te bekijken en te testen. Pas na een "acceptatietest" en eventuele opgeloste bevindingen, is er sprake van een afgeronde implementatie (wat veelal gepaard gaat met betaling van een laatste factuur deel). De testaanpak dient te kijken naar alle aspecten van het systeem, van functies naar datamodel, van helpteksten naar look-and-feel, van domeinnaam tot API.
+When the supplier has indicated that the CMS implementation is complete (from their perspective), it is time to carefully review and test the implementation. Only after an "acceptance test" and any resolved findings is there a completed implementation (which often coincides with payment of a final invoice instalment). The test approach should cover all aspects of the system, from functions to data model, from help texts to look and feel, from domain name to API.
 
-Een regressietest is een test die controleert of bestaande functionaliteit nog steeds correct werkt nadat er wijzigingen zijn aangebracht, zoals configuratiewijzigingen, code-updates, bugfixes of nieuwe functies. Het doel is om onbedoelde fouten (regressies) in reeds goedgekeurde delen van het systeem te voorkomen. Geadviseerd wordt om dit testplan óók te gebruiken om er zeker van te zijn dat het systeem nog steeds NDE-compatibel is. 
+A regression test verifies that existing functionality still works correctly after changes have been made, such as configuration changes, code updates, bug fixes or new features. The goal is to prevent unintended errors (regressions) in already-approved parts of the system. It is recommended to also use this test plan to ensure the system remains NDE-compatible.
 
-## Stappenplan
+## Step-by-step plan
 
-Dit document beschrijft alleen hoe de NDE compatibiliteit van het opgeleverde systeem getest kan worden. De tests worden op een zodanige wijze beschreven dat deze met een webbrowser uitgevoerd kunnen worden, zonder andere technische hulpmiddelen. Elke teststap start ter inleiding met informatie over het te testen onderwerp.
+This document describes only how to test the NDE compatibility of the delivered system. The tests are described in such a way that they can be performed with a web browser, without other technical tools. Each test step begins with background information about the topic being tested.
 
-![alt_text](/img/test-stappen.png "Test stappen")
+![alt_text](/img/test-stappen.png "Test steps")
 
-Over de volgorde van de teststappen is nagedacht. Als een teststap niet slaagt, dan kan het lastig zijn om met de vervolgstappen aan de slag te gaan. Meld het issue bij de leverancier, vermeld daarbij precies hoe en wat je hebt getest, bij voorkeur met URI van erfgoedobjecten of URL's van collectie pagina's. Als de leverancier een issue heeft opgelost of het toch geen issue blijkt te zijn, dan kan de teststap herhaald worden. Als een teststap niet slaagt, probeer toch de vervolgstappen van het testplan te zetten.
+The order of the test steps has been carefully considered. If a test step fails, it may be difficult to proceed with subsequent steps. Report the issue to the supplier, describing exactly how and what you tested, preferably with URIs of heritage objects or URLs of collection pages. Once the supplier has resolved an issue, or it turns out not to be an issue, the test step can be repeated. If a test step fails, still try to proceed with the subsequent steps of the test plan.
 
-Om informatie bij te houden wordt er in de bijlage een sjabloon gegeven voor een werkdocument. Het testrapport is voor de erfgoedinstelling, communiceer met de leverancier via de door hen ingestelde communicatiemiddelen over specifieke issues.
+To keep track of information, the appendix provides a template for a working document. The test report is for the heritage institution; communicate with the supplier via their designated communication channels about specific issues.
 
-## 1. Dataset(s) opzoeken via het Datasetregister 
+## 1. Finding dataset(s) via the Dataset Register
 
-> ***Wat is een dataset?***
+> ***What is a dataset?***
 >
-> *Een dataset (of gegevensverzameling) is een verzameling van gegevens (data of metadata). In de context van erfgoedinstellingen kun je hierbij denken aan de data van/over erfgoedobjecten, zoals een catalogus, een set museumobjecten of een collectie van archieven of nadere toegangen. Deze (meta)data wordt veelal in een archiefbeheer- of collectieinformatiesysteem beheerd en in de een of andere vorm via de eigen website toegankelijk gemaakt aan haar gebruikers. De data kan ook worden gedeeld voor hergebruik, door een dienstenportaal of aggregator. Het systeem van de erfgoedinstelling dient hiervoor de data via een datadump (export) of API beschikbaar te stellen.*
+> *A dataset (or data collection) is a collection of data (data or metadata). In the context of heritage institutions, this can include data about heritage objects, such as a catalogue, a set of museum objects or a collection of archives or finding aids. This (meta)data is often managed in an archive management or collection management system and made accessible to users via the institution's website in some form. The data can also be shared for reuse, by a service portal or aggregator. The institution's system must make the data available for this purpose via a data dump (export) or API.*
 >
-> **Bron**: [Veelgestelde vragen over het Datasetregister door dataset beheerders bij erfgoedinstellingen](https://datasetregister.netwerkdigitaalerfgoed.nl/faq-beheerders.php)
+> **Source**: [Frequently asked questions about the Dataset Register for dataset managers at heritage institutions](https://datasetregister.netwerkdigitaalerfgoed.nl/faq-beheerders.php)
 
-Het testen op NDE-compatabiliteit van het CIS begint bij het NDE Datasetregister. Het datasetregister geeft inzicht in de beschikbaarheid van datasets in het erfgoedveld en stimuleert daarmee het gebruik van deze datasets.
+Testing CMS NDE compatibility starts with the NDE Dataset Register. The Dataset Register provides insight into the availability of datasets in the heritage field and thereby encourages the use of these datasets.
 
-➡️ Open het [NDE Datasetregister](https://datasetregister.netwerkdigitaalerfgoed.nl/) in je browser. Ga naar de zoekpagina en zoek de dataset(s) van de erfgoedorganisatie op. 
+➡️ Open the [NDE Dataset Register](https://datasetregister.netwerkdigitaalerfgoed.nl/?lang=en) in your browser. Go to the search page and search for the dataset(s) of the heritage organisation.
 
-Kan er geen enkele dataset van erfgoedorganisatie gevonden worden, dan geeft dat de eerste bevinding die bij de leverancier gemeld dient te worden.
+If no datasets from the heritage organisation can be found, this is the first finding that should be reported to the supplier.
 
-Als er wel één of meerdere zoekresultaten zijn, dan betekent dit dat de datasetbeschrijvingen die door de erfgoedorganisatie online worden gepubliceerd (veelal via het CIS) bij het NDE Datasetregister zijn aangemeld en dat deze **valide** zijn. Oftewel, de datasetbeschrijving voldoet qua syntax geheel aan de eisen in [Requirements for Datasets](https://docs.nde.nl/requirements-datasets/).
+If one or more search results are found, this means that the dataset descriptions published online by the heritage organisation (often via the CMS) have been registered with the NDE Dataset Register and are **valid**. In other words, the dataset description fully meets the syntax requirements in the [Requirements for Datasets](https://docs.nde.nl/requirements-datasets/).
 
-Bij de zoekresultaten dient gelijk de vraag beantwoord te worden of de naam van de dataset en de naam van de organisatie correct en duidelijk is. Het zijn de "producten" die "in de etalage staan" en dus aantrekkelijk moeten zijn voor hergebruikers van de datasets. Wanneer de naam van de dataset of naam van de organisatie niet naar wens is, dient dit aangepast te worden. Dit kan veelal binnen je CIS of via een bericht aan de leverancier die het kan aanpassen.
+When reviewing the search results, you should also ask whether the name of the dataset and the name of the organisation are correct and clear. These are the "products in the shop window" and must therefore be appealing to dataset reusers. If the name of the dataset or organisation is not as desired, this should be corrected — usually within your CMS or by contacting the supplier.
 
-➡️ Klik op elke zoekresultaat om de complete datasetbeschrijving te bekijken. Neem de URI van de dataset op in het werkdocument.
+➡️ Click on each search result to view the complete dataset description. Record the URI of the dataset in the working document.
 
-Net als een object uit de collectie dient de dataset goed beschreven te zijn voor de doelgroep. Het verhoogt de kans dat de dataset gevonden en hergebruikt wordt door dienstplatformen, waarmee jouw objecten nog beter vindbaar worden. Dus stel jezelf de vragen: is de beschrijving correct en compleet en aansprekend? Klopt de licentie? Is duidelijk om wat voor soort data het gaat, over welke periode, over welke gebieden, relevante steekwoorden, waarvan het is afgeleid, is er een link naar een pagina met nog meer uitleg over de dataset, enz. ?
+Like an object from the collection, the dataset should be well described for its target audience. This increases the chance that the dataset will be found and reused by service platforms, making your objects even more discoverable. Ask yourself: is the description correct, complete and appealing? Is the licence correct? Is it clear what kind of data it is, what time period it covers, what areas it covers, relevant keywords, what it is derived from, is there a link to a page with more information about the dataset, etc.?
 
-➡️ Onder het kopje Metadata vind je de URL van de datasetbeschrijving met daarachter een Valideer link, klik daarop.
+➡️ Under the Metadata heading, find the URL of the dataset description followed by a Validate link — click on it.
 
-De datasetbeschrijving is valide (de verplichte velden zijn aanwezig), want deze is opgenomen in het Dataset Register. Maar de validatiefunctie geeft ook adviezen over toe te voegen waarden en waarschuwing omtrent waarden die in de toekomst verplicht worden!
+The dataset description is valid (the required fields are present), since it has been included in the Dataset Register. But the validation function also provides advice on values to add and warnings about values that will become mandatory in the future!
 
-![alt_text](/img/test-datasetregister-validatie.png "Validatie via het Dataset Register")
+![alt_text](/img/test-datasetregister-validatie.png "Validation via the Dataset Register")
 
-Een dataset bevat één of meer zogenaamde distributies. Dit zijn de links naar een datadump of een API waarmee de dataset daadwerkelijk gedownload of op een machineleesbare wijze geraadpleegd kan worden. 
+A dataset contains one or more so-called distributions. These are links to a data dump or an API through which the dataset can actually be downloaded or consulted in a machine-readable way.
 
-➡️ Klik bij elke datasetbeschrijving op de AccessURL van elke distributie in de datasetbeschrijving. Sla het bestand lokaal op en noteer URI en bestandsnaam in het werkdocument.
+➡️ For each dataset description, click on the AccessURL of each distribution. Save the file locally and record the URI and filename in the working document.
 
-Controleer de inhoud van de datadump of van Application Programming Interface (API) met de in de datasetbeschrijving genoemde media type, die minimaal één van de Linked Data formaten moet zijn, zoals JSON-LD, N-triples (.nt) en Turtle (.ttl). Bijvoorbeeld: als bij media type "text/turtle" staat dan moet er in de datadump dus Turtle staan. Dit kunt je eenvoudig zien door het bestand in een editor zoals Notepad/kladblok te openen (of een [online variant](https://onlinenotepad.org/notepad)). 
+Check the contents of the data dump or Application Programming Interface (API) against the media type stated in the dataset description, which must be at least one of the Linked Data formats, such as JSON-LD, N-triples (.nt) and Turtle (.ttl). For example: if the media type states "text/turtle" then the data dump must contain Turtle. You can easily see this by opening the file in an editor such as Notepad (or an [online variant](https://onlinenotepad.org/notepad)).
 
-**Tip**: Turtle is de meest leesbare vorm voor de mens van RDF / linked data, dus voor visuele inspectie erg fijn. Machines werken efficiënter met N-triples.
+**Tip**: Turtle is the most human-readable form of RDF/linked data, making it great for visual inspection. Machines work more efficiently with N-triples.
 
-Als API zijn veel voorkomend SPARQL, GraphQL en OAI-PMH. Dat datasets via dergelijke API's beschikbaar worden gesteld is niet verplicht, andersom geldt wel dat als er datasets via dergelijke API's wordt beschikbaar gesteld deze genoemd moet worden in één of meerdere datasetbeschrijvingen.
+Common APIs include SPARQL, GraphQL and OAI-PMH. Making datasets available via such APIs is not mandatory; however, if datasets are made available via such APIs, they must be listed in one or more dataset descriptions.
+
+**✅ If the expected datasets from your organisation are found in the NDE Dataset Register, the description is complete and clear, and the distributions are downloadable or queryable, this test has passed.**
 
 
-**✅ Zijn de verwachte datasets van jouw organisatie gevonden in het NDE Datasetregister, is de beschrijving compleet en duidelijk en zijn de distributies downloadbaar of op te vragen, dan is deze test geslaagd.**
+## 2. Finding and testing persistent identifiers
 
-
-## 2. Opzoeken en testen van persistente identifiers
-
-> ***Wat zijn Persistent Identifiers (PID's)?***
+> ***What are Persistent Identifiers (PIDs)?***
 >
-> *Een Persistent Identifier is een permanente en unieke identificatiecode van een digitaal object (scan, een audiovisueel bestand, een metadata record, een website, etc.). De Persistent Identifier staat los van de bewaarlocatie. Het is een unieke identificatiecode die op een afgesproken plaats wordt geregistreerd. De unieke identificatiecode zorgt ervoor dat het object altijd teruggevonden kan worden op het internet, ook als de naam van het object of de bewaarplaats verandert. Hiermee is een object altijd en overal eenduidig refereerbaar en vindbaar.*
+> *A Persistent Identifier is a permanent and unique identification code for a digital object (scan, audiovisual file, metadata record, website, etc.). The Persistent Identifier is independent of the storage location. It is a unique identification code registered at an agreed location. The unique identification code ensures that the object can always be found on the internet, even if the name of the object or its storage location changes. This makes an object unambiguously citable and findable at any time and place.*
 >
-> **Bron**: [Veelgestelde vragen Persistent Identifier Wijzer](https://www.pidwijzer.nl/veelgestelde-vragen)
+> **Source**: [Frequently asked questions Persistent Identifier Guide](https://www.pidwijzer.nl/veelgestelde-vragen)
 
-Tijdens de implementatie van het CIS heeft de leverancier wellicht gevraagd naar het duurzaamheidsbeleid en het gewenste persistent identifier (PID) systeem. Veelal wordt er gekozen voor ARK (via [Arks.org](https://arks.org/)) of Handle (via [SURF](https://www.surf.nl/diensten/publiceren/persistent-identifiers)), maar gebruik van een generieke domeinnaam als [data.bibliotheek.nl](http://data.bibliotheek.nl) met per object een GUID, kan ook voldoen. In het algemeen geldt dat duurzame identifiers een **belofte** zijn van de erfgoedorganisatie: het object is ook in de toekomst op te vragen via een persistent webadres. Deze belofte is deels beleid & organisatie en deels techniek. In deze stap wordt alleen naar het techniek deel gekeken.
+During the CMS implementation, the supplier may have asked about your sustainability policy and preferred persistent identifier (PID) system. ARK (via [Arks.org](https://arks.org/)) or Handle (via [SURF](https://www.surf.nl/diensten/publiceren/persistent-identifiers)) are commonly chosen, but using a generic domain name such as [data.bibliotheek.nl](http://data.bibliotheek.nl) with a GUID per object can also suffice. In general, persistent identifiers are a **promise** by the heritage organisation: the object will also be accessible in the future via a persistent web address. This promise is partly policy & organisational and partly technical. This step looks only at the technical part.
 
-Een belangrijk aspect van linked data is dat alles een HTTP URI (internetadres) heeft. We willen het gebruik van termen en het aan elkaar verbinden van collecties duurzaam vormgeven. Dus de HTTP URI's van erfgoedobjecten (en termen) dienen ook persistent te zijn. Om deze reden spreken we in plaats van PID's (dat de vorm `ark:60537/b3xVzO` kan hebben) liever over persistente HTTP URI's (zoals bijv. [https://n2t.net/ark:/60537/b3xVzO](https://n2t.net/ark:/60537/b3xVzO)). In een persistente HTTP URI staat dus veelal een globale resolver als [n2t.net](https://n2t.net), [arks.org](https://arks.org) of [handle.net](https://handle.net) waarmee de PID een echt, duurzaam internetadres wordt.
+An important aspect of linked data is that everything has an HTTP URI (web address). We want to make the use of terms and the interconnection of collections sustainable. Therefore, the HTTP URIs of heritage objects (and terms) must also be persistent. For this reason, rather than PIDs (which can have the form `ark:60537/b3xVzO`), we prefer to speak of persistent HTTP URIs (such as [https://n2t.net/ark:/60537/b3xVzO](https://n2t.net/ark:/60537/b3xVzO)). A persistent HTTP URI typically contains a global resolver such as [n2t.net](https://n2t.net), [arks.org](https://arks.org) or [handle.net](https://handle.net), turning the PID into a real, persistent web address.
 
-In de voorgaande stap is er linked data gedownload. Het testen van een complete RDF datadump via online tooling is lastig: veelal zijn de datadumps te groot en alleen via offline tools in z'n geheel te testen. De testen in stap 2 tot en met 5 zullen we steekproefsgewijs aanpakken.
+In the previous step, linked data was downloaded. Testing a complete RDF data dump using online tooling is difficult: data dumps are often too large and can only be tested in their entirety using offline tools. The tests in steps 2 through 5 will be approached using sampling.
 
-➡️ Open het de datadump uit de vorige stap in een programma als Kladblok/Notepad (of een [online variant](https://onlinenotepad.org/notepad)).
+➡️ Open the data dump from the previous step in a programme such as Notepad (or an [online variant](https://onlinenotepad.org/notepad)).
 
 ![alt_text](/img/test-notepad-turtle.png "image_tooltip")
 
-➡️ Voor de steekproef dien je een stuk of 5 persistente HTTP URI's te verzamelen van erfgoedobjecten, archieftoegangen of werken. Noteer de URI's in het werkdocument.
+➡️ For the sample, collect around 5 persistent HTTP URIs of heritage objects, archival finding aids or works. Record the URIs in the working document.
 
-Als je een Turtle bestand hebt, zijn URI's te herkennen door de internetadressen tussen haakjes &lt;>. Selecteer willekeurige persistente HTTP URI's (uit heel de datadump) van de eigen organisaties en niet "externe" URI's van bijvoorbeeld termen (deze nemen we in stap 4 onder de loep). Noteer de 5 persistente HTTP URI's in een tabel in een werkdocument (dat je ook kunt gebruiken voor een eventuele acceptatietestrapport).
+In a Turtle file, URIs can be recognised as web addresses between angle brackets &lt;>. Select random persistent HTTP URIs (from across the entire data dump) of the institution's own objects — not "external" URIs such as those of terms (which we will examine in step 4). Record the 5 persistent HTTP URIs in a table in a working document (which can also be used for an acceptance test report).
 
-Indien de persistente HTTP URI's werken op basis van het ARK systeem kan de registratie van de gecontroleerd worden. Het nummer achter "ark:" is de zogenaamde NAAN (Name Assigning Authority Number), het nummer specifiek voor de eigen erfgoedorganisatie. Door de URL https://arks.org/ark:{NAAN} op te vragen (bijv. [https://arks.org/ark:60537](https://arks.org/ark:60537)) krijg je de metadata te zien die aan deze registratie is gekoppeld,
+If the persistent HTTP URIs use the ARK system, the registration can be verified. The number after "ark:" is the so-called NAAN (Name Assigning Authority Number), the number specific to the heritage organisation. By requesting the URL https://arks.org/ark:{NAAN} (e.g. [https://arks.org/ark:60537](https://arks.org/ark:60537)) you can see the metadata associated with this registration.
 
-➡️ Vraag de pagina die de ARK registratie van je organisatie beschrijft op in de webbrowser en controleer dat het inderdaad de eigen organisatie is (en niet van een aggregatieplatform of CIS leverancier).
+➡️ Request the page describing the ARK registration of your organisation in the web browser and verify that it is indeed your own organisation (and not an aggregation platform or CMS supplier).
 
-➡️ Plak elke persistente HTTP URI in de adresbalk van je browser en controleer de inhoud: kom je op een collectiepagina (in HTML) die het erfgoedobject beschrijft? Werk de resultaten bij in het werkdocument.
+➡️ Paste each persistent HTTP URI into the browser address bar and check the content: do you land on a collection page (in HTML) that describes the heritage object? Update the results in the working document.
 
-Idealiter staat de persistente HTTP URI ook genoemd op de publiekspagina, als "duurzaam adres" of "persistente link" of "permalink". Het is aan erfgoedorganisaties om haar gebruikers te wijzen op deze persistente HTTP URI's en uit te leggen dat deze webadressen blijven werken en altijd naar de informatie over het specifieke object zullen leiden, zodat ze niet het internetadres uit de adresbalk van de browser blijven overnemen in hun onderzoek, maar de permalink.
+Ideally, the persistent HTTP URI is also shown on the public page, as a "persistent address" or "persistent link" or "permalink". It is up to heritage organisations to point their users to these persistent HTTP URIs and explain that these web addresses will continue to work and will always lead to information about the specific object — so that users do not keep copying the address from the browser's address bar for their research, but use the permalink instead.
 
-**✅ Wanneer er persistente HTTP URI's in de linked data voorkomen en deze URI's leiden naar het betreffende erfgoedobject dan is deze test geslaagd.**
+**✅ If persistent HTTP URIs appear in the linked data and these URIs lead to the relevant heritage object, this test has passed.**
 
 
+## 3. Checking the linked data
 
-## 3. Controleren van de linked data
-
-> ***Wat is linked data?***
+> ***What is linked data?***
 >
-> *Linked data zijn gestructureerde gegevens (data) die gelinkt zijn aan andere gegevens en daardoor beter bruikbaar zijn in semantische queries. De methode is gebaseerd op de techniek van HTTP-URI's en RDF. Linked data kunnen worden gelezen door mensen via internetpagina's en geautomatiseerd door computers. Onderdeel van de visie van linked data is om het internet te laten uitgroeien tot een wereldwijde database en zo een grotere groep 'niet-ingewijde' gebruikers gebruik te kunnen laten maken van de data.*
+> *Linked data is structured data that is linked to other data and is therefore more useful in semantic queries. The method is based on the technology of HTTP URIs and RDF. Linked data can be read by people via web pages and automatically by computers. Part of the linked data vision is to allow the internet to grow into a worldwide database, enabling a larger group of 'non-expert' users to make use of the data.*
 >
-> *Wanneer bij linked data gebruik wordt gemaakt van open data (dat wel als de voorloper van linked data wordt gezien) wordt gesproken van linked open data (LOD). Linked open data implementeert vrije kennis.*
-> **Bron**: [Linked data (op Wikipedia)](https://nl.wikipedia.org/wiki/Linked_data)
-
-> **DOEL Naar brede bruikbaarheid van erfgoedinformatie**
+> *When linked data uses open data (which is seen as a precursor to linked data), it is referred to as linked open data (LOD). Linked open data implements free knowledge.*
 >
-> *De inzet van algemene webstandaarden bevordert niet alleen de toegankelijkheid voor mensen, maar ook voor machines. Zo zorgt het gebruik van linked data, de standaard die het Netwerk Digitaal Erfgoed toepast bij het koppelen van data, ervoor dat computers die kunnen lezen en verbanden kunnen ontdekken in stukjes informatie uit verschillende bronnen. Op die manier kan erfgoedinformatie ook gebruikt worden door algoritmen, bijvoorbeeld in (veilige en verantwoorde) AI-toepassingen. En als gegevens weergegeven worden volgens de standaard schema.org, kunnen ook zoekmachines die verwerken. Zo kan erfgoed wereldwijd gedeeld worden, voor gebruik in heel veel verschillende contexten. 
+> **Source**: [Linked data (on Wikipedia)](https://en.wikipedia.org/wiki/Linked_data)
+
+> **GOAL: Towards broad usability of heritage information**
 >
-> **Bron**: [Nationale Strategie Digitaal Erfgoed 2025-2028](https://zenodo.org/records/14237069)
+> *The use of general web standards promotes accessibility not only for people, but also for machines. For example, the use of linked data — the standard applied by the Dutch Digital Heritage Network when connecting data — enables computers to read and discover connections in pieces of information from different sources. In this way, heritage information can also be used by algorithms, for example in (safe and responsible) AI applications. And when data is presented according to the schema.org standard, search engines can also process it. This allows heritage to be shared globally, for use in many different contexts.*
+>
+> **Source**: [National Strategy for Digital Heritage 2025-2028](https://zenodo.org/records/14237069)
 
-Elke erfgoedobject URI moet "resolvable" zijn, oftewel elke erfgoedobject moet zijn op te vragen via het betreffende internetadres, waarbij de juiste inhoud in het juiste formaat wordt teruggegeven. 
+Each heritage object URI must be "resolvable" — that is, every heritage object must be retrievable via its web address, returning the correct content in the correct format.
 
-Met opvragen van URI's via de browser in stap 2 zijn verzoek gedaan om inhoud te leveren in HTML formaat (onder water geeft de browser de request header `Accept: text/html` mee). Dit vragen om inhoud in een bepaald formaat heet *content-negotiation*. Laten we kijken of de URI's ook voor machine leesbare linked data leveren.
+By requesting URIs via the browser in step 2, you requested content in HTML format (the browser automatically sends the request header `Accept: text/html`). Requesting content in a specific format is called *content negotiation*. Let's see if the URIs also return machine-readable linked data.
 
-➡️ Controleer elke persistente HTTP URI via [reqbin.com](https://reqbin.com) en sla het resultaat op in een bestand. Noteer de URI en bestandsnamen in het werkdocument.
+➡️ Check each persistent HTTP URI via [reqbin.com](https://reqbin.com) and save the result to a file. Record the URI and filenames in the working document.
 
-[Reqbin.com](https://reqbin.com) is een gratis service, inloggen is niet nodig, maar geeft wel extra functionaliteiten. Met deze online service kun je via de browser HTTP requests doen en de HTTP response bekijken. Om een HTTP request te doen, vul je naast de URI ook op het 'tabblad' *Headers* een `Accept` key in met de waarde `text/turtle` (zie onderstaande screenshot). Na het klikken op de Send knop zie je onder het HTTP request (de vraag) de HTTP response (het antwoord). Als het goed is het de informatie over het object in Turtle formaat! 
+[Reqbin.com](https://reqbin.com) is a free service — no login required, though logging in provides extra functionality. Using this online service you can make HTTP requests via your browser and view the HTTP response. To make an HTTP request, enter the URI and on the *Headers* tab add an `Accept` key with the value `text/turtle` (see the screenshot below). After clicking the Send button, you will see the HTTP response (the answer) below the HTTP request (the question). If all is well, the response will contain information about the object in Turtle format!
 
 ![alt_text](/img/test-reqbin.png "ReqBin 1")
 
 ![alt_text](/img/test-reqbin2.png "ReqBin 2")
 
-Als je in de *Body* van de response alleen HTML ziet: heb je de `Accept` key op het *Headers* tabblad ingevuld met een geldige waarde voor de RDF representatie? Zo ja, het kan zijn dat de gevraagde RDF representatie niet wordt ondersteund door het systeem. Probeer andere formaten (want de verplichting is dat er minimaal één van de RDF representatie wordt ondersteund): `text/turtle`, `application/ld+json`, `application/n-triples`, `application/n-quads`.
+If you only see HTML in the *Body* of the response: have you filled in the `Accept` key on the *Headers* tab with a valid RDF representation value? If so, it is possible that the requested RDF representation is not supported by the system. Try other formats (as the requirement is that at least one RDF representation must be supported): `text/turtle`, `application/ld+json`, `application/n-triples`, `application/n-quads`.
 
-Zie je in *Body* van de response rare tekens als `��V�n�6}�...` dan in het response hoogstwaarschijnlijk in gecomprimeerd formaat (Gzip) ontvangen. Op zich is dit erg goed, want er hoeft een kleinere hoeveelheid informatie getransporteerd te worden, dus een 'groenere' oplossing. Wil je liever ongecomprimeerde RDF terug hebben, voeg dan in het *Headers* tabje ook de *Key* `Accept-Encoding` met als waarde `identity` toe. 
+If you see strange characters such as `��V�n�6}�...` in the *Body* of the response, the response has most likely been received in compressed format (Gzip). This is actually very good, as less data needs to be transferred — a 'greener' solution. If you prefer uncompressed RDF, add the key `Accept-Encoding` with value `identity` on the *Headers* tab.
 
-Of de ontvangen linked data geldig is qua syntax kun je controleren met de RDF converter van Zazuko.
+You can check whether the received linked data is syntactically valid using the RDF converter by Zazuko.
 
-➡️ Ga naar [RDF converter van Zazuko](https://converter.zazuko.com) en plak de inhoud van de in bestanden opgeslagen linked data in het Input vlak. Kies in het linker paneel het juiste input formaat (waarschijnlijk `text/turtle`). Als de syntax ok is verschijnt er in het Output vlak de omgezette linked data naar JSON-LD, TriG, enz. Als de syntax niet ok is, dan verschijnt naast Input de rode tekst Parsing failed (zet de muis op de eerste regel in het input vlak dat rood is onderstreept en je ziet informatie over de fout). Noteer de resultaten van de controles in het werkdocument.
+➡️ Go to the [RDF converter by Zazuko](https://converter.zazuko.com) and paste the contents of the saved linked data files into the Input field. In the left panel, select the correct input format (probably `text/turtle`). If the syntax is correct, the Output field will show the converted linked data in JSON-LD, TriG, etc. If the syntax is incorrect, the red text *Parsing failed* will appear next to Input (hover over the first red-underlined line in the input field to see error information). Record the results of the checks in the working document.
 
-![alt_text](/img/test-converter.png "Zazuko's Converver")
+![alt_text](/img/test-converter.png "Zazuko's Converter")
 
-Het is een vereist dat de linked data (de RDF) gebruik maakt van het [schema.org](https://schema.org/) vocabulaire. Dit kun je eenvoudig zien in de datadump: worden er classes en properties gebruikt die beginnen met https://schema.org. Bij voorkeur wordt hierbij het Schema.org NDE applicatie profiel ([SCHEMA-AP-NDE](https://docs.nde.nl/schema-profile/)) gebruikt, waarin keuzes zijn gemaakt voor eenduidig gebruik en betere vindbaarheid. In de toekomst wordt gebruik van [SCHEMA-AP-NDE](https://docs.nde.nl/schema-profile/) een requirement. Daarnaast kan er de linked data in een domeinspecifiek model worden gepubliceerd, zoals Records-in-Context ([RIC-O](https://www.ica.org/resource/records-in-contexts-ontology/)), [Linked.Art](https://linked.art/) en Resource Description and Access ([RDA](https://www.rdaregistry.info/)).
+It is a requirement that the linked data (the RDF) uses the [schema.org](https://schema.org/) vocabulary. You can easily see this in the data dump: look for classes and properties beginning with https://schema.org. The Schema.org NDE Application Profile ([SCHEMA-AP-NDE](https://docs.nde.nl/schema-profile/)) is preferred, as it makes explicit choices for consistent use and better findability. In the future, use of [SCHEMA-AP-NDE](https://docs.nde.nl/schema-profile/) will become a requirement. In addition, linked data can be published in a domain-specific model such as Records in Contexts ([RIC-O](https://www.ica.org/resource/records-in-contexts-ontology/)), [Linked.Art](https://linked.art/) and Resource Description and Access ([RDA](https://www.rdaregistry.info/)).
 
-Als er een datadump beschikbaar is (online of één die gedownload kan worden), dan kun je deze ook inspecteren met de tool RDF Glance. Naast statistieken, gebruikten classes, kun je ook de relaties van resources en 'meta graph' bekijken. 
+If a data dump is available (online or downloadable), you can also inspect it with the tool RDF Glance. In addition to statistics and used classes, you can also view the relationships of resources and the 'meta graph'.
 
-![alt_text](/img/test-rdfglance.gif "Alba Amicorum van de KB - nationale bibliotheek geladen in RDF Glance")
+![alt_text](/img/test-rdfglance.gif "Album Amicorum of the KB - national library loaded in RDF Glance")
 
-➡️ Ga naar [RDF Glance](https://xdobry.github.io/rdfglance/) en kies in het menu 'Import RDF File' of 'Import RDF File from URL' om de RDF te laden en te inspecteren.
+➡️ Go to [RDF Glance](https://xdobry.github.io/rdfglance/) and choose 'Import RDF File' or 'Import RDF File from URL' from the menu to load and inspect the RDF.
 
-Een vervolgtest controleert of de linked data voldoet aan het applicatie profiel Schema.org AP NDE zoals beschreven op [https://docs.nde.nl/schema-profile/](https://docs.nde.nl/schema-profile/). Voor deze test maken we gebruik van SHACL Play! van het Franse Sparna.
+A follow-up test verifies whether the linked data complies with the Schema.org AP NDE application profile as described at [https://docs.nde.nl/schema-profile/](https://docs.nde.nl/schema-profile/). For this test we use SHACL Play! by the French company Sparna.
 
-➡️ Ga naar [SHACL Play!](https://shacl-play.sparna.fr/play/validate) en plak de RDF (uit een opgeslagen bestand) als Input Data bij het veld 'Copy/paste RDF content'. Selecteer bij de Shapes sectie 'Schema.org Application Profile for NDE' uit de Shapes catalog. Click op de 'Validate' knop om een validatierapport te krijgen. Herhaal dit voor alle opgeslagen linked data bestanden, pas het werkdocument aan met resultaten.
+➡️ Go to [SHACL Play!](https://shacl-play.sparna.fr/play/validate) and paste the RDF (from a saved file) as Input Data in the 'Copy/paste RDF content' field. In the Shapes section, select 'Schema.org Application Profile for NDE' from the Shapes catalog. Click the 'Validate' button to get a validation report. Repeat this for all saved linked data files and update the working document with the results.
 
 ![alt_text](/img/test-shacl-play.png "SHACL Play - Validate RDF data")
 
+The NDE requirements for publishing linked data require that URIs are resolvable (level 1) and that a data dump is available (level 2). Level 3 — a SPARQL endpoint — is not mandatory and therefore not a prerequisite for an NDE-compatible system. If you encountered a SPARQL endpoint in step 1 in the dataset description, it must work correctly (otherwise the test fails). We can test this using Yasgui.
 
-De NDE requirements vereisen voor het publiceren van linked data dat URI's zijn te resolven (nivo 1) en dat er een datadump is (nivo 2). Nivo 3 - een SPARQL endpoint - is niet verplicht en dus ook geen voorwaarde voor een NDE-compatibele systeem. Als je stap 1 in de datasetbeschrijving een SPARQL-endpoint bent tegengekomen, dan moet deze wel goed werken (anders slaagt de test niet). We kunnen dit testen met behulp van Yasgui.
-
-➡️ Ga naar [Yasgui](https://yasgui.org/) en vul de URL van het SPARQL-endpoint in (gevolgd door Enter). Voer de volgende SPARQL query in en klik op de 'Play' knop:  
+➡️ Go to [Yasgui](https://yasgui.org/) and enter the URL of the SPARQL endpoint (followed by Enter). Enter the following SPARQL query and click the 'Play' button:
 ```
 SELECT ?class (COUNT(?s) AS ?count) WHERE { 
     ?s a ?class . 
@@ -181,79 +179,78 @@ GROUP BY ?class
 ORDER BY DESC(?count)
 ```
 
-Als het goed is zie je onder het query vlak resultaten verschijnen. Deze specifieke query vraagt naar de gebruikte classes. Naast het controleren van de technische werking van het SPARQL-endpoint kun je ook inhoudelijk controleren of je de verwachte classes (van schema.org!) terug ziet.
+If all is well, results will appear below the query field. This specific query asks for the used classes. In addition to checking the technical functioning of the SPARQL endpoint, you can also verify whether you see the expected classes (from schema.org!).
 
-![alt_text](/img/test-yasgui-classes.png "List class via YASGUI")
+![alt_text](/img/test-yasgui-classes.png "List classes via YASGUI")
 
-**Tip**: via het Deel ikoontje kun je een verkorte URL krijgen van de SPARQL-query op het geselecteerde  SPARQL-endpoint, die je eenvoudig kunt delen met collega's en leverancier. Via [http://yasgui.org/short/Bnnq2X1w2F](http://yasgui.org/short/Bnnq2X1w2F) kom je op de hierboven getoonde SPARQL pagina.
+**Tip**: via the Share icon you can get a shortened URL of the SPARQL query on the selected SPARQL endpoint, which you can easily share with colleagues and the supplier. Via [http://yasgui.org/short/Bnnq2X1w2F](http://yasgui.org/short/Bnnq2X1w2F) you can access the SPARQL page shown above.
 
-**✅ Als de linked data in z'n geheel is te downloaden en objecten los zijn op te vragen met inachtneming van het gewenste linked data format, dit valide RDF is en minimaal voldoet aan het [Schema.org](https://docs.nde.nl/schema-profile/) AP NDE dan is deze test geslaagd.**
+**✅ If the linked data as a whole can be downloaded and individual objects can be requested in the desired linked data format, the data constitutes valid RDF and at minimum complies with the [Schema.org](https://docs.nde.nl/schema-profile/) AP NDE, this test has passed.**
 
 
-## 4. Opvoeren, opzoeken en controleren van termen via termennetwerk
+## 4. Adding, finding and checking terms via the Network of Terms
 
-> ***Wat zijn termen?***
+> ***What are terms?***
 >
-> *Termen beschrijven waar erfgoed over gaat. Termen zijn bijvoorbeeld onderwerpen, personen of plaatsen. Neem De Nachtwacht: het is een 'schilderij', vervaardigd door 'Rembrandt' in 'Amsterdam'.*
+> *Terms describe what heritage is about. Terms are, for example, subjects, persons or places. Take The Night Watch: it is a 'painting', made by 'Rembrandt' in 'Amsterdam'.*
 >
-> *Toch is een term meer dan een woord. Elke term heeft namelijk een identifier, een zogeheten URI. Een URI is een uniek adres waardoor ondubbelzinnig duidelijk is welke term bedoeld wordt. Bijvoorbeeld de term 'noodweer': wordt hier het juridische concept bedoeld of een bepaalde weersgesteldheid? De betekenis wordt duidelijk als je de URI van de term gebruikt, zoals http://www.wikidata.org/entity/Q741507.*
+> *Yet a term is more than a word. Each term has an identifier, a so-called URI. A URI is a unique address that makes it unambiguously clear which term is meant. For example, the (Dutch) term 'noodweer': does it refer to the legal concept or to severe weather? The meaning becomes clear when you use the URI of the term, such as http://www.wikidata.org/entity/Q741507.*
 >
-> *Daarnaast kan een term extra informatie bevatten, zoals een definitie of een alternatieve benaming. Bijvoorbeeld de term 'schilderij' met de URI http://vocab.getty.edu/aat/300177435. De extra informatie over deze term maakt duidelijk dat het een synoniem heeft, 'schilderstuk'.*
+> *In addition, a term can contain additional information, such as a definition or an alternative name. For example the term 'painting' with the URI http://vocab.getty.edu/aat/300177435. The additional information about this term makes it clear that it has a synonym (in Dutch), 'schilderstuk'.*
 >
-> **Bron**: [https://termennetwerk.netwerkdigitaalerfgoed.nl/nl/faq1](https://termennetwerk.netwerkdigitaalerfgoed.nl/nl/faq1) *
+> **Source**: [https://termennetwerk.netwerkdigitaalerfgoed.nl/en/faq1](https://termennetwerk.netwerkdigitaalerfgoed.nl/en/faq1)
 
-Deze test hangt af van de eigen data in je CIS, is deze al gekoppeld aan termen? Heb je dit als organisatie nog niet gedaan, vraag dan aan de leverancier om een uitleg hoe de eigen data aan termen is te koppelen. De leverancier zal vragen welke velden aan welke terminologiebronnen gekoppeld moeten worden. Bij een goede implementatie van het NDE Termennetwerk staan de terminologiebronnen ter beschikking zoals deze in de [lijst van terminologiebronnen](https://termennetwerk.netwerkdigitaalerfgoed.nl/nl/sources) opgesomd staan. Het is aan te raden om voor de afronding van de implementatie van het CIS enkele objecten voorzien te hebben van (URI's van) termen. Deze URI's moeten namelijk ook door het CIS gepubliceerd worden in de linked data, waarmee de hierboven beschreven test uitgevoerd kan worden.
+This test depends on your own data in the CMS — has it already been linked to terms? If your organisation has not yet done this, ask the supplier to explain how to link your data to terms. The supplier will ask which fields should be linked to which terminology sources. In a good implementation of the NDE Network of Terms, the terminology sources are available as listed in the [list of terminology sources](https://termennetwerk.netwerkdigitaalerfgoed.nl/en/sources). It is advisable to have a few objects linked to terms (URIs) before completing the CMS implementation, as these URIs must also be published by the CMS in the linked data for the test described above.
 
-➡️ Zoek in de RDF URI's op van termen. Veelal zie je URI's van de [AAT](https://www.getty.edu/research/tools/vocabularies/aat/), de [CHT](https://kennis.cultureelerfgoed.nl/index.php/Thesauri_bij_de_RCE_-_Cultuurhistorische_Thesaurus), [WO2 thesaurus](https://www.niod.nl/collections/ww2-thesaurus), [Geonames](https://www.geonames.org/), enz. bij velden als onderwerp, steekwoord, plaats, auteur,... Plak de gevonden URI's van termen in de browser: krijg je meer informatie over de term of een "pagina niet gevonden"? Noteer de URI's en resultaten in het werkdocument.
+➡️ Search the RDF for URIs of terms. You will often see URIs from the [AAT](https://www.getty.edu/research/tools/vocabularies/aat/), the [CHT](https://kennis.cultureelerfgoed.nl/index.php/Thesauri_bij_de_RCE_-_Cultuurhistorische_Thesaurus), [WO2 thesaurus](https://www.niod.nl/collections/ww2-thesaurus), [Geonames](https://www.geonames.org/), etc. in fields such as subject, keyword, place, creator, etc. Paste the found term URIs into the browser: do you get more information about the term or a "page not found"? Record the URIs and results in the working document.
 
-➡️ Vraag de steekproef objecten op in de browser en controleer of de termen ook op de publiekspagina worden getoond. Minimaal moet het label van de term getoond worden, idealiter wordt er ook een beschrijving gegeven van de term, bijvoorbeeld in een tooltip. Noteer de URL's van de publiekspagina's en de resultaten in het werkdocument.
+➡️ Request the sample objects in the browser and verify that the terms are also shown on the public page. At minimum, the label of the term must be displayed; ideally a description of the term is also shown, for example in a tooltip. Record the URLs of the public pages and the results in the working document.
 
-**✅ Wanneer er in het CIS - via het NDE Termennetwerk - velden voorzien zijn en kunnen worden met termen en deze ook in de gepubliceerde linked data voorkomen is deze test geslaagd.**
+**✅ If the CMS has fields that are — via the NDE Network of Terms — linked to terms and these also appear in the published linked data, this test has passed.**
 
 
-## 5. Controle van de media en metadata via IIIF
+## 5. Checking media and metadata via IIIF
 
-> ***Wat is IIIF?***
+> ***What is IIIF?***
 >
-> *IIIF staat voor International Image Interoperability Framework. Het is een set open standaarden die het makkelijker maakt om gedigitaliseerde schilderijen, kaarten, aktes, middeleeuwse handschriften, foto's en andere afbeeldingen, samen met de bijbehorende informatie, online toegankelijk te maken. IIIF is ontwikkeld door en voor de internationale erfgoedwereld. Het wordt ondersteund door een community van bibliotheken, archieven, musea, universiteiten, softwarebedrijven en ontwikkelaars die samen de standaarden schrijven, ontwikkelen, testen en promoten. De communitysite [iiif.io](https://iiif.io) biedt veel achtergrondinformatie, gidsen en trainingen om je op weg te helpen met IIIF.*
+> *IIIF stands for International Image Interoperability Framework. It is a set of open standards that makes it easier to make digitised paintings, maps, deeds, medieval manuscripts, photographs and other images, together with their associated information, accessible online. IIIF was developed by and for the international heritage community. It is supported by a community of libraries, archives, museums, universities, software companies and developers who together write, develop, test and promote the standards. The community site [iiif.io](https://iiif.io) offers extensive background information, guides and training to help you get started with IIIF.*
 >
-> **Bron**: [https://netwerkdigitaalerfgoed.nl/activiteiten/iiif/](https://netwerkdigitaalerfgoed.nl/activiteiten/iiif/)
+> **Source**: [https://netwerkdigitaalerfgoed.nl/activiteiten/iiif/](https://netwerkdigitaalerfgoed.nl/activiteiten/iiif/)
 
-Als er media (afbeeldingen, scans, 3D-modellen, video's) worden gepubliceerd dan moeten de afbeeldingen beschikbaar zijn via de [IIIF Image API](https://iiif.io/api/image/3.0/) en de metadata van de media moet beschikbaar zijn via de [IIIF Presentation API](https://iiif.io/api/presentation/3.0/), ook wel manifest genoemd.
+If media (images, scans, 3D models, videos) are published, the images must be available via the [IIIF Image API](https://iiif.io/api/image/3.0/) and the media metadata must be available via the [IIIF Presentation API](https://iiif.io/api/presentation/3.0/), also known as a manifest.
 
-De IIIF Image API beschrijft de wijze waarop een afbeelding kan worden opgehaald en welke bewerkingen moeten plaatsvinden. De opbouw van een URL van een afbeelding via IIIF is `{scheme}://{server}{/prefix}/{identifier}/{region}/{size}/{rotation}/{quality}.{format}`, een voorbeeld: [https://www.goudatijdmachine.nl/omeka/iiif/2/51787/full/max/0/default.jpg](https://www.goudatijdmachine.nl/omeka/iiif/2/51787/full/max/0/default.jpg). Ook is er een info.json bestand die technische informatie geeft over de afbeeldingen als afmetingen, bijvoorbeeld [https://www.goudatijdmachine.nl/omeka/iiif/2/51787/info.json](https://www.goudatijdmachine.nl/omeka/iiif/2/51787/info.json) Een validator specifiek voor de IIIF Image API wordt door de IIIF community beschikbaar gesteld via [https://iiif.io/api/image/validator/](https://iiif.io/api/image/validator/).
+The IIIF Image API describes how an image can be retrieved and what transformations must be applied. The structure of a IIIF image URL is `{scheme}://{server}{/prefix}/{identifier}/{region}/{size}/{rotation}/{quality}.{format}`, for example: [https://www.goudatijdmachine.nl/omeka/iiif/2/51787/full/max/0/default.jpg](https://www.goudatijdmachine.nl/omeka/iiif/2/51787/full/max/0/default.jpg). There is also an info.json file providing technical information about the image, such as dimensions, for example [https://www.goudatijdmachine.nl/omeka/iiif/2/51787/info.json](https://www.goudatijdmachine.nl/omeka/iiif/2/51787/info.json). A validator specific to the IIIF Image API is made available by the IIIF community at [https://iiif.io/api/image/validator/](https://iiif.io/api/image/validator/).
 
-De IIIF Presentatie API beschrijft meer de structuur van een werk, wat één foto kan zijn, maar ook meerdere scans van een boek of register. Het manifest biedt een IIIF viewer alle informatie om het werk te tonen. Een vaste structuur voor de URI van een manifest is er niet, maar veelal herken je IIIF (versie 2 of 3) en het woord manifest, zoals [https://www.goudatijdmachine.nl/omeka/iiif/2/98632/manifest](https://www.goudatijdmachine.nl/omeka/iiif/2/98632/manifest)  Een validator specifiek voor de IIIF Presentation API wordt door de IIIF community beschikbaar gesteld via [https://presentation-validator.iiif.io/](https://presentation-validator.iiif.io/) (let op dat je de juiste API versie instelt, 2 of 3). 
+The IIIF Presentation API describes the structure of a work, which can be a single photograph or multiple scans of a book or register. The manifest provides a IIIF viewer with all the information needed to display the work. There is no fixed structure for the URI of a manifest, but you will often recognise IIIF (version 2 or 3) and the word manifest, such as [https://www.goudatijdmachine.nl/omeka/iiif/2/98632/manifest](https://www.goudatijdmachine.nl/omeka/iiif/2/98632/manifest). A validator specific to the IIIF Presentation API is made available by the IIIF community at [https://presentation-validator.iiif.io/](https://presentation-validator.iiif.io/) (make sure to set the correct API version, 2 or 3).
 
-Wanneer je een IIIF Manifest bekijkt in een IIIF Viewer zoals de [Theseus Viewer](https://theseusviewer.org/), [Mirador](https://projectmirador.org/) of [Universal Viewer](https://universalviewer.io/), valideer je daarmee de IIIF bestanden!
+When you view a IIIF Manifest in a IIIF Viewer such as the [Theseus Viewer](https://theseusviewer.org/), [Mirador](https://projectmirador.org/) or [Universal Viewer](https://universalviewer.io/), you are validating the IIIF files!
 
-➡️ Zoek in de steekproef linked data bestanden IIIF URI's. Ga naar [Theseus Viewer](https://theseusviewer.org/) en plak daar elke IIIF URI in om het resultaat te bekijken (zie je de afbeeldingen, is de metadata goed > klik hiervoor op (i) in de linker balk). Neem in het werkdocument de IIIF URI's en resultaten op.
+➡️ Search the sample linked data files for IIIF URIs. Go to [Theseus Viewer](https://theseusviewer.org/) and paste each IIIF URI there to view the result (can you see the images, is the metadata correct — click (i) in the left bar to check). Record the IIIF URIs and results in the working document.
 
 ![alt_text](/img/test-iiif.png "image_tooltip")
 
-
-Idealiter wordt het IIIF manifest ook beschikbaar gesteld op de collectiewebsite. Het is gebruikelijk om hiervoor het IIIF logo op te nemen en te linken naar het manifest.
+Ideally, the IIIF manifest is also made available on the collection website. It is common practice to include the IIIF logo and link to the manifest.
 
 ![alt_text](/img/test-iiif2.png "image_tooltip")
 
-**✅ Als de afbeeldingen en de hieraan gekoppelde informatie zichtbaar is in een IIIF viewer, dan is deze test geslaagd.**
+**✅ If the images and their associated information are visible in a IIIF viewer, this test has passed.**
 
-Als je op dit punt gekomen bent heb je de 5 stappen om NDE-compatabiliteit te testen voltooid!
+If you have reached this point, you have completed the 5 steps for testing NDE compatibility!
 
-## Bijlage: werkdocument
+## Appendix: working document
 
-Het is aan te raden om tijdens de test op NDE compatabiliteit informatie vast te leggen in een werkdocument. Handig voor jezelf, collega's en leverancier en kan gebruikt worden in een acceptatietestrapport. Deze bijlage - ook beschikbaar als [Word document](../../static/doc/BijlageTestenOpNdeCompatibiliteit.docx) - biedt een sjabloon voor zo'n werkdocument.
+It is recommended to record information in a working document during the NDE compatibility test. Useful for yourself, colleagues and the supplier, and it can be used in an acceptance test report. This appendix — also available as a [Word document](../../static/doc/BijlageTestenOpNdeCompatibiliteit.docx) — provides a template for such a working document.
 
 
-#### 1. Dataset(s) opzoeken via het Datasetregister 
+#### 1. Finding dataset(s) via the Dataset Register
 
-Lijst van URI's van de geteste datasets en het validatie resultaat, inclusief waarschuwingen en adviezen.
+List of URIs of the tested datasets and the validation result, including warnings and recommendations.
 
 
 <table class="table">
   <tr>
    <td><strong>Dataset URI</strong></td>
-   <td><strong>Validatie resultaat </strong></td>
+   <td><strong>Validation result</strong></td>
   </tr>
   <tr>
    <td></td>
@@ -269,12 +266,12 @@ Lijst van URI's van de geteste datasets en het validatie resultaat, inclusief wa
   </tr>
 </table>
 
-Lijst van URI's van de gedownloade datadumps en bestandsnaam op je computer (wat aangeeft dat distributie URI werk).
+List of URIs of downloaded data dumps and filename on your computer (confirming that the distribution URI works).
 
 <table class="table">
   <tr>
-   <td><strong>Distributie URI (AccessURL van datadump)</strong></td>
-   <td><strong>Lokaal bestand</strong></td>
+   <td><strong>Distribution URI (AccessURL of data dump)</strong></td>
+   <td><strong>Local file</strong></td>
   </tr>
   <tr>
    <td></td>
@@ -291,28 +288,28 @@ Lijst van URI's van de gedownloade datadumps en bestandsnaam op je computer (wat
 </table>
 
 
-URI van het SPARQL-endpoint (alleen als opgenomen als distributie):
+URI of the SPARQL endpoint (only if included as a distribution):
 
 -
 
-Gevonden / opgeloste issues:
+Found / resolved issues:
 
 -
 -
 -
 
-#### 2. Opzoeken en testen van persistente identifiers
+#### 2. Finding and testing persistent identifiers
 
-Gebruikt PID-systeem:
+PID system used:
 
 -
 
-Lijst van persistente HTTP URI's van erfgoed objecten (en of je "beeld" krijgt als je deze URI's in de browser opvraagt).
+List of persistent HTTP URIs of heritage objects (and whether you get a "view" when requesting these URIs in the browser).
 
 <table class="table">
   <tr>
-   <td><strong>Persistente HTTP URI</strong></td>
-   <td><strong>Beeld in browser</strong></td>
+   <td><strong>Persistent HTTP URI</strong></td>
+   <td><strong>View in browser</strong></td>
   </tr>
   <tr>
    <td></td>
@@ -336,18 +333,18 @@ Lijst van persistente HTTP URI's van erfgoed objecten (en of je "beeld" krijgt a
   </tr>
 </table>
 
-Gevonden / opgeloste issues:
+Found / resolved issues:
 
 -
 
-#### 3. Controleren van de linked data
+#### 3. Checking the linked data
 
-Lijst van persistente HTTP URI's van erfgoed objecten, de bestandsnaam op je computer (van de linked data die via [reqbin.com](https://reqbin.com) is opgehaald), of ze valide zijn en voldoen aan schema.org AP NDE.
+List of persistent HTTP URIs of heritage objects, the filename on your computer (of the linked data retrieved via [reqbin.com](https://reqbin.com)), whether they are valid and whether they comply with schema.org AP NDE.
 
 <table class="table">
   <tr>
-   <td><strong>Persistente HTTP URI</strong></td>
-   <td><strong>Valide syntax</strong></td>
+   <td><strong>Persistent HTTP URI</strong></td>
+   <td><strong>Valid syntax</strong></td>
    <td><strong>Schema.org AP NDE</strong></td>
   </tr>
   <tr>
@@ -378,26 +375,26 @@ Lijst van persistente HTTP URI's van erfgoed objecten, de bestandsnaam op je com
 </table>
 
 
-Verkorte URL van SPARQL-pagina (als er een SPARQL-endpoint is):
+Shortened URL of SPARQL page (if a SPARQL endpoint is present):
 
 -
 
-Gevonden / opgeloste issues:
+Found / resolved issues:
 
 -
 -
 -
 
 
-#### 4. Opvoeren, opzoeken en controleren van termen via termennetwerk
+#### 4. Adding, finding and checking terms via the Network of Terms
 
-Lijst van URI's van termen en of je "beeld" krijgt als je deze URI's in de browser opvraagt.
+List of term URIs and whether you get a "view" when requesting these URIs in the browser.
 
 <table class="table">
   <tr>
-   <td><strong>URI term</strong></td>
+   <td><strong>Term URI</strong></td>
    <td><strong>Term</strong></td>
-   <td><strong>Beeld in browser</strong></td>
+   <td><strong>View in browser</strong></td>
   </tr>
   <tr>
    <td></td>
@@ -426,13 +423,13 @@ Lijst van URI's van termen en of je "beeld" krijgt als je deze URI's in de brows
   </tr>
 </table>
 
-Lijst van URL's van collectiepagina's en of je hier termen worden getoond.
+List of URLs of collection pages and whether terms are shown there.
 
 <table class="table">
   <tr>
-   <td><strong>URL collectiepagina</strong></td>
+   <td><strong>Collection page URL</strong></td>
    <td><strong>Term</strong></td>
-   <td><strong>Getoond op collectiepagina</strong></td>
+   <td><strong>Shown on collection page</strong></td>
   </tr>
   <tr>
    <td></td>
@@ -461,20 +458,20 @@ Lijst van URL's van collectiepagina's en of je hier termen worden getoond.
   </tr>
 </table>
 
-Gevonden / opgeloste issues:
+Found / resolved issues:
 
 - 
 -  
 -
 
-#### 5. Controle van de media en metadata via IIIF
+#### 5. Checking media and metadata via IIIF
 
-Lijstje van IIIF URI's en of ze goed worden getoond in Theseus.
+List of IIIF URIs and whether they display correctly in Theseus.
 
 <table class="table">
   <tr>
    <td><strong>IIIF URI</strong></td>
-   <td><strong>Beeld in Theseus</strong></td>
+   <td><strong>View in Theseus</strong></td>
   </tr>
   <tr>
    <td></td>
@@ -498,37 +495,37 @@ Lijstje van IIIF URI's en of ze goed worden getoond in Theseus.
   </tr>
 </table>
 
-Gevonden / opgeloste issues:
+Found / resolved issues:
 
 -
 -
 -
 
-#### **Eindconclusie NDE compatabiliteit**
+#### **Final conclusion NDE compatibility**
 
 <table class="table">
   <tr>
    <td><strong>Aspect</strong></td>
-   <td><strong>Voldoet wel / niet</strong></td>
+   <td><strong>Compliant / non-compliant</strong></td>
   </tr>
   <tr>
-   <td>✅ Datasets vindbaar via het Datasetregister</td>
+   <td>✅ Datasets findable via the Dataset Register</td>
    <td>👍👎</td>
   </tr>
   <tr>
-   <td>✅ Gebruik van duurzame identifiers</td>
+   <td>✅ Use of persistent identifiers</td>
    <td>👍👎</td>
   </tr>
   <tr>
-   <td>✅ Publiceert linked open data</td>
+   <td>✅ Publishes linked open data</td>
    <td>👍👎</td>
   </tr>
   <tr>
-   <td>✅ Linkt naar URI's van gestandaardiseerde termen via het Termennetwerk</td>
+   <td>✅ Links to URIs of standardised terms via the Network of Terms</td>
    <td>👍👎</td>
   </tr>
   <tr>
-   <td>✅ Gebruik IIIF voor toegang tot beeldcollecties</td>
+   <td>✅ Uses IIIF for access to image collections</td>
    <td>👍👎</td>
   </tr>
 </table>

@@ -19,6 +19,7 @@
     "@docusaurus/core": "^3.9.2",
     "@docusaurus/preset-classic": "^3.9.2",
     "@docusaurus/theme-mermaid": "^3.9.2",
+    "@fontsource/poppins": "^5.2.7",
     "@mdx-js/react": "^3.1.1",
     "@whitespace-se/docusaurus-plugin-matomo": "^1.1.0",
     "clsx": "^2.0.0",
