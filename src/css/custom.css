@@ -4,32 +4,216 @@
  * work well for content-centric websites.
  */
 
-/* You can override the default Infima variables here. */
+@import "@fontsource/roboto/400.css";
+@import "@fontsource/roboto/500.css";
+@import "@fontsource/roboto/700.css";
+@import "@fontsource/poppins/500.css";
+@import "@fontsource/poppins/600.css";
+@import "@fontsource/poppins/700.css";
+
 :root {
-  --ifm-color-primary: #2e8555;
-  --ifm-color-primary-dark: #29784c;
-  --ifm-color-primary-darker: #277148;
-  --ifm-color-primary-darkest: #205d3b;
-  --ifm-color-primary-light: #33925d;
-  --ifm-color-primary-lighter: #359962;
-  --ifm-color-primary-lightest: #3cad6e;
+  --nde-blue: oklch(0.4927 0.2767 264.42);
+  --nde-dark-blue: oklch(0.2983 0.0882 264.96);
+  --nde-light-blue: oklch(0.953 0.0266 233.96);
+  --nde-orange: oklch(0.663 0.2142 38.61);
+
+  --ifm-color-primary: var(--nde-blue);
+  --ifm-color-primary-dark: oklch(0.46 0.27 264.42);
+  --ifm-color-primary-darker: oklch(0.43 0.26 264.42);
+  --ifm-color-primary-darkest: oklch(0.36 0.24 264.42);
+  --ifm-color-primary-light: oklch(0.53 0.27 264.42);
+  --ifm-color-primary-lighter: oklch(0.56 0.27 264.42);
+  --ifm-color-primary-lightest: oklch(0.62 0.25 264.42);
+
+  --ifm-font-family-base: 'Roboto', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --ifm-heading-font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --ifm-heading-font-weight: 600;
+
   --ifm-code-font-size: 95%;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
 }
 
-/* For readability concerns, you should choose a lighter palette in dark mode. */
 [data-theme='dark'] {
-  --ifm-color-primary: #25c2a0;
-  --ifm-color-primary-dark: #21af90;
-  --ifm-color-primary-darker: #1fa588;
-  --ifm-color-primary-darkest: #1a8870;
-  --ifm-color-primary-light: #29d5b0;
-  --ifm-color-primary-lighter: #32d8b4;
-  --ifm-color-primary-lightest: #4fddbf;
+  --ifm-color-primary: var(--nde-orange);
+  --ifm-color-primary-dark: oklch(0.62 0.21 38.61);
+  --ifm-color-primary-darker: oklch(0.59 0.20 38.61);
+  --ifm-color-primary-darkest: oklch(0.49 0.18 38.61);
+  --ifm-color-primary-light: oklch(0.71 0.21 38.61);
+  --ifm-color-primary-lighter: oklch(0.74 0.20 38.61);
+  --ifm-color-primary-lightest: oklch(0.80 0.18 38.61);
+
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
 
-/* External link indicator */
-main a[target="_blank"]::after {
-  content: " ↗";
+.footer--dark {
+  --ifm-footer-background-color: var(--nde-dark-blue);
+}
+
+.navbar__title,
+.navbar__link,
+.navbar__brand,
+.menu__link,
+.breadcrumbs__link,
+.theme-blog-sidebar a,
+[class*="sidebarItemTitle"],
+[class*="sidebarItemLink"] {
+  font-family: var(--ifm-heading-font-family);
+}
+
+a[class*="tagRegular_"],
+a[class*="tagWithCount_"] {
+  background-color: var(--nde-light-blue);
+  border: 0;
+  border-radius: 0;
+  color: var(--nde-blue);
+  font-family: var(--ifm-heading-font-family);
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+a[class*="tagRegular_"]:hover,
+a[class*="tagWithCount_"]:hover {
+  background-color: var(--nde-blue);
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.markdown p a,
+.markdown li a,
+.markdown td a,
+.markdown blockquote a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
+}
+
+.markdown p a:hover,
+.markdown li a:hover,
+.markdown td a:hover,
+.markdown blockquote a:hover,
+.markdown p a:focus-visible,
+.markdown li a:focus-visible,
+.markdown td a:focus-visible,
+.markdown blockquote a:focus-visible {
+  color: var(--ifm-link-color);
+}
+
+a[target="_blank"] > svg[class*="iconExternalLink"] {
+  display: none;
+}
+
+.markdown a[target="_blank"]::after,
+.footer__link-item[target="_blank"]::after,
+.navbar__link[target="_blank"]::after {
+  content: " \2197";
+}
+
+.pagination-nav__link {
+  background-color: transparent;
+  border: 1px solid var(--nde-blue);
+  border-radius: 0;
+  color: inherit;
+  padding: 1rem 1.25rem;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.pagination-nav__link:hover {
+  background-color: var(--nde-blue);
+  color: #ffffff;
+}
+
+.pagination-nav__link:hover .pagination-nav__sublabel,
+.pagination-nav__link:hover .pagination-nav__label {
+  color: #ffffff;
+}
+
+.pagination-nav__sublabel {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.pagination-nav__label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5em;
+  text-align: left;
+  font-family: var(--ifm-heading-font-family);
+  font-weight: 700;
+}
+
+.pagination-nav__link--prev .pagination-nav__label::before,
+.pagination-nav__link--next .pagination-nav__label::after {
+  content: "";
+  display: inline-block;
+  width: 2.2em;
+  height: 1.2em;
+  background-color: currentColor;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  vertical-align: middle;
+}
+
+.pagination-nav__link--prev .pagination-nav__label::before {
+  -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 28'><path d='M0.84 14.090l12.91 12.91 1.99-2-9.5-9.5h42.84s0-2.82 0-2.82h-42.84s9.5-9.5 9.5-9.5l-1.99-1.99-12.91 12.9z'/></svg>");
+  mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 28'><path d='M0.84 14.090l12.91 12.91 1.99-2-9.5-9.5h42.84s0-2.82 0-2.82h-42.84s9.5-9.5 9.5-9.5l-1.99-1.99-12.91 12.9z'/></svg>");
+  flex-shrink: 0;
+}
+
+.pagination-nav__link--next .pagination-nav__label::after {
+  -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 28'><path d='M36.18 1.18l-1.99 1.99 9.5 9.5h-42.85v2.82h42.84l-9.5 9.5 1.99 2 12.91-12.91-12.9-12.9z'/></svg>");
+  mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 28'><path d='M36.18 1.18l-1.99 1.99 9.5 9.5h-42.85v2.82h42.84l-9.5 9.5 1.99 2 12.91-12.91-12.9-12.9z'/></svg>");
+  flex-shrink: 0;
+}
+
+article a[aria-label^="Read more"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 3em;
+  min-width: 14rem;
+  background-color: var(--nde-blue);
+  color: #ffffff;
+  font-family: var(--ifm-heading-font-family);
+  font-weight: 700;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+article a[aria-label^="Read more"]:hover {
+  background-color: var(--nde-dark-blue);
+  color: #ffffff;
+  text-decoration: none;
+}
+
+article a[aria-label^="Read more"] b {
+  font-weight: inherit;
+}
+
+article a[aria-label^="Read more"]::after {
+  content: "";
+  display: inline-block;
+  width: 2.2em;
+  height: 1.2em;
+  flex-shrink: 0;
+  background-color: currentColor;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 28'><path d='M36.18 1.18l-1.99 1.99 9.5 9.5h-42.85v2.82h42.84l-9.5 9.5 1.99 2 12.91-12.91-12.9-12.9z'/></svg>");
+  mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 28'><path d='M36.18 1.18l-1.99 1.99 9.5 9.5h-42.85v2.82h42.84l-9.5 9.5 1.99 2 12.91-12.91-12.9-12.9z'/></svg>");
 }
