@@ -166,7 +166,7 @@ const config: Config = {
             },
             {
               label: 'GitHub',
-              href: 'https://github.com/netwerk-digitaal-erfgoed/netwerk-digitaal-erfgoed.github.io',
+              href: 'https://github.com/netwerk-digitaal-erfgoed',
             },
           ],
         },
