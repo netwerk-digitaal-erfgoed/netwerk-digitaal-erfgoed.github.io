@@ -114,7 +114,7 @@ const config: Config = {
     navbar: {
       title: 'Netwerk Digitaal Erfgoed',
       logo: {
-        alt: 'My Site Logo',
+        alt: 'Logo Netwerk Digitaal Erfgoed',
         src: 'img/logo.svg',
       },
       items: [
