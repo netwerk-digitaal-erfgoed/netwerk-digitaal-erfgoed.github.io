@@ -1,10 +1,10 @@
 ---
-title: Can I use UUID's with ARK?
+title: Can I use UUIDs with ARK?
 authors: coret
 tags: [persistent-http-uris]
 ---
 
-Yes, although hyphens have no meaning in the Assigned Name of an ARK, you can use UUID's as Assigned Names in ARK, the local resolver does need to be made aware.
+Yes, although hyphens have no meaning in the Assigned Name of an ARK, you can use UUIDs as Assigned Names in ARK, the local resolver does need to be made aware.
 
 <!-- truncate -->
 
@@ -45,7 +45,7 @@ So, as heritage organisation (and as Collection Information System vendor), you 
 
 However, in the realm of resolvers, you will need to consider the fact that the hyphen has no meaning. The [nt2.net](https://n2t.net) and [arks.org](https://arks.org/) resolvers chose an implementation where the hyphen is removed from the Assigned Names _"as they have no meaning."_ upon redirect.
 
-In practice, for heritage organisations using UUID's the local resolver (on the heritage institution's side) will have to redirect (*)/interpreted an ARK like `ark:12345/141e86dcd3964e59bbc24c3bf5326152` as/to `ark:12345/141e86dc-d396-4e59-bbc2-4c3bf5326152`. This Assigned Name 'in UUID style' can then simply be routed to the object page or - based on content negotiation - resolved to RDF information.
+In practice, for heritage organisations using UUIDs the local resolver (on the heritage institution's side) will have to redirect (*)/interpreted an ARK like `ark:12345/141e86dcd3964e59bbc24c3bf5326152` as/to `ark:12345/141e86dc-d396-4e59-bbc2-4c3bf5326152`. This Assigned Name 'in UUID style' can then simply be routed to the object page or - based on content negotiation - resolved to RDF information.
 
 \*) Example Apache rewrite rule with regexp:
 ```
