@@ -60,6 +60,26 @@
   font-family: var(--ifm-heading-font-family);
 }
 
+a[class*="tagRegular_"],
+a[class*="tagWithCount_"] {
+  background-color: var(--nde-light-blue);
+  border: 0;
+  border-radius: 0;
+  color: var(--nde-blue);
+  font-family: var(--ifm-heading-font-family);
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+a[class*="tagRegular_"]:hover,
+a[class*="tagWithCount_"]:hover {
+  background-color: var(--nde-blue);
+  color: #ffffff;
+  text-decoration: none;
+}
+
 .markdown p a,
 .markdown li a,
 .markdown td a,
