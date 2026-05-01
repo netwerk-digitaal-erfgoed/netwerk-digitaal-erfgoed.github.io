@@ -7,7 +7,27 @@ import type * as Preset from '@docusaurus/preset-classic';
 const config: Config = {
   title: 'NDE',
   tagline: 'Make digital heritage accessible to all',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/favicon.png',
+
+  headTags: [
+    {
+      tagName: 'link',
+      attributes: {
+        rel: 'icon',
+        type: 'image/png',
+        sizes: '192x192',
+        href: '/img/favicon-192x192.png',
+      },
+    },
+    {
+      tagName: 'link',
+      attributes: {
+        rel: 'apple-touch-icon',
+        sizes: '180x180',
+        href: '/img/apple-touch-icon.png',
+      },
+    },
+  ],
 
   // Set the production url of your site here
   url: 'https://docs.nde.nl',
