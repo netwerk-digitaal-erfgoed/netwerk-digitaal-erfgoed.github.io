@@ -73,3 +73,25 @@
 main a[target="_blank"]::after {
   content: " ↗";
 }
+
+.pagination-nav__link {
+  background-color: var(--nde-blue);
+  border: 0;
+  border-radius: 0;
+  padding: 1rem 1.25rem;
+  transition: background-color 0.2s ease;
+}
+
+.pagination-nav__link:hover {
+  background-color: var(--nde-dark-blue);
+}
+
+.pagination-nav__sublabel {
+  color: #ffffff;
+  opacity: 0.8;
+}
+
+.pagination-nav__label {
+  color: #ffffff;
+  font-weight: 700;
+}
