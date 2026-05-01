@@ -2,9 +2,5 @@
   "item.label.Documentation": {
     "message": "Documentatie",
     "description": "Navbar item with label Documentation"
-  },
-  "item.label.News": {
-    "message": "Nieuws",
-    "description": "Navbar item with label News"
   }
 }

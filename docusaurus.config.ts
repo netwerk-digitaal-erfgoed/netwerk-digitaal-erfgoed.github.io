@@ -124,7 +124,7 @@ const config: Config = {
           position: 'left',
           label: 'Documentation',
         },
-        {to: '/blog', label: 'News', position: 'left'},
+        {to: '/blog', label: 'Blog', position: 'left'},
         {to: '/showcase', label: 'Showcase', position: 'left'},
         {
           href: 'https://status.netwerkdigitaalerfgoed.nl',

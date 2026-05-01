@@ -78,7 +78,13 @@
   color: var(--ifm-link-color);
 }
 
-.markdown a[target="_blank"]::after {
+a[target="_blank"] > svg[class*="iconExternalLink"] {
+  display: none;
+}
+
+.markdown a[target="_blank"]::after,
+.footer__link-item[target="_blank"]::after,
+.navbar__link[target="_blank"]::after {
   content: " \2197";
 }
 
