@@ -78,8 +78,8 @@
   color: var(--ifm-link-color);
 }
 
-main a[target="_blank"]::after {
-  content: " ↗";
+.markdown a[target="_blank"]::after {
+  content: " \2197";
 }
 
 .pagination-nav__link {
