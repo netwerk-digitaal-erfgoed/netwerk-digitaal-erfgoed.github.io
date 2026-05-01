@@ -123,6 +123,11 @@ a[target="_blank"] > svg[class*="iconExternalLink"] {
 }
 
 .pagination-nav__label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5em;
+  text-align: left;
   font-family: var(--ifm-heading-font-family);
   font-weight: 700;
 }
@@ -131,8 +136,8 @@ a[target="_blank"] > svg[class*="iconExternalLink"] {
 .pagination-nav__link--next .pagination-nav__label::after {
   content: "";
   display: inline-block;
-  width: 1.6em;
-  height: 0.9em;
+  width: 2.2em;
+  height: 1.2em;
   background-color: currentColor;
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
@@ -144,18 +149,21 @@ a[target="_blank"] > svg[class*="iconExternalLink"] {
 .pagination-nav__link--prev .pagination-nav__label::before {
   -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 28'><path d='M0.84 14.090l12.91 12.91 1.99-2-9.5-9.5h42.84s0-2.82 0-2.82h-42.84s9.5-9.5 9.5-9.5l-1.99-1.99-12.91 12.9z'/></svg>");
   mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 28'><path d='M0.84 14.090l12.91 12.91 1.99-2-9.5-9.5h42.84s0-2.82 0-2.82h-42.84s9.5-9.5 9.5-9.5l-1.99-1.99-12.91 12.9z'/></svg>");
-  margin-right: 0.5em;
+  flex-shrink: 0;
 }
 
 .pagination-nav__link--next .pagination-nav__label::after {
   -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 28'><path d='M36.18 1.18l-1.99 1.99 9.5 9.5h-42.85v2.82h42.84l-9.5 9.5 1.99 2 12.91-12.91-12.9-12.9z'/></svg>");
   mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 28'><path d='M36.18 1.18l-1.99 1.99 9.5 9.5h-42.85v2.82h42.84l-9.5 9.5 1.99 2 12.91-12.91-12.9-12.9z'/></svg>");
-  margin-left: 0.5em;
+  flex-shrink: 0;
 }
 
 article a[aria-label^="Read more"] {
   display: inline-flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 3em;
+  min-width: 14rem;
   background-color: var(--nde-blue);
   color: #ffffff;
   font-family: var(--ifm-heading-font-family);
@@ -178,9 +186,9 @@ article a[aria-label^="Read more"] b {
 article a[aria-label^="Read more"]::after {
   content: "";
   display: inline-block;
-  margin-left: 0.75em;
-  width: 1.6em;
-  height: 0.9em;
+  width: 2.2em;
+  height: 1.2em;
+  flex-shrink: 0;
   background-color: currentColor;
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
