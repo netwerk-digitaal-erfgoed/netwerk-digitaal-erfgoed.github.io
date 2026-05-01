@@ -149,3 +149,40 @@ a[target="_blank"] > svg[class*="iconExternalLink"] {
   mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 28'><path d='M36.18 1.18l-1.99 1.99 9.5 9.5h-42.85v2.82h42.84l-9.5 9.5 1.99 2 12.91-12.91-12.9-12.9z'/></svg>");
   margin-left: 0.5em;
 }
+
+article a[aria-label^="Read more"] {
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--nde-blue);
+  color: #ffffff;
+  font-family: var(--ifm-heading-font-family);
+  font-weight: 700;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+article a[aria-label^="Read more"]:hover {
+  background-color: var(--nde-dark-blue);
+  color: #ffffff;
+  text-decoration: none;
+}
+
+article a[aria-label^="Read more"] b {
+  font-weight: inherit;
+}
+
+article a[aria-label^="Read more"]::after {
+  content: "";
+  display: inline-block;
+  margin-left: 0.75em;
+  width: 1.6em;
+  height: 0.9em;
+  background-color: currentColor;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 28'><path d='M36.18 1.18l-1.99 1.99 9.5 9.5h-42.85v2.82h42.84l-9.5 9.5 1.99 2 12.91-12.91-12.9-12.9z'/></svg>");
+  mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 28'><path d='M36.18 1.18l-1.99 1.99 9.5 9.5h-42.85v2.82h42.84l-9.5 9.5 1.99 2 12.91-12.91-12.9-12.9z'/></svg>");
+}
