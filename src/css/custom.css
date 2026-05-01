@@ -75,23 +75,36 @@ main a[target="_blank"]::after {
 }
 
 .pagination-nav__link {
-  background-color: var(--nde-blue);
-  border: 0;
+  background-color: transparent;
+  border: 1px solid var(--nde-blue);
   border-radius: 0;
+  color: inherit;
   padding: 1rem 1.25rem;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .pagination-nav__link:hover {
-  background-color: var(--nde-dark-blue);
+  background-color: var(--nde-blue);
+  color: #ffffff;
+}
+
+.pagination-nav__link:hover .pagination-nav__sublabel,
+.pagination-nav__link:hover .pagination-nav__label {
+  color: #ffffff;
 }
 
 .pagination-nav__sublabel {
-  color: #ffffff;
-  opacity: 0.8;
+  opacity: 0.7;
 }
 
 .pagination-nav__label {
-  color: #ffffff;
   font-weight: 700;
+}
+
+.pagination-nav__link--prev .pagination-nav__label::before {
+  content: "\2190  ";
+}
+
+.pagination-nav__link--next .pagination-nav__label::after {
+  content: "  \2192";
 }
