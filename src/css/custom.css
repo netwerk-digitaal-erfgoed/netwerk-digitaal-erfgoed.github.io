@@ -53,7 +53,10 @@
 .navbar__link,
 .navbar__brand,
 .menu__link,
-.breadcrumbs__link {
+.breadcrumbs__link,
+.theme-blog-sidebar a,
+[class*="sidebarItemTitle"],
+[class*="sidebarItemLink"] {
   font-family: var(--ifm-heading-font-family);
 }
 
