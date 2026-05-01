@@ -114,6 +114,7 @@
 }
 
 .pagination-nav__label {
+  font-family: var(--ifm-heading-font-family);
   font-weight: 700;
 }
 
