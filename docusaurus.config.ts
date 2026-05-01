@@ -177,7 +177,6 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `Copyright? © ${new Date().getFullYear()} NDE`,
     },
     prism: {
       theme: prismThemes.github,
