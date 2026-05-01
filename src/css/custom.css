@@ -4,32 +4,72 @@
  * work well for content-centric websites.
  */
 
-/* You can override the default Infima variables here. */
+@import "@fontsource/roboto/400.css";
+@import "@fontsource/roboto/500.css";
+@import "@fontsource/roboto/700.css";
+@import "@fontsource/poppins/500.css";
+@import "@fontsource/poppins/600.css";
+@import "@fontsource/poppins/700.css";
+
 :root {
-  --ifm-color-primary: #2e8555;
-  --ifm-color-primary-dark: #29784c;
-  --ifm-color-primary-darker: #277148;
-  --ifm-color-primary-darkest: #205d3b;
-  --ifm-color-primary-light: #33925d;
-  --ifm-color-primary-lighter: #359962;
-  --ifm-color-primary-lightest: #3cad6e;
+  --nde-blue: oklch(0.4927 0.2767 264.42);
+  --nde-dark-blue: oklch(0.2983 0.0882 264.96);
+  --nde-light-blue: oklch(0.953 0.0266 233.96);
+  --nde-orange: oklch(0.663 0.2142 38.61);
+
+  --ifm-color-primary: var(--nde-blue);
+  --ifm-color-primary-dark: oklch(0.46 0.27 264.42);
+  --ifm-color-primary-darker: oklch(0.43 0.26 264.42);
+  --ifm-color-primary-darkest: oklch(0.36 0.24 264.42);
+  --ifm-color-primary-light: oklch(0.53 0.27 264.42);
+  --ifm-color-primary-lighter: oklch(0.56 0.27 264.42);
+  --ifm-color-primary-lightest: oklch(0.62 0.25 264.42);
+
+  --ifm-font-family-base: 'Roboto', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --ifm-heading-font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --ifm-heading-font-weight: 600;
+
   --ifm-code-font-size: 95%;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
 }
 
-/* For readability concerns, you should choose a lighter palette in dark mode. */
 [data-theme='dark'] {
-  --ifm-color-primary: #25c2a0;
-  --ifm-color-primary-dark: #21af90;
-  --ifm-color-primary-darker: #1fa588;
-  --ifm-color-primary-darkest: #1a8870;
-  --ifm-color-primary-light: #29d5b0;
-  --ifm-color-primary-lighter: #32d8b4;
-  --ifm-color-primary-lightest: #4fddbf;
+  --ifm-color-primary: var(--nde-orange);
+  --ifm-color-primary-dark: oklch(0.62 0.21 38.61);
+  --ifm-color-primary-darker: oklch(0.59 0.20 38.61);
+  --ifm-color-primary-darkest: oklch(0.49 0.18 38.61);
+  --ifm-color-primary-light: oklch(0.71 0.21 38.61);
+  --ifm-color-primary-lighter: oklch(0.74 0.20 38.61);
+  --ifm-color-primary-lightest: oklch(0.80 0.18 38.61);
+
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
 
-/* External link indicator */
+.footer--dark {
+  --ifm-footer-background-color: var(--nde-dark-blue);
+}
+
+.markdown p a,
+.markdown li a,
+.markdown td a,
+.markdown blockquote a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
+}
+
+.markdown p a:hover,
+.markdown li a:hover,
+.markdown td a:hover,
+.markdown blockquote a:hover,
+.markdown p a:focus-visible,
+.markdown li a:focus-visible,
+.markdown td a:focus-visible,
+.markdown blockquote a:focus-visible {
+  color: var(--ifm-link-color);
+}
+
 main a[target="_blank"]::after {
   content: " ↗";
 }
