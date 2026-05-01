@@ -122,9 +122,9 @@ const config: Config = {
           type: 'docSidebar',
           sidebarId: 'tutorialSidebar',
           position: 'left',
-          label: 'Docs',
+          label: 'Documentation',
         },
-        {to: '/blog', label: 'Blog', position: 'left'},
+        {to: '/blog', label: 'News', position: 'left'},
         {to: '/showcase', label: 'Showcase', position: 'left'},
         {
           href: 'https://status.netwerkdigitaalerfgoed.nl',
