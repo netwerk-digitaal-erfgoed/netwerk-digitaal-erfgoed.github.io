@@ -1,6 +1,6 @@
 {
-  "item.label.Documentation": {
-    "message": "Documentatie",
-    "description": "Navbar item with label Documentation"
+  "item.label.Docs": {
+    "message": "Docs",
+    "description": "Navbar item with label Docs"
   }
 }
