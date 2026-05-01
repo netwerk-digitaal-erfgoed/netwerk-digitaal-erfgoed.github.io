@@ -146,33 +146,41 @@ const config: Config = {
       style: 'dark',
       links: [
         {
-          title: 'Docs',
+          title: 'Services',
           items: [
             {
-              label: 'Docs',
-              to: '/',
+              label: 'Dataset Register',
+              href: 'https://datasetregister.netwerkdigitaalerfgoed.nl/',
             },
-          ],
-        },
-        {
-          title: 'Community',
-          items: [
             {
-              label: 'Website',
-              href: 'https://netwerkdigitaalerfgoed.nl',
-            }
+              label: 'Network of Terms',
+              href: 'https://network-of-terms.netwerkdigitaalerfgoed.nl/',
+            },
           ],
         },
         {
           title: 'More',
           items: [
             {
-              label: 'Blog',
-              to: '/blog',
+              label: 'Status',
+              href: 'https://status.netwerkdigitaalerfgoed.nl/',
             },
             {
               label: 'GitHub',
-              href: 'https://github.com/netwerk-digitaal-erfgoed/docs',
+              href: 'https://github.com/netwerk-digitaal-erfgoed/netwerk-digitaal-erfgoed.github.io',
+            },
+          ],
+        },
+        {
+          title: 'Contact',
+          items: [
+            {
+              label: 'tech@netwerkdigitaalerfgoed.nl',
+              href: 'mailto:tech@netwerkdigitaalerfgoed.nl',
+            },
+            {
+              label: '@NetwerkDigitaalErfgoed@mastodon.nl',
+              href: 'https://mastodon.nl/@NetwerkDigitaalErfgoed',
             },
           ],
         },
