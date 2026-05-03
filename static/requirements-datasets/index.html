@@ -1490,7 +1490,7 @@ Possible extra rowspan handling
 </style>
   <meta content="Bikeshed version 5d4d5b9a8, updated Fri Apr 17 13:49:40 2026 -0700" name="generator">
   <link href="https://docs.nde.nl/requirements-datasets/" rel="canonical">
-  <meta content="2e059a9532b948cbe0aca58b4b274705a0206492" name="revision">
+  <meta content="dcd91bb48a856199e2f8a16229c31d7aebfc9ce3" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>
 td, th {
@@ -2292,7 +2292,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <p data-fill-with="logo"></p>
    <h1 class="no-ref p-name" id="title">Requirements for Datasets</h1>
    <h2 class="heading no-num no-ref no-toc settled" id="profile-and-date"><span class="content">Living Standard,
-    <time class="dt-updated" datetime="2026-04-23">23 April 2026</time></span></h2>
+    <time class="dt-updated" datetime="2026-05-03">3 May 2026</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -2312,7 +2312,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <p class="copyright" data-fill-with="copyright"><a href="http://creativecommons.org/publicdomain/zero/1.0/" rel="license"><img alt="CC0" height="15" src="https://licensebuttons.net/p/zero/1.0/80x15.png" width="80"></a>
 To the extent possible under law, the editors have waived all copyright
 and related or neighboring rights to this work.
-In addition, as of 23 April 2026,
+In addition, as of 3 May 2026,
 the editors have made this specification available under the
 <a href="https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0" rel="license">Open Web Foundation Agreement Version 1.0</a>,
 which is available at https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0.
@@ -3260,7 +3260,7 @@ even if that resource is the same on all pages.</p>
                     
       <td>
                 Required
-                        <br><small>v[object Object]: must be rdf:langString</small>
+                        <br><small>v2.0: must be rdf:langString</small>
                     
      <tr>
       <th scope="row"><a href="schema:description">schema:description</a>
@@ -3274,7 +3274,7 @@ even if that resource is the same on all pages.</p>
                     
       <td>
                 Required
-                        <br><small>v[object Object]: must be rdf:langString</small>
+                        <br><small>v2.0: must be rdf:langString</small>
                     
      <tr>
       <th scope="row"><a href="schema:publisher">schema:publisher</a>
@@ -3299,7 +3299,7 @@ even if that resource is the same on all pages.</p>
                     
       <td>
                 Required
-                        <br><small>v[object Object]: must be IRI</small>
+                        <br><small>v2.0: must be IRI</small>
                     
      <tr>
       <th scope="row"><a href="schema:distribution">schema:distribution</a>
@@ -3321,33 +3321,33 @@ even if that resource is the same on all pages.</p>
                         
      <tr>
       <th scope="row"><a href="schema:datePublished">schema:datePublished</a>
-      <td>The date of formal issuance (such as publication) of the dataset.
+      <td>The date of formal issuance (such as publication) of the dataset. See <a href="#dataset-date">§ 4.2.3 Creation, publication and modification dates</a>.
       <td>
                 1
                     
       <td>
                 Recommended
-                    <br><small>v[object Object]: becomes required</small>
+                    <br><small>v2.0: must be valid ISO 8601</small>
                     
      <tr>
       <th scope="row"><a href="schema:dateCreated">schema:dateCreated</a>
-      <td>The date on which the dataset was created.
+      <td>The date on which the dataset was created. See <a href="#dataset-date">§ 4.2.3 Creation, publication and modification dates</a>.
       <td>
                 1
                     
       <td>
                 Recommended
-                    <br><small>v[object Object]: becomes required</small>
+                    <br><small>v2.0: must be valid ISO 8601</small>
                     
      <tr>
       <th scope="row"><a href="schema:dateModified">schema:dateModified</a>
-      <td>The most recent date on which the dataset was changed or modified.
+      <td>The most recent date on which the dataset was changed or modified. See <a href="#dataset-date">§ 4.2.3 Creation, publication and modification dates</a>.
       <td>
                 1
                     
       <td>
                 Recommended
-                    <br><small>v[object Object]: becomes required</small>
+                    <br><small>v2.0: must be valid ISO 8601</small>
                     
      <tr>
       <th scope="row"><a href="schema:version">schema:version</a>
@@ -3366,7 +3366,7 @@ even if that resource is the same on all pages.</p>
                     
       <td>
                 Recommended
-                <br><small>v[object Object]: must match <code>[object Object]</code></small>
+                <br><small>v2.0: must match <code>^[a-zA-Z]{2,3}(-[a-zA-Z0-9]+)*$</code></small>
                     
      <tr>
       <th scope="row"><a href="schema:mainEntityOfPage">schema:mainEntityOfPage</a>
@@ -3403,7 +3403,7 @@ even if that resource is the same on all pages.</p>
                 
       <td>
                 Discouraged
-                <br><small>v[object Object]: no longer allowed</small>
+                <br><small>v2.0: no longer allowed</small>
                     
      <tr>
       <th scope="row"><a href="schema:about">schema:about</a>
@@ -3422,7 +3422,7 @@ even if that resource is the same on all pages.</p>
                     
       <td>
                 Recommended
-                    <br><small>v[object Object]: becomes required</small>
+                    <br><small>v2.0: becomes required</small>
                     
      <tr>
       <th scope="row"><a href="schema:spatialCoverage">schema:spatialCoverage</a>
@@ -3432,7 +3432,7 @@ even if that resource is the same on all pages.</p>
                     
       <td>
                 Recommended
-                    <br><small>v[object Object]: must be IRI</small>
+                    <br><small>v2.0: must be IRI</small>
                     
      <tr>
       <th scope="row"><a href="schema:temporalCoverage">schema:temporalCoverage</a>
@@ -3442,7 +3442,7 @@ even if that resource is the same on all pages.</p>
                     
       <td>
                 Recommended
-                    <br><small>v[object Object]: becomes required</small>
+                    <br><small>v2.0: becomes required</small>
                     
      <tr>
       <th scope="row"><a href="schema:hasPart">schema:hasPart</a>
@@ -3461,7 +3461,7 @@ even if that resource is the same on all pages.</p>
                     
       <td>
                 Recommended
-                <br><small>v[object Object]: must be IRI</small>
+                <br><small>v2.0: must be IRI</small>
                     
      <tr>
       <th scope="row"><a href="dct:accrualPeriodicity">dct:accrualPeriodicity</a>
@@ -3507,7 +3507,7 @@ even if that resource is the same on all pages.</p>
                     
       <td>
                 Required
-                        <br><small>v[object Object]: must be rdf:langString</small>
+                        <br><small>v2.0: must be rdf:langString</small>
                     
      <tr>
       <th scope="row"><a href="schema:alternateName">schema:alternateName</a>
@@ -3517,7 +3517,7 @@ even if that resource is the same on all pages.</p>
                     
       <td>
                 Recommended
-                <br><small>v[object Object]: must be rdf:langString</small>
+                <br><small>v2.0: must be rdf:langString</small>
                     
      <tr>
       <th scope="row"><a href="schema:identifier">schema:identifier</a>
@@ -3571,7 +3571,7 @@ even if that resource is the same on all pages.</p>
       <td>
       <td>
                 Recommended
-                <br><small>v[object Object]: max 1</small>
+                <br><small>v2.0: max 1</small>
                     
      <tr>
       <th scope="row"><a href="schema:description">schema:description</a>
@@ -3584,23 +3584,23 @@ even if that resource is the same on all pages.</p>
                     
      <tr>
       <th scope="row"><a href="schema:datePublished">schema:datePublished</a>
-      <td>The date of formal issuance (such as publication) of the distribution.
+      <td>The date of formal issuance (such as publication) of the distribution. See <a href="#dataset-date">§ 4.2.3 Creation, publication and modification dates</a>.
       <td>
                 0..1
                     
       <td>
                 Recommended
-                <br><small>v[object Object]: becomes required</small>
+                <br><small>v2.0: must be valid ISO 8601</small>
                     
      <tr>
       <th scope="row"><a href="schema:dateModified">schema:dateModified</a>
-      <td>The most recent date on which the distribution was changed or modified.
+      <td>The most recent date on which the distribution was changed or modified. See <a href="#dataset-date">§ 4.2.3 Creation, publication and modification dates</a>.
       <td>
                 0..1
                     
       <td>
                 Recommended
-                <br><small>v[object Object]: becomes required</small>
+                <br><small>v2.0: must be valid ISO 8601</small>
                     
      <tr>
       <th scope="row"><a href="schema:inLanguage">schema:inLanguage</a>
@@ -3610,7 +3610,7 @@ even if that resource is the same on all pages.</p>
                     
       <td>
                 Recommended
-                <br><small>v[object Object]: must match <code>[object Object]</code></small>
+                <br><small>v2.0: must match <code>^[a-zA-Z]{2,3}(-[a-zA-Z0-9]+)*$</code></small>
                     
      <tr>
       <th scope="row"><a href="schema:license">schema:license</a>
@@ -3622,7 +3622,7 @@ even if that resource is the same on all pages.</p>
                     
       <td>
                 Recommended
-                <br><small>v[object Object]: must be IRI</small>
+                <br><small>v2.0: must be IRI</small>
                     
      <tr>
       <th scope="row"><a href="schema:contentSize">schema:contentSize</a>
@@ -3641,7 +3641,7 @@ even if that resource is the same on all pages.</p>
                     
       <td>
                 Recommended
-                <br><small>v[object Object]: must be IRI</small>
+                <br><small>v2.0: must be IRI</small>
                     
      <tr>
       <th scope="row"><a href="schema:documentation">schema:documentation</a>
@@ -3668,7 +3668,7 @@ even if that resource is the same on all pages.</p>
       <th scope="row">@id
       <td>The HTTP <a data-link-type="biblio" href="#biblio-iri" title="Internationalized Resource Identifiers (IRIs)">[IRI]</a> of the DataCatalog.
       <td>1
-      <td>Recommended<br><small>v[object Object]: must be IRI</small>
+      <td>Recommended<br><small>v2.0: must be IRI</small>
      <tr>
       <th scope="row"><a href="schema:name">schema:name</a>
       <td>Name of the data catalog
@@ -3677,7 +3677,7 @@ even if that resource is the same on all pages.</p>
                     
       <td>
                 Required
-                        <br><small>v[object Object]: must be rdf:langString</small>
+                        <br><small>v2.0: must be rdf:langString</small>
                     
      <tr>
       <th scope="row"><a href="schema:description">schema:description</a>
@@ -3691,7 +3691,7 @@ even if that resource is the same on all pages.</p>
                     
       <td>
                 Required
-                        <br><small>v[object Object]: must be rdf:langString</small>
+                        <br><small>v2.0: must be rdf:langString</small>
                     
      <tr>
       <th scope="row"><a href="schema:publisher">schema:publisher</a>
