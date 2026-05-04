@@ -1,5 +1,5 @@
 title: AAT (Getty) tijdelijk niet beschikbaar
-authors: Joop Vanderheijden
+authors: Joop
 tags: [network-of-terms]
 ------------------------
 
