@@ -392,6 +392,18 @@ to see which languages are available for each source.
 
 :::
 
+### Language fallback
+
+The `languages` parameter filters labels per term – it does not exclude terms from the results.
+If a term has no labels in any of the preferred languages, it is still returned, but its label fields
+(`prefLabel`, `altLabel`, `hiddenLabel`, `definition`, `scopeNote`) fall back as follows:
+
+* If the source provides untagged literals for the field, they are returned and treated as Dutch (`nl`).
+* Otherwise, the field is returned as an empty list.
+
+The languages you can actually get back depend on what each source provides: see the `inLanguage`
+field when [listing sources](#list-terminology-sources).
+
 ## Response times
 
 Response times from the Network of Terms will vary depending on how fast each terminology source returns results for the
