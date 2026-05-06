@@ -59,8 +59,8 @@ Bij deze vernieuwingen besteden we veel aandacht aan de gebruikersinterface en -
 
 ## Vervolg
 
-Over de [validatiepagina](https://datasetregister.netwerkdigitaalerfgoed.nl/validate.php?url=http%3A%2F%2Fdata.beeldengeluid.nl%2Fid%2Fdataset%2F0029) krijgen we regelmatig vragen van uitgevers, 
-wat haar een logische kandidaat maakt voor de volgende verbetering.
+Inmiddels is ook de [validatiepagina](https://datasetregister.netwerkdigitaalerfgoed.nl/validate.php?url=http%3A%2F%2Fdata.beeldengeluid.nl%2Fid%2Fdataset%2F0029) vernieuwd,
+zodat uitgevers hun datasetbeschrijvingen eenvoudiger kunnen controleren voordat ze deze aanmelden.
 
 ## Techniek
 
