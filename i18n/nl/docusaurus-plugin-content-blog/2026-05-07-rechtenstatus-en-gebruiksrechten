@@ -52,7 +52,7 @@ De thesaurus bevat onder andere:
 * aanvullende rechtenstatussen zoals:
   * “In Copyright - Rights-holder(s) Unlocatable or Unidentifiable”
 
-De thesaurus bevat bewust een beperkte en praktisch bruikbare set termen.
+De thesaurus bevat bewust een beperkte en praktisch bruikbare set termen. 
 
 ## Waarom deze thesaurus?
 
@@ -71,7 +71,7 @@ De thesaurus is gemodelleerd als SKOS en gepubliceerd als linked data.
 Kenmerken:
 
 * stabiele URI’s
-* meertalige labels
+* meertalige labels (@nl en @en)
 * scope notes
 * SPARQL-endpoint
 * hergebruik van internationale linked data-bronnen
