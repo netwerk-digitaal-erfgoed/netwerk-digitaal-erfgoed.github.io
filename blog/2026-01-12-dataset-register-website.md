@@ -63,8 +63,8 @@ With these updates, we pay close attention to user interface and experience:
 
 ## Next step
 
-We regularly receive questions from publishers about the [validation page](https://datasetregister.netwerkdigitaalerfgoed.nl/validate.php?url=http%3A%2F%2Fdata.beeldengeluid.nl%2Fid%2Fdataset%2F0029),
-making it a logical candidate for the next improvement.
+The [validation page](https://datasetregister.netwerkdigitaalerfgoed.nl/validate.php?url=http%3A%2F%2Fdata.beeldengeluid.nl%2Fid%2Fdataset%2F0029) has now been redesigned as well,
+making it easier for publishers to check their dataset descriptions before registering.
 
 ## Technical details
 
