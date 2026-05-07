@@ -1490,7 +1490,7 @@ Possible extra rowspan handling
 </style>
   <meta content="Bikeshed version 0a3d88311, updated Mon May 4 18:07:03 2026 +0000" name="generator">
   <link href="https://docs.nde.nl/requirements-datasets/" rel="canonical">
-  <meta content="c6bfa41adf55ba2dc5111d1600f185f0d17474cd" name="revision">
+  <meta content="efa4c5d5b2b47fc68ad69e868d00631b41ce3ea4" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>
 td, th {
@@ -2292,7 +2292,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <p data-fill-with="logo"></p>
    <h1 class="no-ref p-name" id="title">Requirements for Datasets</h1>
    <h2 class="heading no-num no-ref no-toc settled" id="profile-and-date"><span class="content">Living Standard,
-    <time class="dt-updated" datetime="2026-05-06">6 May 2026</time></span></h2>
+    <time class="dt-updated" datetime="2026-05-07">7 May 2026</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -2312,7 +2312,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <p class="copyright" data-fill-with="copyright"><a href="http://creativecommons.org/publicdomain/zero/1.0/" rel="license"><img alt="CC0" height="15" src="https://licensebuttons.net/p/zero/1.0/80x15.png" width="80"></a>
 To the extent possible under law, the editors have waived all copyright
 and related or neighboring rights to this work.
-In addition, as of 6 May 2026,
+In addition, as of 7 May 2026,
 the editors have made this specification available under the
 <a href="https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0" rel="license">Open Web Foundation Agreement Version 1.0</a>,
 which is available at https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0.
@@ -3074,7 +3074,7 @@ add it on the distribution with <code>schema:documentation</code>.</p>
    <h4 class="heading settled" data-level="4.4.1" id="distribution-date"><span class="secno">4.4.1. </span><span class="content">Creation and modification dates</span><a class="self-link" href="#distribution-date"></a></h4>
    <p>Publishers <em>SHOULD</em> make known when the <a data-link-type="dfn" href="#distribution" id="ref-for-distribution③">distribution</a> was originally created and when it was last updated,
 so <a data-link-type="dfn" href="#consumer" id="ref-for-consumer⑧">consumers</a> can efficiently stay up-to-date with the latest changes.
-Please note that this is different from <a href="#dataset-date">dataset description’s dates</a>.
+Please note that this is different from the <a href="#dataset-date">dataset description’s dates</a>.
 Datetimes (<code>2019-08-15T08:05:00Z</code>) are preferred because they offer greater precision,
 but simple dates (<code>2019-04-14</code>) are also allowed.</p>
    <div class="example" id="example-bec7408c">
@@ -3584,7 +3584,7 @@ even if that resource is the same on all pages.</p>
                     
      <tr>
       <th scope="row"><a href="schema:datePublished">schema:datePublished</a>
-      <td>The date of formal issuance (such as publication) of the distribution. See <a href="#dataset-date">§ 4.2.3 Creation, publication and modification dates</a>.
+      <td>The date of formal issuance (such as publication) of the distribution. See <a href="#distribution-date">§ 4.4.1 Creation and modification dates</a>.
       <td>
                 0..1
                     
@@ -3594,7 +3594,7 @@ even if that resource is the same on all pages.</p>
                     
      <tr>
       <th scope="row"><a href="schema:dateModified">schema:dateModified</a>
-      <td>The most recent date on which the distribution was changed or modified. See <a href="#dataset-date">§ 4.2.3 Creation, publication and modification dates</a>.
+      <td>The most recent date on which the distribution was changed or modified. See <a href="#distribution-date">§ 4.4.1 Creation and modification dates</a>.
       <td>
                 0..1
                     
