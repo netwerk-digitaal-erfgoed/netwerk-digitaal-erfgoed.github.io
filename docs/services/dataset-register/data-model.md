@@ -115,7 +115,7 @@ dataset description that consumers query.
 ### `schema:EntryPoint`
 
 Any URL [registered by clients](api.md) is added as a `schema:EntryPoint` to the
-[Registrations graph](https://qlever.netwerkdigitaalerfgoed.nl/chqohW?exec=true).
+[Registrations graph](https://qlever.netwerkdigitaalerfgoed.nl/datasetregister/NwXonb?exec=true).
 
 Datasets are fetched from this URL on registration and when the crawler runs.
 
@@ -132,7 +132,7 @@ Datasets are fetched from this URL on registration and when the crawler runs.
 
 Each dataset that is found at the `schema:EntryPoint` registration URL gets added as a
 `schema:Dataset` to the
-[Registrations graph](https://qlever.netwerkdigitaalerfgoed.nl/datasetregister/chqohW?exec=true).
+[Registrations graph](https://qlever.netwerkdigitaalerfgoed.nl/datasetregister/NwXonb?exec=true).
 
 | Property                                           | Description                                                     |
 | -------------------------------------------------- | --------------------------------------------------------------- |
