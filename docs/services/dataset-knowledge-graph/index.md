@@ -6,22 +6,22 @@ description: Find heritage datasets that fit your purpose and learn how to query
 
 # Dataset Knowledge Graph
 
-The Dataset Knowledge Graph helps researchers, [service platform](../../glossary.md#service-platform) builders and data engineers **decide which heritage datasets fit a use case, and how to query them**. It does this by publishing a *Dataset Summary* for every valid dataset in the [Dataset Register](../dataset-register/index.md) – an empirical, [VoID](https://www.w3.org/TR/void/)-modelled description of what each dataset actually contains.
+The Dataset Knowledge Graph helps researchers, [service platform](../../glossary.md#service-platform) builders and data engineers **decide which heritage datasets fit their use case, and how to query them**. It does this by publishing a *Dataset Summary* for every valid dataset in the [Dataset Register](../dataset-register/index.md) – an empirical, [VoID](https://www.w3.org/TR/void/)-modelled description of what each dataset actually contains.
 
-## What summaries answer
+## Common questions
 
 For each dataset, the Summary lets you answer questions like:
 
-- *Does this dataset contain what I need?* – which RDF types are present and how many instances of each; which predicates are populated for which classes.
-- *How big and how queryable is it?* – total triples, distinct subjects and predicates, literal vs URI object mix, example resources to start exploring.
-- *Which terminology sources does it link to?* – outgoing [linksets](https://www.w3.org/TR/void/#linksets) to AAT, GTAA, GeoNames, Wikidata and other vocabularies in the [Network of Terms](../network-of-terms/index.md).
-- *Which languages and datatypes does it cover?* – language tags and XSD datatypes per property, broken down by class.
-- *Does it conform to SCHEMA-AP-NDE?* – a sampled SHACL validation of the dataset against the [Schema.org Application Profile for NDE](https://docs.nde.nl/schema-profile/), surfaced as a [DQV](https://www.w3.org/TR/vocab-dqv/) quality measurement.
-- *How can I access it?* – which RDF distributions (SPARQL endpoint and/or data dump) currently respond, and at what size.
+- **Does this dataset contain what I need?** – which RDF types are present and how many instances of each; which predicates are populated for which classes.
+- **How big and how queryable is it?** – total triples, distinct subjects and predicates, literal vs URI object mix, example resources to start exploring.
+- **Which terminology sources does it link to?** – outgoing [linksets](https://www.w3.org/TR/void/#linksets) to AAT, GTAA, GeoNames, Wikidata and other vocabularies in the [Network of Terms](../network-of-terms/index.md).
+- **Which languages and datatypes does it cover?** – language tags and XSD datatypes per property, broken down by class.
+- **Does it conform to SCHEMA-AP-NDE?** – a sampled SHACL validation of the dataset against the [Schema.org Application Profile for NDE](https://docs.nde.nl/schema-profile/), surfaced as a [DQV](https://www.w3.org/TR/vocab-dqv/) quality measurement.
+- **How can I access it?** – which RDF distributions (SPARQL endpoint and/or data dump) currently respond, and at what size.
 
-## What is in a summary
+## Inside a Dataset Summary
 
-Each Summary is a single `void:Dataset` resource with the following partitions:
+Each Summary attaches the following information to a `void:Dataset` – a mix of dataset-level statistical properties, [VoID partitions](https://www.w3.org/TR/void/#class-property-partitions), separate [linkset](https://www.w3.org/TR/void/#linksets) resources, and DQV/PROV quality measurements:
 
 | Aspect | Modelled as | What it tells you |
 | --- | --- | --- |
@@ -48,11 +48,9 @@ One example per analysis. Each link opens the query pre‑loaded in the [Knowled
 
 ### Size
 
-[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Size&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0ASELECT%20%3Fdataset%20%3Ftriples%20%3FdistinctSubjects%20WHERE%20%7B%0A%20%20%3Fdataset%20a%20void%3ADataset%20%3B%0A%20%20%20%20void%3Atriples%20%3Ftriples%20%3B%0A%20%20%20%20void%3AdistinctSubjects%20%3FdistinctSubjects%20.%0A%7D%0AORDER%20BY%20DESC%28%3Ftriples%29)
-
 ```sparql
 PREFIX void: <http://rdfs.org/ns/void#>
-SELECT ?dataset ?triples ?distinctSubjects WHERE {
+SELECT * WHERE {
   ?dataset a void:Dataset ;
     void:triples ?triples ;
     void:distinctSubjects ?distinctSubjects .
@@ -60,9 +58,9 @@ SELECT ?dataset ?triples ?distinctSubjects WHERE {
 ORDER BY DESC(?triples)
 ```
 
-### Classes across the network
+[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Size&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0ASELECT%20%2A%20WHERE%20%7B%0A%20%20%3Fdataset%20a%20void%3ADataset%20%3B%0A%20%20%20%20void%3Atriples%20%3Ftriples%20%3B%0A%20%20%20%20void%3AdistinctSubjects%20%3FdistinctSubjects%20.%0A%7D%0AORDER%20BY%20DESC%28%3Ftriples%29)
 
-[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Classes%20across%20the%20network&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0ASELECT%20%3Fclass%20%28SUM%28%3Fcount%29%20AS%20%3Finstances%29%20%28COUNT%28DISTINCT%20%3Fdataset%29%20AS%20%3Fdatasets%29%20WHERE%20%7B%0A%20%20%3Fdataset%20a%20void%3ADataset%20%3B%0A%20%20%20%20void%3AclassPartition%20%5B%0A%20%20%20%20%20%20void%3Aclass%20%3Fclass%20%3B%0A%20%20%20%20%20%20void%3Aentities%20%3Fcount%0A%20%20%20%20%5D%20.%0A%7D%0AGROUP%20BY%20%3Fclass%0AORDER%20BY%20DESC%28%3Finstances%29%0ALIMIT%2020)
+### Most common classes
 
 ```sparql
 PREFIX void: <http://rdfs.org/ns/void#>
@@ -78,9 +76,9 @@ ORDER BY DESC(?instances)
 LIMIT 20
 ```
 
-### Properties across the network
+[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Classes%20across%20the%20network&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0ASELECT%20%3Fclass%20%28SUM%28%3Fcount%29%20AS%20%3Finstances%29%20%28COUNT%28DISTINCT%20%3Fdataset%29%20AS%20%3Fdatasets%29%20WHERE%20%7B%0A%20%20%3Fdataset%20a%20void%3ADataset%20%3B%0A%20%20%20%20void%3AclassPartition%20%5B%0A%20%20%20%20%20%20void%3Aclass%20%3Fclass%20%3B%0A%20%20%20%20%20%20void%3Aentities%20%3Fcount%0A%20%20%20%20%5D%20.%0A%7D%0AGROUP%20BY%20%3Fclass%0AORDER%20BY%20DESC%28%3Finstances%29%0ALIMIT%2020)
 
-[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Properties%20across%20the%20network&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0ASELECT%20%3Fproperty%20%28SUM%28%3Fentities%29%20AS%20%3FtotalEntities%29%20WHERE%20%7B%0A%20%20%3Fdataset%20a%20void%3ADataset%20%3B%0A%20%20%20%20void%3ApropertyPartition%20%5B%0A%20%20%20%20%20%20void%3Aproperty%20%3Fproperty%20%3B%0A%20%20%20%20%20%20void%3Aentities%20%3Fentities%0A%20%20%20%20%5D%20.%0A%7D%0AGROUP%20BY%20%3Fproperty%0AORDER%20BY%20DESC%28%3FtotalEntities%29%0ALIMIT%2020)
+### Most common properties
 
 ```sparql
 PREFIX void: <http://rdfs.org/ns/void#>
@@ -96,14 +94,14 @@ ORDER BY DESC(?totalEntities)
 LIMIT 20
 ```
 
-### Property density on `schema:Person`
+[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Properties%20across%20the%20network&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0ASELECT%20%3Fproperty%20%28SUM%28%3Fentities%29%20AS%20%3FtotalEntities%29%20WHERE%20%7B%0A%20%20%3Fdataset%20a%20void%3ADataset%20%3B%0A%20%20%20%20void%3ApropertyPartition%20%5B%0A%20%20%20%20%20%20void%3Aproperty%20%3Fproperty%20%3B%0A%20%20%20%20%20%20void%3Aentities%20%3Fentities%0A%20%20%20%20%5D%20.%0A%7D%0AGROUP%20BY%20%3Fproperty%0AORDER%20BY%20DESC%28%3FtotalEntities%29%0ALIMIT%2020)
 
-[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Property%20density%20on%20schema%3APerson&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0APREFIX%20schema%3A%20%3Chttps%3A//schema.org/%3E%0ASELECT%20%3Fdataset%20%3Fproperty%20%3Fentities%20%3FdistinctObjects%20WHERE%20%7B%0A%20%20%3Fdataset%20void%3AclassPartition%20%5B%0A%20%20%20%20void%3Aclass%20schema%3APerson%20%3B%0A%20%20%20%20void%3ApropertyPartition%20%5B%0A%20%20%20%20%20%20void%3Aproperty%20%3Fproperty%20%3B%0A%20%20%20%20%20%20void%3Aentities%20%3Fentities%20%3B%0A%20%20%20%20%20%20void%3AdistinctObjects%20%3FdistinctObjects%0A%20%20%20%20%5D%0A%20%20%5D%0A%7D%0AORDER%20BY%20DESC%28%3Fentities%29%0ALIMIT%2050)
+### Property density on `schema:Person`
 
 ```sparql
 PREFIX void: <http://rdfs.org/ns/void#>
 PREFIX schema: <https://schema.org/>
-SELECT ?dataset ?property ?entities ?distinctObjects WHERE {
+SELECT * WHERE {
   ?dataset void:classPartition [
     void:class schema:Person ;
     void:propertyPartition [
@@ -117,9 +115,9 @@ ORDER BY DESC(?entities)
 LIMIT 50
 ```
 
-### Datatypes used for `schema:Person`/`schema:name`
+[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Property%20density%20on%20schema%3APerson&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0APREFIX%20schema%3A%20%3Chttps%3A//schema.org/%3E%0ASELECT%20%2A%20WHERE%20%7B%0A%20%20%3Fdataset%20void%3AclassPartition%20%5B%0A%20%20%20%20void%3Aclass%20schema%3APerson%20%3B%0A%20%20%20%20void%3ApropertyPartition%20%5B%0A%20%20%20%20%20%20void%3Aproperty%20%3Fproperty%20%3B%0A%20%20%20%20%20%20void%3Aentities%20%3Fentities%20%3B%0A%20%20%20%20%20%20void%3AdistinctObjects%20%3FdistinctObjects%0A%20%20%20%20%5D%0A%20%20%5D%0A%7D%0AORDER%20BY%20DESC%28%3Fentities%29%0ALIMIT%2050)
 
-[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Datatypes%20used%20for%20schema%3APerson/schema%3Aname&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0APREFIX%20void-ext%3A%20%3Chttp%3A//ldf.fi/void-ext%23%3E%0APREFIX%20schema%3A%20%3Chttps%3A//schema.org/%3E%0ASELECT%20%3Fdatatype%20%28SUM%28%3Ftriples%29%20AS%20%3Fcount%29%20WHERE%20%7B%0A%20%20%3Fdataset%20void%3AclassPartition%20%5B%0A%20%20%20%20void%3Aclass%20schema%3APerson%20%3B%0A%20%20%20%20void%3ApropertyPartition%20%5B%0A%20%20%20%20%20%20void%3Aproperty%20schema%3Aname%20%3B%0A%20%20%20%20%20%20void-ext%3AdatatypePartition%20%5B%0A%20%20%20%20%20%20%20%20void-ext%3Adatatype%20%3Fdatatype%20%3B%0A%20%20%20%20%20%20%20%20void%3Atriples%20%3Ftriples%0A%20%20%20%20%20%20%5D%0A%20%20%20%20%5D%0A%20%20%5D%0A%7D%0AGROUP%20BY%20%3Fdatatype%0AORDER%20BY%20DESC%28%3Fcount%29)
+### Datatypes used for `schema:Person`/`schema:name`
 
 ```sparql
 PREFIX void: <http://rdfs.org/ns/void#>
@@ -141,9 +139,9 @@ GROUP BY ?datatype
 ORDER BY DESC(?count)
 ```
 
-### Language coverage on `schema:name`
+[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Datatypes%20used%20for%20schema%3APerson/schema%3Aname&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0APREFIX%20void-ext%3A%20%3Chttp%3A//ldf.fi/void-ext%23%3E%0APREFIX%20schema%3A%20%3Chttps%3A//schema.org/%3E%0ASELECT%20%3Fdatatype%20%28SUM%28%3Ftriples%29%20AS%20%3Fcount%29%20WHERE%20%7B%0A%20%20%3Fdataset%20void%3AclassPartition%20%5B%0A%20%20%20%20void%3Aclass%20schema%3APerson%20%3B%0A%20%20%20%20void%3ApropertyPartition%20%5B%0A%20%20%20%20%20%20void%3Aproperty%20schema%3Aname%20%3B%0A%20%20%20%20%20%20void-ext%3AdatatypePartition%20%5B%0A%20%20%20%20%20%20%20%20void-ext%3Adatatype%20%3Fdatatype%20%3B%0A%20%20%20%20%20%20%20%20void%3Atriples%20%3Ftriples%0A%20%20%20%20%20%20%5D%0A%20%20%20%20%5D%0A%20%20%5D%0A%7D%0AGROUP%20BY%20%3Fdatatype%0AORDER%20BY%20DESC%28%3Fcount%29)
 
-[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Language%20coverage%20on%20schema%3Aname&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0APREFIX%20void-ext%3A%20%3Chttp%3A//ldf.fi/void-ext%23%3E%0APREFIX%20schema%3A%20%3Chttps%3A//schema.org/%3E%0ASELECT%20%3Flanguage%20%28SUM%28%3Ftriples%29%20AS%20%3Fcount%29%20WHERE%20%7B%0A%20%20%3Fdataset%20void%3AclassPartition%20%5B%0A%20%20%20%20void%3Aclass%20schema%3ACreativeWork%20%3B%0A%20%20%20%20void%3ApropertyPartition%20%5B%0A%20%20%20%20%20%20void%3Aproperty%20schema%3Aname%20%3B%0A%20%20%20%20%20%20void-ext%3AlanguagePartition%20%5B%0A%20%20%20%20%20%20%20%20void-ext%3Alanguage%20%3Flanguage%20%3B%0A%20%20%20%20%20%20%20%20void%3Atriples%20%3Ftriples%0A%20%20%20%20%20%20%5D%0A%20%20%20%20%5D%0A%20%20%5D%0A%7D%0AGROUP%20BY%20%3Flanguage%0AORDER%20BY%20DESC%28%3Fcount%29)
+### Language coverage on `schema:name`
 
 ```sparql
 PREFIX void: <http://rdfs.org/ns/void#>
@@ -165,9 +163,9 @@ GROUP BY ?language
 ORDER BY DESC(?count)
 ```
 
-### Object classes linked from `schema:Book`/`schema:author`
+[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Language%20coverage%20on%20schema%3Aname&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0APREFIX%20void-ext%3A%20%3Chttp%3A//ldf.fi/void-ext%23%3E%0APREFIX%20schema%3A%20%3Chttps%3A//schema.org/%3E%0ASELECT%20%3Flanguage%20%28SUM%28%3Ftriples%29%20AS%20%3Fcount%29%20WHERE%20%7B%0A%20%20%3Fdataset%20void%3AclassPartition%20%5B%0A%20%20%20%20void%3Aclass%20schema%3ACreativeWork%20%3B%0A%20%20%20%20void%3ApropertyPartition%20%5B%0A%20%20%20%20%20%20void%3Aproperty%20schema%3Aname%20%3B%0A%20%20%20%20%20%20void-ext%3AlanguagePartition%20%5B%0A%20%20%20%20%20%20%20%20void-ext%3Alanguage%20%3Flanguage%20%3B%0A%20%20%20%20%20%20%20%20void%3Atriples%20%3Ftriples%0A%20%20%20%20%20%20%5D%0A%20%20%20%20%5D%0A%20%20%5D%0A%7D%0AGROUP%20BY%20%3Flanguage%0AORDER%20BY%20DESC%28%3Fcount%29)
 
-[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Object%20classes%20linked%20from%20schema%3ABook/schema%3Aauthor&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0APREFIX%20void-ext%3A%20%3Chttp%3A//ldf.fi/void-ext%23%3E%0APREFIX%20schema%3A%20%3Chttps%3A//schema.org/%3E%0ASELECT%20%3FobjectClass%20%28SUM%28%3Ftriples%29%20AS%20%3Fcount%29%20WHERE%20%7B%0A%20%20%3Fdataset%20void%3AclassPartition%20%5B%0A%20%20%20%20void%3Aclass%20schema%3ABook%20%3B%0A%20%20%20%20void%3ApropertyPartition%20%5B%0A%20%20%20%20%20%20void%3Aproperty%20schema%3Aauthor%20%3B%0A%20%20%20%20%20%20void-ext%3AobjectClassPartition%20%5B%0A%20%20%20%20%20%20%20%20void%3Aclass%20%3FobjectClass%20%3B%0A%20%20%20%20%20%20%20%20void%3Atriples%20%3Ftriples%0A%20%20%20%20%20%20%5D%0A%20%20%20%20%5D%0A%20%20%5D%0A%7D%0AGROUP%20BY%20%3FobjectClass%0AORDER%20BY%20DESC%28%3Fcount%29)
+### Object classes linked from `schema:Book`/`schema:author`
 
 ```sparql
 PREFIX void: <http://rdfs.org/ns/void#>
@@ -189,14 +187,14 @@ GROUP BY ?objectClass
 ORDER BY DESC(?count)
 ```
 
-### Outgoing linksets to terminology sources
+[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Object%20classes%20linked%20from%20schema%3ABook/schema%3Aauthor&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0APREFIX%20void-ext%3A%20%3Chttp%3A//ldf.fi/void-ext%23%3E%0APREFIX%20schema%3A%20%3Chttps%3A//schema.org/%3E%0ASELECT%20%3FobjectClass%20%28SUM%28%3Ftriples%29%20AS%20%3Fcount%29%20WHERE%20%7B%0A%20%20%3Fdataset%20void%3AclassPartition%20%5B%0A%20%20%20%20void%3Aclass%20schema%3ABook%20%3B%0A%20%20%20%20void%3ApropertyPartition%20%5B%0A%20%20%20%20%20%20void%3Aproperty%20schema%3Aauthor%20%3B%0A%20%20%20%20%20%20void-ext%3AobjectClassPartition%20%5B%0A%20%20%20%20%20%20%20%20void%3Aclass%20%3FobjectClass%20%3B%0A%20%20%20%20%20%20%20%20void%3Atriples%20%3Ftriples%0A%20%20%20%20%20%20%5D%0A%20%20%20%20%5D%0A%20%20%5D%0A%7D%0AGROUP%20BY%20%3FobjectClass%0AORDER%20BY%20DESC%28%3Fcount%29)
 
-[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Outgoing%20linksets%20to%20terminology%20sources&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0ASELECT%20%3Fdataset%20%3FterminologySource%20%3Ftriples%20WHERE%20%7B%0A%20%20%3Flinkset%20a%20void%3ALinkset%20%3B%0A%20%20%20%20void%3AsubjectsTarget%20%3Fdataset%20%3B%0A%20%20%20%20void%3AobjectsTarget%20%3FterminologySource%20%3B%0A%20%20%20%20void%3Atriples%20%3Ftriples%20.%0A%7D%0AORDER%20BY%20DESC%28%3Ftriples%29%0ALIMIT%2050)
+### Outgoing linksets to terminology sources
 
 ```sparql
 PREFIX void: <http://rdfs.org/ns/void#>
-SELECT ?dataset ?terminologySource ?triples WHERE {
-  ?linkset a void:Linkset ;
+SELECT * WHERE {
+  [] a void:Linkset ;
     void:subjectsTarget ?dataset ;
     void:objectsTarget ?terminologySource ;
     void:triples ?triples .
@@ -205,13 +203,13 @@ ORDER BY DESC(?triples)
 LIMIT 50
 ```
 
-### Subject URI spaces
+[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Outgoing%20linksets%20to%20terminology%20sources&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0ASELECT%20%2A%20WHERE%20%7B%0A%20%20%5B%5D%20a%20void%3ALinkset%20%3B%0A%20%20%20%20void%3AsubjectsTarget%20%3Fdataset%20%3B%0A%20%20%20%20void%3AobjectsTarget%20%3FterminologySource%20%3B%0A%20%20%20%20void%3Atriples%20%3Ftriples%20.%0A%7D%0AORDER%20BY%20DESC%28%3Ftriples%29%0ALIMIT%2050)
 
-[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Subject%20URI%20spaces&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0ASELECT%20%3Fdataset%20%3FuriSpace%20%3Fentities%20WHERE%20%7B%0A%20%20%3Fdataset%20void%3Asubset%20%5B%0A%20%20%20%20void%3AuriSpace%20%3FuriSpace%20%3B%0A%20%20%20%20void%3Aentities%20%3Fentities%0A%20%20%5D%20.%0A%7D%0AORDER%20BY%20DESC%28%3Fentities%29%0ALIMIT%2050)
+### Subject URI spaces
 
 ```sparql
 PREFIX void: <http://rdfs.org/ns/void#>
-SELECT ?dataset ?uriSpace ?entities WHERE {
+SELECT * WHERE {
   ?dataset void:subset [
     void:uriSpace ?uriSpace ;
     void:entities ?entities
@@ -221,9 +219,9 @@ ORDER BY DESC(?entities)
 LIMIT 50
 ```
 
-### Vocabularies referenced across datasets
+[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Subject%20URI%20spaces&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0ASELECT%20%2A%20WHERE%20%7B%0A%20%20%3Fdataset%20void%3Asubset%20%5B%0A%20%20%20%20void%3AuriSpace%20%3FuriSpace%20%3B%0A%20%20%20%20void%3Aentities%20%3Fentities%0A%20%20%5D%20.%0A%7D%0AORDER%20BY%20DESC%28%3Fentities%29%0ALIMIT%2050)
 
-[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Vocabularies%20referenced%20across%20datasets&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0ASELECT%20%3Fvocabulary%20%28COUNT%28DISTINCT%20%3Fdataset%29%20AS%20%3FdatasetCount%29%20WHERE%20%7B%0A%20%20%3Fdataset%20a%20void%3ADataset%20%3B%0A%20%20%20%20void%3Avocabulary%20%3Fvocabulary%20.%0A%7D%0AGROUP%20BY%20%3Fvocabulary%0AORDER%20BY%20DESC%28%3FdatasetCount%29)
+### Most-referenced vocabularies
 
 ```sparql
 PREFIX void: <http://rdfs.org/ns/void#>
@@ -235,9 +233,9 @@ GROUP BY ?vocabulary
 ORDER BY DESC(?datasetCount)
 ```
 
-### License usage
+[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Vocabularies%20referenced%20across%20datasets&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0ASELECT%20%3Fvocabulary%20%28COUNT%28DISTINCT%20%3Fdataset%29%20AS%20%3FdatasetCount%29%20WHERE%20%7B%0A%20%20%3Fdataset%20a%20void%3ADataset%20%3B%0A%20%20%20%20void%3Avocabulary%20%3Fvocabulary%20.%0A%7D%0AGROUP%20BY%20%3Fvocabulary%0AORDER%20BY%20DESC%28%3FdatasetCount%29)
 
-[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=License%20usage&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0APREFIX%20dcterms%3A%20%3Chttp%3A//purl.org/dc/terms/%3E%0ASELECT%20%3Flicense%20%28COUNT%28DISTINCT%20%3Fdataset%29%20AS%20%3FdatasetCount%29%20WHERE%20%7B%0A%20%20%3Fdataset%20a%20void%3ADataset%20%3B%0A%20%20%20%20void%3Asubset%20%5B%0A%20%20%20%20%20%20dcterms%3Alicense%20%3Flicense%0A%20%20%20%20%5D%20.%0A%7D%0AGROUP%20BY%20%3Flicense%0AORDER%20BY%20DESC%28%3FdatasetCount%29)
+### License usage
 
 ```sparql
 PREFIX void: <http://rdfs.org/ns/void#>
@@ -252,39 +250,39 @@ GROUP BY ?license
 ORDER BY DESC(?datasetCount)
 ```
 
-### Datasets with working SPARQL endpoints
+[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=License%20usage&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0APREFIX%20dcterms%3A%20%3Chttp%3A//purl.org/dc/terms/%3E%0ASELECT%20%3Flicense%20%28COUNT%28DISTINCT%20%3Fdataset%29%20AS%20%3FdatasetCount%29%20WHERE%20%7B%0A%20%20%3Fdataset%20a%20void%3ADataset%20%3B%0A%20%20%20%20void%3Asubset%20%5B%0A%20%20%20%20%20%20dcterms%3Alicense%20%3Flicense%0A%20%20%20%20%5D%20.%0A%7D%0AGROUP%20BY%20%3Flicense%0AORDER%20BY%20DESC%28%3FdatasetCount%29)
 
-[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Datasets%20with%20working%20SPARQL%20endpoints&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0ASELECT%20%3Fdataset%20%3Fendpoint%20WHERE%20%7B%0A%20%20%3Fdataset%20a%20void%3ADataset%20%3B%0A%20%20%20%20void%3AsparqlEndpoint%20%3Fendpoint%20.%0A%7D)
+### Datasets with working SPARQL endpoints
 
 ```sparql
 PREFIX void: <http://rdfs.org/ns/void#>
-SELECT ?dataset ?endpoint WHERE {
+SELECT * WHERE {
   ?dataset a void:Dataset ;
     void:sparqlEndpoint ?endpoint .
 }
 ```
 
-### Example resources per dataset
+[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Datasets%20with%20working%20SPARQL%20endpoints&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0ASELECT%20%2A%20WHERE%20%7B%0A%20%20%3Fdataset%20a%20void%3ADataset%20%3B%0A%20%20%20%20void%3AsparqlEndpoint%20%3Fendpoint%20.%0A%7D)
 
-[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Example%20resources%20per%20dataset&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0ASELECT%20%3Fdataset%20%3Fexample%20WHERE%20%7B%0A%20%20%3Fdataset%20void%3AexampleResource%20%3Fexample%20.%0A%7D%0ALIMIT%2050)
+### Example resources per dataset
 
 ```sparql
 PREFIX void: <http://rdfs.org/ns/void#>
-SELECT ?dataset ?example WHERE {
+SELECT * WHERE {
   ?dataset void:exampleResource ?example .
 }
 LIMIT 50
 ```
 
-### Datasets passing SCHEMA-AP-NDE
+[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Example%20resources%20per%20dataset&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0ASELECT%20%2A%20WHERE%20%7B%0A%20%20%3Fdataset%20void%3AexampleResource%20%3Fexample%20.%0A%7D%0ALIMIT%2050)
 
-[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Datasets%20passing%20SCHEMA-AP-NDE&infer=true&sameAs=true&query=PREFIX%20dcterms%3A%20%3Chttp%3A//purl.org/dc/terms/%3E%0APREFIX%20dqv%3A%20%3Chttp%3A//www.w3.org/ns/dqv%23%3E%0APREFIX%20nde%3A%20%3Chttps%3A//data.netwerkdigitaalerfgoed.nl/def/metric/%3E%0ASELECT%20%3Fdataset%20WHERE%20%7B%0A%20%20%3Fdataset%20dqv%3AhasQualityMeasurement%0A%20%20%20%20%5B%20dqv%3Avalue%20true%20%3B%0A%20%20%20%20%20%20dcterms%3AconformsTo%20%3Chttps%3A//docs.nde.nl/schema-profile/%3E%20%5D%20%2C%0A%20%20%20%20%5B%20dqv%3AisMeasurementOf%20nde%3Aquads-validated%20%3B%0A%20%20%20%20%20%20dqv%3Avalue%20%3Fn%20%5D%20.%0A%20%20FILTER%20%28%3Fn%20%3E%200%29%0A%7D)
+### Datasets passing SCHEMA-AP-NDE
 
 ```sparql
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX dqv: <http://www.w3.org/ns/dqv#>
 PREFIX nde: <https://data.netwerkdigitaalerfgoed.nl/def/metric/>
-SELECT ?dataset WHERE {
+SELECT * WHERE {
   ?dataset dqv:hasQualityMeasurement
     [ dqv:value true ;
       dcterms:conformsTo <https://docs.nde.nl/schema-profile/> ] ,
@@ -293,6 +291,8 @@ SELECT ?dataset WHERE {
   FILTER (?n > 0)
 }
 ```
+
+[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Datasets%20passing%20SCHEMA-AP-NDE&infer=true&sameAs=true&query=PREFIX%20dcterms%3A%20%3Chttp%3A//purl.org/dc/terms/%3E%0APREFIX%20dqv%3A%20%3Chttp%3A//www.w3.org/ns/dqv%23%3E%0APREFIX%20nde%3A%20%3Chttps%3A//data.netwerkdigitaalerfgoed.nl/def/metric/%3E%0ASELECT%20%2A%20WHERE%20%7B%0A%20%20%3Fdataset%20dqv%3AhasQualityMeasurement%0A%20%20%20%20%5B%20dqv%3Avalue%20true%20%3B%0A%20%20%20%20%20%20dcterms%3AconformsTo%20%3Chttps%3A//docs.nde.nl/schema-profile/%3E%20%5D%20%2C%0A%20%20%20%20%5B%20dqv%3AisMeasurementOf%20nde%3Aquads-validated%20%3B%0A%20%20%20%20%20%20dqv%3Avalue%20%3Fn%20%5D%20.%0A%20%20FILTER%20%28%3Fn%20%3E%200%29%0A%7D)
 
 The `?n > 0` filter excludes datasets that use a different data model and to which the profile doesn't apply at all (where SHACL returns *vacuously true*). To find datasets that tried the profile and failed, swap `dqv:value true` for `dqv:value false`.
 
