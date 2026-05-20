@@ -6,7 +6,7 @@ description: Find heritage datasets that fit your purpose and learn how to query
 
 # Dataset Knowledge Graph
 
-The Dataset Knowledge Graph helps researchers, [service platform](../../glossary.md#service-platform) builders and data engineers **decide which heritage datasets fit their use case, and how to query them**. It does this by publishing a *Dataset Summary* for every valid dataset in the [Dataset Register](../dataset-register/index.md) – an empirical, [VoID](https://www.w3.org/TR/void/)-modelled description of what each dataset actually contains.
+The Dataset Knowledge Graph helps researchers, [service platform](../../glossary.md#service-platform) builders and data engineers **decide which heritage datasets fit their use case, and how to query them**. It does this by publishing a *Dataset Summary* for every valid dataset in the [Dataset Register](../dataset-register/index.md) – an empirical, [VoID](https://www.w3.org/TR/void/)-modelled view of each dataset's shape.
 
 ## Common questions
 
@@ -48,6 +48,8 @@ One example per analysis. Each link opens the query pre‑loaded in the [Knowled
 
 ### Size
 
+The overall size of each dataset: total triples, distinct subjects, and the literal-vs-URI object split.
+
 ```sparql
 PREFIX void: <http://rdfs.org/ns/void#>
 SELECT * WHERE {
@@ -61,6 +63,8 @@ ORDER BY DESC(?triples)
 [▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Size&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0ASELECT%20%2A%20WHERE%20%7B%0A%20%20%3Fdataset%20a%20void%3ADataset%20%3B%0A%20%20%20%20void%3Atriples%20%3Ftriples%20%3B%0A%20%20%20%20void%3AdistinctSubjects%20%3FdistinctSubjects%20.%0A%7D%0AORDER%20BY%20DESC%28%3Ftriples%29)
 
 ### Most common classes
+
+Which RDF types appear most across the network, with instance counts summed across datasets and the number of datasets each class appears in.
 
 ```sparql
 PREFIX void: <http://rdfs.org/ns/void#>
@@ -80,6 +84,8 @@ LIMIT 20
 
 ### Most common properties
 
+Which predicates appear most across the network, with the total number of entities that carry each predicate.
+
 ```sparql
 PREFIX void: <http://rdfs.org/ns/void#>
 SELECT ?property (SUM(?entities) AS ?totalEntities) WHERE {
@@ -97,6 +103,8 @@ LIMIT 20
 [▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Properties%20across%20the%20network&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0ASELECT%20%3Fproperty%20%28SUM%28%3Fentities%29%20AS%20%3FtotalEntities%29%20WHERE%20%7B%0A%20%20%3Fdataset%20a%20void%3ADataset%20%3B%0A%20%20%20%20void%3ApropertyPartition%20%5B%0A%20%20%20%20%20%20void%3Aproperty%20%3Fproperty%20%3B%0A%20%20%20%20%20%20void%3Aentities%20%3Fentities%0A%20%20%20%20%5D%20.%0A%7D%0AGROUP%20BY%20%3Fproperty%0AORDER%20BY%20DESC%28%3FtotalEntities%29%0ALIMIT%2020)
 
 ### Property density on `schema:Person`
+
+For each dataset, which predicates are populated on `schema:Person` resources, and how many entities carry them.
 
 ```sparql
 PREFIX void: <http://rdfs.org/ns/void#>
@@ -118,6 +126,8 @@ LIMIT 50
 [▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Property%20density%20on%20schema%3APerson&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0APREFIX%20schema%3A%20%3Chttps%3A//schema.org/%3E%0ASELECT%20%2A%20WHERE%20%7B%0A%20%20%3Fdataset%20void%3AclassPartition%20%5B%0A%20%20%20%20void%3Aclass%20schema%3APerson%20%3B%0A%20%20%20%20void%3ApropertyPartition%20%5B%0A%20%20%20%20%20%20void%3Aproperty%20%3Fproperty%20%3B%0A%20%20%20%20%20%20void%3Aentities%20%3Fentities%20%3B%0A%20%20%20%20%20%20void%3AdistinctObjects%20%3FdistinctObjects%0A%20%20%20%20%5D%0A%20%20%5D%0A%7D%0AORDER%20BY%20DESC%28%3Fentities%29%0ALIMIT%2050)
 
 ### Datatypes used for `schema:Person`/`schema:name`
+
+Which XSD datatypes appear in `schema:name` values on `schema:Person` resources — useful for spotting unexpected datatype mixes.
 
 ```sparql
 PREFIX void: <http://rdfs.org/ns/void#>
@@ -143,6 +153,8 @@ ORDER BY DESC(?count)
 
 ### Language coverage on `schema:name`
 
+Which language tags appear on `schema:name` values of `schema:CreativeWork` resources, and how often.
+
 ```sparql
 PREFIX void: <http://rdfs.org/ns/void#>
 PREFIX void-ext: <http://ldf.fi/void-ext#>
@@ -166,6 +178,8 @@ ORDER BY DESC(?count)
 [▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Language%20coverage%20on%20schema%3Aname&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0APREFIX%20void-ext%3A%20%3Chttp%3A//ldf.fi/void-ext%23%3E%0APREFIX%20schema%3A%20%3Chttps%3A//schema.org/%3E%0ASELECT%20%3Flanguage%20%28SUM%28%3Ftriples%29%20AS%20%3Fcount%29%20WHERE%20%7B%0A%20%20%3Fdataset%20void%3AclassPartition%20%5B%0A%20%20%20%20void%3Aclass%20schema%3ACreativeWork%20%3B%0A%20%20%20%20void%3ApropertyPartition%20%5B%0A%20%20%20%20%20%20void%3Aproperty%20schema%3Aname%20%3B%0A%20%20%20%20%20%20void-ext%3AlanguagePartition%20%5B%0A%20%20%20%20%20%20%20%20void-ext%3Alanguage%20%3Flanguage%20%3B%0A%20%20%20%20%20%20%20%20void%3Atriples%20%3Ftriples%0A%20%20%20%20%20%20%5D%0A%20%20%20%20%5D%0A%20%20%5D%0A%7D%0AGROUP%20BY%20%3Flanguage%0AORDER%20BY%20DESC%28%3Fcount%29)
 
 ### Object classes linked from `schema:Book`/`schema:author`
+
+Which classes are the targets of `schema:author` on `schema:Book` resources, and how often each class is linked — shows how `Book` connects to other things in the data.
 
 ```sparql
 PREFIX void: <http://rdfs.org/ns/void#>
@@ -191,6 +205,8 @@ ORDER BY DESC(?count)
 
 ### Outgoing linksets to terminology sources
 
+Every cross-dataset and cross-vocabulary linkset emitted by the pipeline, with the number of triples in each — shows how datasets connect to terminology sources and to one another.
+
 ```sparql
 PREFIX void: <http://rdfs.org/ns/void#>
 SELECT * WHERE {
@@ -206,6 +222,8 @@ LIMIT 50
 [▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Outgoing%20linksets%20to%20terminology%20sources&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0ASELECT%20%2A%20WHERE%20%7B%0A%20%20%5B%5D%20a%20void%3ALinkset%20%3B%0A%20%20%20%20void%3AsubjectsTarget%20%3Fdataset%20%3B%0A%20%20%20%20void%3AobjectsTarget%20%3FterminologySource%20%3B%0A%20%20%20%20void%3Atriples%20%3Ftriples%20.%0A%7D%0AORDER%20BY%20DESC%28%3Ftriples%29%0ALIMIT%2050)
 
 ### Subject URI spaces
+
+The most common URI namespaces used for subject resources across all datasets — shows where the network's identifiers live.
 
 ```sparql
 PREFIX void: <http://rdfs.org/ns/void#>
@@ -223,6 +241,8 @@ LIMIT 50
 
 ### Most-referenced vocabularies
 
+Which vocabularies (Schema.org, FOAF, Dublin Core, …) are referenced, and by how many datasets.
+
 ```sparql
 PREFIX void: <http://rdfs.org/ns/void#>
 SELECT ?vocabulary (COUNT(DISTINCT ?dataset) AS ?datasetCount) WHERE {
@@ -236,6 +256,8 @@ ORDER BY DESC(?datasetCount)
 [▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Vocabularies%20referenced%20across%20datasets&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0ASELECT%20%3Fvocabulary%20%28COUNT%28DISTINCT%20%3Fdataset%29%20AS%20%3FdatasetCount%29%20WHERE%20%7B%0A%20%20%3Fdataset%20a%20void%3ADataset%20%3B%0A%20%20%20%20void%3Avocabulary%20%3Fvocabulary%20.%0A%7D%0AGROUP%20BY%20%3Fvocabulary%0AORDER%20BY%20DESC%28%3FdatasetCount%29)
 
 ### License usage
+
+License IRIs that appear in dataset subsets and how many datasets use each.
 
 ```sparql
 PREFIX void: <http://rdfs.org/ns/void#>
@@ -254,6 +276,8 @@ ORDER BY DESC(?datasetCount)
 
 ### Datasets with working SPARQL endpoints
 
+Datasets whose declared SPARQL endpoint passed the pipeline's smoke test.
+
 ```sparql
 PREFIX void: <http://rdfs.org/ns/void#>
 SELECT * WHERE {
@@ -266,6 +290,8 @@ SELECT * WHERE {
 
 ### Example resources per dataset
 
+A handful of `void:exampleResource` URIs per dataset — concrete starting points for exploration.
+
 ```sparql
 PREFIX void: <http://rdfs.org/ns/void#>
 SELECT * WHERE {
@@ -277,6 +303,8 @@ LIMIT 50
 [▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Example%20resources%20per%20dataset&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0ASELECT%20%2A%20WHERE%20%7B%0A%20%20%3Fdataset%20void%3AexampleResource%20%3Fexample%20.%0A%7D%0ALIMIT%2050)
 
 ### Datasets passing SCHEMA-AP-NDE
+
+Datasets whose sampled resources passed SHACL validation against the [Schema.org Application Profile for NDE](https://docs.nde.nl/schema-profile/). The `?n > 0` filter excludes datasets to which the profile doesn't apply (vacuous truth from an empty target set).
 
 ```sparql
 PREFIX dcterms: <http://purl.org/dc/terms/>
