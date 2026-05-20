@@ -6,18 +6,20 @@ description: Find heritage datasets that fit your purpose and learn how to query
 
 # Dataset Knowledge Graph
 
-The Dataset Knowledge Graph helps researchers, [service platform](../../glossary.md#service-platform) builders and data engineers **decide which heritage datasets fit their use case, and how to query them**. It does this by publishing a *Dataset Summary* for every valid dataset in the [Dataset Register](../dataset-register/index.md) – an empirical, [VoID](https://www.w3.org/TR/void/)-modelled view of each dataset's shape.
+The Dataset Knowledge Graph **enriches the [Dataset Register](../dataset-register/index.md)** with insights derived from each dataset's content. The Register stores what publishers submit; the Knowledge Graph publishes an empirical, [VoID](https://www.w3.org/TR/void/)-modelled view of each dataset's shape – its RDF types, predicates, languages, outgoing links, and conformance to [SCHEMA-AP-NDE](https://docs.nde.nl/schema-profile/).
+
+It helps researchers, [service platform](../../glossary.md#service-platform) builders and data engineers **decide which heritage datasets fit their use case, and how to query them**.
 
 ## Common questions
 
 For each dataset, the Summary lets you answer questions like:
 
-- **Does this dataset contain what I need?** – which RDF types are present and how many instances of each; which predicates are populated for which classes.
-- **How big and how queryable is it?** – total triples, distinct subjects and predicates, literal vs URI object mix, example resources to start exploring.
-- **Which terminology sources does it link to?** – outgoing [linksets](https://www.w3.org/TR/void/#linksets) to AAT, GTAA, GeoNames, Wikidata and other vocabularies in the [Network of Terms](../network-of-terms/index.md).
-- **Which languages and datatypes does it cover?** – language tags and XSD datatypes per property, broken down by class.
-- **Does it conform to SCHEMA-AP-NDE?** – a sampled SHACL validation of the dataset against the [Schema.org Application Profile for NDE](https://docs.nde.nl/schema-profile/), surfaced as a [DQV](https://www.w3.org/TR/vocab-dqv/) quality measurement.
-- **How can I access it?** – which RDF distributions (SPARQL endpoint and/or data dump) currently respond, and at what size.
+- **Does this dataset contain what I need?** – which [RDF types are present](#most-common-classes) and how many instances of each; which [predicates are populated for which classes](#property-density-on-schemaperson).
+- **How big and how queryable is it?** – [total triples, distinct subjects and predicates](#size); [example resources](#example-resources-per-dataset) to start exploring.
+- **Which terminology sources does it link to?** – [outgoing linksets](#outgoing-linksets-to-terminology-sources) to AAT, GTAA, GeoNames, Wikidata and other vocabularies in the [Network of Terms](../network-of-terms/index.md).
+- **Which languages and datatypes does it cover?** – [language tags](#language-coverage-on-schemaname) and [XSD datatypes per property](#datatypes-used-for-schemapersonschemaname), broken down by class.
+- **Does it conform to SCHEMA-AP-NDE?** – a [sampled SHACL validation](#datasets-passing-schema-ap-nde) of the dataset against the [Schema.org Application Profile for NDE](https://docs.nde.nl/schema-profile/).
+- **How can I access it?** – which [SPARQL endpoint or data dump](#datasets-with-working-sparql-endpoints) currently responds, and at what size.
 
 ## Inside a Dataset Summary
 
