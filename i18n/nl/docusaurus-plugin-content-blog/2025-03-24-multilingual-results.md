@@ -28,7 +28,7 @@ Omdat steeds meer software [afhankelijk is](/services/network-of-terms/integrati
 van het Termennetwerk, hebben we gezorgd voor achterwaartse compatibiliteit.
 Dat betekent dat bestaande zoekopdrachten in één taal blijven werken zoals voorheen.
 Als je meertalig zoeken aan je applicatie wilt toevoegen,
-kijk dan in de [technische documentatie](/services/network-of-terms/graphql#multilingual-queries).
+kijk dan in de [technische documentatie](/services/network-of-terms/graphql#language-selection).
 
 Als je een terminologiebron beheert en deze in meer talen beschikbaar wilt maken,
 kun je [contact met ons opnemen](https://termennetwerk.netwerkdigitaalerfgoed.nl/nl/contact).
