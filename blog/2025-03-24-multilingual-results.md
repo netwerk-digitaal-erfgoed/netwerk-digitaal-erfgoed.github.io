@@ -28,7 +28,7 @@ Because more and more clients are [relying](/services/network-of-terms/integrati
 on the Network of Terms, we made sure to preserve backwards compatibility.
 Existing single-language queries will continue to work as before.
 If you want to add multilingual search to your application, 
-have a look at the [technical documentation](/services/network-of-terms/graphql#multilingual-queries). 
+have a look at the [technical documentation](/services/network-of-terms/graphql#language-selection). 
 
 If you manage a terminology source and want to make it available in more languages,
 please [contact us](https://termennetwerk.netwerkdigitaalerfgoed.nl/en/contact).
