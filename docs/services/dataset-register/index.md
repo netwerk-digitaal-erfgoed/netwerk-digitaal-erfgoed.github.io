@@ -11,12 +11,13 @@ that includes:
 * the dataset name, publisher
 * information on how to access the dataset’s content, for example data dumps and SPARQL endpoints
 
-## Components
+## Where to go next
 
-* Users can search the [Dataset Register website](https://datasetregister.netwerkdigitaalerfgoed.nl/en/datasets)
-  for datasets.
-* Software developers that want to find datasets may want to use the [Dataset Register SPARQL endpoint](sparql.md).
-* Software developers that want to register dataset descriptions should use the [Dataset Register REST API](api.md).
+**If you are publishing a dataset**, register your [dataset description](../../glossary.md#dataset-description) via the [REST API](api.md). The Register fetches it, validates it against the [Requirements for Datasets](https://docs.nde.nl/requirements-datasets/), and stores the result. See also [Register your dataset](../../publish/register.md) for the publisher-side walkthrough.
+
+**If you are consuming the Register**, query the [SPARQL endpoint](sparql.md). The [data model](data-model.md) describes the DCAT-AP-NL shapes you will encounter in the results.
+
+**If you are browsing**, the [Dataset Register website](https://datasetregister.netwerkdigitaalerfgoed.nl/en/datasets) provides a human-readable search interface.
 
 ## Registration flow
 
@@ -37,7 +38,7 @@ To make a dataset description visible on the Dataset Register website,
 ```mermaid
 flowchart TD
     P(Data Platforms)
-    W("Data Provider’s website")
+    W("Publisher’s website")
     R(Dataset Register)
     K(Dataset Knowledge Graph)
     U(Dataset Register website)

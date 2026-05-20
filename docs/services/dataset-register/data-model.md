@@ -1,5 +1,5 @@
 ---
-sidebar_position: 4
+description: The DCAT-AP-NL data model that the Dataset Register exposes to consumers.
 ---
 
 # Data model
