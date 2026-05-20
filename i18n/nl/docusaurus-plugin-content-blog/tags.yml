@@ -21,3 +21,27 @@ persistent-http-uris:
 services:
   label: "Diensten"
   permalink: /services
+
+rechtenstatus:
+  label: "Rechtenstatus"
+  permalink: /rechtenstatus
+
+gebruiksrechten:
+  label: "Gebruiksrechten"
+  permalink: /gebruiksrechten
+
+linked-data:
+  label: "Linked Data"
+  permalink: /linked-data
+
+skos:
+  label: "SKOS"
+  permalink: /skos
+
+creativecommons:
+  label: "Creative Commons"
+  permalink: /creativecommons
+
+rightsstatements:
+  label: "RightsStatements.org"
+  permalink: /rightsstatements
