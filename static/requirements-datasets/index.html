@@ -1490,7 +1490,7 @@ Possible extra rowspan handling
 </style>
   <meta content="Bikeshed version 0a3d88311, updated Mon May 4 18:07:03 2026 +0000" name="generator">
   <link href="https://docs.nde.nl/requirements-datasets/" rel="canonical">
-  <meta content="58e3a69fb0e8e0d171256496d764eab16c5b0608" name="revision">
+  <meta content="c0c1e6899c2cfd64c24e15a7770a16da3cc6af41" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>
 td, th {
@@ -2791,9 +2791,8 @@ This information answers user questions such as:</p>
 </pre>
    </div>
    <h4 class="heading settled" data-level="4.2.2" id="dataset-license"><span class="secno">4.2.2. </span><span class="content">License</span><a class="self-link" href="#dataset-license"></a></h4>
-   <p>License applicable to the dataset. If the dataset has a license, it is inherited by all distributions that do not specify their own license. Publishers <em>MUST</em> make known under which <a href="https://www.w3.org/TR/dwbp/#licenses">license</a> the dataset may be used.</p>
+   <p>License applicable to the dataset. This license is inherited by all distributions that do not specify their own license. Publishers <em>MUST</em> make known under which <a href="https://www.w3.org/TR/dwbp/#licenses">license</a> the dataset may be used.</p>
    <p>This license specifies the conditions under which the metadata records in the dataset may be accessed and reused. It does not cover the heritage objects (either physical or digital) that the metadata describes. Access conditions for these objects should be specified in their own descriptions within the dataset.</p>
-   <p>A license <em>MUST</em> be available on either the distribution or the dataset.</p>
    <p>The DERA requires metadata to be published openly, so this value <em>SHOULD</em> be an open license that allows consumers to reuse the data, such as <code>https://creativecommons.org/publicdomain/zero/1.0/</code> (CC0), <code>https://creativecommons.org/licenses/by/4.0/</code> (CC BY 4.0), or <code>https://creativecommons.org/licenses/by-sa/4.0/</code> (CC BY-SA 4.0). Adopting a non-open license will severely limit reuse and does not comply with the DERA principles.</p>
    <p>The value <em>MUST</em> be the canonical URI of a license. For example, use <code>https://creativecommons.org/publicdomain/zero/1.0/</code> instead of <code>https://creativecommons.org/publicdomain/zero/1.0/deed.nl</code>.</p>
    <div class="example" id="example-c3bca005">
@@ -3290,17 +3289,18 @@ even if that resource is the same on all pages.</p>
      <tr>
       <th scope="row"><a href="schema:license">schema:license</a>
       <td>
-       License applicable to the dataset. If the dataset has a license, it is inherited by all distributions that do not specify their own license. Publishers <em>MUST</em> make known under which <a href="https://www.w3.org/TR/dwbp/#licenses">license</a> the dataset may be used.
+       License applicable to the dataset. This license is inherited by all distributions that do not specify their own license. Publishers <em>MUST</em> make known under which <a href="https://www.w3.org/TR/dwbp/#licenses">license</a> the dataset may be used.
 
 
        <p>This license specifies the conditions under which the metadata records in the dataset may be accessed and reused. It does not cover the heritage objects (either physical or digital) that the metadata describes. Access conditions for these objects should be specified in their own descriptions within the dataset.</p>
-       <p>A license <em>MUST</em> be available on either the distribution or the dataset.</p>
        <p>The <a data-link-type="biblio" href="#biblio-dera" title="Digital Heritage Reference Architecture">[DERA]</a> requires metadata to be published openly, so this value <em>SHOULD</em> be an open license that allows consumers to reuse the data, such as <code>https://creativecommons.org/publicdomain/zero/1.0/</code> (CC0), <code>https://creativecommons.org/licenses/by/4.0/</code> (CC BY 4.0), or <code>https://creativecommons.org/licenses/by-sa/4.0/</code> (CC BY-SA 4.0). Adopting a non-open license will severely limit reuse and does not comply with the <a data-link-type="biblio" href="#biblio-dera" title="Digital Heritage Reference Architecture">[DERA]</a> principles.</p>
        <p>The value <em>MUST</em> be the canonical URI of a license. For example, use <code>https://creativecommons.org/publicdomain/zero/1.0/</code> instead of <code>https://creativecommons.org/publicdomain/zero/1.0/deed.nl</code>. See <a href="#dataset-license">§ 4.2.2 License</a>.</p>
       <td>
+                1
+                    
       <td>
-                Recommended
-                <br><small>v2.0: must be IRI</small>
+                Required
+                        <br><small>v2.0: must be IRI</small>
                     
      <tr>
       <th scope="row"><a href="schema:distribution">schema:distribution</a>
@@ -3617,9 +3617,7 @@ even if that resource is the same on all pages.</p>
                     
      <tr>
       <th scope="row"><a href="schema:license">schema:license</a>
-      <td>License applicable to the distribution.
-        If the distribution has no license of its own, the license of the parent dataset is inherited.
-        A license <em>MUST</em> always be available, either on the distribution or on the dataset.
+      <td>License applicable to this distribution, overriding the parent dataset’s license. Optional; only set this when the distribution carries a different license from the dataset.
       <td>
                 0..1
                     
