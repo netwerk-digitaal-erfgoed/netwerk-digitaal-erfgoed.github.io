@@ -10,7 +10,7 @@ The Dataset Knowledge Graph **enriches the [Dataset Register](../dataset-registe
 
 It helps researchers, [service platform](../../glossary.md#service-platform) builders and data engineers **decide which heritage datasets fit their use case, and how to query them**.
 
-## Common questions
+## What a Summary tells you
 
 For each dataset, the Summary lets you answer questions like:
 
