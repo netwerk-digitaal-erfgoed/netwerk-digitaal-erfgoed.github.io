@@ -1490,7 +1490,7 @@ Possible extra rowspan handling
 </style>
   <meta content="Bikeshed version 0a3d88311, updated Mon May 4 18:07:03 2026 +0000" name="generator">
   <link href="https://docs.nde.nl/requirements-datasets/" rel="canonical">
-  <meta content="58e3b33859d6fa83416300d30ba1d21e10bb6d4d" name="revision">
+  <meta content="58e3a69fb0e8e0d171256496d764eab16c5b0608" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>
 td, th {
@@ -2292,7 +2292,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <p data-fill-with="logo"></p>
    <h1 class="no-ref p-name" id="title">Requirements for Datasets</h1>
    <h2 class="heading no-num no-ref no-toc settled" id="profile-and-date"><span class="content">Living Standard,
-    <time class="dt-updated" datetime="2026-05-19">19 May 2026</time></span></h2>
+    <time class="dt-updated" datetime="2026-05-20">20 May 2026</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -2312,7 +2312,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <p class="copyright" data-fill-with="copyright"><a href="http://creativecommons.org/publicdomain/zero/1.0/" rel="license"><img alt="CC0" height="15" src="https://licensebuttons.net/p/zero/1.0/80x15.png" width="80"></a>
 To the extent possible under law, the editors have waived all copyright
 and related or neighboring rights to this work.
-In addition, as of 19 May 2026,
+In addition, as of 20 May 2026,
 the editors have made this specification available under the
 <a href="https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0" rel="license">Open Web Foundation Agreement Version 1.0</a>,
 which is available at https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0.
@@ -2791,11 +2791,11 @@ This information answers user questions such as:</p>
 </pre>
    </div>
    <h4 class="heading settled" data-level="4.2.2" id="dataset-license"><span class="secno">4.2.2. </span><span class="content">License</span><a class="self-link" href="#dataset-license"></a></h4>
-   <p>License applicable to the dataset. If the dataset has a license, it is inherited by all distributions that do not specify their own license. Publishers MUST make known under which <a href="https://www.w3.org/TR/dwbp/#licenses">license</a> the dataset may be used.</p>
+   <p>License applicable to the dataset. If the dataset has a license, it is inherited by all distributions that do not specify their own license. Publishers <em>MUST</em> make known under which <a href="https://www.w3.org/TR/dwbp/#licenses">license</a> the dataset may be used.</p>
    <p>This license specifies the conditions under which the metadata records in the dataset may be accessed and reused. It does not cover the heritage objects (either physical or digital) that the metadata describes. Access conditions for these objects should be specified in their own descriptions within the dataset.</p>
-   <p>A license must be available on either the distribution or the dataset.</p>
-   <p>The DERA requires metadata to be published openly, so this value SHOULD be an open license that allows consumers to reuse the data, such as <code>https://creativecommons.org/publicdomain/zero/1.0/</code> (CC0), <code>https://creativecommons.org/licenses/by/4.0/</code> (CC BY 4.0), or <code>https://creativecommons.org/licenses/by-sa/4.0/</code> (CC BY-SA 4.0). Adopting a non-open license will severely limit reuse and does not comply with the DERA principles.</p>
-   <p>The value MUST be the canonical URI of a license. For example, use <code>https://creativecommons.org/publicdomain/zero/1.0/</code> instead of <code>https://creativecommons.org/publicdomain/zero/1.0/deed.nl</code>.</p>
+   <p>A license <em>MUST</em> be available on either the distribution or the dataset.</p>
+   <p>The DERA requires metadata to be published openly, so this value <em>SHOULD</em> be an open license that allows consumers to reuse the data, such as <code>https://creativecommons.org/publicdomain/zero/1.0/</code> (CC0), <code>https://creativecommons.org/licenses/by/4.0/</code> (CC BY 4.0), or <code>https://creativecommons.org/licenses/by-sa/4.0/</code> (CC BY-SA 4.0). Adopting a non-open license will severely limit reuse and does not comply with the DERA principles.</p>
+   <p>The value <em>MUST</em> be the canonical URI of a license. For example, use <code>https://creativecommons.org/publicdomain/zero/1.0/</code> instead of <code>https://creativecommons.org/publicdomain/zero/1.0/deed.nl</code>.</p>
    <div class="example" id="example-c3bca005">
     <a class="self-link" href="#example-c3bca005"></a>
     Specify a license for the dataset:
@@ -3275,8 +3275,8 @@ even if that resource is the same on all pages.</p>
                 1..n
                     
       <td>
-                Required
-                        <br><small>v2.0: must be rdf:langString</small>
+                Recommended
+                    <br><small>v2.0: becomes required; must be rdf:langString</small>
                     
      <tr>
       <th scope="row"><a href="schema:publisher">schema:publisher</a>
@@ -3294,7 +3294,7 @@ even if that resource is the same on all pages.</p>
 
 
        <p>This license specifies the conditions under which the metadata records in the dataset may be accessed and reused. It does not cover the heritage objects (either physical or digital) that the metadata describes. Access conditions for these objects should be specified in their own descriptions within the dataset.</p>
-       <p>A license must be available on either the distribution or the dataset.</p>
+       <p>A license <em>MUST</em> be available on either the distribution or the dataset.</p>
        <p>The <a data-link-type="biblio" href="#biblio-dera" title="Digital Heritage Reference Architecture">[DERA]</a> requires metadata to be published openly, so this value <em>SHOULD</em> be an open license that allows consumers to reuse the data, such as <code>https://creativecommons.org/publicdomain/zero/1.0/</code> (CC0), <code>https://creativecommons.org/licenses/by/4.0/</code> (CC BY 4.0), or <code>https://creativecommons.org/licenses/by-sa/4.0/</code> (CC BY-SA 4.0). Adopting a non-open license will severely limit reuse and does not comply with the <a data-link-type="biblio" href="#biblio-dera" title="Digital Heritage Reference Architecture">[DERA]</a> principles.</p>
        <p>The value <em>MUST</em> be the canonical URI of a license. For example, use <code>https://creativecommons.org/publicdomain/zero/1.0/</code> instead of <code>https://creativecommons.org/publicdomain/zero/1.0/deed.nl</code>. See <a href="#dataset-license">§ 4.2.2 License</a>.</p>
       <td>
@@ -3318,8 +3318,9 @@ even if that resource is the same on all pages.</p>
                 1..n
                     
       <td>
-                Required
-                        
+                Recommended
+                    <br><small>v2.0: becomes required</small>
+                    
      <tr>
       <th scope="row"><a href="schema:datePublished">schema:datePublished</a>
       <td>The date of formal issuance (such as publication) of the dataset. See <a href="#dataset-date">§ 4.2.3 Creation, publication and modification dates</a>.
@@ -3544,7 +3545,8 @@ even if that resource is the same on all pages.</p>
       <td>
       <td>
                 Recommended
-                
+                <br><small>v2.0: becomes required</small>
+                    
    </table>
    <h4 class="heading settled" data-level="4.6.3" id="distribution-attributes"><span class="secno">4.6.3. </span><span class="content">Distribution attributes</span><a class="self-link" href="#distribution-attributes"></a></h4>
    <table>
@@ -3617,7 +3619,7 @@ even if that resource is the same on all pages.</p>
       <th scope="row"><a href="schema:license">schema:license</a>
       <td>License applicable to the distribution.
         If the distribution has no license of its own, the license of the parent dataset is inherited.
-        A license must always be available, either on the distribution or on the dataset.
+        A license <em>MUST</em> always be available, either on the distribution or on the dataset.
       <td>
                 0..1
                     
@@ -3691,8 +3693,8 @@ even if that resource is the same on all pages.</p>
                 1..n
                     
       <td>
-                Required
-                        <br><small>v2.0: must be rdf:langString</small>
+                Recommended
+                    <br><small>v2.0: becomes required; must be rdf:langString</small>
                     
      <tr>
       <th scope="row"><a href="schema:publisher">schema:publisher</a>
@@ -3701,8 +3703,9 @@ even if that resource is the same on all pages.</p>
                 1
                     
       <td>
-                Required
-                        
+                Recommended
+                    <br><small>v2.0: becomes required</small>
+                    
      <tr>
       <th scope="row"><a href="schema:dataset">schema:dataset</a>
       <td>Dataset(s) in the data catalog
@@ -3710,8 +3713,8 @@ even if that resource is the same on all pages.</p>
                 1..n
                     
       <td>
-                Required
-                        
+                Recommended
+                    
    </table>
    <h4 class="heading settled" data-level="4.6.5" id="dataset-example"><span class="secno">4.6.5. </span><span class="content">Full example</span><a class="self-link" href="#dataset-example"></a></h4>
    <div class="example" id="example-7149d3c9">
