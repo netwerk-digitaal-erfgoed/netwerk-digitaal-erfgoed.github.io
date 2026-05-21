@@ -78,18 +78,16 @@ query Sources {
 
 ### Source language
 
-Terminology source information is available in both English and Dutch.
-To get a specific language, use the `Accept-Language` HTTP request header, for example:
+Terminology source information (name, description, genre and creator names, and the
+sort order of the result) is returned in the language requested via the `Accept-Language`
+HTTP header. Currently honored values are `nl` and `en`; the default and fallback is `nl`.
 
 ```http request
 Accept-Language: en
 ```
 
-or:
-
-```http request
-Accept-Language: nl
-```
+See [Language selection](#language-selection) for the full picture of how language is
+negotiated across the API, including the `languages` parameter that controls term labels.
 
 ## Search terms
 
@@ -337,16 +335,108 @@ query {
 }
 ```
 
-## Multilingual queries
+## Language selection
 
-By default, [search and lookup results](#search-result) return in the Network of Terms’ default language,
-which is Dutch.
-However, both [search](#search-terms) and [lookup](#look-up-terms-by-uri) queries can be multilingual.
+The Network of Terms exposes natural-language data through two distinct controls,
+because the data comes from two different layers:
 
-You need to adapt your query by:
-* passing a `languages` query parameter with a list of language codes, in preferred order, to return results in multiple languages.
-* match `... on TranslatedTerms` to get the multilingual content
-* read each translated property’s values as a `{ language value }` pair.
+* **Catalog metadata** – source names, descriptions, genre and creator names – lives
+  in our local configuration. We translate it to a fixed set (`nl` and `en`).
+  Negotiated via the standard `Accept-Language` HTTP header.
+* **Term data** – `prefLabel`, `altLabel`, `definition`, etc. – is fetched in real time
+  from remote terminology sources. The available languages depend on what each source
+  publishes. Requested via the `languages` GraphQL argument, which is relayed to the
+  remote queries.
+
+### Two axes of language control
+
+|                       | `Accept-Language` HTTP header                                                         | `languages` GraphQL argument                                   |
+|-----------------------|---------------------------------------------------------------------------------------|----------------------------------------------------------------|
+| Used for              | Catalog metadata (sources, genres, creators)                                          | Term labels (`prefLabel`, `altLabel`, etc.)                    |
+| Input shape           | Ranked list with quality values, per [RFC 9110](https://www.rfc-editor.org/rfc/rfc9110.html#field.accept-language) (e.g. `en, nl;q=0.8`) | Ordered list of preferred languages          |
+| Output shape          | One `String` per field — the server selects a single best match                       | Each term-label field is a list of `{ language, value }` pairs on `TranslatedTerms` |
+| Unknown language      | Silently falls back to `nl`                                                           | Raises a GraphQL error (closed enum)                           |
+| Multilingual output?  | No — one chosen language wins                                                         | Yes — every requested language with available data is returned |
+
+### Which fields are affected
+
+| Field                                                                            | Controlled by                                                |
+|----------------------------------------------------------------------------------|--------------------------------------------------------------|
+| All localized fields on `Source` returned by the top-level `sources` query       | `Accept-Language`                                            |
+| `prefLabel`, `altLabel`, `hiddenLabel`, `definition`, `scopeNote` on terms       | `languages`                                                  |
+| Embedded `Source` inside a `terms` or `lookup` query result                      | First entry of `languages`, else `Accept-Language`           |
+
+Inside a `terms` or `lookup` operation, the `languages` argument doubles as a hint for
+which catalog translation to pick for the embedded `Source`. The top-level `sources`
+query has no operation-level language preference and uses `Accept-Language` directly.
+
+### The `Accept-Language` header
+
+`Accept-Language` is the standard HTTP content-negotiation header: clients send a ranked
+list of preferences and the server picks the best match. The Network of Terms currently
+matches against `nl` and `en`; the default and fallback when nothing matches is `nl`.
+Tags that don’t intersect with the honored set fall through to `nl`.
+
+```http request
+Accept-Language: en, nl;q=0.8
+```
+
+Catalog metadata is only translated into `nl` and `en`, even when the catalog has
+term-level data in other languages. For example, `fy` (Frisian) is a valid value for
+the [`languages` GraphQL argument](#the-languages-graphql-argument) and returns Frisian
+term labels where sources provide them, but `Accept-Language: fy` still resolves source
+names, descriptions, genre names and creator names to `nl`.
+
+### The `languages` GraphQL argument
+
+`languages` is a GraphQL argument accepted by the `terms` and `lookup` queries. It
+takes a list of values from the `Language` enum, in order of preference.
+
+:::important
+
+**Passing `languages` changes the result type.** Without it, term results come back as
+`Terms` with each label field as a plain `[String!]`. With it, results come back as
+[`TranslatedTerms`](#multilingual-results-translatedterms) and each label field is a
+list of `{ language, value }` pairs covering every requested language that the source
+provides data for. This is the only way to get a multilingual response from the API.
+
+:::
+
+Untagged literals are treated as `nl`. Passing a value that is not part of the enum
+(for example `fr` when the catalog has no French data) raises a GraphQL parse error.
+This is by design: the enum is the API’s declarative statement of which languages it
+currently offers.
+
+### Discovering supported languages
+
+The `Language` enum *is* the authoritative list of supported languages. It is derived
+from the catalog at server startup, so the schema grows automatically as new languages
+are added. Clients can discover the current set via GraphQL introspection:
+
+```graphql title="List supported languages"
+query SupportedLanguages {
+  __type(name: "Language") {
+    enumValues { name }
+  }
+}
+```
+
+The recommended pattern for forward-compatible clients:
+
+1. Fetch the supported set via introspection (once, at startup or at build time via codegen).
+2. Intersect it with the languages your application supports.
+3. Send only that intersection in the `languages` argument.
+
+When the Network of Terms adds a new language to its catalog, a fresh introspection
+picks it up without any change to the API contract on the client side.
+
+### Multilingual results: `TranslatedTerms`
+
+Passing `languages` is what turns the API multilingual. Both
+[search](#search-terms) and [lookup](#look-up-terms-by-uri) queries switch to
+`TranslatedTerms` as soon as the argument is present, exposing each label as a
+`{ language, value }` pair so translations can be rendered side by side. Without
+`languages`, you get plain `Terms` with `[String!]` labels in a single language.
 
 ```graphql title="Return results in both English and Dutch" {8,16,19-23} showLineNumbers
 query {
@@ -369,7 +459,7 @@ query {
           uri
           prefLabel { language value }
           altLabel { language value }
-          hiddenLabel { language value}
+          hiddenLabel { language value }
           definition { language value }
           scopeNote { language value }
           seeAlso
@@ -386,23 +476,29 @@ query {
 
 :::tip
 
-Note that not all terminology sources are available in all languages.
-Inspect the `inLanguage` [response parameter](#list-terminology-sources)
-to see which languages are available for each source.
+Not all terminology sources are available in all languages. Inspect the `inLanguage`
+field on each source (see [List terminology sources](#list-terminology-sources)) to
+see which languages it provides.
 
 :::
 
-### Language fallback
+If you omit `languages`, the result type is `Terms` instead and label fields are
+returned as plain `[String!]`. Their values come from whichever language the source
+provides, with untagged literals treated as `nl`.
 
-The `languages` parameter filters labels per term – it does not exclude terms from the results.
-If a term has no labels in any of the preferred languages, it is still returned, but its label fields
-(`prefLabel`, `altLabel`, `hiddenLabel`, `definition`, `scopeNote`) fall back as follows:
+### Per-term label fallback
 
-* If the source provides untagged literals for the field, they are returned and treated as Dutch (`nl`).
+The `languages` parameter filters labels per term – it does not exclude terms from the
+results. If a term has no labels in any of the preferred languages, it is still
+returned, but its label fields (`prefLabel`, `altLabel`, `hiddenLabel`, `definition`,
+`scopeNote`) fall back as follows:
+
+* If the source provides untagged literals for the field, they are returned and treated
+  as Dutch (`nl`).
 * Otherwise, the field is returned as an empty list.
 
-The languages you can actually get back depend on what each source provides: see the `inLanguage`
-field when [listing sources](#list-terminology-sources).
+The languages you can actually get back depend on what each source provides: see the
+`inLanguage` field when [listing sources](#list-terminology-sources).
 
 ## Response times
 
