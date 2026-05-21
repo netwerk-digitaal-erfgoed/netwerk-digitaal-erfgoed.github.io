@@ -1490,7 +1490,7 @@ Possible extra rowspan handling
 </style>
   <meta content="Bikeshed version 0a3d88311, updated Mon May 4 18:07:03 2026 +0000" name="generator">
   <link href="https://docs.nde.nl/requirements-datasets/" rel="canonical">
-  <meta content="31db4cdf9d34831df75dfc397c5ed5a0e4751a80" name="revision">
+  <meta content="c521c74572d39d1c9b7fbd27bdd828e68413bc2b" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>
 td, th {
@@ -2292,7 +2292,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <p data-fill-with="logo"></p>
    <h1 class="no-ref p-name" id="title">Requirements for Datasets</h1>
    <h2 class="heading no-num no-ref no-toc settled" id="profile-and-date"><span class="content">Living Standard,
-    <time class="dt-updated" datetime="2026-05-20">20 May 2026</time></span></h2>
+    <time class="dt-updated" datetime="2026-05-21">21 May 2026</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -2312,7 +2312,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <p class="copyright" data-fill-with="copyright"><a href="http://creativecommons.org/publicdomain/zero/1.0/" rel="license"><img alt="CC0" height="15" src="https://licensebuttons.net/p/zero/1.0/80x15.png" width="80"></a>
 To the extent possible under law, the editors have waived all copyright
 and related or neighboring rights to this work.
-In addition, as of 20 May 2026,
+In addition, as of 21 May 2026,
 the editors have made this specification available under the
 <a href="https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0" rel="license">Open Web Foundation Agreement Version 1.0</a>,
 which is available at https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0.
@@ -3257,9 +3257,7 @@ even if that resource is the same on all pages.</p>
      <tr>
       <th scope="row"><a href="schema:name">schema:name</a>
       <td>A name given to the dataset. See <a href="#dataset-basic">§ 4.2.1 Basic information</a>.
-      <td>
-                1..n
-                    
+      <td>1..n
       <td>
                 Required
                         <br><small>v2.0: must be rdf:langString</small>
@@ -3271,9 +3269,7 @@ even if that resource is the same on all pages.</p>
         The discoverability of the dataset depends in part on the quality of the description.
         Consider different audiences – both domain experts and others –
         for whom the text should be understandable. See <a href="#dataset-basic">§ 4.2.1 Basic information</a>.
-      <td>
-                1..n
-                    
+      <td>1..n
       <td>
                 Recommended
                     <br><small>v2.0: becomes required; must be rdf:langString</small>
@@ -3281,9 +3277,7 @@ even if that resource is the same on all pages.</p>
      <tr>
       <th scope="row"><a href="schema:publisher">schema:publisher</a>
       <td>An entity (organisation or person) responsible for making the Dataset available. See <a href="#creator-publisher-information">§ 4.3 Creator/publisher information</a>.
-      <td>
-                1
-                    
+      <td>1
       <td>
                 Required
                         
@@ -3296,9 +3290,7 @@ even if that resource is the same on all pages.</p>
        <p>This license specifies the conditions under which the metadata records in the dataset may be accessed and reused. It does not cover the heritage objects (either physical or digital) that the metadata describes. Access conditions for these objects should be specified in their own descriptions within the dataset.</p>
        <p>The <a data-link-type="biblio" href="#biblio-dera" title="Digital Heritage Reference Architecture">[DERA]</a> requires metadata to be published openly, so this value <em>SHOULD</em> be an open license that allows consumers to reuse the data, such as <code>https://creativecommons.org/publicdomain/zero/1.0/</code> (CC0), <code>https://creativecommons.org/licenses/by/4.0/</code> (CC BY 4.0), or <code>https://creativecommons.org/licenses/by-sa/4.0/</code> (CC BY-SA 4.0). Adopting a non-open license will severely limit reuse and does not comply with the <a data-link-type="biblio" href="#biblio-dera" title="Digital Heritage Reference Architecture">[DERA]</a> principles.</p>
        <p>The value <em>MUST</em> be the canonical URI of a license. For example, use <code>https://creativecommons.org/publicdomain/zero/1.0/</code> instead of <code>https://creativecommons.org/publicdomain/zero/1.0/deed.nl</code>. See <a href="#dataset-license">§ 4.2.2 License</a>.</p>
-      <td>
-                1
-                    
+      <td>1
       <td>
                 Required
                         <br><small>v2.0: must be IRI</small>
@@ -3306,18 +3298,14 @@ even if that resource is the same on all pages.</p>
      <tr>
       <th scope="row"><a href="schema:distribution">schema:distribution</a>
       <td>Distributions through which the dataset can be retrieved, such as as a download or via an API. See <a href="#dataset-distributions">§ 4.4 Distributions</a>.
-      <td>
-                1..n
-                    
+      <td>1..n
       <td>
                 Recommended
                     
      <tr>
       <th scope="row"><a href="schema:creator">schema:creator</a>
       <td>An entity (organisation or person) responsible for producing the dataset. See <a href="#creator-publisher-information">§ 4.3 Creator/publisher information</a>.
-      <td>
-                1..n
-                    
+      <td>1..n
       <td>
                 Recommended
                     <br><small>v2.0: becomes required</small>
@@ -3325,9 +3313,7 @@ even if that resource is the same on all pages.</p>
      <tr>
       <th scope="row"><a href="schema:datePublished">schema:datePublished</a>
       <td>The date of formal issuance (such as publication) of the dataset. See <a href="#dataset-date">§ 4.2.3 Creation, publication and modification dates</a>.
-      <td>
-                1
-                    
+      <td>1
       <td>
                 Recommended
                     <br><small>v2.0: must be valid ISO 8601</small>
@@ -3335,9 +3321,7 @@ even if that resource is the same on all pages.</p>
      <tr>
       <th scope="row"><a href="schema:dateCreated">schema:dateCreated</a>
       <td>The date on which the dataset was created. See <a href="#dataset-date">§ 4.2.3 Creation, publication and modification dates</a>.
-      <td>
-                1
-                    
+      <td>1
       <td>
                 Recommended
                     <br><small>v2.0: must be valid ISO 8601</small>
@@ -3345,9 +3329,7 @@ even if that resource is the same on all pages.</p>
      <tr>
       <th scope="row"><a href="schema:dateModified">schema:dateModified</a>
       <td>The most recent date on which the dataset was changed or modified. See <a href="#dataset-date">§ 4.2.3 Creation, publication and modification dates</a>.
-      <td>
-                1
-                    
+      <td>1
       <td>
                 Recommended
                     <br><small>v2.0: must be valid ISO 8601</small>
@@ -3355,18 +3337,14 @@ even if that resource is the same on all pages.</p>
      <tr>
       <th scope="row"><a href="schema:version">schema:version</a>
       <td>Version identifier of the dataset, such as a semantic version number or a date. See <a href="#dataset-versions">§ 4.2.4 Versions</a>.
-      <td>
-                0..1
-                    
+      <td>0..1
       <td>
                 Recommended
                 
      <tr>
       <th scope="row"><a href="schema:inLanguage">schema:inLanguage</a>
       <td>The natural language of the textual values within the dataset – that is, of the metadata records themselves (titles, descriptions, and so on). Use a <a data-link-type="biblio" href="#biblio-bcp47" title="Tags for Identifying Languages">[BCP47]</a> language code, such as <code>nl</code> or <code>en</code>.
-      <td>
-                0..n
-                    
+      <td>0..n
       <td>
                 Recommended
                 <br><small>v2.0: must match <code>^[a-zA-Z]{2,3}(-[a-zA-Z0-9]+)*$</code></small>
@@ -3374,36 +3352,28 @@ even if that resource is the same on all pages.</p>
      <tr>
       <th scope="row"><a href="schema:mainEntityOfPage">schema:mainEntityOfPage</a>
       <td>A web page that provides access to the Dataset, its Distributions and/or additional information. Not needed when the dataset URI itself resolves to an HTML page. The human-readable description <em>MUST</em> be consistent with and include at least all details (such as distributions) from the RDF dataset description. See <a href="#resolvable-iris">§ 4.1.3 Resolvable dataset IRIs</a>.
-      <td>
-                0..n
-                    
+      <td>0..n
       <td>
                 Recommended
                 
      <tr>
       <th scope="row"><a href="schema:isBasedOn">schema:isBasedOn</a>
       <td>The URI of a dataset this dataset is based on (previously schema:isBasedOnUrl).
-      <td>
-                0..n
-                    
+      <td>0..n
       <td>
                 Recommended
                 
      <tr>
       <th scope="row"><a href="schema:citation">schema:citation</a>
       <td>A citation or reference for the dataset.
-      <td>
-                0..n
-                    
+      <td>0..n
       <td>
                 Recommended
                 
      <tr>
       <th scope="row"><a href="schema:genre">schema:genre</a>
       <td><code>schema:genre</code> is deprecated. Use <code>schema:about</code> with a URI (e.g. from AAT or GTAA via the Network of Terms) for both subject and material type.
-      <td>
-                0
-                
+      <td>0
       <td>
                 Discouraged
                 <br><small>v2.0: no longer allowed</small>
@@ -3411,18 +3381,14 @@ even if that resource is the same on all pages.</p>
      <tr>
       <th scope="row"><a href="schema:about">schema:about</a>
       <td>The subject matter of the dataset, covering both topical themes (such as ‘post-war reconstruction’ or ‘colonial history’) and material types (such as ‘photographs’ or ‘architectural drawings’). Use a URI from a controlled vocabulary (e.g. AAT, GTAA, or Brinkman via the <a href="https://termennetwerk.netwerkdigitaalerfgoed.nl/en">Network of Terms</a>).
-      <td>
-                1..n
-                    
+      <td>1..n
       <td>
                 Recommended
                     
      <tr>
       <th scope="row"><a href="schema:keywords">schema:keywords</a>
       <td>Words or formalized phrases to describe the dataset. Keywords are free text; use <code>schema:about</code> for URIs describing the subject matter.
-      <td>
-                1..n
-                    
+      <td>1..n
       <td>
                 Recommended
                     <br><small>v2.0: IRIs not allowed</small>
@@ -3430,9 +3396,7 @@ even if that resource is the same on all pages.</p>
      <tr>
       <th scope="row"><a href="schema:spatialCoverage">schema:spatialCoverage</a>
       <td>The geographical area to which the data in the dataset pertains. Use a URI from a controlled vocabulary such as <a href="https://www.geonames.org/">GeoNames</a> via the <a href="https://termennetwerk.netwerkdigitaalerfgoed.nl/en">Network of Terms</a>.
-      <td>
-                1..n
-                    
+      <td>1..n
       <td>
                 Recommended
                     <br><small>v2.0: must be IRI</small>
@@ -3440,9 +3404,7 @@ even if that resource is the same on all pages.</p>
      <tr>
       <th scope="row"><a href="schema:temporalCoverage">schema:temporalCoverage</a>
       <td>The time period to which the dataset pertains. The value must be an ISO 8601 date or time interval (such as ‘2011’, ‘2011/2012’, ‘1889-06/07’ for shortened notation, ‘-0431/-0404’ for BCE dates, or ‘1440/..’ for an open-ended range), or an HTTP(S) URI.
-      <td>
-                1..n
-                    
+      <td>1..n
       <td>
                 Recommended
                     <br><small>v2.0: must be valid ISO 8601 or IRI</small>
@@ -3450,18 +3412,14 @@ even if that resource is the same on all pages.</p>
      <tr>
       <th scope="row"><a href="schema:hasPart">schema:hasPart</a>
       <td>Indicates a dataset that is part of this dataset and also available as a separate dataset.
-      <td>
-                0..n
-                    
+      <td>0..n
       <td>
                 Recommended
                 
      <tr>
       <th scope="row"><a href="schema:includedInDataCatalog">schema:includedInDataCatalog</a>
       <td>The HTTP <a data-link-type="biblio" href="#biblio-iri" title="Internationalized Resource Identifiers (IRIs)">[IRI]</a>(s) of the data catalog(s) that the dataset belongs to.
-      <td>
-                0..n
-                    
+      <td>0..n
       <td>
                 Recommended
                 <br><small>v2.0: must be IRI</small>
@@ -3471,18 +3429,14 @@ even if that resource is the same on all pages.</p>
       <td>How often the dataset is updated.
         Use a value from the EU frequency list,
         for example http://publications.europa.eu/resource/authority/frequency/WEEKLY .
-      <td>
-                0..1
-                    
+      <td>0..1
       <td>
                 Recommended
                 
      <tr>
       <th scope="row"><a href="dct:accessRights">dct:accessRights</a>
       <td>Information about who can access the dataset. Use a value from the EU Access Rights vocabulary. Defaults to <code>PUBLIC</code> if not provided.
-      <td>
-                0..1
-                    
+      <td>0..1
       <td>
                 Recommended
                 
@@ -3505,9 +3459,7 @@ even if that resource is the same on all pages.</p>
      <tr>
       <th scope="row"><a href="schema:name">schema:name</a>
       <td>The full name of the publisher or creator.
-      <td>
-                1..n
-                    
+      <td>1..n
       <td>
                 Required
                         <br><small>v2.0: must be rdf:langString</small>
@@ -3515,9 +3467,7 @@ even if that resource is the same on all pages.</p>
      <tr>
       <th scope="row"><a href="schema:alternateName">schema:alternateName</a>
       <td>Alternative names such as an abbreviation that the organization is known under.
-      <td>
-                0..n
-                    
+      <td>0..n
       <td>
                 Recommended
                 <br><small>v2.0: must be rdf:langString</small>
@@ -3525,25 +3475,21 @@ even if that resource is the same on all pages.</p>
      <tr>
       <th scope="row"><a href="schema:identifier">schema:identifier</a>
       <td>Identifier(s) of the organization, at least its <a href="https://www.nationaalarchief.nl/archiveren/kennisbank/isil-codes">ISIL code</a>.
-      <td>
-                0..n
-                    
+      <td>0..n
       <td>
                 Recommended
                 
      <tr>
       <th scope="row"><a href="schema:sameAs">schema:sameAs</a>
       <td>Links to the organization in other databases.
-      <td>
-                0..n
-                    
+      <td>0..n
       <td>
                 Recommended
                 
      <tr>
       <th scope="row"><a href="schema:contactPoint">schema:contactPoint</a>
       <td>Contact information where end users can get in touch with questions about the dataset. Preferably use the details of the department that manages the dataset or catalogue, rather than an individual employee. See <a href="#contact">§ 4.3.2 Contact information</a>.
-      <td>
+      <td>0..n<br><small>v2.0: 1..n</small>
       <td>
                 Recommended
                 <br><small>v2.0: becomes required</small>
@@ -3563,16 +3509,14 @@ even if that resource is the same on all pages.</p>
       <th scope="row"><a href="schema:contentUrl">schema:contentUrl</a>
       <td>The URL that provides direct access to the distribution itself: the data file or the <a data-link-type="dfn" href="#web-api" id="ref-for-web-api③">web API</a> endpoint.
                 Use <code>schema:documentation</code> if there is also a documentation page that describes or provides access to the distribution (such as a SPARQL UI or a download landing page).
-      <td>
-                1
-                    
+      <td>1
       <td>
                 Required
                         
      <tr>
       <th scope="row"><a href="schema:encodingFormat">schema:encodingFormat</a>
       <td>The media type of the downloadable file. Use a value from the <a data-link-type="biblio" href="#biblio-iana-media-types" title="Media Types">[IANA-MEDIA-TYPES]</a> list. The value should indicate the media type of the response of schema:contentUrl when no Accept header is included in the request. When the distribution is compressed, the compression format (such as <code>zip</code>, <code>gzip</code>) must be included (such as <code>text/turtle+gzip</code>).
-      <td>
+      <td>0..n<br><small>v2.0: 0..1</small>
       <td>
                 Recommended
                 <br><small>v2.0: max 1</small>
@@ -3580,18 +3524,14 @@ even if that resource is the same on all pages.</p>
      <tr>
       <th scope="row"><a href="schema:description">schema:description</a>
       <td>Distribution description
-      <td>
-                1..n
-                    
+      <td>1..n
       <td>
                 Recommended
                     
      <tr>
       <th scope="row"><a href="schema:datePublished">schema:datePublished</a>
       <td>The date of formal issuance (such as publication) of the distribution. See <a href="#distribution-date">§ 4.4.1 Creation and modification dates</a>.
-      <td>
-                0..1
-                    
+      <td>0..1
       <td>
                 Recommended
                 <br><small>v2.0: must be valid ISO 8601</small>
@@ -3599,9 +3539,7 @@ even if that resource is the same on all pages.</p>
      <tr>
       <th scope="row"><a href="schema:dateModified">schema:dateModified</a>
       <td>The most recent date on which the distribution was changed or modified. See <a href="#distribution-date">§ 4.4.1 Creation and modification dates</a>.
-      <td>
-                0..1
-                    
+      <td>0..1
       <td>
                 Recommended
                 <br><small>v2.0: must be valid ISO 8601</small>
@@ -3609,9 +3547,7 @@ even if that resource is the same on all pages.</p>
      <tr>
       <th scope="row"><a href="schema:inLanguage">schema:inLanguage</a>
       <td>Language or languages in which the distribution is available. Use a <a data-link-type="biblio" href="#biblio-bcp47" title="Tags for Identifying Languages">[BCP47]</a> language code, such as <code>nl</code>.
-      <td>
-                0..n
-                    
+      <td>0..n
       <td>
                 Recommended
                 <br><small>v2.0: must match <code>^[a-zA-Z]{2,3}(-[a-zA-Z0-9]+)*$</code></small>
@@ -3619,9 +3555,7 @@ even if that resource is the same on all pages.</p>
      <tr>
       <th scope="row"><a href="schema:license">schema:license</a>
       <td>License applicable to this distribution, overriding the parent dataset’s license. Optional; only set this when the distribution carries a different license from the dataset.
-      <td>
-                0..1
-                    
+      <td>0..1
       <td>
                 Recommended
                 <br><small>v2.0: must be IRI</small>
@@ -3629,18 +3563,14 @@ even if that resource is the same on all pages.</p>
      <tr>
       <th scope="row"><a href="schema:contentSize">schema:contentSize</a>
       <td>Distribution file size in bytes.
-      <td>
-                0..1
-                    
+      <td>0..1
       <td>
                 Recommended
                 
      <tr>
       <th scope="row"><a href="schema:usageInfo">schema:usageInfo</a>
       <td>A link to the documentation: for downloads, the application profile, vocabulary or ontology; for web APIs (such as SPARQL or OAI-PMH), the protocol specification. See <a href="#usage-information">§ 4.4.2 Usage information</a>.
-      <td>
-                0..n
-                    
+      <td>0..n
       <td>
                 Recommended
                 <br><small>v2.0: must be IRI</small>
@@ -3649,9 +3579,7 @@ even if that resource is the same on all pages.</p>
       <th scope="row"><a href="schema:documentation">schema:documentation</a>
       <td>A documentation page that describes or provides access to this distribution, such as a SPARQL UI or a download landing page.
                 <code>schema:contentUrl</code> points to the distribution itself (the data file or the API endpoint).
-      <td>
-                0..n
-                    
+      <td>0..n
       <td>
                 Recommended
                 
@@ -3674,9 +3602,7 @@ even if that resource is the same on all pages.</p>
      <tr>
       <th scope="row"><a href="schema:name">schema:name</a>
       <td>Name of the data catalog
-      <td>
-                1..n
-                    
+      <td>1..n
       <td>
                 Required
                         <br><small>v2.0: must be rdf:langString</small>
@@ -3688,9 +3614,7 @@ even if that resource is the same on all pages.</p>
         The discoverability of the dataset depends in part on the quality of the description.
         Consider different audiences – both domain experts and others –
         for whom the text should be understandable.
-      <td>
-                1..n
-                    
+      <td>1..n
       <td>
                 Recommended
                     <br><small>v2.0: becomes required; must be rdf:langString</small>
@@ -3698,9 +3622,7 @@ even if that resource is the same on all pages.</p>
      <tr>
       <th scope="row"><a href="schema:publisher">schema:publisher</a>
       <td>Publisher of the data catalog See <a href="#creator-publisher-information">§ 4.3 Creator/publisher information</a>.
-      <td>
-                1
-                    
+      <td>1
       <td>
                 Recommended
                     <br><small>v2.0: becomes required</small>
@@ -3708,9 +3630,7 @@ even if that resource is the same on all pages.</p>
      <tr>
       <th scope="row"><a href="schema:dataset">schema:dataset</a>
       <td>Dataset(s) in the data catalog
-      <td>
-                1..n
-                    
+      <td>1..n
       <td>
                 Recommended
                     
