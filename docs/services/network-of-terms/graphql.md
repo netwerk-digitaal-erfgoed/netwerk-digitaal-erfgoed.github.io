@@ -335,6 +335,27 @@ query {
 }
 ```
 
+Each URI is routed to the source whose `url` prefix it starts with. Sources declare one or more URL prefixes in the catalog, and the Network of Terms picks the matching source for every URI in the request. If no source claims the prefix, the `source` field returns an `Error` for that URI.
+
+## Discover reconciliation endpoints
+
+Sources that offer a [Reconciliation API](reconciliation.md) advertise it via the `features` field. Each feature has a `type` and a `url`; the entry with `type: RECONCILIATION` carries the endpoint URL to configure in OpenRefine.
+
+```graphql title="List reconciliation endpoints"
+query {
+  sources {
+    uri
+    name
+    features {
+      type
+      url
+    }
+  }
+}
+```
+
+Filter client-side for entries where `type` equals `RECONCILIATION`. Sources that publish their own reconciliation service (such as Wikidata) are not re-exposed here – see [Reconciliation API](reconciliation.md) for details.
+
 ## Language selection
 
 The Network of Terms exposes natural-language data through two distinct controls,

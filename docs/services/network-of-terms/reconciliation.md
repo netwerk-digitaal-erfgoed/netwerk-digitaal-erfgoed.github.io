@@ -14,10 +14,17 @@ of the specification is still a draft and is not yet supported.
 If you want to use the Reconciliation Service API, configure one or more service endpoints in your
 [OpenRefine](https://openrefine.org) application. An endpoint’s URL is structured like
 `https://termennetwerk-api.netwerkdigitaalerfgoed.nl/reconcile/{sourceUri}`. A full list of endpoints can be found on
-the [Network of Terms website](https://termennetwerk.netwerkdigitaalerfgoed.nl/reconciliation).
+the [Network of Terms website](https://termennetwerk.netwerkdigitaalerfgoed.nl/reconciliation), or
+discovered programmatically via the GraphQL API – see [Discover reconciliation endpoints](graphql.md#discover-reconciliation-endpoints).
 
 Note that the Network of Terms provides Reconciliation endpoints only for terminology sources that do not offer such
 endpoints themselves.
+
+## Using the API from OpenRefine
+
+In OpenRefine, open the column you want to reconcile and choose **Reconcile → Start reconciling…**. The first time you use a Network of Terms endpoint, click **Add standard service…** and paste the endpoint URL for the source (for example `https://termennetwerk-api.netwerkdigitaalerfgoed.nl/reconcile/https://data.cultureelerfgoed.nl/term/id/cht`). OpenRefine remembers the service for subsequent projects.
+
+In the reconciliation dialog, select **Reconcile against no particular type**. Network of Terms endpoints don’t advertise a default type for their candidates, and leaving the default option (“Reconcile against the suggested type”) selected makes OpenRefine match every cell against an empty type set, so no candidates come back. Picking “no particular type” lets the source’s own search query decide what counts as a match.
 
 ## Language selection
 

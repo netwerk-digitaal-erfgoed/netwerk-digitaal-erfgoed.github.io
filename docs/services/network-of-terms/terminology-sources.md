@@ -17,16 +17,10 @@ Most importantly:
 * the source must be available as a SPARQL endpoint
 * basic information must be published for each term, at least a URI and a label. 
 
-If you’d like to add a source to the Network, please consult the [FAQ](https://termennetwerk.netwerkdigitaalerfgoed.nl/faq2).
+If you’d like to add a source to the Network, please consult the [FAQ](https://termennetwerk.netwerkdigitaalerfgoed.nl/faq2). The technical steps – dataset description, SPARQL search and lookup queries, and SHACL validation – live in the [catalog README](https://github.com/netwerk-digitaal-erfgoed/network-of-terms/blob/master/packages/catalog/README.md#adding-a-dataset).
 
-## Fulltext search
+## Query authoring
 
-Terms are searched using textual strings. 
-While this is possible with plain SPARQL (`CONTAINS`), search performance can be improved by using the SPARQL’s endpoint fulltext search support,
-usually backed by Lucene.
+Source-specific search and lookup queries (the SPARQL `CONSTRUCT` queries the Network of Terms federates over the source’s endpoint, including template placeholders such as `?query` / `?virtuosoQuery` and recommended full-text patterns per backend) are documented next to the catalog code: see [Writing the SPARQL queries](https://github.com/netwerk-digitaal-erfgoed/network-of-terms/blob/master/packages/catalog/README.md#writing-the-sparql-queries) in the catalog README.
 
-Fulltext search is supported by:
-
-* [Fuseki](https://jena.apache.org/documentation/query/text-query.html) (`text:query`)
-* [GraphDB](https://graphdb.ontotext.com/documentation/10.8/full-text-search.html) 
-* [Virtuoso](https://docs.openlinksw.com/virtuoso/bifcontainsoptions/) (`bif:contains`)
+The `queryMode` GraphQL argument is the client-facing knob: the default `OPTIMIZED` mode lowercases and trims the input before substitution; `RAW` passes it through unchanged.
