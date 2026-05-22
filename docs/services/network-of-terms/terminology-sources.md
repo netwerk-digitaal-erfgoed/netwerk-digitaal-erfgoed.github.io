@@ -17,7 +17,7 @@ Most importantly:
 * the source must be available as a SPARQL endpoint
 * basic information must be published for each term, at least a URI and a label. 
 
-If you’d like to add a source to the Network, please consult the [FAQ](https://termennetwerk.netwerkdigitaalerfgoed.nl/faq2).
+If you’d like to add a source to the Network, please consult the [FAQ](https://termennetwerk.netwerkdigitaalerfgoed.nl/faq2). The technical steps – dataset description, SPARQL search and lookup queries, and SHACL validation – live in the [catalog README](https://github.com/netwerk-digitaal-erfgoed/network-of-terms/blob/master/packages/catalog/README.md#adding-a-dataset).
 
 ## Writing SPARQL queries for a source
 
