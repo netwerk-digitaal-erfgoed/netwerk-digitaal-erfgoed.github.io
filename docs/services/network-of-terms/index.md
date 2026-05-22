@@ -57,3 +57,5 @@ If you just want to search the Network of Terms using a web interface, have a lo
 ## Source code
 
 The Network of Terms is open source software, available [on GitHub](https://github.com/netwerk-digitaal-erfgoed/network-of-terms).
+
+These docs cover **using** the Network of Terms: the GraphQL and Reconciliation APIs, the demonstrator, and the list of available terminology sources. For **running, hosting or extending** the software – install steps, environment variables, the catalog data model, query authoring and the test suite – see the [`network-of-terms` repository README](https://github.com/netwerk-digitaal-erfgoed/network-of-terms#readme) and the README of each package under it.
