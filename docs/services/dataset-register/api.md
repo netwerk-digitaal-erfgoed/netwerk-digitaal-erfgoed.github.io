@@ -54,22 +54,48 @@ graph returned here is the authoritative source: it matches what the validation 
 
 Validation is performed against the
 [Requirements for Datasets](https://docs.nde.nl/requirements-datasets/), expressed as the SHACL
-shape graph available from `GET /shacl`. Both validation endpoints and `POST /datasets` return
-SHACL [validation reports](https://www.w3.org/TR/shacl/#validation-report). When acting on a
-report, keep two distinctions in mind:
+shape graph available from `GET /shacl`. How you interpret the result depends on whether you
+call the API or run the shape graph yourself.
 
-- **Validity vs. conformance.** A description is considered *valid* (and will be registered) if it has no
-  violations. In SHACL, `sh:conforms` is only `true` when there are no violations **and** no
-  warnings or infos, so do not treat `sh:conforms = false` as a hard failure – inspect
-  `sh:resultSeverity` per result instead.
-- **HTTP status maps to validity, not conformance.** The validation endpoints return `200`
-  when the description is valid and `400` when it has one or more violations. `POST /datasets`
-  returns `202 Accepted` on a valid submission (the description is queued for ingestion and
-  will appear in the Register shortly) and `400` when invalid. Warnings and infos do _not_
-  flip the status code on the success path, so a `200` or `202` response can still carry a
-  report with `sh:conforms = false`.
+### Calling the API
 
-For the exact JSON-LD and Turtle shapes of these reports, see the `Valid` and `Invalid` response
+The **HTTP status code is the authoritative signal** – you do not need to parse the SHACL
+report to decide pass or fail:
+
+| Status | Meaning                                                                                            |
+| ------ | -------------------------------------------------------------------------------------------------- |
+| `200`  | Valid. Returned by `POST /datasets/validate` and `PUT /datasets/validate`.                         |
+| `202`  | Valid; queued for ingestion. Returned by `POST /datasets`.                                         |
+| `400`  | Invalid – one or more SHACL violations. The response body lists them.                              |
+
+The status maps to **validity**, not to SHACL's `sh:conforms`. A description is *valid* when no
+result has severity `sh:Violation`; warnings and infos do not block ingestion. SHACL's
+`sh:conforms` is stricter – it is only `true` when there are no violations **and** no warnings
+**and** no infos. So a `200` or `202` response can still carry a report with
+`sh:conforms = false` if the description triggered warnings or infos.
+
+In short: use the status code to keep or reject; surface anything else in the report body to
+the editor as advisory feedback.
+
+### Validating against the SHACL shape directly
+
+If you fetch the shape graph from `GET /shacl` and run validation in your own pipeline (e.g.
+an authoring tool that highlights violations inline, or a CI check on a publishing repo),
+there is no HTTP status to lean on – only the SHACL
+[validation report](https://www.w3.org/TR/shacl/#validation-report). Walk every
+`sh:ValidationResult` and inspect its `sh:resultSeverity`:
+
+| Severity        | Meaning                                                                                  |
+| --------------- | ---------------------------------------------------------------------------------------- |
+| `sh:Violation`  | The register would reject this description (HTTP `400`). Must be fixed before submitting. |
+| `sh:Warning`    | The register would accept the description, but the issue should be addressed.            |
+| `sh:Info`       | Informational only.                                                                      |
+
+To reproduce the register's accept/reject decision, treat the description as valid when no
+result has severity `sh:Violation`. Do **not** rely on `sh:conforms` for this decision – it
+flips to `false` on warnings and infos too, which is stricter than what the register enforces.
+
+For the exact JSON-LD and Turtle shapes of the report, see the `Valid` and `Invalid` response
 schemas in the OpenAPI spec.
 
 ## Authentication
