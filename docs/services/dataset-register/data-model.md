@@ -1,13 +1,14 @@
 ---
+sidebar_position: 3
 description: The DCAT-AP-NL data model that the Dataset Register exposes to consumers.
 ---
 
 # Data model
 
-This page is for **users** of the [Dataset Register](index.md) — anyone querying the
+This page is for users of the [Dataset Register](index.md): anyone querying the
 [SPARQL endpoint](sparql.md), fetching dataset descriptions in RDF, or building applications on
 top of the register. It describes the **consumer-facing, published data model**: the RDF as it
-appears in the register **after** fetching, validating, mapping, and storing the providers’ input.
+appears in the register after fetching, validating, mapping, and storing the providers’ input.
 
 :::info
 
@@ -154,15 +155,13 @@ how complete the description is. Reach it from a dataset via the `schema:content
 ## Allow list
 
 A registration URL must be on a domain that is allowed before it can be added to the Register.
-Allowed domains are administered in the
+The allow list lives in the
 [`https://data.netwerkdigitaalerfgoed.nl/registry/allowed_domain_names` RDF graph](https://qlever.netwerkdigitaalerfgoed.nl/datasetregister/CYjX1Y?exec=true).
+Each entry is a blank node with a single property:
 
-To add a URL:
+| Property                                                                                        | Description                                                                                                                                                                       |
+| ----------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `https://data.netwerkdigitaalerfgoed.nl/allowed_domain_names/def/domain_name`                   | Literal: either a registrable domain (`example.com`) or a specific subdomain (`sub.example.com`). A registrable domain implicitly covers all its subdomains. |
 
-```sparql
-INSERT DATA {
-    GRAPH <https://data.netwerkdigitaalerfgoed.nl/registry/allowed_domain_names> {
-        [] <https://data.netwerkdigitaalerfgoed.nl/allowed_domain_names/def/domain_name> "your-domain.com" .
-    }
-}
-```
+To modify the allow list, use the [REST API](api.md) (`POST /allowed-domains`); the SPARQL
+endpoint is read-only.
