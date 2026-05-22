@@ -51,8 +51,8 @@ If you just want to search the Network of Terms using a web interface, have a lo
 
 ## APIs
 
-* [GraphQL](graphql.md)
-* [Reconciliation](reconciliation.md)
+* [GraphQL](graphql.md) is the primary API for searching one or more terminology sources from a query string and retrieving harmonized SKOS results.
+* [Reconciliation](reconciliation.md) for matching textual strings in your data against terms, typically used from [OpenRefine](https://openrefine.org) to clean up and link data in bulk. 
 
 ## Source code
 
