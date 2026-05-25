@@ -160,7 +160,7 @@ For every distribution URL referenced by a registered dataset, the crawler perio
 https://datasetregister.netwerkdigitaalerfgoed.nl/sparql/distribution-health
 ```
 
-The graph is intentionally separate from the dataset graphs so it can be pruned or reset without touching the published DCAT. Each probed URL appears as a `nde-probe:DistributionHealthRecord` whose IRI **is** the distribution URL itself.
+Distribution health is **enrichment data produced by the register**, not metadata supplied by publishers. Keeping it in its own named graph makes that origin explicit — consumers can opt in or out of it cleanly, and the register can re-probe, prune, or reset the data without touching the published DCAT description in the dataset graphs. Each probed URL appears as a `nde-probe:DistributionHealthRecord` whose IRI **is** the distribution URL itself.
 
 Vocabulary prefix: `nde-probe: <https://def.nde.nl/probe#>`.
 

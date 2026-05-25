@@ -107,9 +107,7 @@ schemas in the OpenAPI spec.
 
 ### Distribution-health probes
 
-During validation the Register also probes every distribution URL it can derive from the description (e.g. `dcat:accessURL`, `dcat:downloadURL`, `schema:contentUrl`) to check that it is reachable and that the response matches the declared media type. On the API path a failed probe emits a `sh:Violation` — so an otherwise valid description can still be rejected with HTTP `400` if its distribution URLs are broken.
-
-Probe-emitted violations carry an `nde-probe:probeOutcome` IRI (`NetworkError`, `NotFound`, `ContentTypeMismatch`, …) on the `sh:ValidationResult`. The crawler keeps a longer-lived record of these outcomes per URL, queryable via the SPARQL endpoint — see [Distribution health](data-model.md#distribution-health) for the vocabulary and the named graph.
+During validation the Register also probes every distribution URL it can derive from the description (`dcat:accessURL`, `dcat:downloadURL`, `schema:contentUrl`) to check that it is reachable and that the response matches the declared media type. A failed probe emits a `sh:Violation`, so a description that passes SHACL can still be rejected with HTTP `400` if one of its distribution URLs is broken. See [Distribution health](data-model.md#distribution-health) for the outcome vocabulary that appears on probe-emitted `sh:ValidationResult` nodes.
 
 ## Authentication
 
