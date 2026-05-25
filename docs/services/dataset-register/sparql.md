@@ -48,6 +48,7 @@ you can query; jump straight to the section you need:
 - [Dataset](data-model.md#dataset): `dcat:Dataset`, `dcat:Distribution`, `foaf:Agent`
 - [Registration](data-model.md#registration): the register-specific metadata used for
   [registration status](#registration-status) below
+- [Distribution health](data-model.md#distribution-health): per-URL probe results (reachability and content-type match), exposed in a dedicated named graph
 - [Allow list](data-model.md#allow-list): which domains are permitted to register datasets
 
 ## Registration status

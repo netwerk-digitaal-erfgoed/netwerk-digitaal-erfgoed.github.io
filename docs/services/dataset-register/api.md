@@ -105,6 +105,10 @@ it flips to `false` on warnings and infos too, which is stricter than what the r
 For the exact JSON-LD and Turtle shapes of the report, see the `Valid` and `Invalid` response
 schemas in the OpenAPI spec.
 
+### Distribution-health probes
+
+During validation the Register also probes every distribution URL it can derive from the description (`dcat:accessURL`, `dcat:downloadURL`, `schema:contentUrl`) to check that it is reachable and that the response matches the declared media type. A failed probe emits a `sh:Violation`, so a description that passes SHACL can still be rejected with HTTP `400` if one of its distribution URLs is broken. See [Distribution health](data-model.md#distribution-health) for the outcome vocabulary that appears on probe-emitted `sh:ValidationResult` nodes.
+
 ## Authentication
 
 Only `DELETE /datasets` requires authentication, via a Bearer token in the `Authorization`
