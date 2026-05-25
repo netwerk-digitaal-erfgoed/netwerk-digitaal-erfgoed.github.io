@@ -152,6 +152,63 @@ how complete the description is. Reach it from a dataset via the `schema:content
 | [`schema:ratingValue`](https://schema.org/ratingValue)             | Rating for the dataset description.                       |
 | [`schema:ratingExplanation`](https://schema.org/ratingExplanation) | Explanation for the rating: which properties are missing? |
 
+### Distribution health
+
+For every distribution URL referenced by a registered dataset, the crawler periodically issues a probe (an HTTP `HEAD`/`GET` or a SPARQL `ASK`, depending on the distribution type) and records the outcome in a dedicated named graph:
+
+```text
+https://datasetregister.netwerkdigitaalerfgoed.nl/sparql/distribution-health
+```
+
+The graph is intentionally separate from the dataset graphs so it can be pruned or reset without touching the published DCAT. Each probed URL appears as a `nde-probe:DistributionHealthRecord` whose IRI **is** the distribution URL itself.
+
+Vocabulary prefix: `nde-probe: <https://def.nde.nl/probe#>`.
+
+| Property                       | Data type / notes                                                                                                                                                                              | Cardinality |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| `nde-probe:lastProbedAt`       | `xsd:dateTime` — UTC timestamp of the most recent probe attempt.                                                                                                                                | 1..1        |
+| `nde-probe:lastOutcome`        | Outcome IRI of the last probe; absent when the last probe succeeded. One of the IRIs listed under [Probe outcomes](#probe-outcomes) below.                                                     | 0..1        |
+| `nde-probe:lastSuccessAt`      | `xsd:dateTime` — UTC timestamp of the most recent successful probe, if any.                                                                                                                     | 0..1        |
+| `nde-probe:firstFailureAt`     | `xsd:dateTime` — UTC timestamp at which the current failure streak began. Cleared on the next success.                                                                                          | 0..1        |
+| `nde-probe:consecutiveFailures`| `xsd:integer` — length of the current failure streak. Reset to `0` on the next success.                                                                                                         | 1..1        |
+
+#### Probe outcomes
+
+When a probe fails, `nde-probe:lastOutcome` is one of:
+
+| Outcome IRI                          | Meaning                                                                                       |
+| ------------------------------------ | --------------------------------------------------------------------------------------------- |
+| `nde-probe:NetworkError`             | Connection refused, DNS failure, TLS error, timeout, or any other non-HTTP transport failure. |
+| `nde-probe:NotFound`                 | HTTP `404` or `410`.                                                                          |
+| `nde-probe:ServerError`              | HTTP `5xx`.                                                                                   |
+| `nde-probe:AuthRequired`             | HTTP `401` or `403`.                                                                          |
+| `nde-probe:RateLimited`              | HTTP `429`.                                                                                   |
+| `nde-probe:ContentTypeMismatch`      | Response was reachable but its `Content-Type` did not match the declared `dcat:mediaType` / `dct:format` / `schema:encodingFormat`. |
+| `nde-probe:ContentTypeMissing`       | Response had no `Content-Type` header at all.                                                 |
+| `nde-probe:EmptyBody`                | Response body was empty for a distribution that should have returned data.                    |
+| `nde-probe:SparqlProbeFailed`        | The distribution declares a SPARQL endpoint (`dct:conformsTo <https://www.w3.org/TR/sparql11-protocol/>`) but the probe `ASK` query did not return a valid SPARQL result. |
+| `nde-probe:RdfParseFailed`           | The body was returned but could not be parsed as RDF.                                         |
+
+#### Effect on validation results
+
+Probe failures surface in the SHACL [validation report](api.md#validation-results) as additional `sh:ValidationResult` nodes, with one of two probe-specific constraint components on `sh:sourceConstraintComponent`:
+
+- `nde-probe:DistributionReachableConstraintComponent` — the URL itself could not be retrieved.
+- `nde-probe:DistributionFormatMatchConstraintComponent` — the URL was retrieved but the response did not match the declared media type / format.
+
+Probe-emitted results carry these extra properties beyond the standard SHACL ones:
+
+| Property                         | Description                                                                            |
+| -------------------------------- | -------------------------------------------------------------------------------------- |
+| `nde-probe:probeOutcome`         | One of the outcome IRIs in the table above.                                            |
+| `nde-probe:firstFailureAt`       | `xsd:dateTime` — copied from the health record, so consumers see how long the URL has been failing without joining the health graph. Present only on crawler-emitted results. |
+| `nde-probe:consecutiveFailures`  | `xsd:integer` — length of the current failure streak. Present only on crawler-emitted results. |
+
+The REST API and the crawler differ in how strict they are about probe failures:
+
+- **REST API** (`POST /datasets`, `POST/PUT /datasets/validate`): any failed probe is emitted at `sh:Violation` immediately. A registration with a broken distribution URL is rejected synchronously with HTTP `400`.
+- **Crawler**: probes run every crawl round but are only promoted to `sh:Violation` once `nde-probe:firstFailureAt` is older than the failure-streak threshold (default 7 days). Transient blips do not flip a dataset to invalid.
+
 ## Allow list
 
 A registration URL must be on a domain that is allowed before it can be added to the Register.
