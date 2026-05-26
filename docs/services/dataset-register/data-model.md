@@ -152,7 +152,7 @@ how complete the description is. Reach it from a dataset via the `schema:content
 | [`schema:ratingValue`](https://schema.org/ratingValue)             | Rating for the dataset description.                       |
 | [`schema:ratingExplanation`](https://schema.org/ratingExplanation) | Explanation for the rating: which properties are missing? |
 
-### Distribution health
+## Distribution health
 
 For every distribution URL referenced by a registered dataset, the crawler periodically issues a probe (an HTTP `HEAD`/`GET` or a SPARQL `ASK`, depending on the distribution type) and records the outcome in a dedicated named graph:
 
@@ -160,9 +160,13 @@ For every distribution URL referenced by a registered dataset, the crawler perio
 https://datasetregister.netwerkdigitaalerfgoed.nl/sparql/distribution-health
 ```
 
-Distribution health is **enrichment data produced by the register**, not metadata supplied by publishers. Keeping it in its own named graph makes that origin explicit — consumers can opt in or out of it cleanly, and the register can re-probe, prune, or reset the data without touching the published DCAT description in the dataset graphs. Each probed URL appears as a `nde-probe:DistributionHealthRecord` whose IRI **is** the distribution URL itself.
+Distribution health is **enrichment data produced by the register**, not metadata supplied by publishers. Keeping it in its own named graph – parallel to the dataset and registration graphs – makes that origin explicit: consumers can opt in or out of it cleanly, and the register can re-probe, prune, or reset the data without touching the published DCAT description.
 
 Vocabulary prefix: `nde-probe: <https://def.nde.nl/probe#>`.
+
+### `nde-probe:DistributionHealthRecord`
+
+Each probed URL appears as a `nde-probe:DistributionHealthRecord` whose IRI **is** the distribution URL itself.
 
 | Property                       | Data type / notes                                                                                                                                                                              | Cardinality |
 | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
@@ -172,7 +176,7 @@ Vocabulary prefix: `nde-probe: <https://def.nde.nl/probe#>`.
 | `nde-probe:firstFailureAt`     | `xsd:dateTime` — UTC timestamp at which the current failure streak began. Cleared on the next success.                                                                                          | 0..1        |
 | `nde-probe:consecutiveFailures`| `xsd:integer` — length of the current failure streak. Reset to `0` on the next success.                                                                                                         | 1..1        |
 
-#### Probe outcomes
+### Probe outcomes
 
 When a probe fails, `nde-probe:lastOutcome` is one of:
 
@@ -189,7 +193,7 @@ When a probe fails, `nde-probe:lastOutcome` is one of:
 | `nde-probe:SparqlProbeFailed`        | The distribution declares a SPARQL endpoint (`dct:conformsTo <https://www.w3.org/TR/sparql11-protocol/>`) but the probe `ASK` query did not return a valid SPARQL result. |
 | `nde-probe:RdfParseFailed`           | The body was returned but could not be parsed as RDF.                                         |
 
-#### Effect on validation results
+### Effect on validation results
 
 Probe failures surface in the SHACL [validation report](api.md#validation-results) as additional `sh:ValidationResult` nodes, with one of two probe-specific constraint components on `sh:sourceConstraintComponent`:
 
