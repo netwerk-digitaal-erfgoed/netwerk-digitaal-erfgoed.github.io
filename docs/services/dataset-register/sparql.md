@@ -67,7 +67,7 @@ and the registration URL carries a `schema:additionalType` flag indicating its c
 
 ```sparql
 PREFIX dcat: <http://www.w3.org/ns/dcat#>
-PREFIX schema: <http://schema.org/>
+PREFIX schema: <https://schema.org/>
 SELECT * {
   ?dataset a dcat:Dataset ;
     schema:subjectOf ?registrationUrl .
