@@ -38,6 +38,7 @@ Each Summary attaches the following information to a `void:Dataset` – a mix of
 | Subject URI spaces | `void:uriSpace` | The most common namespaces for subject resources |
 | Vocabularies | `void:vocabulary` | Schema.org, FOAF, Dublin Core, etc. – what the predicates draw from |
 | Licenses | `dcterms:license` | License coverage at the resource level |
+| IIIF Presentation manifests | `void:subset` + `dcterms:conformsTo <http://iiif.io/api/presentation/>` + `void:entities` | Whether the dataset exposes [IIIF Presentation API](http://iiif.io/api/presentation/) manifests, and how many. Detected from `schema:encodingFormat` literals matching the [SCHEMA-AP-NDE](https://docs.nde.nl/schema-profile/) IIIF profile pattern; v2 and v3 collapse into one version-less subset |
 | Distributions | `void:sparqlEndpoint`, `void:dataDump`, plus HTTP-validated status | Which distributions currently work and at what size |
 | Example resources | `void:exampleResource` | Concrete starting points for exploration |
 | SCHEMA-AP-NDE conformance | `dqv:QualityMeasurement` + `prov:Activity` | Whether a sample of resources passes the [SCHEMA-AP-NDE](https://docs.nde.nl/schema-profile/) SHACL shapes. Three metrics are emitted: `schema-ap-nde-sample-conformance` (boolean), `quads-validated` (number of sampled triples), and `samples-per-class` (sample cap). Combine `quads-validated > 0` with `conformance = true` to mean *"tested and passed"*; `quads-validated = 0` means the profile didn't apply (e.g. the dataset uses Linked.Art or EDM). The full per-resource SHACL report is written to a file rather than the triple store. |
@@ -275,6 +276,25 @@ ORDER BY DESC(?datasetCount)
 ```
 
 [▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=License%20usage&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0APREFIX%20dcterms%3A%20%3Chttp%3A//purl.org/dc/terms/%3E%0ASELECT%20%3Flicense%20%28COUNT%28DISTINCT%20%3Fdataset%29%20AS%20%3FdatasetCount%29%20WHERE%20%7B%0A%20%20%3Fdataset%20a%20void%3ADataset%20%3B%0A%20%20%20%20void%3Asubset%20%5B%0A%20%20%20%20%20%20dcterms%3Alicense%20%3Flicense%0A%20%20%20%20%5D%20.%0A%7D%0AGROUP%20BY%20%3Flicense%0AORDER%20BY%20DESC%28%3FdatasetCount%29)
+
+### Datasets exposing IIIF Presentation manifests
+
+Datasets that publish [IIIF Presentation API](http://iiif.io/api/presentation/) manifests under the SCHEMA-AP-NDE convention, with the number of distinct manifests detected per dataset.
+
+```sparql
+PREFIX void: <http://rdfs.org/ns/void#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+SELECT ?dataset ?manifests WHERE {
+  ?dataset a void:Dataset ;
+    void:subset [
+      dcterms:conformsTo <http://iiif.io/api/presentation/> ;
+      void:entities ?manifests
+    ] .
+}
+ORDER BY DESC(?manifests)
+```
+
+[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Datasets%20exposing%20IIIF%20Presentation%20manifests&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0APREFIX%20dcterms%3A%20%3Chttp%3A//purl.org/dc/terms/%3E%0ASELECT%20%3Fdataset%20%3Fmanifests%20WHERE%20%7B%0A%20%20%3Fdataset%20a%20void%3ADataset%20%3B%0A%20%20%20%20void%3Asubset%20%5B%0A%20%20%20%20%20%20dcterms%3AconformsTo%20%3Chttp%3A//iiif.io/api/presentation/%3E%20%3B%0A%20%20%20%20%20%20void%3Aentities%20%3Fmanifests%0A%20%20%20%20%5D%20.%0A%7D%0AORDER%20BY%20DESC%28%3Fmanifests%29)
 
 ### Datasets with working SPARQL endpoints
 
