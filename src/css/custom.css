@@ -108,7 +108,7 @@ a[target="_blank"] > svg[class*="iconExternalLink"] {
 .markdown a[target="_blank"]::after,
 .footer__link-item[target="_blank"]::after,
 .navbar__link[target="_blank"]::after {
-  content: " \2197";
+  content: "\00a0\2197";
 }
 
 .pagination-nav__link {
