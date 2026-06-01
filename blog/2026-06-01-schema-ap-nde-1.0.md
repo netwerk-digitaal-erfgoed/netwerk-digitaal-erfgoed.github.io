@@ -2,6 +2,7 @@
 title: NDE releases SCHEMA-AP-NDE 1.0
 authors: [ddeboer]
 tags: [rdf, requirements]
+description: "NDE releases SCHEMA-AP-NDE 1.0: the first stable version of the Schema.org Application Profile for the Dutch cultural heritage network, with a backward compatibility promise for everything on 1.x."
 ---
 
 Today NDE releases **[SCHEMA-AP-NDE](https://docs.nde.nl/schema-profile/) 1.0**: the first stable version of the Schema.org Application Profile every dataset in the Dutch cultural heritage network is expected to publish. It comes with a **backward compatibility promise**: as long as we stay on 1.x, data that conforms keeps conforming, and software built against it keeps working.
