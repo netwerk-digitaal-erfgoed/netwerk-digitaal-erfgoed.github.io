@@ -1,5 +1,5 @@
 ---
-sidebar_position: 2
+sidebar_position: 1
 ---
 
 # Dataset Register
@@ -14,7 +14,7 @@ that includes:
 
 ## Where to go next
 
-**If you are publishing a dataset**, register your dataset description via the [REST API](api.md). The Register fetches it, validates it against the [Requirements for Datasets](https://docs.nde.nl/requirements-datasets/), and stores the result. See also [Register your dataset](../../publish/register.md) for the publisher-side walkthrough.
+**If you are publishing a dataset**, register your dataset description via the [REST API](api.md). The Register fetches it, [validates](validation.md) it against the [Requirements for Datasets](https://docs.nde.nl/requirements-datasets/), and stores the result. See also [Register your dataset](../../publish/register.md) for the publisher-side walkthrough.
 
 **If you are consuming the Register**, query the [SPARQL endpoint](sparql.md). The [data model](data-model.md) describes the DCAT-AP-NL shapes you will encounter in the results.
 

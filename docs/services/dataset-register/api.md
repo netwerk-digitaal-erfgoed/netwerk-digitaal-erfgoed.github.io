@@ -1,5 +1,5 @@
 ---
-sidebar_position: 1
+sidebar_position: 2
 ---
 
 # REST API
@@ -50,64 +50,9 @@ endpoints are normally used in this order:
 for example in a CI pipeline or an authoring tool that highlights violations inline. The shape
 graph returned here is the authoritative source: it matches what the validation endpoints apply.
 
-## Validation results
+## Validation
 
-Validation is performed against the
-[Requirements for Datasets](https://docs.nde.nl/requirements-datasets/), expressed as the SHACL
-shape graph available from `GET /shacl`. How you interpret the result depends on whether you
-call the API or run the shape graph yourself.
-
-:::tip
-
-If you only need to check a single dataset description by hand – e.g. to confirm a publisher’s
-URL before integrating – use the public
-[validation web service](https://datasetregister.netwerkdigitaalerfgoed.nl/validate). It runs
-the same SHACL shape as the API.
-
-:::
-
-### Calling the API
-
-The **HTTP status code is the authoritative signal**; you do not need to parse the SHACL report to decide pass or fail:
-
-| Status | Meaning                                                                    |
-|--------|----------------------------------------------------------------------------|
-| `200`  | Valid. Returned by `POST /datasets/validate` and `PUT /datasets/validate`. |
-| `202`  | Valid; queued for ingestion. Returned by `POST /datasets`.                 |
-| `400`  | Invalid – one or more SHACL violations. The response body lists them.      |
-
-The status maps to **validity**, not to SHACL's `sh:conforms`. A description is considered *valid* when no
-result has severity `sh:Violation`; warnings and infos do not block ingestion. 
-SHACL’s `sh:conforms` is stricter: it is only `true` when there are no violations _and_ no warnings _and_ no infos.
-So a `200` or `202` response can still carry a report with `sh:conforms = false` if the description triggered warnings or infos.
-
-In short: use the status code to keep or reject; surface anything else in the report body to
-the editor as advisory feedback.
-
-### Validating against the SHACL shape directly
-
-If you fetch the shape graph from `GET /shacl` and run validation in your own pipeline (e.g.
-an authoring tool that highlights violations inline, or a CI check on a publishing repo),
-there is no HTTP status to lean on; only the SHACL [validation report](https://www.w3.org/TR/shacl/#validation-report). 
-Walk every `sh:ValidationResult` and inspect its `sh:resultSeverity`:
-
-| Severity       | Meaning                                                                                   |
-|----------------|-------------------------------------------------------------------------------------------|
-| `sh:Violation` | The register would reject this description (HTTP `400`). Must be fixed before submitting. |
-| `sh:Warning`   | The register would accept the description now, but reject it in the future.               |
-| `sh:Info`      | Suggestions.                                                                              |
-
-To reproduce the register’s accept/reject decision, treat the description as valid when no
-result has severity `sh:Violation`. 
-Do _not_ rely on `sh:conforms` for this decision:
-it flips to `false` on warnings and infos too, which is stricter than what the register enforces.
-
-For the exact JSON-LD and Turtle shapes of the report, see the `Valid` and `Invalid` response
-schemas in the OpenAPI spec.
-
-### Distribution-health probes
-
-During validation the Register also probes every distribution URL it can derive from the description (`dcat:accessURL`, `dcat:downloadURL`, `schema:contentUrl`) to check that it is reachable and serves the declared media type. Even when the description passes SHACL, a broken or mistyped distribution URL is reported as a `sh:Violation` and rejected with HTTP `400` — so fix the URL before (re)submitting. After a dataset is registered the crawler re-checks the same URLs more leniently; see [Distribution health](data-model.md#distribution-health) for that behaviour, the [outcome vocabulary](data-model.md#probe-outcomes), and how failures [appear in the report](data-model.md#effect-on-validation-results).
+The Register validates every description you submit. The **HTTP status code is authoritative**: `200`/`202` mean valid (accepted) and `400` means invalid (rejected, with the SHACL report in the body). See the [Validation](validation.md) chapter for how to read the report, the severity semantics, validating the shape graph yourself, and the distribution-health probes that can reject an otherwise-valid description.
 
 ## Authentication
 
