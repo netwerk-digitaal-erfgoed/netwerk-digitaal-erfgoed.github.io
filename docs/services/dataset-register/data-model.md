@@ -195,7 +195,7 @@ When a probe fails, `nde-probe:lastOutcome` is one of:
 
 ### Effect on validation results
 
-Probe failures surface in the SHACL [validation report](api.md#validation-results) as additional `sh:ValidationResult` nodes, with one of two probe-specific constraint components on `sh:sourceConstraintComponent`:
+Probe failures surface in the SHACL [validation report](api.md#validation-results) — see also the REST API's [distribution-health probes](api.md#distribution-health-probes) — as additional `sh:ValidationResult` nodes, with one of two probe-specific constraint components on `sh:sourceConstraintComponent`:
 
 - `nde-probe:DistributionReachableConstraintComponent` — the URL itself could not be retrieved.
 - `nde-probe:DistributionFormatMatchConstraintComponent` — the URL was retrieved but the response did not match the declared media type / format.
@@ -210,8 +210,13 @@ Probe-emitted results carry these extra properties beyond the standard SHACL one
 
 The REST API and the crawler differ in how strict they are about probe failures:
 
-- **REST API** (`POST /datasets`, `POST/PUT /datasets/validate`): any failed probe is emitted at `sh:Violation` immediately. A registration with a broken distribution URL is rejected synchronously with HTTP `400`.
-- **Crawler**: probes run every crawl round but are only promoted to `sh:Violation` once `nde-probe:firstFailureAt` is older than the failure-streak threshold (default 7 days). Transient blips do not flip a dataset to invalid.
+| Caller | Probe-failure severity | Effect |
+| ------ | ---------------------- | ------ |
+| **Registration** (`POST /datasets`) | `sh:Violation` (strict) | A faulty distribution makes the dataset invalid, so it is rejected with HTTP `400` and never indexed. |
+| **Validation** (`POST`/`PUT /datasets/validate`) | `sh:Violation` (strict) | The same result registration would give – an accurate dry-run; the [validate page](https://datasetregister.netwerkdigitaalerfgoed.nl/validate) shows the dataset as invalid. |
+| **Crawler** | declared `sh:severity` (`sh:Warning` today) | Emitted only once the failure streak is persistent (`nde-probe:firstFailureAt` older than the threshold, default 7 days); a distribution that breaks *after* registration is flagged without invalidating the dataset, and transient blips are suppressed. |
+
+The REST API is strict regardless of the severity the shapes declare, so it will not admit a dataset whose distributions are unreachable or mistyped at submit time. The crawler instead honours the shapes: promoting `nde-probe:probeReachable` / `nde-probe:probeFormatMatch` to `sh:Violation` in the [Requirements for Datasets](https://docs.nde.nl/requirements-datasets/) would make the crawler invalidate matching datasets too.
 
 ## Allow list
 
