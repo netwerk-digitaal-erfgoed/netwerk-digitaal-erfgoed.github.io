@@ -107,7 +107,7 @@ schemas in the OpenAPI spec.
 
 ### Distribution-health probes
 
-During validation the Register also probes every distribution URL it can derive from the description (`dcat:accessURL`, `dcat:downloadURL`, `schema:contentUrl`) to check that it is reachable and that the response matches the declared media type. A failed probe emits a `sh:Violation`, so a description that passes SHACL can still be rejected with HTTP `400` if one of its distribution URLs is broken. See [Distribution health](data-model.md#distribution-health) for the outcome vocabulary that appears on probe-emitted `sh:ValidationResult` nodes.
+During validation the Register also probes every distribution URL it can derive from the description (`dcat:accessURL`, `dcat:downloadURL`, `schema:contentUrl`) to check that it is reachable and serves the declared media type. Even when the description passes SHACL, a broken or mistyped distribution URL is reported as a `sh:Violation` and rejected with HTTP `400` — so fix the URL before (re)submitting. After a dataset is registered the crawler re-checks the same URLs more leniently; see [Distribution health](data-model.md#distribution-health) for that behaviour, the [outcome vocabulary](data-model.md#probe-outcomes), and how failures [appear in the report](data-model.md#effect-on-validation-results).
 
 ## Authentication
 
