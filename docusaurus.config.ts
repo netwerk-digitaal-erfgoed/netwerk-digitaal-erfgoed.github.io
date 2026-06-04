@@ -4,7 +4,11 @@ import type * as Preset from '@docusaurus/preset-classic';
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
-const config: Config = {
+export default async function createConfig(): Promise<Config> {
+  // remark-deflist is ESM-only; load it via dynamic import inside the async config function.
+  const remarkDeflist = (await import('remark-deflist')).default;
+
+  const config: Config = {
   title: 'NDE',
   tagline: 'Make digital heritage accessible to all',
   favicon: 'img/favicon.png',
@@ -76,6 +80,7 @@ const config: Config = {
         docs: {
           routeBasePath: '/',
           sidebarPath: './sidebars.ts',
+          remarkPlugins: [remarkDeflist],
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
@@ -191,6 +196,7 @@ const config: Config = {
       additionalLanguages: ['turtle', 'sparql'],
     },
   } satisfies Preset.ThemeConfig,
-};
+  };
 
-export default config;
+  return config;
+}
