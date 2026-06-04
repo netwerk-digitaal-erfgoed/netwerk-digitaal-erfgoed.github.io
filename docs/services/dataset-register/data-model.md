@@ -187,7 +187,7 @@ When a probe fails, `nde-probe:lastOutcome` is one of:
 | `nde-probe:ServerError`              | HTTP `5xx`.                                                                                   |
 | `nde-probe:AuthRequired`             | HTTP `401` or `403`.                                                                          |
 | `nde-probe:RateLimited`              | HTTP `429`.                                                                                   |
-| `nde-probe:ContentTypeMismatch`      | Response was reachable but its `Content-Type` did not match the declared `dcat:mediaType` / `dct:format` / `schema:encodingFormat`. |
+| `nde-probe:ContentTypeMismatch`      | Response was reachable but served the wrong content type. For a data dump, its `Content-Type` did not match the declared `dcat:mediaType` / `dct:format` / `schema:encodingFormat`. For a SPARQL endpoint, the response was not a SPARQL results media type – most often an HTML page, meaning the access URL points to a SPARQL query web UI rather than the SPARQL protocol endpoint itself. The fix is to put the SPARQL protocol endpoint in `dcat:accessURL` (`schema:contentUrl`) and declare the query UI on `foaf:page` (`schema:documentation`) instead. |
 | `nde-probe:ContentTypeMissing`       | Response had no `Content-Type` header at all.                                                 |
 | `nde-probe:EmptyBody`                | Response body was empty for a distribution that should have returned data.                    |
 | `nde-probe:SparqlProbeFailed`        | The distribution declares a SPARQL endpoint (`dct:conformsTo <https://www.w3.org/TR/sparql11-protocol/>`) but the probe `ASK` query did not return a valid SPARQL result. |
