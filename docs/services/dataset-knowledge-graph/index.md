@@ -38,7 +38,7 @@ Each Summary attaches the following information to a `void:Dataset` – a mix of
 | Subject URI spaces | `void:uriSpace` | The most common namespaces for subject resources |
 | Vocabularies | `void:vocabulary` | Schema.org, FOAF, Dublin Core, etc. – what the predicates draw from |
 | Licenses | `dcterms:license` | License coverage at the resource level |
-| IIIF Presentation manifests | `void:subset` + `dcterms:conformsTo <http://iiif.io/api/presentation/>` + `void:entities`, plus `iiif-manifests-sampled` / `iiif-manifests-validated` DQV measurements | Whether the dataset exposes [IIIF Presentation API](http://iiif.io/api/presentation/) manifests, how many, and how many of a sample actually resolve. Detected from `schema:encodingFormat` literals matching the [SCHEMA-AP-NDE](https://docs.nde.nl/schema-profile/) IIIF profile pattern; v2 and v3 collapse into one version-less subset. The `dcterms:conformsTo` marker is *declared*; a sample of the manifest IRIs is then dereferenced and *validated*, so a dataset whose manifests genuinely resolve (`validated > 0`) is distinguishable from one that declares IIIF but serves broken manifests (`validated = 0`) |
+| IIIF Presentation manifests | `void:subset` + `dcterms:conformsTo <http://iiif.io/api/presentation/>` + `void:entities`, plus `manifests-sampled` / `manifests-validated` DQV measurements | Whether the dataset exposes [IIIF Presentation API](http://iiif.io/api/presentation/) manifests, how many, and how many of a sample actually resolve. Detected from `schema:encodingFormat` literals matching the [SCHEMA-AP-NDE](https://docs.nde.nl/schema-profile/) IIIF profile pattern; v2 and v3 collapse into one version-less subset. The `dcterms:conformsTo` marker is *declared*; a sample of the manifest IRIs is then dereferenced and *validated*, so a dataset whose manifests genuinely resolve (`validated > 0`) is distinguishable from one that declares IIIF but serves broken manifests (`validated = 0`) |
 | Distributions | `void:sparqlEndpoint`, `void:dataDump`, plus HTTP-validated status | Which distributions currently work and at what size |
 | Example resources | `void:exampleResource` | Concrete starting points for exploration |
 | SCHEMA-AP-NDE conformance | `dqv:QualityMeasurement` + `prov:Activity` | Whether a sample of resources passes the [SCHEMA-AP-NDE](https://docs.nde.nl/schema-profile/) SHACL shapes. Three metrics are emitted: `schema-ap-nde-sample-conformance` (boolean), `quads-validated` (number of sampled triples), and `samples-per-class` (sample cap). Combine `quads-validated > 0` with `conformance = true` to mean *"tested and passed"*; `quads-validated = 0` means the profile didn't apply (e.g. the dataset uses Linked.Art or EDM). The full per-resource SHACL report is written to a file rather than the triple store. |
@@ -296,7 +296,7 @@ ORDER BY DESC(?manifests)
 
 [▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Datasets%20exposing%20IIIF%20Presentation%20manifests&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0APREFIX%20dcterms%3A%20%3Chttp%3A//purl.org/dc/terms/%3E%0ASELECT%20%3Fdataset%20%3Fmanifests%20WHERE%20%7B%0A%20%20%3Fdataset%20a%20void%3ADataset%20%3B%0A%20%20%20%20void%3Asubset%20%5B%0A%20%20%20%20%20%20dcterms%3AconformsTo%20%3Chttp%3A//iiif.io/api/presentation/%3E%20%3B%0A%20%20%20%20%20%20void%3Aentities%20%3Fmanifests%0A%20%20%20%20%5D%20.%0A%7D%0AORDER%20BY%20DESC%28%3Fmanifests%29)
 
-The `dcterms:conformsTo` marker above is *declared*. To find datasets whose manifests are *validated working*, query the `iiif-manifests-validated` measurement instead – a sample of the manifest IRIs is dereferenced each run, and this counts how many resolved to a valid IIIF Presentation Manifest. `validated > 0` means working manifests; `validated = 0` alongside a declared subset means the dataset claims IIIF but its sampled manifests all failed to resolve.
+The `dcterms:conformsTo` marker above is *declared*. To find datasets whose manifests are *validated working*, query the `manifests-validated` measurement instead – a sample of the manifest IRIs is dereferenced each run, and this counts how many resolved to a valid IIIF Presentation Manifest. `validated > 0` means working manifests; `validated = 0` alongside a declared subset means the dataset claims IIIF but its sampled manifests all failed to resolve.
 
 ### Datasets with validated IIIF manifests
 
@@ -304,17 +304,17 @@ Datasets whose declared IIIF manifests actually resolve, ordered by how many of 
 
 ```sparql
 PREFIX dqv: <http://www.w3.org/ns/dqv#>
-PREFIX nde: <https://data.netwerkdigitaalerfgoed.nl/def/metric/>
+PREFIX nde: <https://def.nde.nl/metric#>
 SELECT ?dataset ?validated ?sampled WHERE {
   ?dataset dqv:hasQualityMeasurement
-    [ dqv:isMeasurementOf nde:iiif-manifests-validated ; dqv:value ?validated ] ,
-    [ dqv:isMeasurementOf nde:iiif-manifests-sampled ; dqv:value ?sampled ] .
+    [ dqv:isMeasurementOf nde:manifests-validated ; dqv:value ?validated ] ,
+    [ dqv:isMeasurementOf nde:manifests-sampled ; dqv:value ?sampled ] .
   FILTER(?validated > 0)
 }
 ORDER BY DESC(?validated)
 ```
 
-[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Datasets%20with%20validated%20IIIF%20manifests&infer=true&sameAs=true&query=PREFIX%20dqv%3A%20%3Chttp%3A//www.w3.org/ns/dqv%23%3E%0APREFIX%20nde%3A%20%3Chttps%3A//data.netwerkdigitaalerfgoed.nl/def/metric/%3E%0ASELECT%20%3Fdataset%20%3Fvalidated%20%3Fsampled%20WHERE%20%7B%0A%20%20%3Fdataset%20dqv%3AhasQualityMeasurement%0A%20%20%20%20%5B%20dqv%3AisMeasurementOf%20nde%3Aiiif-manifests-validated%20%3B%20dqv%3Avalue%20%3Fvalidated%20%5D%20%2C%0A%20%20%20%20%5B%20dqv%3AisMeasurementOf%20nde%3Aiiif-manifests-sampled%20%3B%20dqv%3Avalue%20%3Fsampled%20%5D%20.%0A%20%20FILTER%28%3Fvalidated%20%3E%200%29%0A%7D%0AORDER%20BY%20DESC%28%3Fvalidated%29)
+[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Datasets%20with%20validated%20IIIF%20manifests&infer=true&sameAs=true&query=PREFIX%20dqv%3A%20%3Chttp%3A//www.w3.org/ns/dqv%23%3E%0APREFIX%20nde%3A%20%3Chttps%3A//def.nde.nl/metric%23%3E%0ASELECT%20%3Fdataset%20%3Fvalidated%20%3Fsampled%20WHERE%20%7B%0A%20%20%3Fdataset%20dqv%3AhasQualityMeasurement%0A%20%20%20%20%5B%20dqv%3AisMeasurementOf%20nde%3Amanifests-validated%20%3B%20dqv%3Avalue%20%3Fvalidated%20%5D%20%2C%0A%20%20%20%20%5B%20dqv%3AisMeasurementOf%20nde%3Amanifests-sampled%20%3B%20dqv%3Avalue%20%3Fsampled%20%5D%20.%0A%20%20FILTER%28%3Fvalidated%20%3E%200%29%0A%7D%0AORDER%20BY%20DESC%28%3Fvalidated%29)
 
 ### Datasets with working SPARQL endpoints
 
@@ -351,7 +351,7 @@ Datasets whose sampled resources passed SHACL validation against the [Schema.org
 ```sparql
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX dqv: <http://www.w3.org/ns/dqv#>
-PREFIX nde: <https://data.netwerkdigitaalerfgoed.nl/def/metric/>
+PREFIX nde: <https://def.nde.nl/metric#>
 SELECT * WHERE {
   ?dataset dqv:hasQualityMeasurement
     [ dqv:value true ;
@@ -362,7 +362,7 @@ SELECT * WHERE {
 }
 ```
 
-[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Datasets%20passing%20SCHEMA-AP-NDE&infer=true&sameAs=true&query=PREFIX%20dcterms%3A%20%3Chttp%3A//purl.org/dc/terms/%3E%0APREFIX%20dqv%3A%20%3Chttp%3A//www.w3.org/ns/dqv%23%3E%0APREFIX%20nde%3A%20%3Chttps%3A//data.netwerkdigitaalerfgoed.nl/def/metric/%3E%0ASELECT%20%2A%20WHERE%20%7B%0A%20%20%3Fdataset%20dqv%3AhasQualityMeasurement%0A%20%20%20%20%5B%20dqv%3Avalue%20true%20%3B%0A%20%20%20%20%20%20dcterms%3AconformsTo%20%3Chttps%3A//docs.nde.nl/schema-profile/%3E%20%5D%20%2C%0A%20%20%20%20%5B%20dqv%3AisMeasurementOf%20nde%3Aquads-validated%20%3B%0A%20%20%20%20%20%20dqv%3Avalue%20%3Fn%20%5D%20.%0A%20%20FILTER%20%28%3Fn%20%3E%200%29%0A%7D)
+[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Datasets%20passing%20SCHEMA-AP-NDE&infer=true&sameAs=true&query=PREFIX%20dcterms%3A%20%3Chttp%3A//purl.org/dc/terms/%3E%0APREFIX%20dqv%3A%20%3Chttp%3A//www.w3.org/ns/dqv%23%3E%0APREFIX%20nde%3A%20%3Chttps%3A//def.nde.nl/metric%23%3E%0ASELECT%20%2A%20WHERE%20%7B%0A%20%20%3Fdataset%20dqv%3AhasQualityMeasurement%0A%20%20%20%20%5B%20dqv%3Avalue%20true%20%3B%0A%20%20%20%20%20%20dcterms%3AconformsTo%20%3Chttps%3A//docs.nde.nl/schema-profile/%3E%20%5D%20%2C%0A%20%20%20%20%5B%20dqv%3AisMeasurementOf%20nde%3Aquads-validated%20%3B%0A%20%20%20%20%20%20dqv%3Avalue%20%3Fn%20%5D%20.%0A%20%20FILTER%20%28%3Fn%20%3E%200%29%0A%7D)
 
 The `?n > 0` filter excludes datasets that use a different data model and to which the profile doesn't apply at all (where SHACL returns *vacuously true*). To find datasets that tried the profile and failed, swap `dqv:value true` for `dqv:value false`.
 
