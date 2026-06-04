@@ -27,7 +27,8 @@
     "graphiql": "^5.2.3",
     "prism-react-renderer": "^2.3.0",
     "react": "^19.2.6",
-    "react-dom": "^19.2.6"
+    "react-dom": "^19.2.6",
+    "remark-deflist": "^1.0.0"
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "3.10.1",
