@@ -26,8 +26,8 @@
     "clsx": "^2.0.0",
     "graphiql": "^5.2.3",
     "prism-react-renderer": "^2.3.0",
-    "react": "^19.2.6",
-    "react-dom": "^19.2.6",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
     "remark-deflist": "^1.0.0"
   },
   "devDependencies": {
