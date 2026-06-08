@@ -142,15 +142,25 @@ Each dataset that is found at the `schema:EntryPoint` registration URL gets adde
 
 ### `schema:Rating`
 
-A separate named graph keeps a `schema:Rating` instance for each dataset description, indicating
-how complete the description is. Reach it from a dataset via the `schema:contentRating` property.
+A separate named graph keeps `schema:Rating` instances for each dataset description. Reach them
+from a dataset via the `schema:contentRating` property. There are two, told apart by
+`schema:additionalType`:
 
-| Property                                                           | Description                                               |
-| ------------------------------------------------------------------ | --------------------------------------------------------- |
-| [`schema:bestRating`](https://schema.org/bestRating)               | The highest possible rating.                              |
-| [`schema:worstRating`](https://schema.org/worstRating)             | The lowest possible rating.                               |
-| [`schema:ratingValue`](https://schema.org/ratingValue)             | Rating for the dataset description.                       |
-| [`schema:ratingExplanation`](https://schema.org/ratingExplanation) | Explanation for the rating: which properties are missing? |
+- the **completeness rating** (no `schema:additionalType`), indicating how complete the
+  description is;
+- the **validation-warnings rating**
+  (`schema:additionalType <https://data.netwerkdigitaalerfgoed.nl/registry/validation-warnings>`),
+  indicating how far the description is from full validity. Its `schema:ratingValue` is the number
+  of `sh:Warning`-severity validation results, and its `schema:bestRating` is `0` (zero warnings is
+  best).
+
+| Property                                                           | Description                                                                                                                                                    |
+| ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`schema:additionalType`](https://schema.org/additionalType)       | Present only on the validation-warnings rating: `<https://data.netwerkdigitaalerfgoed.nl/registry/validation-warnings>`. Absent on the completeness rating.    |
+| [`schema:bestRating`](https://schema.org/bestRating)               | The highest possible rating. `100` for completeness; `0` for the validation-warnings rating (fewer warnings is better).                                        |
+| [`schema:worstRating`](https://schema.org/worstRating)             | The lowest possible rating. Completeness rating only.                                                                                                          |
+| [`schema:ratingValue`](https://schema.org/ratingValue)             | The completeness score, or — on the validation-warnings rating — the number of validation warnings.                                                            |
+| [`schema:ratingExplanation`](https://schema.org/ratingExplanation) | Explanation for the completeness rating: which properties are missing?                                                                                         |
 
 ## Distribution health
 
