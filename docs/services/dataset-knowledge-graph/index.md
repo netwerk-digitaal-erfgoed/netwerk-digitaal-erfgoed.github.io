@@ -35,7 +35,8 @@ Each Summary attaches the following information to a `void:Dataset` – a mix of
 | Languages per class and property | `void-ext:languagePartition` | Language-tag coverage per class and property |
 | Object classes per class and property | `void-ext:objectClassPartition` | How classes connect through predicates – e.g. *"books link to persons via author 1350 times"* |
 | Outgoing linksets | `void:Linkset` | Cross-dataset and cross-vocabulary links – how the dataset fits into the wider network |
-| Subject URI spaces | `void:uriSpace` | The most common namespaces for subject resources |
+| Subject URI spaces | `void:uriSpace` + `void:entities` on a `void:subset` | The most common namespaces for subject resources |
+| Subject URI resolution & persistent identifiers | `subject-uris-sampled` / `subject-uris-resolved` DQV measurements on the subset, plus – when the namespace is a recognised PID scheme – `dcterms:conformsTo <https://def.nde.nl/pid-scheme#ark>` (or `#handle`) and, for ARK, `dcterms:publisher` | For the namespace the dataset mints for its own resources (the most common one that is *not* a terminology source), whether a sample of those URIs resolves to a self-describing landing page. ARK and Handle persistent identifiers are detected from the namespace, with the ARK issuing organisation looked up via `arks.org`. `resolved > 0` means the dataset's own identifiers genuinely dereference; `resolved = 0` next to a declared PID scheme means it claims a persistent identifier whose links are broken |
 | Vocabularies | `void:vocabulary` | Schema.org, FOAF, Dublin Core, etc. – what the predicates draw from |
 | Licenses | `dcterms:license` | License coverage at the resource level |
 | IIIF Presentation manifests | `void:subset` + `dcterms:conformsTo <http://iiif.io/api/presentation/>` + `void:entities`, plus `manifests-sampled` / `manifests-validated` DQV measurements | Whether the dataset exposes [IIIF Presentation API](http://iiif.io/api/presentation/) manifests, how many, and how many of a sample actually resolve. Detected from `schema:encodingFormat` literals matching the [SCHEMA-AP-NDE](https://docs.nde.nl/schema-profile/) IIIF profile pattern; v2 and v3 collapse into one version-less subset. The `dcterms:conformsTo` marker is *declared*; a sample of the manifest IRIs is then dereferenced and *validated*, so a dataset whose manifests genuinely resolve (`validated > 0`) is distinguishable from one that declares IIIF but serves broken manifests (`validated = 0`) |
@@ -242,6 +243,45 @@ LIMIT 50
 
 [▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Subject%20URI%20spaces&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0ASELECT%20%2A%20WHERE%20%7B%0A%20%20%3Fdataset%20void%3Asubset%20%5B%0A%20%20%20%20void%3AuriSpace%20%3FuriSpace%20%3B%0A%20%20%20%20void%3Aentities%20%3Fentities%0A%20%20%5D%20.%0A%7D%0AORDER%20BY%20DESC%28%3Fentities%29%0ALIMIT%2050)
 
+### Datasets whose subject URIs resolve
+
+For each dataset's own subject namespace – the most common one that is *not* a terminology source – a sample of URIs is dereferenced and checked to resolve to a self-describing landing page. `subject-uris-resolved > 0` means the identifiers genuinely work; the namespace and the `subject-uris-sampled` denominator come along so you can read the ratio.
+
+```sparql
+PREFIX void: <http://rdfs.org/ns/void#>
+PREFIX dqv: <http://www.w3.org/ns/dqv#>
+PREFIX nde: <https://def.nde.nl/metric#>
+SELECT ?dataset ?uriSpace ?resolved ?sampled WHERE {
+  ?dataset void:subset ?ns .
+  ?ns void:uriSpace ?uriSpace ;
+    dqv:hasQualityMeasurement
+      [ dqv:isMeasurementOf nde:subject-uris-resolved ; dqv:value ?resolved ] ,
+      [ dqv:isMeasurementOf nde:subject-uris-sampled ; dqv:value ?sampled ] .
+  FILTER(?resolved > 0)
+}
+ORDER BY DESC(?resolved)
+```
+
+[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Datasets%20whose%20subject%20URIs%20resolve&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0APREFIX%20dqv%3A%20%3Chttp%3A//www.w3.org/ns/dqv%23%3E%0APREFIX%20nde%3A%20%3Chttps%3A//def.nde.nl/metric%23%3E%0ASELECT%20%3Fdataset%20%3FuriSpace%20%3Fresolved%20%3Fsampled%20WHERE%20%7B%0A%20%20%3Fdataset%20void%3Asubset%20%3Fns%20.%0A%20%20%3Fns%20void%3AuriSpace%20%3FuriSpace%20%3B%0A%20%20%20%20dqv%3AhasQualityMeasurement%0A%20%20%20%20%20%20%5B%20dqv%3AisMeasurementOf%20nde%3Asubject-uris-resolved%20%3B%20dqv%3Avalue%20%3Fresolved%20%5D%20%2C%0A%20%20%20%20%20%20%5B%20dqv%3AisMeasurementOf%20nde%3Asubject-uris-sampled%20%3B%20dqv%3Avalue%20%3Fsampled%20%5D%20.%0A%20%20FILTER%28%3Fresolved%20%3E%200%29%0A%7D%0AORDER%20BY%20DESC%28%3Fresolved%29)
+
+### Datasets that mint a persistent identifier
+
+Datasets whose own subject namespace is a recognised ARK or Handle scheme, with the scheme and – for ARK – the issuing organisation. Combine with `subject-uris-resolved` above to tell a dataset that declares a persistent identifier *and* whose links resolve from one that claims a PID but serves broken links.
+
+```sparql
+PREFIX void: <http://rdfs.org/ns/void#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+SELECT ?dataset ?uriSpace ?scheme ?publisher WHERE {
+  ?dataset void:subset ?ns .
+  ?ns void:uriSpace ?uriSpace ;
+    dcterms:conformsTo ?scheme .
+  FILTER(STRSTARTS(STR(?scheme), "https://def.nde.nl/pid-scheme#"))
+  OPTIONAL { ?ns dcterms:publisher ?publisher }
+}
+```
+
+[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Datasets%20that%20mint%20a%20persistent%20identifier&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0APREFIX%20dcterms%3A%20%3Chttp%3A//purl.org/dc/terms/%3E%0ASELECT%20%3Fdataset%20%3FuriSpace%20%3Fscheme%20%3Fpublisher%20WHERE%20%7B%0A%20%20%3Fdataset%20void%3Asubset%20%3Fns%20.%0A%20%20%3Fns%20void%3AuriSpace%20%3FuriSpace%20%3B%0A%20%20%20%20dcterms%3AconformsTo%20%3Fscheme%20.%0A%20%20FILTER%28STRSTARTS%28STR%28%3Fscheme%29%2C%20%22https%3A//def.nde.nl/pid-scheme%23%22%29%29%0A%20%20OPTIONAL%20%7B%20%3Fns%20dcterms%3Apublisher%20%3Fpublisher%20%7D%0A%7D)
+
 ### Most-referenced vocabularies
 
 Which vocabularies (Schema.org, FOAF, Dublin Core, …) are referenced, and by how many datasets.
@@ -377,7 +417,7 @@ A periodic pipeline builds the summaries:
 
 1. **Select** valid dataset descriptions with at least one RDF distribution from the [Dataset Register](../dataset-register/index.md).
 2. **Load** the data – directly from the publisher’s SPARQL endpoint if available, otherwise by indexing the RDF dump in [QLever](https://github.com/ad-freiburg/qlever).
-3. **Analyse** by running a set of [SPARQL CONSTRUCT queries](https://github.com/netwerk-digitaal-erfgoed/dataset-knowledge-graph/tree/main/queries/analysis), one per partition type, with code-level post-processing where needed. Each analyser emits VoID triples. For IIIF, a sample of the detected manifest IRIs is also dereferenced and validated (via [`@lde/iiif-validator`](https://www.npmjs.com/package/@lde/iiif-validator)), recording how many resolve to valid Presentation Manifests.
+3. **Analyse** by running a set of [SPARQL CONSTRUCT queries](https://github.com/netwerk-digitaal-erfgoed/dataset-knowledge-graph/tree/main/queries/analysis), one per partition type, with code-level post-processing where needed. Each analyser emits VoID triples. For IIIF, a sample of the detected manifest IRIs is also dereferenced and validated (via [`@lde/iiif-validator`](https://www.npmjs.com/package/@lde/iiif-validator)), recording how many resolve to valid Presentation Manifests. Likewise, the dataset's own subject namespace is sampled and dereferenced to measure whether its URIs – and any ARK or Handle persistent identifiers – resolve.
 4. **Validate against SCHEMA-AP-NDE** by sampling a configurable number of resources per `sh:targetClass` and running them through the profile's SHACL shapes. The detailed per-resource SHACL report is written to a file (not the triple store).
 5. **Summarise quality measurements** as [DQV](https://www.w3.org/TR/vocab-dqv/) measurements and a [PROV](https://www.w3.org/TR/prov-o/) activity, and append them to the dataset's Summary.
 6. **Write** the results to the Knowledge Graph triple store.
