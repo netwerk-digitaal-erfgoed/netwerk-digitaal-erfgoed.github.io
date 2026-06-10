@@ -49,6 +49,7 @@ you can query; jump straight to the section you need:
 - [Registration](data-model.md#registration): the register-specific metadata used for
   [registration status](#registration-status) below
 - [Distribution health](data-model.md#distribution-health): per-URL probe results (reachability and content-type match), exposed in a dedicated named graph
+- [SHACL validation report](data-model.md#shacl-validation-report): the full validation report per registration, in a dedicated named graph; the warning count is summarised on the registration as `nde:warningCount`
 - [Allow list](data-model.md#allow-list): which domains are permitted to register datasets
 
 ## Registration status
