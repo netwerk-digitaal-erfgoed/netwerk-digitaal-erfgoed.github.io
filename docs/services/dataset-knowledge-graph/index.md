@@ -48,7 +48,7 @@ For the full RDF examples behind each row, see the [`dataset-knowledge-graph` RE
 
 ## Sample queries
 
-One example per analysis. Each link opens the query pre‑loaded in the [Knowledge Graph triplestore UI](https://triplestore.netwerkdigitaalerfgoed.nl/sparql) — click *Run* to execute. The aggregate [datastory](https://datastories.demo.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph/index.html) demonstrates more advanced combinations.
+One example per analysis. Each link opens the query pre‑loaded in the [Knowledge Graph query UI](https://qlever.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph) — click *Run* to execute. The aggregate [datastory](https://datastories.demo.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph/index.html) demonstrates more advanced combinations.
 
 ### Size
 
@@ -64,7 +64,7 @@ SELECT * WHERE {
 ORDER BY DESC(?triples)
 ```
 
-[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Size&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0ASELECT%20%2A%20WHERE%20%7B%0A%20%20%3Fdataset%20a%20void%3ADataset%20%3B%0A%20%20%20%20void%3Atriples%20%3Ftriples%20%3B%0A%20%20%20%20void%3AdistinctSubjects%20%3FdistinctSubjects%20.%0A%7D%0AORDER%20BY%20DESC%28%3Ftriples%29)
+[▶ Run in the query UI](https://qlever.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph?query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0ASELECT%20%2A%20WHERE%20%7B%0A%20%20%3Fdataset%20a%20void%3ADataset%20%3B%0A%20%20%20%20void%3Atriples%20%3Ftriples%20%3B%0A%20%20%20%20void%3AdistinctSubjects%20%3FdistinctSubjects%20.%0A%7D%0AORDER%20BY%20DESC%28%3Ftriples%29)
 
 ### Most common classes
 
@@ -84,7 +84,7 @@ ORDER BY DESC(?instances)
 LIMIT 20
 ```
 
-[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Classes%20across%20the%20network&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0ASELECT%20%3Fclass%20%28SUM%28%3Fcount%29%20AS%20%3Finstances%29%20%28COUNT%28DISTINCT%20%3Fdataset%29%20AS%20%3Fdatasets%29%20WHERE%20%7B%0A%20%20%3Fdataset%20a%20void%3ADataset%20%3B%0A%20%20%20%20void%3AclassPartition%20%5B%0A%20%20%20%20%20%20void%3Aclass%20%3Fclass%20%3B%0A%20%20%20%20%20%20void%3Aentities%20%3Fcount%0A%20%20%20%20%5D%20.%0A%7D%0AGROUP%20BY%20%3Fclass%0AORDER%20BY%20DESC%28%3Finstances%29%0ALIMIT%2020)
+[▶ Run in the query UI](https://qlever.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph?query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0ASELECT%20%3Fclass%20%28SUM%28%3Fcount%29%20AS%20%3Finstances%29%20%28COUNT%28DISTINCT%20%3Fdataset%29%20AS%20%3Fdatasets%29%20WHERE%20%7B%0A%20%20%3Fdataset%20a%20void%3ADataset%20%3B%0A%20%20%20%20void%3AclassPartition%20%5B%0A%20%20%20%20%20%20void%3Aclass%20%3Fclass%20%3B%0A%20%20%20%20%20%20void%3Aentities%20%3Fcount%0A%20%20%20%20%5D%20.%0A%7D%0AGROUP%20BY%20%3Fclass%0AORDER%20BY%20DESC%28%3Finstances%29%0ALIMIT%2020)
 
 ### Most common properties
 
@@ -104,7 +104,7 @@ ORDER BY DESC(?totalEntities)
 LIMIT 20
 ```
 
-[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Properties%20across%20the%20network&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0ASELECT%20%3Fproperty%20%28SUM%28%3Fentities%29%20AS%20%3FtotalEntities%29%20WHERE%20%7B%0A%20%20%3Fdataset%20a%20void%3ADataset%20%3B%0A%20%20%20%20void%3ApropertyPartition%20%5B%0A%20%20%20%20%20%20void%3Aproperty%20%3Fproperty%20%3B%0A%20%20%20%20%20%20void%3Aentities%20%3Fentities%0A%20%20%20%20%5D%20.%0A%7D%0AGROUP%20BY%20%3Fproperty%0AORDER%20BY%20DESC%28%3FtotalEntities%29%0ALIMIT%2020)
+[▶ Run in the query UI](https://qlever.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph?query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0ASELECT%20%3Fproperty%20%28SUM%28%3Fentities%29%20AS%20%3FtotalEntities%29%20WHERE%20%7B%0A%20%20%3Fdataset%20a%20void%3ADataset%20%3B%0A%20%20%20%20void%3ApropertyPartition%20%5B%0A%20%20%20%20%20%20void%3Aproperty%20%3Fproperty%20%3B%0A%20%20%20%20%20%20void%3Aentities%20%3Fentities%0A%20%20%20%20%5D%20.%0A%7D%0AGROUP%20BY%20%3Fproperty%0AORDER%20BY%20DESC%28%3FtotalEntities%29%0ALIMIT%2020)
 
 ### Property density on `schema:Person`
 
@@ -127,7 +127,7 @@ ORDER BY DESC(?entities)
 LIMIT 50
 ```
 
-[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Property%20density%20on%20schema%3APerson&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0APREFIX%20schema%3A%20%3Chttps%3A//schema.org/%3E%0ASELECT%20%2A%20WHERE%20%7B%0A%20%20%3Fdataset%20void%3AclassPartition%20%5B%0A%20%20%20%20void%3Aclass%20schema%3APerson%20%3B%0A%20%20%20%20void%3ApropertyPartition%20%5B%0A%20%20%20%20%20%20void%3Aproperty%20%3Fproperty%20%3B%0A%20%20%20%20%20%20void%3Aentities%20%3Fentities%20%3B%0A%20%20%20%20%20%20void%3AdistinctObjects%20%3FdistinctObjects%0A%20%20%20%20%5D%0A%20%20%5D%0A%7D%0AORDER%20BY%20DESC%28%3Fentities%29%0ALIMIT%2050)
+[▶ Run in the query UI](https://qlever.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph?query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0APREFIX%20schema%3A%20%3Chttps%3A//schema.org/%3E%0ASELECT%20%2A%20WHERE%20%7B%0A%20%20%3Fdataset%20void%3AclassPartition%20%5B%0A%20%20%20%20void%3Aclass%20schema%3APerson%20%3B%0A%20%20%20%20void%3ApropertyPartition%20%5B%0A%20%20%20%20%20%20void%3Aproperty%20%3Fproperty%20%3B%0A%20%20%20%20%20%20void%3Aentities%20%3Fentities%20%3B%0A%20%20%20%20%20%20void%3AdistinctObjects%20%3FdistinctObjects%0A%20%20%20%20%5D%0A%20%20%5D%0A%7D%0AORDER%20BY%20DESC%28%3Fentities%29%0ALIMIT%2050)
 
 ### Datatypes used for `schema:Person`/`schema:name`
 
@@ -153,7 +153,7 @@ GROUP BY ?datatype
 ORDER BY DESC(?count)
 ```
 
-[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Datatypes%20used%20for%20schema%3APerson/schema%3Aname&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0APREFIX%20void-ext%3A%20%3Chttp%3A//ldf.fi/void-ext%23%3E%0APREFIX%20schema%3A%20%3Chttps%3A//schema.org/%3E%0ASELECT%20%3Fdatatype%20%28SUM%28%3Ftriples%29%20AS%20%3Fcount%29%20WHERE%20%7B%0A%20%20%3Fdataset%20void%3AclassPartition%20%5B%0A%20%20%20%20void%3Aclass%20schema%3APerson%20%3B%0A%20%20%20%20void%3ApropertyPartition%20%5B%0A%20%20%20%20%20%20void%3Aproperty%20schema%3Aname%20%3B%0A%20%20%20%20%20%20void-ext%3AdatatypePartition%20%5B%0A%20%20%20%20%20%20%20%20void-ext%3Adatatype%20%3Fdatatype%20%3B%0A%20%20%20%20%20%20%20%20void%3Atriples%20%3Ftriples%0A%20%20%20%20%20%20%5D%0A%20%20%20%20%5D%0A%20%20%5D%0A%7D%0AGROUP%20BY%20%3Fdatatype%0AORDER%20BY%20DESC%28%3Fcount%29)
+[▶ Run in the query UI](https://qlever.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph?query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0APREFIX%20void-ext%3A%20%3Chttp%3A//ldf.fi/void-ext%23%3E%0APREFIX%20schema%3A%20%3Chttps%3A//schema.org/%3E%0ASELECT%20%3Fdatatype%20%28SUM%28%3Ftriples%29%20AS%20%3Fcount%29%20WHERE%20%7B%0A%20%20%3Fdataset%20void%3AclassPartition%20%5B%0A%20%20%20%20void%3Aclass%20schema%3APerson%20%3B%0A%20%20%20%20void%3ApropertyPartition%20%5B%0A%20%20%20%20%20%20void%3Aproperty%20schema%3Aname%20%3B%0A%20%20%20%20%20%20void-ext%3AdatatypePartition%20%5B%0A%20%20%20%20%20%20%20%20void-ext%3Adatatype%20%3Fdatatype%20%3B%0A%20%20%20%20%20%20%20%20void%3Atriples%20%3Ftriples%0A%20%20%20%20%20%20%5D%0A%20%20%20%20%5D%0A%20%20%5D%0A%7D%0AGROUP%20BY%20%3Fdatatype%0AORDER%20BY%20DESC%28%3Fcount%29)
 
 ### Language coverage on `schema:name`
 
@@ -179,7 +179,7 @@ GROUP BY ?language
 ORDER BY DESC(?count)
 ```
 
-[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Language%20coverage%20on%20schema%3Aname&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0APREFIX%20void-ext%3A%20%3Chttp%3A//ldf.fi/void-ext%23%3E%0APREFIX%20schema%3A%20%3Chttps%3A//schema.org/%3E%0ASELECT%20%3Flanguage%20%28SUM%28%3Ftriples%29%20AS%20%3Fcount%29%20WHERE%20%7B%0A%20%20%3Fdataset%20void%3AclassPartition%20%5B%0A%20%20%20%20void%3Aclass%20schema%3ACreativeWork%20%3B%0A%20%20%20%20void%3ApropertyPartition%20%5B%0A%20%20%20%20%20%20void%3Aproperty%20schema%3Aname%20%3B%0A%20%20%20%20%20%20void-ext%3AlanguagePartition%20%5B%0A%20%20%20%20%20%20%20%20void-ext%3Alanguage%20%3Flanguage%20%3B%0A%20%20%20%20%20%20%20%20void%3Atriples%20%3Ftriples%0A%20%20%20%20%20%20%5D%0A%20%20%20%20%5D%0A%20%20%5D%0A%7D%0AGROUP%20BY%20%3Flanguage%0AORDER%20BY%20DESC%28%3Fcount%29)
+[▶ Run in the query UI](https://qlever.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph?query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0APREFIX%20void-ext%3A%20%3Chttp%3A//ldf.fi/void-ext%23%3E%0APREFIX%20schema%3A%20%3Chttps%3A//schema.org/%3E%0ASELECT%20%3Flanguage%20%28SUM%28%3Ftriples%29%20AS%20%3Fcount%29%20WHERE%20%7B%0A%20%20%3Fdataset%20void%3AclassPartition%20%5B%0A%20%20%20%20void%3Aclass%20schema%3ACreativeWork%20%3B%0A%20%20%20%20void%3ApropertyPartition%20%5B%0A%20%20%20%20%20%20void%3Aproperty%20schema%3Aname%20%3B%0A%20%20%20%20%20%20void-ext%3AlanguagePartition%20%5B%0A%20%20%20%20%20%20%20%20void-ext%3Alanguage%20%3Flanguage%20%3B%0A%20%20%20%20%20%20%20%20void%3Atriples%20%3Ftriples%0A%20%20%20%20%20%20%5D%0A%20%20%20%20%5D%0A%20%20%5D%0A%7D%0AGROUP%20BY%20%3Flanguage%0AORDER%20BY%20DESC%28%3Fcount%29)
 
 ### Object classes linked from `schema:Book`/`schema:author`
 
@@ -205,7 +205,7 @@ GROUP BY ?objectClass
 ORDER BY DESC(?count)
 ```
 
-[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Object%20classes%20linked%20from%20schema%3ABook/schema%3Aauthor&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0APREFIX%20void-ext%3A%20%3Chttp%3A//ldf.fi/void-ext%23%3E%0APREFIX%20schema%3A%20%3Chttps%3A//schema.org/%3E%0ASELECT%20%3FobjectClass%20%28SUM%28%3Ftriples%29%20AS%20%3Fcount%29%20WHERE%20%7B%0A%20%20%3Fdataset%20void%3AclassPartition%20%5B%0A%20%20%20%20void%3Aclass%20schema%3ABook%20%3B%0A%20%20%20%20void%3ApropertyPartition%20%5B%0A%20%20%20%20%20%20void%3Aproperty%20schema%3Aauthor%20%3B%0A%20%20%20%20%20%20void-ext%3AobjectClassPartition%20%5B%0A%20%20%20%20%20%20%20%20void%3Aclass%20%3FobjectClass%20%3B%0A%20%20%20%20%20%20%20%20void%3Atriples%20%3Ftriples%0A%20%20%20%20%20%20%5D%0A%20%20%20%20%5D%0A%20%20%5D%0A%7D%0AGROUP%20BY%20%3FobjectClass%0AORDER%20BY%20DESC%28%3Fcount%29)
+[▶ Run in the query UI](https://qlever.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph?query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0APREFIX%20void-ext%3A%20%3Chttp%3A//ldf.fi/void-ext%23%3E%0APREFIX%20schema%3A%20%3Chttps%3A//schema.org/%3E%0ASELECT%20%3FobjectClass%20%28SUM%28%3Ftriples%29%20AS%20%3Fcount%29%20WHERE%20%7B%0A%20%20%3Fdataset%20void%3AclassPartition%20%5B%0A%20%20%20%20void%3Aclass%20schema%3ABook%20%3B%0A%20%20%20%20void%3ApropertyPartition%20%5B%0A%20%20%20%20%20%20void%3Aproperty%20schema%3Aauthor%20%3B%0A%20%20%20%20%20%20void-ext%3AobjectClassPartition%20%5B%0A%20%20%20%20%20%20%20%20void%3Aclass%20%3FobjectClass%20%3B%0A%20%20%20%20%20%20%20%20void%3Atriples%20%3Ftriples%0A%20%20%20%20%20%20%5D%0A%20%20%20%20%5D%0A%20%20%5D%0A%7D%0AGROUP%20BY%20%3FobjectClass%0AORDER%20BY%20DESC%28%3Fcount%29)
 
 ### Outgoing linksets to terminology sources
 
@@ -223,7 +223,7 @@ ORDER BY DESC(?triples)
 LIMIT 50
 ```
 
-[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Outgoing%20linksets%20to%20terminology%20sources&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0ASELECT%20%2A%20WHERE%20%7B%0A%20%20%5B%5D%20a%20void%3ALinkset%20%3B%0A%20%20%20%20void%3AsubjectsTarget%20%3Fdataset%20%3B%0A%20%20%20%20void%3AobjectsTarget%20%3FterminologySource%20%3B%0A%20%20%20%20void%3Atriples%20%3Ftriples%20.%0A%7D%0AORDER%20BY%20DESC%28%3Ftriples%29%0ALIMIT%2050)
+[▶ Run in the query UI](https://qlever.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph?query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0ASELECT%20%2A%20WHERE%20%7B%0A%20%20%5B%5D%20a%20void%3ALinkset%20%3B%0A%20%20%20%20void%3AsubjectsTarget%20%3Fdataset%20%3B%0A%20%20%20%20void%3AobjectsTarget%20%3FterminologySource%20%3B%0A%20%20%20%20void%3Atriples%20%3Ftriples%20.%0A%7D%0AORDER%20BY%20DESC%28%3Ftriples%29%0ALIMIT%2050)
 
 ### Subject URI spaces
 
@@ -241,7 +241,7 @@ ORDER BY DESC(?entities)
 LIMIT 50
 ```
 
-[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Subject%20URI%20spaces&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0ASELECT%20%2A%20WHERE%20%7B%0A%20%20%3Fdataset%20void%3Asubset%20%5B%0A%20%20%20%20void%3AuriSpace%20%3FuriSpace%20%3B%0A%20%20%20%20void%3Aentities%20%3Fentities%0A%20%20%5D%20.%0A%7D%0AORDER%20BY%20DESC%28%3Fentities%29%0ALIMIT%2050)
+[▶ Run in the query UI](https://qlever.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph?query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0ASELECT%20%2A%20WHERE%20%7B%0A%20%20%3Fdataset%20void%3Asubset%20%5B%0A%20%20%20%20void%3AuriSpace%20%3FuriSpace%20%3B%0A%20%20%20%20void%3Aentities%20%3Fentities%0A%20%20%5D%20.%0A%7D%0AORDER%20BY%20DESC%28%3Fentities%29%0ALIMIT%2050)
 
 ### Datasets whose subject URIs resolve
 
@@ -262,7 +262,7 @@ SELECT ?dataset ?uriSpace ?resolved ?sampled WHERE {
 ORDER BY DESC(?resolved)
 ```
 
-[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Datasets%20whose%20subject%20URIs%20resolve&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0APREFIX%20dqv%3A%20%3Chttp%3A//www.w3.org/ns/dqv%23%3E%0APREFIX%20nde%3A%20%3Chttps%3A//def.nde.nl/metric%23%3E%0ASELECT%20%3Fdataset%20%3FuriSpace%20%3Fresolved%20%3Fsampled%20WHERE%20%7B%0A%20%20%3Fdataset%20void%3Asubset%20%3Fns%20.%0A%20%20%3Fns%20void%3AuriSpace%20%3FuriSpace%20%3B%0A%20%20%20%20dqv%3AhasQualityMeasurement%0A%20%20%20%20%20%20%5B%20dqv%3AisMeasurementOf%20nde%3Asubject-uris-resolved%20%3B%20dqv%3Avalue%20%3Fresolved%20%5D%20%2C%0A%20%20%20%20%20%20%5B%20dqv%3AisMeasurementOf%20nde%3Asubject-uris-sampled%20%3B%20dqv%3Avalue%20%3Fsampled%20%5D%20.%0A%20%20FILTER%28%3Fresolved%20%3E%200%29%0A%7D%0AORDER%20BY%20DESC%28%3Fresolved%29)
+[▶ Run in the query UI](https://qlever.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph?query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0APREFIX%20dqv%3A%20%3Chttp%3A//www.w3.org/ns/dqv%23%3E%0APREFIX%20nde%3A%20%3Chttps%3A//def.nde.nl/metric%23%3E%0ASELECT%20%3Fdataset%20%3FuriSpace%20%3Fresolved%20%3Fsampled%20WHERE%20%7B%0A%20%20%3Fdataset%20void%3Asubset%20%3Fns%20.%0A%20%20%3Fns%20void%3AuriSpace%20%3FuriSpace%20%3B%0A%20%20%20%20dqv%3AhasQualityMeasurement%0A%20%20%20%20%20%20%5B%20dqv%3AisMeasurementOf%20nde%3Asubject-uris-resolved%20%3B%20dqv%3Avalue%20%3Fresolved%20%5D%20%2C%0A%20%20%20%20%20%20%5B%20dqv%3AisMeasurementOf%20nde%3Asubject-uris-sampled%20%3B%20dqv%3Avalue%20%3Fsampled%20%5D%20.%0A%20%20FILTER%28%3Fresolved%20%3E%200%29%0A%7D%0AORDER%20BY%20DESC%28%3Fresolved%29)
 
 ### Datasets that mint a persistent identifier
 
@@ -280,7 +280,7 @@ SELECT ?dataset ?uriSpace ?scheme ?publisher WHERE {
 }
 ```
 
-[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Datasets%20that%20mint%20a%20persistent%20identifier&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0APREFIX%20dcterms%3A%20%3Chttp%3A//purl.org/dc/terms/%3E%0ASELECT%20%3Fdataset%20%3FuriSpace%20%3Fscheme%20%3Fpublisher%20WHERE%20%7B%0A%20%20%3Fdataset%20void%3Asubset%20%3Fns%20.%0A%20%20%3Fns%20void%3AuriSpace%20%3FuriSpace%20%3B%0A%20%20%20%20dcterms%3AconformsTo%20%3Fscheme%20.%0A%20%20FILTER%28STRSTARTS%28STR%28%3Fscheme%29%2C%20%22https%3A//def.nde.nl/pid-scheme%23%22%29%29%0A%20%20OPTIONAL%20%7B%20%3Fns%20dcterms%3Apublisher%20%3Fpublisher%20%7D%0A%7D)
+[▶ Run in the query UI](https://qlever.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph?query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0APREFIX%20dcterms%3A%20%3Chttp%3A//purl.org/dc/terms/%3E%0ASELECT%20%3Fdataset%20%3FuriSpace%20%3Fscheme%20%3Fpublisher%20WHERE%20%7B%0A%20%20%3Fdataset%20void%3Asubset%20%3Fns%20.%0A%20%20%3Fns%20void%3AuriSpace%20%3FuriSpace%20%3B%0A%20%20%20%20dcterms%3AconformsTo%20%3Fscheme%20.%0A%20%20FILTER%28STRSTARTS%28STR%28%3Fscheme%29%2C%20%22https%3A//def.nde.nl/pid-scheme%23%22%29%29%0A%20%20OPTIONAL%20%7B%20%3Fns%20dcterms%3Apublisher%20%3Fpublisher%20%7D%0A%7D)
 
 ### Most-referenced vocabularies
 
@@ -296,7 +296,7 @@ GROUP BY ?vocabulary
 ORDER BY DESC(?datasetCount)
 ```
 
-[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Vocabularies%20referenced%20across%20datasets&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0ASELECT%20%3Fvocabulary%20%28COUNT%28DISTINCT%20%3Fdataset%29%20AS%20%3FdatasetCount%29%20WHERE%20%7B%0A%20%20%3Fdataset%20a%20void%3ADataset%20%3B%0A%20%20%20%20void%3Avocabulary%20%3Fvocabulary%20.%0A%7D%0AGROUP%20BY%20%3Fvocabulary%0AORDER%20BY%20DESC%28%3FdatasetCount%29)
+[▶ Run in the query UI](https://qlever.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph?query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0ASELECT%20%3Fvocabulary%20%28COUNT%28DISTINCT%20%3Fdataset%29%20AS%20%3FdatasetCount%29%20WHERE%20%7B%0A%20%20%3Fdataset%20a%20void%3ADataset%20%3B%0A%20%20%20%20void%3Avocabulary%20%3Fvocabulary%20.%0A%7D%0AGROUP%20BY%20%3Fvocabulary%0AORDER%20BY%20DESC%28%3FdatasetCount%29)
 
 ### License usage
 
@@ -315,7 +315,7 @@ GROUP BY ?license
 ORDER BY DESC(?datasetCount)
 ```
 
-[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=License%20usage&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0APREFIX%20dcterms%3A%20%3Chttp%3A//purl.org/dc/terms/%3E%0ASELECT%20%3Flicense%20%28COUNT%28DISTINCT%20%3Fdataset%29%20AS%20%3FdatasetCount%29%20WHERE%20%7B%0A%20%20%3Fdataset%20a%20void%3ADataset%20%3B%0A%20%20%20%20void%3Asubset%20%5B%0A%20%20%20%20%20%20dcterms%3Alicense%20%3Flicense%0A%20%20%20%20%5D%20.%0A%7D%0AGROUP%20BY%20%3Flicense%0AORDER%20BY%20DESC%28%3FdatasetCount%29)
+[▶ Run in the query UI](https://qlever.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph?query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0APREFIX%20dcterms%3A%20%3Chttp%3A//purl.org/dc/terms/%3E%0ASELECT%20%3Flicense%20%28COUNT%28DISTINCT%20%3Fdataset%29%20AS%20%3FdatasetCount%29%20WHERE%20%7B%0A%20%20%3Fdataset%20a%20void%3ADataset%20%3B%0A%20%20%20%20void%3Asubset%20%5B%0A%20%20%20%20%20%20dcterms%3Alicense%20%3Flicense%0A%20%20%20%20%5D%20.%0A%7D%0AGROUP%20BY%20%3Flicense%0AORDER%20BY%20DESC%28%3FdatasetCount%29)
 
 ### Datasets exposing IIIF Presentation manifests
 
@@ -334,7 +334,7 @@ SELECT ?dataset ?manifests WHERE {
 ORDER BY DESC(?manifests)
 ```
 
-[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Datasets%20exposing%20IIIF%20Presentation%20manifests&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0APREFIX%20dcterms%3A%20%3Chttp%3A//purl.org/dc/terms/%3E%0ASELECT%20%3Fdataset%20%3Fmanifests%20WHERE%20%7B%0A%20%20%3Fdataset%20a%20void%3ADataset%20%3B%0A%20%20%20%20void%3Asubset%20%5B%0A%20%20%20%20%20%20dcterms%3AconformsTo%20%3Chttp%3A//iiif.io/api/presentation/%3E%20%3B%0A%20%20%20%20%20%20void%3Aentities%20%3Fmanifests%0A%20%20%20%20%5D%20.%0A%7D%0AORDER%20BY%20DESC%28%3Fmanifests%29)
+[▶ Run in the query UI](https://qlever.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph?query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0APREFIX%20dcterms%3A%20%3Chttp%3A//purl.org/dc/terms/%3E%0ASELECT%20%3Fdataset%20%3Fmanifests%20WHERE%20%7B%0A%20%20%3Fdataset%20a%20void%3ADataset%20%3B%0A%20%20%20%20void%3Asubset%20%5B%0A%20%20%20%20%20%20dcterms%3AconformsTo%20%3Chttp%3A//iiif.io/api/presentation/%3E%20%3B%0A%20%20%20%20%20%20void%3Aentities%20%3Fmanifests%0A%20%20%20%20%5D%20.%0A%7D%0AORDER%20BY%20DESC%28%3Fmanifests%29)
 
 The `dcterms:conformsTo` marker above is *declared*. To find datasets whose manifests are *validated working*, query the `manifests-validated` measurement instead – a sample of the manifest IRIs is dereferenced each run, and this counts how many resolved to a valid IIIF Presentation Manifest. `validated > 0` means working manifests; `validated = 0` alongside a declared subset means the dataset claims IIIF but its sampled manifests all failed to resolve.
 
@@ -354,7 +354,7 @@ SELECT ?dataset ?validated ?sampled WHERE {
 ORDER BY DESC(?validated)
 ```
 
-[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Datasets%20with%20validated%20IIIF%20manifests&infer=true&sameAs=true&query=PREFIX%20dqv%3A%20%3Chttp%3A//www.w3.org/ns/dqv%23%3E%0APREFIX%20nde%3A%20%3Chttps%3A//def.nde.nl/metric%23%3E%0ASELECT%20%3Fdataset%20%3Fvalidated%20%3Fsampled%20WHERE%20%7B%0A%20%20%3Fdataset%20dqv%3AhasQualityMeasurement%0A%20%20%20%20%5B%20dqv%3AisMeasurementOf%20nde%3Amanifests-validated%20%3B%20dqv%3Avalue%20%3Fvalidated%20%5D%20%2C%0A%20%20%20%20%5B%20dqv%3AisMeasurementOf%20nde%3Amanifests-sampled%20%3B%20dqv%3Avalue%20%3Fsampled%20%5D%20.%0A%20%20FILTER%28%3Fvalidated%20%3E%200%29%0A%7D%0AORDER%20BY%20DESC%28%3Fvalidated%29)
+[▶ Run in the query UI](https://qlever.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph?query=PREFIX%20dqv%3A%20%3Chttp%3A//www.w3.org/ns/dqv%23%3E%0APREFIX%20nde%3A%20%3Chttps%3A//def.nde.nl/metric%23%3E%0ASELECT%20%3Fdataset%20%3Fvalidated%20%3Fsampled%20WHERE%20%7B%0A%20%20%3Fdataset%20dqv%3AhasQualityMeasurement%0A%20%20%20%20%5B%20dqv%3AisMeasurementOf%20nde%3Amanifests-validated%20%3B%20dqv%3Avalue%20%3Fvalidated%20%5D%20%2C%0A%20%20%20%20%5B%20dqv%3AisMeasurementOf%20nde%3Amanifests-sampled%20%3B%20dqv%3Avalue%20%3Fsampled%20%5D%20.%0A%20%20FILTER%28%3Fvalidated%20%3E%200%29%0A%7D%0AORDER%20BY%20DESC%28%3Fvalidated%29)
 
 ### Datasets with working SPARQL endpoints
 
@@ -368,7 +368,7 @@ SELECT * WHERE {
 }
 ```
 
-[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Datasets%20with%20working%20SPARQL%20endpoints&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0ASELECT%20%2A%20WHERE%20%7B%0A%20%20%3Fdataset%20a%20void%3ADataset%20%3B%0A%20%20%20%20void%3AsparqlEndpoint%20%3Fendpoint%20.%0A%7D)
+[▶ Run in the query UI](https://qlever.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph?query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0ASELECT%20%2A%20WHERE%20%7B%0A%20%20%3Fdataset%20a%20void%3ADataset%20%3B%0A%20%20%20%20void%3AsparqlEndpoint%20%3Fendpoint%20.%0A%7D)
 
 ### Example resources per dataset
 
@@ -382,7 +382,7 @@ SELECT * WHERE {
 LIMIT 50
 ```
 
-[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Example%20resources%20per%20dataset&infer=true&sameAs=true&query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0ASELECT%20%2A%20WHERE%20%7B%0A%20%20%3Fdataset%20void%3AexampleResource%20%3Fexample%20.%0A%7D%0ALIMIT%2050)
+[▶ Run in the query UI](https://qlever.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph?query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0ASELECT%20%2A%20WHERE%20%7B%0A%20%20%3Fdataset%20void%3AexampleResource%20%3Fexample%20.%0A%7D%0ALIMIT%2050)
 
 ### Datasets passing SCHEMA-AP-NDE
 
@@ -402,14 +402,14 @@ SELECT * WHERE {
 }
 ```
 
-[▶ Run on the triplestore](https://triplestore.netwerkdigitaalerfgoed.nl/sparql?name=Datasets%20passing%20SCHEMA-AP-NDE&infer=true&sameAs=true&query=PREFIX%20dcterms%3A%20%3Chttp%3A//purl.org/dc/terms/%3E%0APREFIX%20dqv%3A%20%3Chttp%3A//www.w3.org/ns/dqv%23%3E%0APREFIX%20nde%3A%20%3Chttps%3A//def.nde.nl/metric%23%3E%0ASELECT%20%2A%20WHERE%20%7B%0A%20%20%3Fdataset%20dqv%3AhasQualityMeasurement%0A%20%20%20%20%5B%20dqv%3Avalue%20true%20%3B%0A%20%20%20%20%20%20dcterms%3AconformsTo%20%3Chttps%3A//docs.nde.nl/schema-profile/%3E%20%5D%20%2C%0A%20%20%20%20%5B%20dqv%3AisMeasurementOf%20nde%3Aquads-validated%20%3B%0A%20%20%20%20%20%20dqv%3Avalue%20%3Fn%20%5D%20.%0A%20%20FILTER%20%28%3Fn%20%3E%200%29%0A%7D)
+[▶ Run in the query UI](https://qlever.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph?query=PREFIX%20dcterms%3A%20%3Chttp%3A//purl.org/dc/terms/%3E%0APREFIX%20dqv%3A%20%3Chttp%3A//www.w3.org/ns/dqv%23%3E%0APREFIX%20nde%3A%20%3Chttps%3A//def.nde.nl/metric%23%3E%0ASELECT%20%2A%20WHERE%20%7B%0A%20%20%3Fdataset%20dqv%3AhasQualityMeasurement%0A%20%20%20%20%5B%20dqv%3Avalue%20true%20%3B%0A%20%20%20%20%20%20dcterms%3AconformsTo%20%3Chttps%3A//docs.nde.nl/schema-profile/%3E%20%5D%20%2C%0A%20%20%20%20%5B%20dqv%3AisMeasurementOf%20nde%3Aquads-validated%20%3B%0A%20%20%20%20%20%20dqv%3Avalue%20%3Fn%20%5D%20.%0A%20%20FILTER%20%28%3Fn%20%3E%200%29%0A%7D)
 
 The `?n > 0` filter excludes datasets that use a different data model and to which the profile doesn't apply at all (where SHACL returns *vacuously true*). To find datasets that tried the profile and failed, swap `dqv:value true` for `dqv:value false`.
 
 ## Access
 
 - **Datastory** for visual aggregate insights across all datasets: [datastories.demo.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph](https://datastories.demo.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph/index.html).
-- **SPARQL endpoint** for direct queries: `https://triplestore.netwerkdigitaalerfgoed.nl/repositories/dataset-knowledge-graph`.
+- **SPARQL endpoint** for direct queries: `https://sparql.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph`.
 
 ## How summaries are produced
 
@@ -420,7 +420,8 @@ A periodic pipeline builds the summaries:
 3. **Analyse** by running a set of [SPARQL CONSTRUCT queries](https://github.com/netwerk-digitaal-erfgoed/dataset-knowledge-graph/tree/main/queries/analysis), one per partition type, with code-level post-processing where needed. Each analyser emits VoID triples. For IIIF, a sample of the detected manifest IRIs is also dereferenced and validated (via [`@lde/iiif-validator`](https://www.npmjs.com/package/@lde/iiif-validator)), recording how many resolve to valid Presentation Manifests. Likewise, the dataset's own subject namespace is sampled and dereferenced to measure whether its URIs – and any ARK or Handle persistent identifiers – resolve.
 4. **Validate against SCHEMA-AP-NDE** by sampling a configurable number of resources per `sh:targetClass` and running them through the profile's SHACL shapes. The detailed per-resource SHACL report is written to a file (not the triple store).
 5. **Summarise quality measurements** as [DQV](https://www.w3.org/TR/vocab-dqv/) measurements and a [PROV](https://www.w3.org/TR/prov-o/) activity, and append them to the dataset's Summary.
-6. **Write** the results to the Knowledge Graph triple store.
+6. **Write** the results as one n-quads file per dataset (each Summary in a named graph keyed on the dataset IRI, its SHACL report in a derived graph). A separate, read-only [QLever](https://github.com/ad-freiburg/qlever) rebuilds its served index from these files after every run – on success and on partial failure alike – so the Knowledge Graph is a pure derived cache, fully rebuilt each run rather than mutated in place.
+7. **Reconcile** the cache with the register: a dataset that has since been removed from the register or whose registration expired is no longer rewritten, so its file would linger as a stale “ghost”. After writing, the pipeline deletes every file whose dataset URI is no longer present-and-valid in the register. Datasets merely skipped this run (no RDF distribution, an unreachable endpoint) are kept, and an empty result from the register prunes nothing – so a register outage can never empty the cache.
 
 Datasets without a valid RDF distribution are skipped; invalid distributions emit a `schema:error` triple instead of a summary, so consumers can still see *which* distributions are unreachable.
 
