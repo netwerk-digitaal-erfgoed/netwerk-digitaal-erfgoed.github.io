@@ -36,10 +36,11 @@ Each Summary attaches the following information to a `void:Dataset` – a mix of
 | Object classes per class and property | `void-ext:objectClassPartition` | How classes connect through predicates – e.g. *"books link to persons via author 1350 times"* |
 | Outgoing linksets | `void:Linkset` | Cross-dataset and cross-vocabulary links – how the dataset fits into the wider network |
 | Subject URI spaces | `void:uriSpace` + `void:entities` on a `void:subset` | The most common namespaces for subject resources |
-| Subject URI resolution & persistent identifiers | `subject-uris-sampled` / `subject-uris-resolved` DQV measurements on the subset, plus – when the namespace is a recognised PID scheme – `dcterms:conformsTo <https://def.nde.nl/pid-scheme#ark>` (or `#handle`) and, for ARK, `dcterms:publisher`, plus a `subject-uris-persistent` boolean flag | For the namespace the dataset mints for its own resources (the most common one that is *not* a terminology source), whether a sample of those URIs resolves to a self-describing landing page. ARK and Handle persistent identifiers are detected from the namespace, with the ARK issuing organisation looked up via `arks.org`. `resolved > 0` means the dataset's own identifiers genuinely dereference; `resolved = 0` next to a declared PID scheme means it claims a persistent identifier whose links are broken. A `subject-uris-persistent` flag set to `false` marks a namespace on the disallow list of known non-durable vendor namespaces – it resolves today but is not a durable home for the identifiers |
+| Subject URI resolution & persistent identifiers | `subject-uris-sampled` / `subject-uris-resolved` DQV measurements on the subset, plus – when the namespace is a recognised PID scheme – `dcterms:conformsTo <https://def.nde.nl/pid-scheme#ark>` (or `#handle`) and, for ARK, `dcterms:publisher`, plus a `subject-uris-persistent` boolean flag | For the namespace the dataset mints for its own resources (the most common one that is *not* a terminology source), whether a sample of those URIs resolves to a self-describing landing page. ARK and Handle persistent identifiers are detected from the namespace, with the ARK issuing organisation looked up via `arks.org`. `resolved > 0` means the dataset's own identifiers genuinely dereference; `resolved = 0` next to a declared PID scheme means it claims a persistent identifier whose links are broken. A `subject-uris-persistent` flag set to `false` marks a namespace on the disallow list of known non-durable vendor namespaces – it resolves today but is not a durable home for the identifiers. Each sampled URI that *failed* is enumerated on the sampling activity as a [failed-sample qualified usage](#failed-samples), carrying the exact URI and a typed `failure:reason` |
 | Vocabularies | `void:vocabulary` | Schema.org, FOAF, Dublin Core, etc. – what the predicates draw from |
 | Licenses | `dcterms:license` | License coverage at the resource level |
-| IIIF Presentation manifests | `void:subset` + `dcterms:conformsTo <http://iiif.io/api/presentation/>` + `void:entities`, plus `manifests-sampled` / `manifests-validated` DQV measurements | Whether the dataset exposes [IIIF Presentation API](http://iiif.io/api/presentation/) manifests, how many, and how many of a sample actually resolve. Detected from `schema:encodingFormat` literals matching the [SCHEMA-AP-NDE](https://docs.nde.nl/schema-profile/) IIIF profile pattern; v2 and v3 collapse into one version-less subset. The `dcterms:conformsTo` marker is *declared*; a sample of the manifest IRIs is then dereferenced and *validated*, so a dataset whose manifests genuinely resolve (`validated > 0`) is distinguishable from one that declares IIIF but serves broken manifests (`validated = 0`) |
+| IIIF Presentation manifests | `void:subset` + `dcterms:conformsTo <http://iiif.io/api/presentation/>` + `void:entities`, plus `manifests-sampled` / `manifests-validated` DQV measurements | Whether the dataset exposes [IIIF Presentation API](http://iiif.io/api/presentation/) manifests, how many, and how many of a sample actually resolve. Detected from `schema:encodingFormat` literals matching the [SCHEMA-AP-NDE](https://docs.nde.nl/schema-profile/) IIIF profile pattern; v2 and v3 collapse into one version-less subset. The `dcterms:conformsTo` marker is *declared*; a sample of the manifest IRIs is then dereferenced and *validated*, so a dataset whose manifests genuinely resolve (`validated > 0`) is distinguishable from one that declares IIIF but serves broken manifests (`validated = 0`). Each sampled manifest that *failed* validation is enumerated on the validation activity as a [failed-sample qualified usage](#failed-samples), carrying the exact URL and a typed `failure:reason` |
+| Failed samples | `prov:qualifiedUsage` → `prov:Usage` with `prov:entity` + `failure:reason` on the sampling/validation `prov:Activity` | For the subject-URI resolution and IIIF manifest checks, the identity of each *failed* sample, so a low ratio can be triaged down to the individual broken URI/URL and its reason. See [Failed samples](#failed-samples) |
 | Distributions | `void:sparqlEndpoint`, `void:dataDump`, plus HTTP-validated status | Which distributions currently work and at what size |
 | Example resources | `void:exampleResource` | Concrete starting points for exploration |
 | SCHEMA-AP-NDE conformance | `dqv:QualityMeasurement` + `prov:Activity` | Whether a sample of resources passes the [SCHEMA-AP-NDE](https://docs.nde.nl/schema-profile/) SHACL shapes. Three metrics are emitted: `schema-ap-nde-sample-conformance` (boolean), `quads-validated` (number of sampled triples), and `samples-per-class` (sample cap). Combine `quads-validated > 0` with `conformance = true` to mean *"tested and passed"*; `quads-validated = 0` means the profile didn't apply (e.g. the dataset uses Linked.Art or EDM). The full per-resource SHACL report is written to a file rather than the triple store. |
@@ -355,6 +356,47 @@ ORDER BY DESC(?validated)
 ```
 
 [▶ Run in the query UI](https://qlever.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph?query=PREFIX%20dqv%3A%20%3Chttp%3A//www.w3.org/ns/dqv%23%3E%0APREFIX%20nde%3A%20%3Chttps%3A//def.nde.nl/metric%23%3E%0ASELECT%20%3Fdataset%20%3Fvalidated%20%3Fsampled%20WHERE%20%7B%0A%20%20%3Fdataset%20dqv%3AhasQualityMeasurement%0A%20%20%20%20%5B%20dqv%3AisMeasurementOf%20nde%3Amanifests-validated%20%3B%20dqv%3Avalue%20%3Fvalidated%20%5D%20%2C%0A%20%20%20%20%5B%20dqv%3AisMeasurementOf%20nde%3Amanifests-sampled%20%3B%20dqv%3Avalue%20%3Fsampled%20%5D%20.%0A%20%20FILTER%28%3Fvalidated%20%3E%200%29%0A%7D%0AORDER%20BY%20DESC%28%3Fvalidated%29)
+
+### Failed samples
+
+The subject-URI resolution and IIIF manifest-validation checks each sample a handful of resources and report an aggregate ratio (`subject-uris-resolved` / `subject-uris-sampled` and `manifests-validated` / `manifests-sampled`). A low ratio tells you *that* something broke, not *which* resource or *why*. To answer that, every sampled resource that **failed** is enumerated on the check's `prov:Activity` as a qualified usage:
+
+```turtle
+_:activity a prov:Activity ;
+    prov:used <https://example.org/id/123> ;       # the failed resource
+    prov:qualifiedUsage _:usage ;
+    prov:wasAssociatedWith <…software> .
+_:usage a prov:Usage ;
+    prov:entity <https://example.org/id/123> ;
+    failure:reason <https://def.nde.nl/subject-resolution-failure#no-self-reference> .
+```
+
+Only failures are persisted – the presence of a `failure:reason` is the contract for *“this sample failed”*; the resolved/validated samples are covered by the count alone. The `prov:Usage` hangs off the activity (a usage reifies an activity-uses-entity relationship), but you still reach failures dataset-first through the measurement that the activity generated:
+
+`void:subset` → `dqv:hasQualityMeasurement` → measurement → `prov:wasGeneratedBy` → `prov:Activity` → `prov:qualifiedUsage` → `prov:Usage` → `prov:entity` / `failure:reason`.
+
+The reason is a SKOS concept from the scheme matching the check: [`subject-resolution-failure`](https://def.nde.nl/subject-resolution-failure) (`timeout`, `network-error`, `http-error`, `wrong-content-type`, `no-self-reference`) for subject URIs, and [`manifest-validation-failure`](https://def.nde.nl/manifest-validation-failure) (`timeout`, `network-error`, `http-error`, `invalid-json`, `binary-content`, `not-a-manifest`, `does-not-load`) for IIIF manifests. The `failure:reason` predicate itself is defined in the [`failure`](https://def.nde.nl/failure) module.
+
+This query lists every failed subject URI per dataset with its reason:
+
+```sparql
+PREFIX void: <http://rdfs.org/ns/void#>
+PREFIX dqv: <http://www.w3.org/ns/dqv#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX nde: <https://def.nde.nl/metric#>
+PREFIX failure: <https://def.nde.nl/failure#>
+SELECT ?dataset ?failedUri ?reason WHERE {
+  ?dataset void:subset ?subset .
+  ?subset dqv:hasQualityMeasurement ?measurement .
+  ?measurement dqv:isMeasurementOf nde:subject-uris-resolved ;
+    prov:wasGeneratedBy ?activity .
+  ?activity prov:qualifiedUsage ?usage .
+  ?usage prov:entity ?failedUri ;
+    failure:reason ?reason .
+}
+```
+
+Swap `nde:subject-uris-resolved` for `nde:manifests-validated` to list failed IIIF manifests instead.
 
 ### Datasets with working SPARQL endpoints
 
