@@ -102,7 +102,7 @@ The transformation is **SPARQL CONSTRUCT mapping SCHEMA-AP-NDE to EDM**, not a r
 
 A new axis is warranted when a real choice opens up that the existing axes don’t capture. Candidates to keep an eye on:
 
-- **Trigger axis** (push: webhooks, [LDN](https://www.w3.org/TR/ldn/) (Linked Data Notifications)) when network sources begin to offer push notifications. Today every pipeline is pull-based and scheduled, so the trigger is a constant rather than a choice; the *Scope* axis above covers the only real lever (process all selected sources vs. only changed ones). A separate Trigger axis lands the day push arrives.
+- **Trigger axis** (push: webhooks, [LDN](https://www.w3.org/TR/ldn/) (Linked Data Notifications)) when network sources begin to offer push notifications. Today every pipeline is pull-based and scheduled, so the trigger is a constant rather than a choice; the *Scope* axis above covers the only real lever (process all selected sources vs. only changed ones). A separate Trigger axis lands the day push arrives. This source-change trigger is orthogonal to the config-change trigger that already exists – the [schema fingerprint](patterns.md#rebuild-trigger-schema-fingerprint) that fires a full [Blue/green Rebuild](patterns.md#bluegreen-rebuild) when index-affecting configuration changes is deploy-driven, not source-driven, so it is not the Trigger axis discussed here.
 - **Cross-pipeline event publishing** (an upstream substrate-B pipeline that fans out to per-transformation consumers) – currently aspirational; would warrant a *Distribution* axis if built.
 
 Until those land, the six axes above cover the configurations the Stack actually deploys today.
