@@ -452,4 +452,5 @@ Concrete instances in the Stack:
 
 - **Indirection cost.** Ports add an abstraction layer; reading a code path requires understanding both port and adapter.
 - **Abstraction discipline.** Ports must be narrow enough that alternative adapters are realistic to write. A port that leaks too much backend specifics (e.g., baking in Typesense’s filter syntax) defeats the pattern.
+- **Adapters can push work back onto the core.** A narrow port hides backend specifics, but some backends lack a capability the others provide – Typesense has no `asciifolding`, so diacritic folding moves into an application-side utility that must be applied identically at index time and query time. The port stays clean; the obligation is real, and it reaches past the pipeline onto the query side. See [Normalization is engine-dependent](layers/platform.md#normalization-is-engine-dependent).
 - **Adapter maintenance.** Each supported adapter is a maintenance cost. The Stack commits to defaults; alternatives are “supported on best-effort” unless promoted.
