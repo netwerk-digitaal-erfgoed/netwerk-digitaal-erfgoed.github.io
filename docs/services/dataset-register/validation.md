@@ -73,9 +73,18 @@ The REST API and the crawler differ in how strict they are about probe failures:
 | ------ | ---------------------- | ------ |
 | **Registration** (`POST /datasets`) | `sh:Violation` (strict) | A faulty distribution makes the dataset invalid, so it is rejected with HTTP `400` and never indexed. |
 | **Validation** (`POST`/`PUT /datasets/validate`) | `sh:Violation` (strict) | The same result registration would give – an accurate dry-run; the [validate page](https://datasetregister.netwerkdigitaalerfgoed.nl/validate) shows the dataset as invalid. |
-| **Crawler** | declared `sh:severity` (`sh:Warning` today) | Emitted only once the failure streak is persistent (`nde-probe:firstFailureAt` older than the threshold, default 7 days); a distribution that breaks *after* registration is flagged without invalidating the dataset, and transient blips are suppressed. |
+| **Crawler** | declared `sh:severity` (`sh:Warning` today) | A distribution that breaks *after* registration is flagged without invalidating the dataset. How quickly the flag appears depends on the failure type (see below). |
 
 The REST API is strict regardless of the severity the shapes declare, so it will not admit a dataset whose distributions are unreachable or mistyped at submit time. The crawler instead honours the shapes: promoting `nde-probe:probeReachable` / `nde-probe:probeFormatMatch` to `sh:Violation` in the [Requirements for Datasets](https://docs.nde.nl/requirements-datasets/) would make the crawler invalidate matching datasets too.
+
+#### Grace window: transient vs. deterministic failures
+
+The crawler does not flag every probe failure immediately. Whether it waits out a grace window depends on whether the failure could plausibly resolve itself:
+
+- **Transient reachability failures** – `nde-probe:NetworkError`, `nde-probe:NotFound`, `nde-probe:ServerError`, `nde-probe:AuthRequired`, `nde-probe:RateLimited`, `nde-probe:SparqlProbeFailed` – are emitted only once the failure streak is persistent (`nde-probe:firstFailureAt` older than the threshold, default 7 days). A brief outage that self-heals before the threshold is suppressed, so a network blip neither warns the publisher nor flips the browser availability badge.
+- **Deterministic content defects** – `nde-probe:EmptyBody`, `nde-probe:RdfParseFailed`, `nde-probe:ContentTypeMismatch`, `nde-probe:ContentTypeMissing` – are surfaced within one probe cycle, with no grace window. An empty or unparseable body, or a `Content-Type` that does not match the declared media type, is the same defect on the next crawl as it is today, so waiting cannot change the verdict.
+
+The browser availability badge uses the same classification, so the badge and the registration warning tier stay consistent.
 
 ### How probe failures appear in the report
 
