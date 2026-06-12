@@ -236,6 +236,14 @@ Multilingual properties (`rdf:langString` / `sh:languageIn`) project as a nested
 
 This preserves per-language stemming, IDF and query-time boosting (the engine binds `locale` to a field path, not to an array element). A single multi-valued `string[]` field would lose those.
 
+##### Normalization is engine-dependent
+
+Diacritic folding and stemming are not free on every engine. Lucene-based engines (Elasticsearch, OpenSearch) fold and stem natively in their analysis chain – `asciifolding` plus a language analyzer – so the projection can hand them raw text. Typesense cannot: it auto-folds only *decomposing* diacritics for the default locale, and it cannot transliterate *non-decomposing* letters (ø, æ, ß) while also stemming Dutch. The flagship case is the register’s [diacritic-insensitive search](https://github.com/netwerk-digitaal-erfgoed/dataset-register/issues/1661) – “Møhlmann” must be found by “Mohlmann”.
+
+Where the engine cannot do it, the **application** must, under one iron rule: **fold identically at index time and query time.** Any divergence is a silent miss – a document folded one way and a query folded another never match. The Dataset Register search uses a shared, zero-dependency fold utility (proposed `@lde/text-normalization`) imported by both the indexer (index time) and the browser (query time), so the two cannot drift. Pre-folding also sidesteps Typesense’s stemming-versus-diacritics locale conflict: fold first, then let the engine stem the already-folded tokens.
+
+This is a [Ports & Adapters](../patterns.md#adapters) consequence – an engine adapter can push an obligation back up onto the projection. The fold utility is engine-driven (Lucene engines would not need it), so it belongs at the adapter boundary rather than in the engine-agnostic projection; the catch is that the same utility must also run on the query side, outside the indexing pipeline entirely.
+
 ##### Term labels: two sources, two purposes
 
 Term labels enter the index from two distinct sources, serving two distinct UI concerns:
@@ -278,7 +286,9 @@ The architectural consequence: “what if my crawled datasets speak different AP
 
 Default is Mode 1: atomic, no state, simple to reason about. Mode 2 is designed in (every document carries `source` and `last_seen` from day one) but not activated until source cadences diverge enough to make Mode 1 wasteful. Mode 3 stays out of scope until upstream LDES feeds appear.
 
-This is the engine-native variant of the [Blue/green Rebuild](../patterns.md#bluegreen-rebuild) pattern, specialised to the search engine’s collection-alias API.
+A Mode 1 full rebuild is not scheduled; it fires automatically when the [schema fingerprint](../patterns.md#rebuild-trigger-schema-fingerprint) changes – a deploy that retypes a field or bumps the fold-map – while routine runs take the incremental path. Query-time tuning (weights, synonyms, typo tolerance) is excluded from the fingerprint and synced live, so changing it never forces a rebuild.
+
+This is the engine-native variant of the [Blue/green Rebuild](../patterns.md#bluegreen-rebuild) pattern, specialised to the search engine’s collection-alias API. When more than one source writes the collection – today the register projection plus the DKG enrichment – the `source` and `last_seen` fields are scoped per source, per [Multi-source Composition](../patterns.md#multi-source-composition).
 
 ##### Non-conformant source data
 
@@ -452,6 +462,7 @@ The Data Layer is the primary home for most operational patterns defined in the 
 - [Augmented Dataset Selection](../patterns.md#augmented-dataset-selection) – combine publisher-declared DCAT-AP with pipeline-derived analysis to drive selection.
 - [Blue/green Rebuild](../patterns.md#bluegreen-rebuild) – atomic dual-instance rebuild (engine-native / directory-level / proxy-level variants).
 - [Last-known-good Per-source Caching](../patterns.md#last-known-good-per-source-caching) – survive transient source outages by persisting each source’s last-good projection.
+- [Multi-source Composition](../patterns.md#multi-source-composition) – several sources (the register projection plus DKG enrichment) compose into one collection, scoped by `source`; different record kinds get separate collections.
 
 Cross-cutting patterns that also apply at this layer:
 
