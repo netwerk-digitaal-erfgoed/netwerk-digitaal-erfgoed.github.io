@@ -15,7 +15,7 @@ Several patterns are cross-cutting so listing them per layer would duplicate; th
 The patterns roughly group into three:
 
 - **Network-wide commitments** that hold across multiple layers: [SCHEMA-AP-NDE-first](#schema-ap-nde-first), [Parallel Data Models](#parallel-data-models), [Stable API Contract](#stable-api-contract), [Enrichments-as-Datasets](#enrichments-as-datasets).
-- **Data-layer operational mechanics** for rebuilding, refreshing, and surviving source-side flakiness: [Discovery via DCAT-AP Registry](#discovery-via-dcat-ap-registry), [Augmented Dataset Selection](#augmented-dataset-selection), [Change-driven Rebuild](#change-driven-rebuild), [Blue/green Rebuild](#bluegreen-rebuild), [In-place Rebuild](#in-place-rebuild), [Last-known-good Per-source Caching](#last-known-good-per-source-caching).
+- **Data-layer operational mechanics** for rebuilding, refreshing, and surviving source-side flakiness: [Discovery via DCAT-AP Registry](#discovery-via-dcat-ap-registry), [Augmented Dataset Selection](#augmented-dataset-selection), [Change-driven Rebuild](#change-driven-rebuild), [Blue/green Rebuild](#bluegreen-rebuild), [In-place Rebuild](#in-place-rebuild), [Last-known-good Per-source Caching](#last-known-good-per-source-caching), [Multi-source Composition](#multi-source-composition).
 - **Architectural meta-patterns** underlying the Stack as a whole: [Configurable Pipeline](#configurable-pipeline), [Ports & Adapters](#adapters).
 
 ## Pattern relationships
@@ -46,6 +46,7 @@ flowchart TB
         BGR["Blue/green<br/>Rebuild"]
         IPR["In-place<br/>Rebuild"]
         LKG["Last-known-good<br/>Caching"]
+        MSC["Multi-source<br/>Composition"]
     end
 
     %% Meta-patterns
@@ -62,6 +63,8 @@ flowchart TB
     CDR -- composes with --> IPR
     BGR -- requires --> LKG
     BGR <-- alternatives --> IPR
+    MSC -- composes with --> IPR
+    MSC -- composes with --> BGR
 
     %% Closing the loop
     ADS -- publishes VoID via --> EAD
@@ -394,6 +397,41 @@ A rebuild that fans out per source can fail for some sources without losing thei
 - **Disk usage.** Full N copies of source projections persist; for substrate B at NDE-network scale this can be substantial.
 - **Schema evolution.** Cached files from a previous run encode the schema in use *then*. After a SHACL or `search:` annotation change, cached files may be stale-shaped, not just stale-content. Default policy: invalidate the entire cache directory on annotation-graph change.
 - **Trend analysis is still a separate concern.** Caching keeps the *current* state resilient; it does not preserve historical observations for trend analysis. That needs an explicit historical store or an LDES feed.
+
+## Multi-source Composition
+
+*Applies to: [Data Layer](layers/platform.md#data-layer). How several sources land in one derived sink: when they share a collection and when they get separate ones. Sits above the [update modes](layers/platform.md#update-modes) and the engine adapter; composes with [In-place Rebuild](#in-place-rebuild) and [Blue/green Rebuild](#bluegreen-rebuild).*
+
+A derived sink is rarely fed by a single source. The Dataset Register search index, for instance, is written by two pipelines – the register projection and the DKG enrichment – and a future object-search index ingests many datasets at once. Two orthogonal questions decide the layout, and they have different answers.
+
+#### Same kind, multiple sources → one collection
+
+Records of the same kind (all dataset descriptions, or all `schema:Place` objects) share one collection, distinguished by a `source` field. This covers two sub-cases:
+
+- **Enrichment (same id, one owner + enrichers).** One source owns a document’s existence; others only add fields to it. The register pipeline creates and deletes the dataset document (keyed on the dataset IRI); the DKG enrichment pipeline partial-updates facet fields on that same document and never creates or deletes. Exactly one source defines existence and owns the [sweep](#in-place-rebuild); the rest enrich in place. If an enricher’s data for a record disappears, its fields clear on the next enrichment run – the document survives.
+- **Same-kind coexistence (disjoint ids, per-source ownership).** Several sources each contribute their own documents to one collection (two registers, say, or the many datasets in an object index). Each source owns its own ids; no source enriches another.
+
+Both rely on the same three mechanisms, baked in from day one even when there is a single source:
+
+1. every document carries a `source` field;
+2. the [sweep](#in-place-rebuild) filters on `source`, so one source’s run can never delete another’s documents;
+3. the self-describing high-water mark is **per source** (`max(<change-signal>) WHERE source = X`) – a global maximum would let one source’s freshness suppress another’s.
+
+#### Different kinds → separate collections
+
+Records of different kinds (datasets vs objects vs persons) do **not** share a collection. No union schema, no `type` discriminator carrying wildly different fields. Each kind is self-contained – its own schema, synonyms, weights, facets – and relations across kinds are expressed with the engine’s cross-collection features (for Typesense: reference fields + JOINs for query-time links, `multi_search` for federated per-collection results). The limit: no blended cross-collection relevance ranking – merge those application-side.
+
+#### Why this matters
+
+- **One mechanism, every topology.** Enrichment and same-kind coexistence are the same `source`-scoped collection with different id ownership; the `source` field and source-scoped sweep cover both, and they compose (a coexistence index whose sources also enrich each other).
+- **No premature union schema.** Forcing datasets, objects and persons into one collection couples their schemas and analysis config. Separate collections keep each kind’s relevance tuning independent and let new kinds land without reshaping the existing ones.
+- **Forward-compatible at near-zero cost.** Carrying `source` and a per-source high-water mark while there is only one source is cheap at register scale and avoids a reindex when the second source arrives.
+
+#### Tradeoffs
+
+- **A per-document `source` field** is a schema commitment – cheap, but permanent.
+- **Cross-collection relevance must be merged in the application.** The engine federates results per collection but does not blend their scores.
+- **Per-source high-water marks** are more bookkeeping than a single global cursor; the payoff is that one source can never suppress another.
 
 ## Configurable Pipeline
 

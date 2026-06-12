@@ -276,7 +276,7 @@ The architectural consequence: “what if my crawled datasets speak different AP
 
 Default is Mode 1: atomic, no state, simple to reason about. Mode 2 is designed in (every document carries `source` and `last_seen` from day one) but not activated until source cadences diverge enough to make Mode 1 wasteful. Mode 3 stays out of scope until upstream LDES feeds appear.
 
-This is the engine-native variant of the [Blue/green Rebuild](../patterns.md#bluegreen-rebuild) pattern, specialised to the search engine’s collection-alias API.
+This is the engine-native variant of the [Blue/green Rebuild](../patterns.md#bluegreen-rebuild) pattern, specialised to the search engine’s collection-alias API. When more than one source writes the collection – today the register projection plus the DKG enrichment – the `source` and `last_seen` fields are scoped per source, per [Multi-source Composition](../patterns.md#multi-source-composition).
 
 ##### Non-conformant source data
 
@@ -450,6 +450,7 @@ The Data Layer is the primary home for most operational patterns defined in the 
 - [Augmented Dataset Selection](../patterns.md#augmented-dataset-selection) – combine publisher-declared DCAT-AP with pipeline-derived analysis to drive selection.
 - [Blue/green Rebuild](../patterns.md#bluegreen-rebuild) – atomic dual-instance rebuild (engine-native / directory-level / proxy-level variants).
 - [Last-known-good Per-source Caching](../patterns.md#last-known-good-per-source-caching) – survive transient source outages by persisting each source’s last-good projection.
+- [Multi-source Composition](../patterns.md#multi-source-composition) – several sources (the register projection plus DKG enrichment) compose into one collection, scoped by `source`; different record kinds get separate collections.
 
 Cross-cutting patterns that also apply at this layer:
 
