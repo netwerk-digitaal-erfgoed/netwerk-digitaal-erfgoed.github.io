@@ -286,7 +286,7 @@ Default is Mode 1: atomic, no state, simple to reason about. Mode 2 is designed 
 
 A Mode 1 full rebuild is not scheduled; it fires automatically when the [schema fingerprint](../patterns.md#rebuild-trigger-schema-fingerprint) changes – a deploy that retypes a field or bumps the fold-map – while routine runs take the incremental path. Query-time tuning (weights, synonyms, typo tolerance) is excluded from the fingerprint and synced live, so changing it never forces a rebuild.
 
-This is the engine-native variant of the [Blue/green Rebuild](../patterns.md#bluegreen-rebuild) pattern, specialised to the search engine’s collection-alias API.
+This is the engine-native variant of the [Blue/green Rebuild](../patterns.md#bluegreen-rebuild) pattern, specialised to the search engine’s collection-alias API. When more than one source writes the collection – today the register projection plus the DKG enrichment – the `source` and `last_seen` fields are scoped per source, per [Multi-source Composition](../patterns.md#multi-source-composition).
 
 ##### Non-conformant source data
 
@@ -460,6 +460,7 @@ The Data Layer is the primary home for most operational patterns defined in the 
 - [Augmented Dataset Selection](../patterns.md#augmented-dataset-selection) – combine publisher-declared DCAT-AP with pipeline-derived analysis to drive selection.
 - [Blue/green Rebuild](../patterns.md#bluegreen-rebuild) – atomic dual-instance rebuild (engine-native / directory-level / proxy-level variants).
 - [Last-known-good Per-source Caching](../patterns.md#last-known-good-per-source-caching) – survive transient source outages by persisting each source’s last-good projection.
+- [Multi-source Composition](../patterns.md#multi-source-composition) – several sources (the register projection plus DKG enrichment) compose into one collection, scoped by `source`; different record kinds get separate collections.
 
 Cross-cutting patterns that also apply at this layer:
 
