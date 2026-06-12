@@ -421,6 +421,17 @@ Both rely on the same three mechanisms, baked in from day one even when there is
 
 Records of different kinds (datasets vs objects vs persons) do **not** share a collection. No union schema, no `type` discriminator carrying wildly different fields. Each kind is self-contained – its own schema, synonyms, weights, facets – and relations across kinds are expressed with the engine’s cross-collection features (for Typesense: reference fields + JOINs for query-time links, `multi_search` for federated per-collection results). The limit: no blended cross-collection relevance ranking – merge those application-side.
 
+#### Kind and source are orthogonal
+
+The two questions above are independent axes. Separation is by *kind*, never by *source*: choosing separate collections for different kinds does **not** mean one source per collection. Each per-kind collection still composes multiple sources internally, by the same `source`-scoped mechanism. A future `objects` collection is separate from a `persons` collection because they are different kinds – yet the `objects` collection still combines records from hundreds of dataset sources, and may be enriched by another source on top.
+
+| | One source | Many sources |
+| --- | --- | --- |
+| **One kind** | single collection, single writer | single `source`-scoped collection – enrichment (register + DKG) and/or coexistence (many datasets) |
+| **Many kinds** | one collection per kind, each single-source | one collection per kind, **each still combining many sources** |
+
+The register today sits in the top-right cell: one `datasets` collection, two sources (the register projection plus DKG enrichment). Adding an `objects` collection later moves it to the bottom-right – separate collections per kind, each still source-composed.
+
 #### Why this matters
 
 - **One mechanism, every topology.** Enrichment and same-kind coexistence are the same `source`-scoped collection with different id ownership; the `source` field and source-scoped sweep cover both, and they compose (a coexistence index whose sources also enrich each other).
