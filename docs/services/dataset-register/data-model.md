@@ -47,6 +47,11 @@ The [`dcat:Dataset`](#dcatdataset), [`dcat:Distribution`](#dcatdistribution), an
 When a dataset’s RDF description is fetched and validated, it is stored as a `dcat:Dataset` in its
 own graph. The URL of the graph corresponds to the dataset’s IRI.
 
+A dataset MUST be identified by an HTTP(S) IRI: it is the stable, dereferenceable identifier the
+register indexes and uses as the graph URL. A dataset expressed as a blank node, or with a
+non-HTTP IRI, is rejected as invalid (HTTP `400`) with a clear web-URI message – this holds for
+both `dcat:Dataset` and `schema:Dataset` descriptions.
+
 | DCAT term                                | Data type / notes                                                                                                                                                                              | Cardinality             |
 | ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- |
 | [`dct:title`](https://docs.geostandaarden.nl/dcat/dcat-ap-nl30/#dataset-title) | `rdf:langString` | 1..n (one per language) |
