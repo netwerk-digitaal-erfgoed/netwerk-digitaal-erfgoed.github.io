@@ -358,16 +358,16 @@ Filter client-side for entries where `type` equals `RECONCILIATION`. Sources tha
 
 ## Language selection
 
-The Network of Terms exposes natural-language data through two distinct controls,
-because the data comes from two different layers:
+The Network of Terms uses two language controls:
 
-* **Catalog metadata** – source names, descriptions, genre and creator names – lives
-  in our local configuration. We translate it to a fixed set (`nl` and `en`).
-  Negotiated via the standard `Accept-Language` HTTP header.
-* **Term data** – `prefLabel`, `altLabel`, `definition`, etc. – is fetched in real time
-  from remote terminology sources. The available languages depend on what each source
-  publishes. Requested via the `languages` GraphQL argument, which is relayed to the
-  remote queries.
+* **`Accept-Language`** – for single-language fields: source information (names,
+  descriptions, genre and creator names) in this API, and all responses from the
+  [Reconciliation API](./reconciliation). Served from our local catalog, translated
+  to a fixed set (`nl` and `en`).
+* **`languages` GraphQL argument** – for multilingual term labels (`prefLabel`,
+  `altLabel`, `definition`, etc.), returned side by side as `{ language, value }`
+  pairs. Fetched in real time from remote sources, so available languages vary per
+  source – see [Discovering supported languages](#discovering-supported-languages).
 
 ### Two axes of language control
 
