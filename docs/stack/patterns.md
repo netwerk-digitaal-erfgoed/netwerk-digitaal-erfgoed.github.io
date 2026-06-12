@@ -330,6 +330,19 @@ Three variants, distinguished by *what gets flipped* (engine alias, filesystem s
 
 Pick the cheapest variant the consumer’s latency requirements *and* the deployment environment’s permissions allow. Heritage-institution deployments may prefer proxy-level even when directory-level would suffice on latency grounds, because it removes infra-cooperation requirements.
 
+#### Rebuild trigger: schema fingerprint
+
+A full blue/green rebuild is expensive enough that firing it on a fixed schedule wastes work whenever the index shape has not changed. Fire it instead only when the **index-affecting configuration** changes, detected by a **fingerprint**: a hash over everything that determines the index’s shape and analysis – the field registry (which fields, their types, facet/sort flags), the fold-map version (folded values are *stored*, so changing the map invalidates them), and the projection / CONSTRUCT logic.
+
+Query-time parameters are deliberately **excluded** from the fingerprint: relevance weights, synonyms, typo tolerance, and default sort are applied per query against the live collection, so changing them needs no reindex – they sync live on every run instead.
+
+The fingerprint is stored as metadata on the live collection (or alias). Every run compares the code’s fingerprint against the live one:
+
+- **mismatch** → blue/green full rebuild, then done;
+- **match** → the incremental path ([In-place Rebuild](#in-place-rebuild) upsert + sweep, or a no-op).
+
+Rebuilds become **deploy-driven and automatic**: a commit that retypes a field or bumps the fold-map triggers a self-rebuild on the next scheduled run, with no cron entry and no manual flag. This is distinct from the source-change trigger ([Change-driven Rebuild](#change-driven-rebuild), which decides *which sources* a run processes); the fingerprint decides *whether the whole index must be rebuilt from scratch*.
+
 #### Why this matters
 
 - **Zero-downtime atomic switch.** Reads against the live store continue while the new build is materialised; the swap is a single atomic operation. No half-rebuilt window.

@@ -276,6 +276,8 @@ The architectural consequence: “what if my crawled datasets speak different AP
 
 Default is Mode 1: atomic, no state, simple to reason about. Mode 2 is designed in (every document carries `source` and `last_seen` from day one) but not activated until source cadences diverge enough to make Mode 1 wasteful. Mode 3 stays out of scope until upstream LDES feeds appear.
 
+A Mode 1 full rebuild is not scheduled; it fires automatically when the [schema fingerprint](../patterns.md#rebuild-trigger-schema-fingerprint) changes – a deploy that retypes a field or bumps the fold-map – while routine runs take the incremental path. Query-time tuning (weights, synonyms, typo tolerance) is excluded from the fingerprint and synced live, so changing it never forces a rebuild.
+
 This is the engine-native variant of the [Blue/green Rebuild](../patterns.md#bluegreen-rebuild) pattern, specialised to the search engine’s collection-alias API.
 
 ##### Non-conformant source data
