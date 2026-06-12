@@ -128,6 +128,7 @@ Datasets are fetched from this URL on registration and when the crawler runs.
 | [`schema:status`](https://schema.org/status)                 | The HTTP status code last encountered when fetching the URL.                                                                                                                                                                                                                                                   |
 | [`schema:validUntil`](https://schema.org/validUntil)         | If the URL has become invalid, the UTC datetime at which it did so.                                                                                                                                                                                                                                            |
 | [`schema:about`](https://schema.org/about)                   | The `schema:Dataset`s found at this URL. A registration URL may describe a single dataset (one entry) or a catalog of multiple datasets (multiple entries). The crawler updates this value when fetching descriptions. |
+| `nde:warningCount` (`<https://def.nde.nl/registration#warningCount>`) | `xsd:integer` — the number of `sh:Warning`-severity results the registration’s description produced at the last crawl. `0` (or absent) means it validated cleanly; a positive value surfaces as “registered with warnings” on the dataset page. Tracked per registration, so it covers all datasets at the URL together. The full report is in the [SHACL validation report](#shacl-validation-report) graph. |
 
 ### `schema:Dataset`
 
@@ -142,15 +143,42 @@ Each dataset that is found at the `schema:EntryPoint` registration URL gets adde
 
 ### `schema:Rating`
 
-A separate named graph keeps a `schema:Rating` instance for each dataset description, indicating
-how complete the description is. Reach it from a dataset via the `schema:contentRating` property.
+A separate named graph keeps a `schema:Rating` for each dataset description, reached from a
+dataset via the `schema:contentRating` property. It is the **completeness rating**, indicating
+how complete the description is (which recommended properties it provides).
 
-| Property                                                           | Description                                               |
-| ------------------------------------------------------------------ | --------------------------------------------------------- |
-| [`schema:bestRating`](https://schema.org/bestRating)               | The highest possible rating.                              |
-| [`schema:worstRating`](https://schema.org/worstRating)             | The lowest possible rating.                               |
-| [`schema:ratingValue`](https://schema.org/ratingValue)             | Rating for the dataset description.                       |
-| [`schema:ratingExplanation`](https://schema.org/ratingExplanation) | Explanation for the rating: which properties are missing? |
+| Property                                                           | Description                                                    |
+| ------------------------------------------------------------------ | ------------------------------------------------------------- |
+| [`schema:bestRating`](https://schema.org/bestRating)               | The highest possible rating (`100`).                          |
+| [`schema:worstRating`](https://schema.org/worstRating)             | The lowest possible rating.                                   |
+| [`schema:ratingValue`](https://schema.org/ratingValue)             | The completeness score.                                       |
+| [`schema:ratingExplanation`](https://schema.org/ratingExplanation) | Explanation for the rating: which properties are missing?     |
+
+:::note
+Validation warnings used to be kept here as a second `schema:Rating`. They are now recorded per
+registration as [`nde:warningCount`](#schemaentrypoint) — warnings concern the whole registration,
+not an individual dataset — with the full report in the [SHACL validation report](#shacl-validation-report)
+graph.
+:::
+
+## SHACL validation report
+
+On every crawl, the register stores the full SHACL validation report for each registration’s
+description in a dedicated named graph, one per registration URL:
+
+```text
+https://data.netwerkdigitaalerfgoed.nl/registry/shacl-validation/<URL-encoded registration URL>
+```
+
+For example, the report for `https://example.com/datacatalog` lives in the graph
+`https://data.netwerkdigitaalerfgoed.nl/registry/shacl-validation/https%3A%2F%2Fexample.com%2Fdatacatalog`.
+
+The graph holds the same `sh:ValidationReport` the [validation endpoint](validation.md) returns —
+the report of validating the publisher’s description as fetched, covering every dataset at the URL.
+It is **enrichment data produced by the register**, replaced in full on each crawl, so it always
+reflects the latest validation. The [`nde:warningCount`](#schemaentrypoint) on the registration is a
+denormalised count of the `sh:Warning`-severity results in this report, kept on the registration so
+applications can filter on it without reading the report.
 
 ## Distribution health
 
