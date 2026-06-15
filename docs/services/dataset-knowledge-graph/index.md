@@ -257,7 +257,7 @@ LIMIT 50
 
 ### Datasets whose subject URIs resolve
 
-For each dataset's own subject namespace – the most common one that is *not* a terminology source – a sample of URIs is dereferenced and checked to resolve to a self-describing landing page. `subject-uris-resolved > 0` means the identifiers genuinely work; the namespace and the `subject-uris-sampled` denominator come along so you can read the ratio.
+For each dataset's own subject namespace – the most common one that is *not* a terminology source – a sample of URIs is dereferenced and checked to resolve to a self-describing landing page. `subject-uris-resolved > 0` means the identifiers genuinely work; the namespace and the `subject-uris-sampled` denominator come along so you can read the ratio. A transient failure (timeout, network error, `429`/`5xx`) on the multi-hop ARK/Handle resolver chain is retried and, if still failing, excluded from the denominator rather than scored as a non-resolution – so a single network blip during a crawl cannot report a healthy dataset as partially broken. URLs the dataset already exposes as IIIF manifests are excluded from this sample (a manifest serves JSON, not an HTML landing page); they are assessed by the IIIF criterion instead, so the same URL is never both a working manifest and a broken identifier.
 
 ```sparql
 PREFIX void: <http://rdfs.org/ns/void#>
