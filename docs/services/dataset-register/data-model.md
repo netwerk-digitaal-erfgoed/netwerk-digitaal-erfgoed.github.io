@@ -208,6 +208,7 @@ Each probed URL appears as a `nde-probe:DistributionHealthRecord` whose IRI **is
 | `nde-probe:lastSuccessAt`      | `xsd:dateTime` — UTC timestamp of the most recent successful probe, if any.                                                                                                                     | 0..1        |
 | `nde-probe:firstFailureAt`     | `xsd:dateTime` — UTC timestamp at which the current failure streak began. Cleared on the next success.                                                                                          | 0..1        |
 | `nde-probe:consecutiveFailures`| `xsd:integer` — length of the current failure streak. Reset to `0` on the next success.                                                                                                         | 1..1        |
+| `nde-probe:sourceFingerprint`  | `xsd:string` — opaque source-change fingerprint observed on the last probe (the most recent of the declared `dct:modified` and the HTTP `Last-Modified`, combined with the byte size). The shared key the [validity](#distribution-validity) staleness gate compares against. Absent when none could be derived (e.g. a SPARQL endpoint). | 0..1 |
 
 ### Probe outcomes
 
@@ -222,13 +223,59 @@ When a probe fails, `nde-probe:lastOutcome` is one of:
 | `nde-probe:RateLimited`              | HTTP `429`.                                                                                   |
 | `nde-probe:ContentTypeMismatch`      | Response was reachable but served the wrong content type. For a data dump, its `Content-Type` did not match the declared `dcat:mediaType` / `dct:format` / `schema:encodingFormat`. For a SPARQL endpoint, the response was not a SPARQL results media type – most often an HTML page, meaning the access URL points to a SPARQL query web UI rather than the SPARQL protocol endpoint itself. The fix is to put the SPARQL protocol endpoint in `dcat:accessURL` (`schema:contentUrl`) and declare the query UI on `foaf:page` (`schema:documentation`) instead. |
 | `nde-probe:ContentTypeMissing`       | Response had no `Content-Type` header at all.                                                 |
-| `nde-probe:EmptyBody`                | Response body was empty for a distribution that should have returned data.                    |
 | `nde-probe:SparqlProbeFailed`        | The distribution declares a SPARQL endpoint (`dct:conformsTo <https://www.w3.org/TR/sparql11-protocol/>`) but the probe `ASK` query did not return a valid SPARQL result. |
-| `nde-probe:RdfParseFailed`           | The body was returned but could not be parsed as RDF.                                         |
+
+:::note
+
+An empty body and an unparseable body used to be reachability outcomes (`nde-probe:EmptyBody`, `nde-probe:RdfParseFailed`). They no longer are: a fetched body that is empty or does not parse is reachable, and the defect is recorded on the [validity rail](#distribution-validity) instead.
+
+:::
 
 ### Effect on validation results
 
 Probe failures also surface in the SHACL validation report as `sh:ValidationResult` nodes. See [Validation: how probe failures appear in the report](validation.md#how-probe-failures-appear-in-the-report) for the constraint components, the extra properties they carry, and how strict each caller (registration, validation, crawler) is.
+
+## Distribution validity
+
+Where [distribution health](#distribution-health) records **reachability**, distribution validity records whether a distribution’s fetched content actually **parses as RDF**. The crawler shallow-validates small RDF dumps (≤ 10 KB Turtle / N-Triples / N-Quads) and records the verdict — for every distribution it attempts, valid or not — as a [DQV](https://www.w3.org/TR/vocab-dqv/) quality measurement in a dedicated named graph:
+
+```text
+https://datasetregister.netwerkdigitaalerfgoed.nl/sparql/distribution-validity
+```
+
+Like distribution health, this is **enrichment data produced by the register**, kept in its own graph and replaced on every crawl. The same measurement shape is also produced by the [Dataset Knowledge Graph](../dataset-knowledge-graph/index.md), which deep-validates the full distribution; a consumer tells the two apart by which endpoint served the measurement, not by the RDF.
+
+Vocabulary prefixes: `dqv: <http://www.w3.org/ns/dqv#>`, `prov: <http://www.w3.org/ns/prov#>`, `metric: <https://def.nde.nl/metric#>`, `failure: <https://def.nde.nl/failure#>`, `dvf: <https://def.nde.nl/distribution-validity-failure#>`, `probe: <https://def.nde.nl/probe#>`.
+
+### `dqv:QualityMeasurement`
+
+Each validated distribution carries a `dqv:QualityMeasurement` of the boolean metric `metric:distribution-rdf-valid`, computed on the distribution’s access URL — the file itself, because validity is a property of the bytes, not of any dataset’s use of them.
+
+| Property                  | Data type / notes                                                                                                                                  | Cardinality |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| `dqv:isMeasurementOf`     | `metric:distribution-rdf-valid`.                                                                                                                    | 1..1        |
+| `dqv:computedOn`          | The distribution’s access URL.                                                                                                                      | 1..1        |
+| `dqv:value`               | `xsd:boolean` — `true` when the content parsed as RDF, `false` otherwise.                                                                           | 1..1        |
+| `prov:generatedAtTime`    | `xsd:dateTime` — when the verdict was produced.                                                                                                     | 1..1        |
+| `prov:wasGeneratedBy`     | A `prov:Activity` carrying `prov:wasAssociatedWith` the producer (the register crawler).                                                            | 1..1        |
+| `probe:sourceFingerprint` | `xsd:string` — the source fingerprint the verdict was judged against; matched against the [health record](#nde-probedistributionhealthrecord)’s fingerprint by the staleness gate. Absent when none could be derived. | 0..1 |
+
+When the verdict is `false`, the activity additionally `prov:qualifiedUsage` a `prov:Usage` recording why:
+
+| Property          | Data type / notes                                                                                                                      | Cardinality |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| `failure:reason`  | A SKOS concept from the `distribution-validity-failure` scheme: `dvf:parse-error` (the content could not be parsed) or `dvf:empty` (it parsed but yielded no triples, or the body was empty). | 1..1 |
+| `failure:message` | `xsd:string` — best-effort parser message, where the parser provides one. Advisory only.                                               | 0..1        |
+
+### Usability
+
+`reachability` and `validity` are combined, on read, into a single **usability** verdict — `usable`, `unusable`, or `unknown` — that the [browser](https://datasetregister.netwerkdigitaalerfgoed.nl/) surfaces as a per-distribution badge. The rule is:
+
+- **Reachability dominates:** an unreachable distribution is `unusable` (cause: unreachable), regardless of any validity verdict.
+- A reachable distribution with a `false` validity verdict is `unusable` (cause: invalid), with the reason and parser message.
+- A reachable distribution with a `true` validity verdict is `usable`.
+- **Staleness gate:** a validity verdict applies only while its `probe:sourceFingerprint` still equals the currently-observed one; otherwise it decays to `unknown`, so a since-fixed distribution stops showing as broken.
+- **Depth:** a deep (Knowledge Graph) verdict wins over a shallow (register) one; a shallow verdict still counts but is flagged as not yet deeply confirmed.
 
 ## Allow list
 
