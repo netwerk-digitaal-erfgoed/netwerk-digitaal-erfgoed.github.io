@@ -80,6 +80,10 @@ Formally defined in the [Requirements for Datasets](https://docs.nde.nl/requirem
 
 A way to publish data that can be automatically processed by computer programs.
 
+## Metadata record
+
+A structured description of a single entity in a dataset – a heritage object such as a painting, photograph or archival item, or a related person, place or organisation – published as data inside a [Distribution](#distribution). The record holds that entity’s metadata (title, creator, subject, date, …), not the entity itself: institutions keep the objects, while the network exchanges the records that describe them. A record may reference [terms](#term) for its subjects, makers and places.
+
 ## NDE-compatible
 
 Conforming to the requirements published by [Netwerk Digitaal Erfgoed](https://www.netwerkdigitaalerfgoed.nl/en/about-us/),
