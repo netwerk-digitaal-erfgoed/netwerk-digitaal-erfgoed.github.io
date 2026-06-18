@@ -63,9 +63,20 @@ it flips to `false` on warnings and infos too, which is stricter than what the r
 For the exact JSON-LD and Turtle shapes of the report, see the `Valid` and `Invalid` response
 schemas in the [OpenAPI specification](https://datasetregister.netwerkdigitaalerfgoed.nl/api/).
 
-## Distribution-health probes
+## Distribution health
 
-During validation the Register also probes every distribution URL it can derive from the description (`dcat:accessURL`, `dcat:downloadURL`, `schema:contentUrl`) to check that it is reachable and serves the declared media type. Even when the description passes SHACL, a broken or mistyped distribution URL is reported as a `sh:Violation` and rejected with HTTP `400` — so fix the URL before (re)submitting.
+The Register models a distribution’s health as a derived **usability** verdict over two separately-produced signals:
+
+- **reachability** – can the distribution be fetched? (HTTP/SPARQL level)
+- **validity** – does the fetched content actually parse as RDF?
+
+During validation the Register probes every distribution URL it can derive from the description (`dcat:accessURL`, `dcat:downloadURL`, `schema:contentUrl`) to produce both signals: it checks that the URL is reachable and serves the declared media type (reachability), and, for small RDF dumps (≤ 10 KB Turtle / N-Triples / N-Quads), that the body parses as RDF (validity). Even when the description passes SHACL, a broken or mistyped distribution URL, or a body that does not parse as RDF, is reported as a `sh:Violation` and rejected with HTTP `400` — so fix it before (re)submitting.
+
+:::note
+
+Reachability and validity are distinct. A body that is fetched but does not parse (or comes back empty) is still **reachable**; its defect is a **validity** failure, not a reachability one. The two are recorded on separate rails (see [Distribution health](data-model.md#distribution-health) and [Distribution validity](data-model.md#distribution-validity) in the data model) and combined into a single usability verdict on read.
+
+:::
 
 The REST API and the crawler differ in how strict they are about probe failures:
 
@@ -81,17 +92,20 @@ The REST API is strict regardless of the severity the shapes declare, so it will
 
 The crawler does not flag every probe failure immediately. Whether it waits out a grace window depends on whether the failure could plausibly resolve itself:
 
-- **Transient reachability failures** – `nde-probe:NetworkError`, `nde-probe:NotFound`, `nde-probe:ServerError`, `nde-probe:AuthRequired`, `nde-probe:RateLimited`, `nde-probe:SparqlProbeFailed` – are emitted only once the failure streak is persistent (`nde-probe:firstFailureAt` older than the threshold, default 7 days). A brief outage that self-heals before the threshold is suppressed, so a network blip neither warns the publisher nor flips the browser availability badge.
-- **Deterministic content defects** – `nde-probe:EmptyBody`, `nde-probe:RdfParseFailed`, `nde-probe:ContentTypeMismatch`, `nde-probe:ContentTypeMissing` – are surfaced within one probe cycle, with no grace window. An empty or unparseable body, or a `Content-Type` that does not match the declared media type, is the same defect on the next crawl as it is today, so waiting cannot change the verdict.
+- **Transient reachability failures** – `nde-probe:NetworkError`, `nde-probe:NotFound`, `nde-probe:ServerError`, `nde-probe:AuthRequired`, `nde-probe:RateLimited`, `nde-probe:SparqlProbeFailed` – are emitted only once the failure streak is persistent (`nde-probe:firstFailureAt` older than the threshold, default 7 days). A brief outage that self-heals before the threshold is suppressed, so a network blip neither warns the publisher nor flips the browser usability badge.
+- **Deterministic content defects** – `nde-probe:ContentTypeMismatch`, `nde-probe:ContentTypeMissing` – are surfaced within one probe cycle, with no grace window. A `Content-Type` that does not match the declared media type, or none at all, is the same defect on the next crawl as it is today, so waiting cannot change the verdict.
 
-The browser availability badge uses the same classification, so the badge and the registration warning tier stay consistent.
+Empty and unparseable bodies are **not** reachability outcomes: a fetched body that is empty or does not parse is reachable, and its defect is recorded on the [validity rail](data-model.md#distribution-validity) instead. A validity verdict refreshes when the distribution’s source fingerprint changes, rather than riding out a grace window.
+
+The browser usability badge uses the same classification, so the badge and the registration warning tier stay consistent.
 
 ### How probe failures appear in the report
 
-Probe failures surface in the validation report as additional `sh:ValidationResult` nodes, with one of two probe-specific constraint components on `sh:sourceConstraintComponent`:
+Probe failures surface in the validation report as additional `sh:ValidationResult` nodes, with one of three probe-specific constraint components on `sh:sourceConstraintComponent`:
 
 - `nde-probe:DistributionReachableConstraintComponent` — the URL itself could not be retrieved.
 - `nde-probe:DistributionFormatMatchConstraintComponent` — the URL was retrieved but the response did not match the declared media type / format.
+- `nde-probe:DistributionValidConstraintComponent` — the body was retrieved but did not parse as RDF (a validity failure). Emitted only on the registration path (`POST /datasets`, `POST`/`PUT /datasets/validate`); the crawler records validity as a quality measurement instead (see [Distribution validity](data-model.md#distribution-validity)). The `sh:resultMessage` names the reason and, where the parser provides one, the parser message.
 
 Probe-emitted results carry these extra properties beyond the standard SHACL ones:
 
@@ -101,4 +115,4 @@ Probe-emitted results carry these extra properties beyond the standard SHACL one
 | `nde-probe:firstFailureAt`       | `xsd:dateTime` — copied from the health record, so consumers see how long the URL has been failing without joining the health graph. Present only on crawler-emitted results. |
 | `nde-probe:consecutiveFailures`  | `xsd:integer` — length of the current failure streak. Present only on crawler-emitted results. |
 
-Every probe the crawler runs — successful or not — is also recorded as queryable enrichment data. See [Distribution health](data-model.md#distribution-health) in the data model for that named graph, the [`nde-probe:DistributionHealthRecord`](data-model.md#nde-probedistributionhealthrecord) structure, and the [outcome vocabulary](data-model.md#probe-outcomes).
+Every probe the crawler runs — successful or not — is also recorded as queryable enrichment data: its reachability outcome and observed source fingerprint in the [Distribution health](data-model.md#distribution-health) graph (the [`nde-probe:DistributionHealthRecord`](data-model.md#nde-probedistributionhealthrecord) structure and the [outcome vocabulary](data-model.md#probe-outcomes)), and its RDF-validity verdict in the [Distribution validity](data-model.md#distribution-validity) graph as a DQV quality measurement.
