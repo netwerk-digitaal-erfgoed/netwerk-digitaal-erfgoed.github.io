@@ -1,45 +1,26 @@
 ---
-title: Publishing dataset descriptions from a triplestore
+title: Publishing dataset descriptions with a SPARQL CONSTRUCT query
 authors: [coret, ddeboer]
 tags: [rdf, dataset-register]
 ---
 
-## Dataset descriptions are RDF
+To make a dataset findable across the heritage network, you register its [dataset description](https://docs.nde.nl/requirements-datasets/) – a machine-readable (RDF) record of the dataset – with the [NDE Dataset Register](https://datasetregister.netwerkdigitaalerfgoed.nl/?lang=en). If you already publish linked data, you don’t need to maintain a separate description file: you can let the Register read your description straight from your triplestore with a `SPARQL CONSTRUCT` query.
 
-Through a dataset description, an organization can describe and publish the data they make available via a data dump or API in a machine-readable format (RDF), enabling other platforms to make use of it. This can be a service platform such as CollectieNederland, Europeana (via DC4EU), or Oorlogsbronnen. And, to gain better insight into available datasets within the network: via the [NDE Dataset Register](https://datasetregister.netwerkdigitaalerfgoed.nl/?lang=en).
+<!-- truncate -->
 
-Dataset descriptions are defined based on international standards such as Schema.org or DCAT3. For DCAT3, a cross-sector application profile has been developed for use in the Netherlands under the guidance of Geonovum: [DCAT3 AP NL](https://docs.geostandaarden.nl/dcat/dcat-ap-nl30/). For Schema.org, an application profile has been developed within the heritage network in the form of [Requirements for datasets](https://docs.nde.nl/requirements-datasets/).
+## The SPARQL CONSTRUCT registration URL
 
-For both vocabularies, the agreements concern how the RDF of the dataset description should be structured: which classes and properties are used, and their cardinality.
-
-## Publishing dataset descriptions (RDF)
-From the NDE Dataset Register, we see multiple routes that lead to [valid](https://datasetregister.netwerkdigitaalerfgoed.nl/validate.php?lang=en) published dataset descriptions:
-
-- manually created and published on website, dataplatform or Github
-- published from a NDE-compatible collection information system
-- from an organization’s own linked data publishing environment (triplestore)
-
-As more and more heritage organizations publish linked data (RDF), this blog post pays particular attention to this publication route.
-
-## Dataset descriptions (RDF) via a linked data publishing environment
-
-If, as a heritage organization, you have set up a linked data publishing environment and can expose internal data via a pipeline to a data dump or triplestore with a SPARQL endpoint, then this environment logically also becomes relevant for dataset descriptions, after all, these are also linked data to be published!
-
-The requirements for valid dataset descriptions mean that you must publish a complete set of RDF. This can be done via RDFa or JSON-LD within HTML, or as a separate RDF file. If your linked data publishing environment includes a SPARQL endpoint, you can also assemble your dataset description(s) using a `SPARQL CONSTRUCT` query.
-
-## SPARQL CONSTRUCT Registration URL
-The NDE Dataset Register requires you to [register](https://datasetregister.netwerkdigitaalerfgoed.nl/maak.php?lang=en)
- the location of your dataset description(s) via a so-called registration URL. This can be the URL of an HTML page (with RDFa or JSON-LD), a URL of an RDF file (e.g. JSON-LD, Turtle, N-triple), or even a smart call to your own SPARQL endpoint.
+The NDE Dataset Register requires you to [register](https://datasetregister.netwerkdigitaalerfgoed.nl/maak.php?lang=en) the location of your dataset description(s) via a so-called registration URL. This can be the URL of an HTML page (with RDFa or JSON-LD), the URL of an RDF file (e.g. JSON-LD, Turtle, N-Triples), or even a call to your own SPARQL endpoint.
 
 Suppose you have stored all triples for your dataset descriptions, distributions, and possibly a data catalog in the graph `<http://data.bibliotheken.nl/datasetbeschrijvingen>`, which is available in your linked data publishing environment with the SPARQL endpoint `https://data.bibliotheken.nl/sparql`. The query to retrieve all dataset description triples from your triplestore in this example is:
 
 ```SPARQL
 CONSTRUCT {
-      ?s ?p ?o .
+  ?s ?p ?o .
 } WHERE {
-      GRAPH <http://data.bibliotheken.nl/datasetbeschrijvingen> {
-            ?s ?p ?o .
-      }
+  GRAPH <http://data.bibliotheken.nl/datasetbeschrijvingen> {
+    ?s ?p ?o .
+  }
 }
 ```
 
