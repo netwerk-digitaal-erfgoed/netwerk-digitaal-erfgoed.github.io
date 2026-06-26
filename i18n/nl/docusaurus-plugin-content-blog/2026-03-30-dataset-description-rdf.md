@@ -30,7 +30,7 @@ De eisen voor een valide datasetbeschrijvingen maken dat je een complete set van
 ## SPARQL CONSTUCT Registratie URL
 Het NDE Datasetregister vereist dat je [aangeeft](https://datasetregister.netwerkdigitaalerfgoed.nl/maak.php) waar de datasetbeschrijving(en) zijn te vinden, de zogenaamde registratie URL. Dit kan de URL zijn van een HTML pagina (met RDFa of JSON-LD) of een URL van een RDF bestand (bijv. JSON-LD, Turtle, N-triple). En dit kan ook een slimme aanroep naar het eigen SPARQL-endpoint zijn!
 
-Stel, je hebt alle triples voor je datasetbeschrijvingen, distributies en wellicht datacatalogus via je integratieomgeving opgeslagen in de graph `<http://data.bibliotheken.nl/datasetbeschrijvingen>` die beschikbaar is in de eigen linked data publicatie omgeving met als SPARQL-endpoint `https://data.bibliotheken.nl/sparql`. 
+Stel, je hebt alle triples voor je datasetbeschrijvingen, distributies en wellicht datacatalogus via je integratieomgeving opgeslagen in de graph `<https://data.bibliotheken.nl/datasetbeschrijvingen>` die beschikbaar is in de eigen linked data publicatie omgeving met als SPARQL-endpoint `https://data.bibliotheken.nl/sparql`. 
 
 De query om alle datasetbeschrijving triples "uit" je triplestore op te vragen is in dit voorbeeld:
 
@@ -38,7 +38,7 @@ De query om alle datasetbeschrijving triples "uit" je triplestore op te vragen i
 CONSTRUCT {
       ?s ?p ?o .
 } WHERE {
-      GRAPH <http://data.bibliotheken.nl/datasetbeschrijvingen> {
+      GRAPH <https://data.bibliotheken.nl/datasetbeschrijvingen> {
             ?s ?p ?o .
       }
 }
@@ -46,7 +46,7 @@ CONSTRUCT {
 
 Deze `SPARQL CONSTUCT` kun je na URL-encoderen opnemen via de query parametere naar het SPARQL-endpoint. Je hiermee de volgende URL:
 
-`https://data.bibliotheken.nl/sparql?query=CONSTRUCT%20%7B%20%3Fs%20%3Fp%20%3Fo%20.%20%7D%20WHERE%20%7B%20GRAPH%20%3Chttp%3A//data.bibliotheken.nl/datasetbeschrijvingen%3E%20%7B%20%3Fs%20%3Fp%20%3Fo%20.%20%7D%20%7D`
+`https://data.bibliotheken.nl/sparql?query=CONSTRUCT%20%7B%20%3Fs%20%3Fp%20%3Fo%20.%20%7D%20WHERE%20%7B%20GRAPH%20%3Chttps%3A//data.bibliotheken.nl/datasetbeschrijvingen%3E%20%7B%20%3Fs%20%3Fp%20%3Fo%20.%20%7D%20%7D`
 
 Dit is een registratie URL die aangemeld kan worden bij het NDE datasetregister! 
 

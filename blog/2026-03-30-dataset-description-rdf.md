@@ -12,13 +12,13 @@ To make a dataset findable across the heritage network, you register its [datase
 
 The NDE Dataset Register requires you to [register](https://datasetregister.netwerkdigitaalerfgoed.nl/maak.php?lang=en) the location of your dataset description(s) via a so-called registration URL. This can be the URL of an HTML page (with RDFa or JSON-LD), the URL of an RDF file (e.g. JSON-LD, Turtle, N-Triples), or even a call to your own SPARQL endpoint.
 
-Suppose you have stored all triples for your dataset descriptions, distributions, and possibly a data catalog in the graph `<http://data.bibliotheken.nl/datasetbeschrijvingen>`, which is available in your linked data publishing environment with the SPARQL endpoint `https://data.bibliotheken.nl/sparql`. The query to retrieve all dataset description triples from your triplestore in this example is:
+Suppose you have stored all triples for your dataset descriptions, distributions, and possibly a data catalog in the graph `<https://data.bibliotheken.nl/datasetbeschrijvingen>`, which is available in your linked data publishing environment with the SPARQL endpoint `https://data.bibliotheken.nl/sparql`. The query to retrieve all dataset description triples from your triplestore in this example is:
 
 ```SPARQL
 CONSTRUCT {
   ?s ?p ?o .
 } WHERE {
-  GRAPH <http://data.bibliotheken.nl/datasetbeschrijvingen> {
+  GRAPH <https://data.bibliotheken.nl/datasetbeschrijvingen> {
     ?s ?p ?o .
   }
 }
@@ -26,7 +26,7 @@ CONSTRUCT {
 
 After URL-encoding this `SPARQL CONSTRUCT` query, you can include it as a query parameter to the SPARQL endpoint. This results in the following URL:
 
-`https://data.bibliotheken.nl/sparql?query=CONSTRUCT%20%7B%20%3Fs%20%3Fp%20%3Fo%20.%20%7D%20WHERE%20%7B%20GRAPH%20%3Chttp%3A//data.bibliotheken.nl/datasetbeschrijvingen%3E%20%7B%20%3Fs%20%3Fp%20%3Fo%20.%20%7D%20%7D`
+`https://data.bibliotheken.nl/sparql?query=CONSTRUCT%20%7B%20%3Fs%20%3Fp%20%3Fo%20.%20%7D%20WHERE%20%7B%20GRAPH%20%3Chttps%3A//data.bibliotheken.nl/datasetbeschrijvingen%3E%20%7B%20%3Fs%20%3Fp%20%3Fo%20.%20%7D%20%7D`
 
 This is a registration URL that can be submitted to the NDE Dataset Register!
 
