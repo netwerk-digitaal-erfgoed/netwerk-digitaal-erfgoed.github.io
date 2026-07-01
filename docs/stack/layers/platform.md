@@ -214,7 +214,7 @@ The base SHACL-to-engine-and-API mapping is mechanical:
 | `sh:maxCount 1` | Scalar; else `string[]` / `int64[]` | Nullable scalar vs list |
 | `sh:minCount ≥ 1` | Required | Non-null |
 | `sh:languageIn ("nl" "en")` | `title_nl`, `title_en` (nested-object form) | `[LanguageString!]!` |
-| `sh:in (…)` | Facet candidate | Enum |
+| `sh:in (…)` | Facet candidate | String facet values + `in` filter |
 | `sh:node` / `sh:class` | Nested object OR engine `reference` join | Named per-shape type (`labelOnly` by default) |
 
 What SHACL alone doesn’t express – facetability, sortability, full-text inclusion, embedding, per-language field explosion, nested-shape strategy, collection naming – lives in a separate annotation graph at `https://ldelements.org/ns/search#` (prefix `search:`). The vocabulary is engine-agnostic by design (`search:facetable`, not `typesense:facet`); engine-specific tuning lives in separate vocabularies (`tsx:` for Typesense, `esx:` for Elasticsearch) loaded as additional graphs.
@@ -324,7 +324,8 @@ The packages split into a backend tier – `@lde/search` (the field model, the n
 
 The Data Layer’s GraphQL API is the contract to the Presentation Layer. Its primary audience is web developers building consumer-facing applications, most of whom won’t know SHACL, SPARQL, URIs as a first-class concept, or language-tagged literals as a distinct datatype. The API surface is shaped accordingly:
 
-- Standard GraphQL idioms – typed `where` filter inputs (`in` for keyword and reference membership, inclusive `{ min, max }` ranges for numbers and dates, a boolean flag), a single `orderBy` (the client picks one sort; the server appends its own tie-breaks), and facet arrays with counts.
+- Standard GraphQL idioms – typed `where` filter inputs (`in` for keyword and reference membership, inclusive `{ min, max }` ranges for numbers and dates, a boolean flag) and a single `orderBy` (the client picks one sort; the server appends its own tie-breaks).
+- **Facets as a keyed object** – one field per facetable field, not a generic facet array, so the facet set and each bucket shape are typed statically in the schema. A value facet returns `ValueBucket { value, count, label }`; a numeric **range facet** returns `RangeBucket { min, max, count }` (histogram bins). Only the facets a query selects are computed, each counted with its own filter removed (skip-own-filter), so a multi-select facet still lists its other options.
 - Numbered pagination (`page` / `perPage`, with `total`) – it matches the page-numbered catalog UI and the search engine native paging.
 - References surface as **named per-shape types** (e.g. `Organization`, `Term`), `labelOnly` by default (`id` + a `name`), so growing one to `inline` only adds fields.
 - URIs surface as `String`, not a custom `IRI` scalar. Numbers, strings and booleans are GraphQL primitives.
