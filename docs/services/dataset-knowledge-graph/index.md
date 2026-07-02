@@ -331,42 +331,27 @@ ORDER BY DESC(?datasetCount)
 
 ### Datasets exposing IIIF Presentation manifests
 
-Datasets that publish [IIIF Presentation API](http://iiif.io/api/presentation/) manifests under the SCHEMA-AP-NDE convention, with the number of distinct manifests detected per dataset.
+Datasets that publish [IIIF Presentation API](http://iiif.io/api/presentation/) manifests under the SCHEMA-AP-NDE convention, with the number of distinct manifests detected (`manifests`) alongside how many of a dereferenced sample actually resolved to a valid Presentation Manifest (`validated` out of `sampled`).
+
+The `dcterms:conformsTo` marker is *declared*; the `manifests-validated` / `manifests-sampled` measurements are *observed* — both hang off the same IIIF subset, so one query returns them together. `validated > 0` means working manifests; `validated = 0` alongside a declared subset means the dataset claims IIIF but every sampled manifest failed to resolve.
 
 ```sparql
 PREFIX void: <http://rdfs.org/ns/void#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
-SELECT ?dataset ?manifests WHERE {
-  ?dataset a void:Dataset ;
-    void:subset [
-      dcterms:conformsTo <http://iiif.io/api/presentation/> ;
-      void:entities ?manifests
-    ] .
-}
-ORDER BY DESC(?manifests)
-```
-
-[▶ Run in the query UI](https://qlever.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph?query=PREFIX%20void%3A%20%3Chttp%3A//rdfs.org/ns/void%23%3E%0APREFIX%20dcterms%3A%20%3Chttp%3A//purl.org/dc/terms/%3E%0ASELECT%20%3Fdataset%20%3Fmanifests%20WHERE%20%7B%0A%20%20%3Fdataset%20a%20void%3ADataset%20%3B%0A%20%20%20%20void%3Asubset%20%5B%0A%20%20%20%20%20%20dcterms%3AconformsTo%20%3Chttp%3A//iiif.io/api/presentation/%3E%20%3B%0A%20%20%20%20%20%20void%3Aentities%20%3Fmanifests%0A%20%20%20%20%5D%20.%0A%7D%0AORDER%20BY%20DESC%28%3Fmanifests%29)
-
-The `dcterms:conformsTo` marker above is *declared*. To find datasets whose manifests are *validated working*, query the `manifests-validated` measurement instead – a sample of the manifest IRIs is dereferenced each run, and this counts how many resolved to a valid IIIF Presentation Manifest. `validated > 0` means working manifests; `validated = 0` alongside a declared subset means the dataset claims IIIF but its sampled manifests all failed to resolve.
-
-### Datasets with validated IIIF manifests
-
-Datasets whose declared IIIF manifests actually resolve, ordered by how many of the sampled manifests were validated.
-
-```sparql
 PREFIX dqv: <http://www.w3.org/ns/dqv#>
 PREFIX nde: <https://def.nde.nl/metric#>
-SELECT ?dataset ?validated ?sampled WHERE {
-  ?dataset dqv:hasQualityMeasurement
-    [ dqv:isMeasurementOf nde:manifests-validated ; dqv:value ?validated ] ,
-    [ dqv:isMeasurementOf nde:manifests-sampled ; dqv:value ?sampled ] .
-  FILTER(?validated > 0)
+SELECT ?dataset ?manifests ?validated ?sampled WHERE {
+  ?dataset void:subset ?iiif .
+  ?iiif dcterms:conformsTo <http://iiif.io/api/presentation/> ;
+    void:entities ?manifests ;
+    dqv:hasQualityMeasurement
+      [ dqv:isMeasurementOf nde:manifests-validated ; dqv:value ?validated ] ,
+      [ dqv:isMeasurementOf nde:manifests-sampled ; dqv:value ?sampled ] .
 }
 ORDER BY DESC(?validated)
 ```
 
-[▶ Run in the query UI](https://qlever.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph?query=PREFIX%20dqv%3A%20%3Chttp%3A//www.w3.org/ns/dqv%23%3E%0APREFIX%20nde%3A%20%3Chttps%3A//def.nde.nl/metric%23%3E%0ASELECT%20%3Fdataset%20%3Fvalidated%20%3Fsampled%20WHERE%20%7B%0A%20%20%3Fdataset%20dqv%3AhasQualityMeasurement%0A%20%20%20%20%5B%20dqv%3AisMeasurementOf%20nde%3Amanifests-validated%20%3B%20dqv%3Avalue%20%3Fvalidated%20%5D%20%2C%0A%20%20%20%20%5B%20dqv%3AisMeasurementOf%20nde%3Amanifests-sampled%20%3B%20dqv%3Avalue%20%3Fsampled%20%5D%20.%0A%20%20FILTER%28%3Fvalidated%20%3E%200%29%0A%7D%0AORDER%20BY%20DESC%28%3Fvalidated%29)
+[▶ Run in the query UI](https://qlever.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph?query=PREFIX%20void%3A%20%3Chttp%3A%2F%2Frdfs.org%2Fns%2Fvoid%23%3E%0APREFIX%20dcterms%3A%20%3Chttp%3A%2F%2Fpurl.org%2Fdc%2Fterms%2F%3E%0APREFIX%20dqv%3A%20%3Chttp%3A%2F%2Fwww.w3.org%2Fns%2Fdqv%23%3E%0APREFIX%20nde%3A%20%3Chttps%3A%2F%2Fdef.nde.nl%2Fmetric%23%3E%0ASELECT%20%3Fdataset%20%3Fmanifests%20%3Fvalidated%20%3Fsampled%20WHERE%20%7B%0A%20%20%3Fdataset%20void%3Asubset%20%3Fiiif%20.%0A%20%20%3Fiiif%20dcterms%3AconformsTo%20%3Chttp%3A%2F%2Fiiif.io%2Fapi%2Fpresentation%2F%3E%20%3B%0A%20%20%20%20void%3Aentities%20%3Fmanifests%20%3B%0A%20%20%20%20dqv%3AhasQualityMeasurement%0A%20%20%20%20%20%20%5B%20dqv%3AisMeasurementOf%20nde%3Amanifests-validated%20%3B%20dqv%3Avalue%20%3Fvalidated%20%5D%20%2C%0A%20%20%20%20%20%20%5B%20dqv%3AisMeasurementOf%20nde%3Amanifests-sampled%20%3B%20dqv%3Avalue%20%3Fsampled%20%5D%20.%0A%7D%0AORDER%20BY%20DESC(%3Fvalidated)
 
 ### Failed samples
 
