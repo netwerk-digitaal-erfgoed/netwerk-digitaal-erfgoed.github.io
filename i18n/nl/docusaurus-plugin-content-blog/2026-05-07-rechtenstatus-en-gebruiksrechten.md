@@ -1,14 +1,11 @@
-```md
 ---
 title: Nieuwe thesaurus “Rechtenstatus en gebruiksrechten” beschikbaar in het Termennetwerk
 authors: [joop]
-tags: [rdf, skos, linked-data, rechten]
+tags: [rdf, network-of-terms]
 last_update:
-  date: 2027-05-07
+  date: 2026-05-07
   author: joop
 ---
-
-# Nieuwe thesaurus “Rechtenstatus en gebruiksrechten” beschikbaar in het Termennetwerk
 
 Het Termennetwerk is uitgebreid met de nieuwe thesaurus *Rechtenstatus en gebruiksrechten*.
 
@@ -94,4 +91,3 @@ De thesaurus kan worden gebruikt voor:
 * gecontroleerde invoer in collectieregistratiesystemen
 * uitwisseling van rechteninformatie binnen het digitale erfgoedveld
 * betere uitwisseling van rechteninformatie tussen systemen
-```
