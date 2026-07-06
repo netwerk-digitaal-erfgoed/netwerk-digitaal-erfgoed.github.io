@@ -1,0 +1,93 @@
+---
+title: Nieuwe thesaurus “Rechtenstatus en gebruiksrechten” beschikbaar in het Termennetwerk
+authors: [joop]
+tags: [rdf, network-of-terms]
+last_update:
+  date: 2026-05-07
+  author: joop
+---
+
+Het Termennetwerk is uitgebreid met de nieuwe thesaurus *Rechtenstatus en gebruiksrechten*.
+
+Deze thesaurus ondersteunt erfgoedinstellingen bij het eenduidig vastleggen van rechteninformatie bij collecties en digitale objecten.
+
+De thesaurus maakt expliciet onderscheid tussen:
+
+* rechtenstatus: de juridische status van een object
+* gebruiksrechten: het toegestane gebruik van een object
+
+Daarmee sluit de thesaurus beter aan op de praktijk van collectiebeheer, metadataregistratie en linked data-publicatie.
+
+## Internationale standaarden als basis
+
+De thesaurus is gebaseerd op bestaande internationale standaarden:
+
+* RightsStatements.org voor rechtenstatussen
+* Creative Commons voor licenties en verklaringen
+
+De thesaurus gebruikt de originele, de canonical URI’s van RightsStatements.org en Creative Commons rechtstreeks als concept-URI’s. Hierdoor blijven koppelingen met externe systemen en linked data-toepassingen optimaal behouden.
+
+Bronnen:
+
+* https://rightsstatements.org/
+* https://rightsstatements.org/vocab/
+* https://creativecommons.org/licenses/
+* https://creativecommons.org/publicdomain/zero/1.0/
+* https://creativecommons.org/ns
+
+## Wat bevat de thesaurus?
+
+De thesaurus bevat onder andere:
+
+* RightsStatements.org-statements
+* Creative Commons-licenties zoals:
+  * CC BY
+  * CC BY-SA
+  * CC BY-NC
+  * CC BY-NC-SA
+* de CC0-verklaring
+* aanvullende rechtenstatussen zoals:
+  * “In Copyright - Rights-holder(s) Unlocatable or Unidentifiable”
+
+De thesaurus bevat bewust een beperkte en praktisch bruikbare set termen. 
+
+## Waarom deze thesaurus?
+
+In de praktijk worden rechtenstatus, publiek domein en licenties regelmatig door elkaar gebruikt. Dat leidt tot:
+
+* onduidelijke betekenis
+* inconsistente metadata
+* verminderde interoperabiliteit
+
+De nieuwe thesaurus helpt om deze begrippen beter van elkaar te onderscheiden en consistenter toe te passen.
+
+## Technische implementatie
+
+De thesaurus is gemodelleerd als SKOS en gepubliceerd als linked data.
+
+Kenmerken:
+
+* stabiele URI’s
+* meertalige labels (@nl en @en)
+* scope notes
+* SPARQL-endpoint
+* hergebruik van internationale linked data-bronnen
+
+Dataset:
+https://data.cultureelerfgoed.nl/rights
+
+PoolParty:
+https://digitaalerfgoed.poolparty.biz/rights.html
+
+SPARQL-endpoint:
+https://digitaalerfgoed.poolparty.biz/PoolParty/sparql/rights
+
+## Toepassing
+
+De thesaurus kan worden gebruikt voor:
+
+* metadataregistratie
+* linked data-publicatie
+* gecontroleerde invoer in collectieregistratiesystemen
+* uitwisseling van rechteninformatie binnen het digitale erfgoedveld
+* betere uitwisseling van rechteninformatie tussen systemen
