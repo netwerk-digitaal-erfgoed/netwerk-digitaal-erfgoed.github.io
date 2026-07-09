@@ -444,6 +444,8 @@ SELECT * WHERE {
 
 The `?n > 0` filter excludes datasets that use a different data model and to which the profile doesn't apply at all (where SHACL returns *vacuously true*). To find datasets that tried the profile and failed, swap `dqv:value true` for `dqv:value false`.
 
+Conformance counts only `sh:Violation` results: SCHEMA-AP-NDE’s `sh:Warning` constraints are SHOULD-level, so a sample that trips only warnings still reports `schema-ap-nde-sample-conformance = true`. The warnings are not lost – they stay in the full per-resource SHACL report written alongside the summary – they just don’t flip the conformance boolean.
+
 ## Access
 
 - **Datastory** for visual aggregate insights across all datasets: [datastories.demo.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph](https://datastories.demo.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph/index.html).
