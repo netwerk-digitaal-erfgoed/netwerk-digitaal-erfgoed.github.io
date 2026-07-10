@@ -52,7 +52,7 @@ flowchart TB
     %% Meta-patterns
     CP -- requires --> PA
     CP -- transform stage realised by --> SNT["SPARQL-native<br/>Transformation"]
-    SNT -- escapes to --> PA
+    SNT -- supplemented by --> PA
 
     %% Network-wide
     SAP -- pairs --> SAC
@@ -85,7 +85,7 @@ Relationship vocabulary used in the diagram:
 - **composes with**: optional combination – either pattern works on its own, both together unlock a configuration.
 - **requires**: hard dependency – the upstream pattern cannot deliver its property without the downstream.
 - **realised by**: the downstream pattern is the concrete technique that implements a specific stage of the upstream one (here, the Transform stage of Configurable Pipeline).
-- **escapes to**: the technique falls back to the downstream pattern for the cases it cannot express itself.
+- **supplemented by**: the technique relies on the downstream pattern for the cases it cannot express itself.
 - **alternatives**: choose one or the other for the same axis (Blue/green vs In-place at the Deploy axis).
 - **publishes back via** / **registered in**: closes a loop – an output of one pattern becomes a published input the other discovers.
 
@@ -499,7 +499,7 @@ Prefer **several small `CONSTRUCT`s chained** over one monolithic query. Each st
 - **CONSTRUCT to a published shape.** The target is usually a published AP, usually [SCHEMA-AP-NDE](#schema-ap-nde-first), or a downstream profile such as EDM. The same SHACL that defines the target shape both drives the mapping and validates its output.
 - **UNION, not OPTIONAL, for independently multi-valued properties.** One `CONSTRUCT` full of `OPTIONAL`s multiplies multi-valued properties into a cross-product of duplicate triples; giving each its own `UNION` branch (each binding only its own variable) avoids that. Keep related single-valued properties together in one `OPTIONAL`.
 - **Non-RDF sources enter through a SPARQL facade.** A CSV/TSV, JSON, XML or spreadsheet source is transformed with the same `CONSTRUCT` via [SPARQL Anything](https://sparql-anything.cc), which presents any such source as RDF (Facade-X) behind a `SERVICE` block without extending the SPARQL grammar. A non-RDF source therefore does not force a different transformation toolchain.
-- **Escape to an adapter where SPARQL cannot reach.** Logic SPARQL genuinely cannot express (bespoke normalisation, an external lookup) moves to a named [port/adapter](#adapters) boundary rather than sprawling as procedural glue inside the mapping.
+- **Supplement with an adapter where SPARQL cannot reach.** Logic SPARQL genuinely cannot express (bespoke normalisation, an external lookup) moves to a named [port/adapter](#adapters) boundary rather than sprawling as procedural glue inside the mapping.
 
 #### Why this matters
 
