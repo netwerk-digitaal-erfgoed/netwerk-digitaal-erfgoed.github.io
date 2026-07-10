@@ -51,6 +51,8 @@ flowchart TB
 
     %% Meta-patterns
     CP -- requires --> PA
+    CP -- transform stage realised by --> SNT["SPARQL-native<br/>Transformation"]
+    SNT -- escapes to --> PA
 
     %% Network-wide
     SAP -- pairs --> SAC
@@ -82,6 +84,8 @@ Relationship vocabulary used in the diagram:
 - **feeds**: one pattern's output becomes another's input.
 - **composes with**: optional combination – either pattern works on its own, both together unlock a configuration.
 - **requires**: hard dependency – the upstream pattern cannot deliver its property without the downstream.
+- **realised by**: the downstream pattern is the concrete technique that implements a specific stage of the upstream one (here, the Transform stage of Configurable Pipeline).
+- **escapes to**: the technique falls back to the downstream pattern for the cases it cannot express itself.
 - **alternatives**: choose one or the other for the same axis (Blue/green vs In-place at the Deploy axis).
 - **publishes back via** / **registered in**: closes a loop – an output of one pattern becomes a published input the other discovers.
 
@@ -478,7 +482,30 @@ The register today sits in the top-right cell: one `datasets` collection, two so
 Data Layer pipelines are **configured, not coded**. Pipeline structure is explicit in configuration artifacts (SHACL shapes for projection, SPARQL CONSTRUCT for extraction, JSON-LD Frames for output shaping) not buried inside bespoke scripts.
 Custom code lives only at [port/adapter](#adapters) boundaries (a writer, a filter compiler). The contrast is with implicit, coded pipelines whose stages, transformations, and assumptions are visible only to the people maintaining the code.
 
+The Transform stage’s own realisation – SPARQL `CONSTRUCT` for RDF and non-RDF sources alike – is the [SPARQL-native Transformation](#sparql-native-transformation) pattern below.
+
 See [Pipeline](pipeline.md) for the configuration axes, composition rules, and worked examples.
+
+## SPARQL-native Transformation
+
+*Applies to: [Data Layer](layers/platform.md#data-layer). Realises the Transform stage of [Configurable Pipeline](#configurable-pipeline); escapes to [Ports & Adapters](#adapters) for the mappings SPARQL cannot express. The consumer-facing how-to is [Use → Transform](../use/transform.md).*
+
+The Transform stage of a pipeline is written as **SPARQL `CONSTRUCT`**, not as imperative mapping code. Source RDF goes in, target-shape RDF comes out, and the query *is* the transformation specification – readable, diffable, and runnable by any SPARQL engine outside the pipeline. This is the Transform-stage realisation of [Configurable Pipeline](#configurable-pipeline)’s “configured, not coded” commitment: the mapping lives in a query artifact, not inside a bespoke script.
+
+Prefer **several small `CONSTRUCT`s chained** over one monolithic query. Each step targets one part of the output shape (e.g. `edm:ProvidedCHO`, then the aggregation, then constants), which keeps every step independently testable and lets [Last-known-good Caching](#last-known-good-per-source-caching) reuse the steps whose inputs did not change. The [EDM export pipeline](pipeline.md#example-edm-export-loda-pipeline) is built this way.
+
+#### Mechanics
+
+- **CONSTRUCT to a published shape.** The target is usually a published AP – most often the [SCHEMA-AP-NDE](#schema-ap-nde-first) pivot, or a downstream profile such as EDM. The same SHACL that defines the target shape both drives the mapping and validates its output.
+- **UNION, not OPTIONAL, for independently multi-valued properties.** One `CONSTRUCT` full of `OPTIONAL`s multiplies multi-valued properties into a cross-product of duplicate triples; giving each its own `UNION` branch (each binding only its own variable) avoids that. Keep related single-valued properties together in one `OPTIONAL`.
+- **Non-RDF sources enter through a SPARQL facade.** A CSV/TSV, JSON, XML or spreadsheet source is transformed with the same `CONSTRUCT` via [SPARQL Anything](https://sparql-anything.cc), which presents any such source as RDF (Facade-X) behind a `SERVICE` block without extending the SPARQL grammar. A non-RDF source therefore does not force a different transformation toolchain.
+- **Escape to an adapter where SPARQL cannot reach.** Logic SPARQL genuinely cannot express (bespoke normalisation, an external lookup) moves to a named [port/adapter](#adapters) boundary rather than sprawling as procedural glue inside the mapping.
+
+#### Why this matters
+
+- **The transformation is inspectable.** Every step’s input and output is RDF and its logic is a query, so the mapping can be read, diffed, and re-run standalone – unlike a transformation buried in code.
+- **One language across the stage.** RDF and non-RDF sources are transformed with the same `CONSTRUCT` skill set; there is no separate mapping DSL or per-format ETL tool to learn and maintain.
+- **The mapping is portable.** A `CONSTRUCT` runs on any SPARQL engine, so the Transform step is not married to a specific runtime – the same [Ports & Adapters](#adapters) substitutability the rest of the Stack relies on.
 
 ## Ports & Adapters {#adapters}
 
