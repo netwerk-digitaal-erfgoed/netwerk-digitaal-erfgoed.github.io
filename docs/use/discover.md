@@ -33,7 +33,7 @@ Caching a catalog of these descriptions lets the Register build on them, giving 
 - **A Linked Data summary.** 
   The [Dataset Knowledge Graph](../services/dataset-knowledge-graph/index.md) enriches each entry with the
   dataset’s empirical shape (including triple counts, classes, properties, vocabularies and terminology sources used)
-  so you can assess a dataset before retrieving it and see which classes and properties to target in your queries.
+  so you can [assess a dataset before retrieving it](../services/dataset-knowledge-graph/index.md#what-a-summary-tells-you) and see which classes and properties to target in your queries.
 - **Full-catalog search.** Search every description in one place with full-text search and facets,
   instead of hunting source by source, so you find every dataset matching your criteria across the
   network. An RSS feed per query notifies you when new matching datasets are registered.
