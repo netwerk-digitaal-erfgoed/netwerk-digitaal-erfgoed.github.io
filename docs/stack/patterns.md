@@ -192,6 +192,7 @@ Stack components never hardcode a source list; every [pipeline](#configurable-pi
 #### Mechanics
 
 - [`@lde/dataset-registry-client`](https://github.com/ldelements/lde/tree/main/packages/dataset-registry-client) queries the registry, returning a stream of `dcat:Dataset` descriptions with their distributions. Generic over DCAT-AP 3.0 registries; not tied to the NDE Dataset Register specifically.
+- **The registry serves one normalized model.** Publishers submit descriptions as DCAT or schema.org; the NDE Dataset Register converts schema.org to DCAT at ingest (following the W3C DCAT 3 [Alignment with Schema.org](https://www.w3.org/TR/vocab-dcat-3/#dcat-sdo)), so consumers read uniform DCAT regardless of how each source published. Reading descriptions *through the registry* is how a Service Platform standardises on DCAT: the per-source description at the source is often schema.org, so bypassing the registry reintroduces the model heterogeneity the registry absorbs.
 - **Filtered queries narrow the candidate list at discovery time.** Pipelines can ask the registry for datasets matching criteria – keyword, publisher, subject, `dcterms:conformsTo`, validity – rather than fetching the full list and filtering downstream. The NDE [Dataset Register](../services/dataset-register/) exposes this via its [SPARQL endpoint](../services/dataset-register/sparql.md) (arbitrary filter expressions) and a [website search](https://datasetregister.netwerkdigitaalerfgoed.nl/en/datasets) for human use.
 
 #### Why this matters
@@ -199,6 +200,19 @@ Stack components never hardcode a source list; every [pipeline](#configurable-pi
 - All Stack [pipelines](pipeline.md) use the same discovery step; no per-component source-list configuration.
 - It is the basis for [Last-known-good Caching](#last-known-good-per-source-caching) (the cache lifecycle is keyed on registry membership, not on previous index state).
 - A source removed from the registry drops out everywhere downstream on the next rebuild, automatically. A source added shows up everywhere. Operationally clean.
+
+#### What to read from the registry, and what from the source
+
+The registry is authoritative for **which datasets exist**, for the **normalized DCAT description** of each, and for the **metadata the network derives** – validation status, [distribution health](../services/dataset-register/data-model.md#distribution-health), and the [VoID / DKG analyses](#augmented-dataset-selection) it computes. It is **not** the datasets' content, and it is **not** a real-time mirror of publisher-declared fields: its copy is re-crawled on a schedule (daily for the NDE register), so a declared value such as `dct:modified` is at most one crawl interval stale and never fresher than the source.
+
+That boundary assigns each read to the right place:
+
+- **Discovery and change *triggering* → the registry.** Use it not only to enumerate datasets but as the change-detection trigger: its daily-refreshed declared `dct:modified` answers *“is this source worth re-fetching?”* for every dataset in one uniform DCAT query, without probing many heterogeneous source endpoints. This is the declared-metadata rung of [Change-driven Rebuild](#change-driven-rebuild), read centrally rather than source by source.
+- **Content and the precise *delta* → the source.** The registry's dataset-level trigger says *something* changed – enough to re-crawl a whole dataset – but not *which records*. Record-level incremental updates still need source-side signals (LDES, `MAX(?sdDatePublished)`) read at the source, alongside the data itself.
+
+Reading the trigger from the registry rather than from each source is also what keeps the registry a **discovery cache, not a content source**: the Service Platform still fetches authoritative data from the source, so the registry never takes on the Data Provider's responsibility for the content.
+
+Caveat: the declared `dct:modified` is only as reliable as the publisher's discipline in advancing it, which is why [Change-driven Rebuild](#change-driven-rebuild) ranks declared metadata below LDES, `Last-Modified`, and `MAX(?sdDatePublished)`. It is a coarse trigger, not a guarantee.
 
 ## Augmented Dataset Selection
 
