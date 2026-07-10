@@ -58,7 +58,7 @@ Once the dump is on disk, you can:
 
 * **query it** by loading it into a local triplestore (QLever, Oxigraph, Jena Fuseki, …) and running
   SPARQL against your own copy, so you no longer depend on the source being up;
-* [transform](transform.md) it into the model your application needs.
+* [transform](transform.md) it into the model your application needs – the Stack does this with the [SPARQL-native Transformation](../stack/patterns.md#sparql-native-transformation) pattern.
 
 ## Query a SPARQL endpoint
 

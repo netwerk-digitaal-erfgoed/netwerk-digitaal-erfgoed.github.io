@@ -14,8 +14,9 @@ NDE recommends doing this with SPARQL, keeping transformations declarative and p
 For RDF-to-RDF transformations, NDE recommends **SPARQL `CONSTRUCT`**: you write a query that reads the
 source shape and constructs the target shape, often as several small steps chained together. Because
 the transformation is an ordinary SPARQL query rather than custom code, it is portable across tools and
-inspectable – the same approach the Stack’s [pipelines](../stack/pipeline.md) use to project source
-data into search indexes, knowledge graphs and [EDM](https://pro.europeana.eu/page/edm-documentation).
+inspectable – the Stack’s [SPARQL-native Transformation](../stack/patterns.md#sparql-native-transformation)
+pattern, used by its [pipelines](../stack/pipeline.md) to project source data into search indexes,
+knowledge graphs and [EDM](https://pro.europeana.eu/page/edm-documentation).
 
 When a source has several independently multi-valued properties, split the mapping into small
 `CONSTRUCT` queries joined by `UNION` rather than one query full of `OPTIONAL`s, so multi-valued
