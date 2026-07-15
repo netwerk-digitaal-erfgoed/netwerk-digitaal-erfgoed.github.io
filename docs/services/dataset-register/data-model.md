@@ -62,7 +62,6 @@ both `dcat:Dataset` and `schema:Dataset` descriptions.
 | [`dcat:theme`](https://docs.geostandaarden.nl/dcat/dcat-ap-nl30/#dataset-theme) | IRI from a controlled vocabulary; the [EU Data Theme NAL](https://op.europa.eu/en/web/eu-vocabularies/concept-scheme/-/resource?uri=http://publications.europa.eu/resource/authority/data-theme) value `data-theme/EDUC` is auto-assigned | 1..n |
 | [`dcat:contactPoint`](https://docs.geostandaarden.nl/dcat/dcat-ap-nl30/#dataset-contact-point) | `vcard:Kind` with `vcard:fn` and `vcard:hasEmail` (`mailto:` IRI) | 0..1<br />**v2.0**: 1..1 |
 | [`dct:language`](https://docs.geostandaarden.nl/dcat/dcat-ap-nl30/#dataset-language) | [EU Language Authority](https://op.europa.eu/en/web/eu-vocabularies/concept-scheme/-/resource?uri=http://publications.europa.eu/resource/authority/language) IRI | 0..n |
-| [`dcat:keyword`](https://docs.geostandaarden.nl/dcat/dcat-ap-nl30/#dataset-keyword) | `rdf:langString` | 0..n |
 | [`dcat:landingPage`](https://docs.geostandaarden.nl/dcat/dcat-ap-nl30/#dataset-landing-page) | IRI | 0..n |
 | [`dct:source`](https://docs.geostandaarden.nl/dcat/dcat-ap-nl30/#dataset-source) | IRI | 0..n |
 | `dct:created` <span class="vocab-tag">DC</span> | `xsd:date` or `xsd:dateTime`; the lexical form may not be ISO 8601 in v1.<br />**v2.0**: ISO 8601 value required | 0..1 |
