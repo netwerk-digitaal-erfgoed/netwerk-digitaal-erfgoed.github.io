@@ -49,7 +49,7 @@ human-readable search interface with facets for publisher, terminology source, s
 **If you are automating**, query the Register’s
 [SPARQL endpoint](../services/dataset-register/sparql.md). It exposes every registered description in
 [DCAT](../services/dataset-register/data-model.md), so you can narrow the list at query time – by
-keyword, publisher, subject, `dcterms:conformsTo`, or validation status – instead of fetching
+publisher, subject, `dcterms:conformsTo`, or validation status – instead of fetching
 everything and filtering afterwards. Usually you want valid datasets only, so that you skip any whose
 latest fetch failed to produce a valid description; the
 [registration-status](../services/dataset-register/sparql.md#registration-status) section shows that
