@@ -16,7 +16,7 @@ that includes:
 
 **If you are publishing a dataset**, register your dataset description via the [REST API](api.md). The Register fetches it, [validates](validation.md) it against the [Requirements for Datasets](https://docs.nde.nl/requirements-datasets/), and stores the result. See also [Register your dataset](../../publish/register.md) for the publisher-side walkthrough.
 
-**If you are consuming the Register**, query the [SPARQL endpoint](sparql.md). The [data model](data-model.md) describes the DCAT-AP-NL shapes you will encounter in the results.
+**If you are consuming the Register**, use the [GraphQL search API](graphql.md) to build search and discovery interfaces (the same API that powers the website), or the [SPARQL endpoint](sparql.md) for arbitrary queries over the full RDF store. The [data model](data-model.md) describes the DCAT-AP-NL shapes you will encounter in the results.
 
 **If you are browsing**, the [Dataset Register website](https://datasetregister.netwerkdigitaalerfgoed.nl/en/datasets) provides a human-readable search interface.
 
