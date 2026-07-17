@@ -119,14 +119,17 @@ dataset description that consumers query.
 
 ### `schema:EntryPoint`
 
-Any URL [registered by clients](api.md) is added as a `schema:EntryPoint` to the
-[Registrations graph](https://qlever.netwerkdigitaalerfgoed.nl/datasetregister/NwXonb?exec=true).
+A URL [registered by clients](api.md) is added as a `schema:EntryPoint` to the
+[Registrations graph](https://qlever.netwerkdigitaalerfgoed.nl/datasetregister/NwXonb?exec=true)
+once its description passes validation. A submission that is
+[rejected](validation.md#what-happens-to-a-rejected-submission) with HTTP `400` is not stored,
+so it never appears here.
 
 Datasets are fetched from this URL on registration and when the crawler runs.
 
 | Property                                                     | Description                                                                                                                                                                                                                                                                                                    |
 | ------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`schema:additionalType`](https://schema.org/additionalType) | Computed registration status:<ul><li>`<https://data.netwerkdigitaalerfgoed.nl/registry/valid>` — fetched and passed SHACL validation</li><li>`<https://data.netwerkdigitaalerfgoed.nl/registry/invalid>` — fetched but failed SHACL validation; see `schema:validUntil`</li><li>`<https://data.netwerkdigitaalerfgoed.nl/registry/gone>` — could not be fetched as a dataset description. Covers HTTP error responses (≥ 300) **and** non‑HTTP failures: parse errors, unrecognised content types, and URLs that returned 200 but contained no dataset triples.</li></ul> |
+| [`schema:additionalType`](https://schema.org/additionalType) | Computed registration status:<ul><li>`<https://data.netwerkdigitaalerfgoed.nl/registry/valid>` — fetched and passed SHACL validation</li><li>`<https://data.netwerkdigitaalerfgoed.nl/registry/invalid>` — was registered successfully but has since failed SHACL validation at a later crawl; see `schema:validUntil`. A submission rejected at registration is never stored, so this status never denotes one</li><li>`<https://data.netwerkdigitaalerfgoed.nl/registry/gone>` — could not be fetched as a dataset description. Covers HTTP error responses (≥ 300) **and** non‑HTTP failures: parse errors, unrecognised content types, and URLs that returned 200 but contained no dataset triples.</li></ul> |
 | [`schema:datePosted`](https://schema.org/datePosted)         | UTC datetime when the URL was registered.                                                                                                                                                                                                                                                                      |
 | [`schema:dateRead`](https://schema.org/dateRead)             | UTC datetime when the URL was last read by the application. The crawler updates this value when fetching descriptions.                                                                                                                                                                                         |
 | [`schema:status`](https://schema.org/status)                 | The HTTP status code last encountered when fetching the URL.                                                                                                                                                                                                                                                   |

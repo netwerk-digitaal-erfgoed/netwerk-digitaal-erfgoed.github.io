@@ -42,6 +42,20 @@ So a `200` or `202` response can still carry a report with `sh:conforms = false`
 In short: use the status code to keep or reject; surface anything else in the report body to
 the editor as advisory feedback.
 
+## What happens to a rejected submission
+
+A `400` is final for that submission. The Register stores nothing on the rejection path: no registration record, no pending queue, no scheduled retry. Only a description that passes validation is written to the [Registrations graph](data-model.md#schemaentrypoint), and the crawler only ever re-fetches URLs it finds there. A rejected URL is therefore never re-checked, not after 24 hours and not ever: nothing picks it up by itself once the underlying problem is fixed.
+
+To register the description, fix what the report lists and call `POST /datasets` again. That call is idempotent, so re-submitting is both safe and necessary.
+
+This applies to a URL that is not yet registered. Re-submitting a URL that is **already** registered leaves its existing registration untouched: the `400` changes nothing, and the crawler keeps re-fetching that registration on its normal schedule.
+
+:::note
+
+Because rejected submissions leave no trace, the Register cannot report which descriptions were turned away, or how many. A publisher who does not act on the `400` is invisible to it. This is why the [Requirements for Dataset Register Implementations](https://docs.nde.nl/requirements-dataset-register-implementations/) place the duty to surface validation results on the [collection management system](../../glossary.md#collection-management-system).
+
+:::
+
 ## Validating against the SHACL shape directly
 
 If you fetch the shape graph from `GET /shacl` and run validation in your own pipeline (e.g.
@@ -70,7 +84,7 @@ The Register models a distribution’s health as a derived **usability** verdict
 - **reachability** – can the distribution be fetched? (HTTP/SPARQL level)
 - **validity** – does the fetched content actually parse as RDF?
 
-During validation the Register probes every distribution URL it can derive from the description (`dcat:accessURL`, `dcat:downloadURL`, `schema:contentUrl`) to produce both signals: it checks that the URL is reachable and serves the declared media type (reachability), and, for small RDF dumps (≤ 10 KB Turtle / N-Triples / N-Quads), that the body parses as RDF (validity). Even when the description passes SHACL, a broken or mistyped distribution URL, or a body that does not parse as RDF, is reported as a `sh:Violation` and rejected with HTTP `400` — so fix it before (re)submitting.
+During validation the Register probes every distribution URL it can derive from the description (`dcat:accessURL`, `dcat:downloadURL`, `schema:contentUrl`) to produce both signals: it checks that the URL is reachable and serves the declared media type (reachability), and, for small RDF dumps (≤ 10 KB Turtle / N-Triples / N-Quads), that the body parses as RDF (validity). Even when the description passes SHACL, a broken or mistyped distribution URL, or a body that does not parse as RDF, is reported as a `sh:Violation` and rejected with HTTP `400` — so fix it before [(re)submitting](#what-happens-to-a-rejected-submission).
 
 :::note
 
