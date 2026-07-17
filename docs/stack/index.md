@@ -10,27 +10,32 @@ This chapter proposes engineering choices, naming conventions, and operational p
 
 ## Introduction
 
-The **NDE Stack** is the working name given here to the **ecosystem of [NDE-compatible](../glossary.md#nde-compatible) [components](#components)** and the **[operational patterns](patterns.md)** that compose them, grounded in the network’s shared standards.
+The **NDE Stack** is the working name given here to the **ecosystem of [NDE-compatible](../glossary.md#nde-compatible) [components](#components)** and the **[operational patterns](patterns.md)** that compose them, grounded in the network’s shared [standards](#taxonomy): SCHEMA-AP-NDE, LDES, IIIF, DCAT-AP.
 The Stack’s goal is to **help software developers in the NDE network solve shared functionality once** rather than reinventing it in each project.
 It is what NDE offers builders to work *with*; the NDE-operated [network services](#taxonomy) it works *on* – the [Dataset Register](../services/dataset-register/), [Network of Terms](../services/network-of-terms/), and [Dataset Knowledge Graph](../services/dataset-knowledge-graph/) – are composed and consumed, not part of the Stack a builder deploys.
 Most of what appears here is new: proposed components and patterns yet to be built.
 The rest is existing software given a role in the Stack.
 
-The Stack **operationalises the architecture** sketched in [*Van data naar dienst: visie op de ontwikkeling van verbonden erfgoeddiensten*](https://zenodo.org/records/17541400) (NDE, November 2025), covering the [Data and Presentation Layers](layers/platform.md) of a [Service Platform](../glossary.md#service-platform). The Stack also includes the [Publication Layer](layers/provider.md#publication-layer) and connects to source-side data management. As more of the network’s functionality is named, the Stack grows. Where the report leaves gaps, the Stack fills them.
+The Stack spans the **whole path heritage data travels** through the network, across all four [layers](layers/index.md) of the NDE network architecture:
+from being managed and published in [Data Platforms](layers/provider.md) to being exposed and finally presented to end users in [Service Platforms](layers/platform.md).
+Within that breadth, this documentation **goes deepest on the Service Platforms**, because that is where development work will focus in the near future.
+For Data Platforms, this documentation can rely more on existing solutions.
 
 These chapters are also meant to **create a shared language and understanding** across the network:
 a [common vocabulary](#taxonomy) for the components and patterns that builders, operators, and decision-makers can use when discussing what the Stack does and how it fits together.
 Naming the parts is the prerequisite for talking about them coherently across teams and organisations.
 
-## Scope
+## Reading guide
 
-**This is**: a bridge from the report’s architectural vocabulary to running code. Names concrete components (existing and proposed), default operational patterns, and the foundational technologies the Stack depends on.
+**This is**: the Stack described across the four layers above, at the engineering level: concrete components (existing and proposed), the default operational patterns that compose them, the standards they rest on, and the foundational technologies they depend on.
 
-**This isn’t**: a restatement of the report. The report describes *what* should happen at each step of a [Service Platform](../glossary.md#service-platform); this guidance proposes *how*, at the engineering level, with named patterns and packages.
+**This isn’t**: a description of any single product, nor a restatement of an existing document.
+
+**Relation to [*Van data naar dienst*](https://zenodo.org/records/17541400)** (NDE, November 2025): the report is a vision covering **two of the four layers**, discussing only what happens inside a [Service Platform](../glossary.md#service-platform). For those two layers this guidance is a bridge from the report’s architectural vocabulary to running code: the report describes *what* should happen at each step, the Stack proposes *how*, with named patterns and packages. The Stack’s other layers have no report counterpart.
 
 **Goes beyond the report where useful**: some practical engineering concerns are not in the report, such as semantic search, snapshot-CDC (change data capture) deletion handling, per-source outage resilience, declarative standards-backed pipeline configuration. The Stack picks these up as natural extensions of the report’s framework, flagged in context where they appear so a reader can tell report-grounded content from Stack-direction extensions.
 
-**Primary audience**: builders of [Service Platforms](../glossary.md#service-platform) and [network services](../services/index.md) within the NDE network.
+**Audience**: primarily builders of [Service Platforms](../glossary.md#service-platform) and [network services](../services/index.md) within the NDE network. [Data Providers](../glossary.md#data-provider) are a secondary audience: the [Publication Layer](layers/provider.md#publication-layer) is in scope, but what they publish is specified in [Requirements](../requirements.md) rather than here.
 
 **Status of contents**: many components are proposals (`@lde/*` or `@ndes/*` packages that do not exist yet). The [function-mapping table](layers/platform.md#function-mapping) marks them as such. Patterns labelled “Proposed” have been discussed but not endorsed.
 
