@@ -57,8 +57,8 @@ The Stack provides the components below – the software a builder deploys. Thes
 | **[Knowledge Graph Pipeline](layers/platform.md#knowledge-graph-pipeline)** | Data | Builds a queryable knowledge graph from selected datasets |
 | **[Search APIs](layers/platform.md#search-apis)** *(proposed)* | Data | Search and filter API that Presentation Layers consume |
 | **[Knowledge Graph APIs](layers/platform.md#knowledge-graph-apis)** | Data | Query interfaces for the Stack’s knowledge graphs: [DKG](../services/dataset-knowledge-graph/) *(operational)*, Term Backlink Graph *(proposed)*, Knowledge Graph voor Termen *(proposed)*, and any self-operated KG a Service Platform builds |
-| **[Change Stream Producer](layers/platform.md#change-stream-producer)** *(proposed)* | Data | Publishes a Service Platform’s data changes as a feed other systems can subscribe to |
-| **[Heritage UI Components](layers/platform.md#presentation-layer)** *(future)* | Presentation | Reusable display components |
+| **[Change Stream Producer](layers/platform.md#change-stream-producer)** *(proposed)* | Publication → Data | Detects changes in [Data Layers](layers/provider.md#publication-layer) that do not publish a change stream themselves, and republishes them as the LDES feed Service Platforms can subscribe to                                               |
+| **[Heritage UI Components](layers/platform.md#presentation-layer)** *(future)* | Presentation | Reusable display components                                                                                                                                                                                                                    |
 
 ## Foundational technologies
 
