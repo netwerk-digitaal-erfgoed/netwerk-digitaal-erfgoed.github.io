@@ -14,6 +14,8 @@ Data management and Publication are run by [Data Providers](../../glossary.md#da
 
 [Data Providers](../../glossary.md#data-provider) make their data available via standardised channels so [Service Platforms](../../glossary.md#service-platform), [consumers](../../glossary.md#consumer), and [network services](../../services/index.md) can discover, fetch, and process it.
 
+This layer is DERA’s [Publicatie](https://dera.netwerkdigitaalerfgoed.nl/index.php/Publicatie): “zorgdragen dat erfgoedinformatie toegankelijk wordt gemaakt voor afnemers”. Unlike the [Data Layer](platform.md#data-layer), it sits inside DERA’s existing scope, so the terms below are shared rather than Stack-specific.
+
 ### Patterns applied at this layer
 
 The Publication Layer is the source-side of several cross-cutting patterns defined in the [Patterns chapter](../patterns.md):
