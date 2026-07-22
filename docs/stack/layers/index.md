@@ -20,7 +20,7 @@ The NDE network architecture distinguishes four layers. This chapter consolidate
 The [NDE Stack](../) covers all four layers. It is positioned around the full Linked Data lifecycle the same way Linked Data Elements ([LDE](https://github.com/ldelements/lde)) is (Discovery / Ingestion / Transformation / Analysis / Publication / Serve).
 LDE is a toolkit of small, composable `@lde/*` packages that handle generic linked-data plumbing:
 discovering datasets, downloading distributions, running pipelines, serving SPARQL and RDF. It is data-model-agnostic and network-agnostic.
-The NDE Stack composes LDE’s packages with NDE-specific configuration (`@ndes/*`) and operated [network services](../../services/) to produce the NDE approach of the lifecycle.
+The NDE Stack composes LDE’s packages with NDE-specific configuration (`@ndes/*`), building on NDE’s operated [network services](../../services/) to produce the NDE approach of the lifecycle.
 
 ## In this chapter
 
