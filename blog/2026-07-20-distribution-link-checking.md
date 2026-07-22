@@ -17,7 +17,7 @@ only through reliably and predictably structured definitions can we build the
 [Dataset Register search website](https://datasetregister.netwerkdigitaalerfgoed.nl/en/datasets).
 That is why the Dataset Register has always checked that descriptions provided by dataset publishers are well-formed, containing the right properties, data types, language tags, a canonical license URI.
 
-But a [dataset description](../docs/glossary.md#dataset-description) is not the dataset;
+But a [dataset description](/glossary#dataset-description) is not the dataset;
 it only provides metadata about it and points to its distributions:
 the files and API endpoints that hold the actual data.
 The end goal is never to just discover datasets, but to be actually able to use them,
