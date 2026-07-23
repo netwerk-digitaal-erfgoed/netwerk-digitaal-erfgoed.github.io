@@ -74,6 +74,9 @@ datasets(
   `terminology_source`, `keyword`, `catalog`, `status`) take a `StringFilter` – `{ in: […] }`,
   which unions the listed values – and `size` takes an `IntRange` (`{ min, max }`). For example,
   `where: { format: { in: ["group:rdf"] } }` returns datasets with any RDF distribution.
+  The automated checks the Register performs on the datasets themselves are boolean fields and
+  take a plain `Boolean`: `where: { nde_schema_ap: true }` returns the datasets of which a sample
+  of the resources conforms to the NDE Schema.org Application Profile.
 - **`orderBy`** takes a `field` (`RELEVANCE`, `TITLE`, `DATE_POSTED`, `SIZE`, `STATUS_RANK`) and a
   `direction` (`ASC`/`DESC`).
 - By default only **currently valid** datasets are returned. Pass a `status` filter (for example
