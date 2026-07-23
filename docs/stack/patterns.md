@@ -286,7 +286,7 @@ A rebuild that re-processes every source on every run wastes work and floods ups
 
 Composes with both deploy strategies. With [Blue/green Rebuild](#bluegreen-rebuild), unchanged sources land in the new build via [Last-known-good Per-source Caching](#last-known-good-per-source-caching) – the same cache that Blue/green already needs for source-outage resilience. With [In-place Rebuild](#in-place-rebuild), unchanged sources stay where they are because the rebuild only touches changed ones; no cache needed.
 
-The granularity of "what changed" varies. LDES gives record-level deltas including deletions — true incremental. Per-record timestamps (`schema:sdDatePublished`) let a consumer filter for records newer than its last-seen max, so additions and updates are record-level even without LDES — though pure deletions go undetected. Distribution-level signals (`Last-Modified`, declared metadata, fingerprint) only say "the dataset changed somehow"; without per-record timestamps to layer on top, the response is a full per-dataset re-crawl (which does catch deletions).
+The granularity of "what changed" varies. LDES gives record-level deltas including deletions – true incremental. Per-record timestamps (`schema:sdDatePublished`) let a consumer filter for records newer than its last-seen max, so additions and updates are record-level even without LDES – though pure deletions go undetected. Distribution-level signals (`Last-Modified`, declared metadata, fingerprint) only say "the dataset changed somehow"; without per-record timestamps to layer on top, the response is a full per-dataset re-crawl (which does catch deletions).
 
 #### Mechanics
 
@@ -421,7 +421,7 @@ A rebuild that fans out per source can fail for some sources without losing thei
 
 - **Survives transient source outages.** A single unreachable source doesn’t lose its data or stall the rebuild – the previous projection stays in place until the source comes back.
 - **Decouples rebuild scope from per-source reachability.** Reachability becomes a per-run signal, not a registry-membership signal. The registry decides whether a dataset should exist; reachability only decides whether *this run* refreshes it.
-- **Closes a gap the report describes only implicitly.** [Function 6](layers/platform.md#function-mapping)’s “afgeleide of cache”-framing taken literally would lose unreachable sources during a rebuild; this pattern keeps them.
+- **Preserves unreachable sources across rebuilds.** [Function 6](layers/platform.md#function-mapping)’s “afgeleide of cache”-framing, implemented literally, would drop them; this pattern keeps them.
 
 #### Tradeoffs
 

@@ -10,27 +10,32 @@ This chapter proposes engineering choices, naming conventions, and operational p
 
 ## Introduction
 
-The **NDE Stack** is the working name given here to the **ecosystem of [NDE-compatible](../glossary.md#nde-compatible) [components](#components)** and the **[operational patterns](patterns.md)** that compose them, grounded in the network’s shared standards.
+The **NDE Stack** is the working name given here to the **ecosystem of [NDE-compatible](../glossary.md#nde-compatible) [components](#components)** and the **[operational patterns](patterns.md)** that compose them, grounded in the network’s shared [standards](#taxonomy): SCHEMA-AP-NDE, LDES, IIIF, DCAT-AP.
 The Stack’s goal is to **help software developers in the NDE network solve shared functionality once** rather than reinventing it in each project.
 It is what NDE offers builders to work *with*; the NDE-operated [network services](#taxonomy) it works *on* – the [Dataset Register](../services/dataset-register/), [Network of Terms](../services/network-of-terms/), and [Dataset Knowledge Graph](../services/dataset-knowledge-graph/) – are composed and consumed, not part of the Stack a builder deploys.
 Most of what appears here is new: proposed components and patterns yet to be built.
 The rest is existing software given a role in the Stack.
 
-The Stack **operationalises the architecture** sketched in [*Van data naar dienst: visie op de ontwikkeling van verbonden erfgoeddiensten*](https://zenodo.org/records/17541400) (NDE, November 2025), covering the [Data and Presentation Layers](layers/platform.md) of a [Service Platform](../glossary.md#service-platform). The Stack also includes the [Publication Layer](layers/provider.md#publication-layer) and connects to source-side data management. As more of the network’s functionality is named, the Stack grows. Where the report leaves gaps, the Stack fills them.
+The Stack spans the **whole path heritage data travels** through the network, across all four [layers](layers/index.md) of the NDE network architecture:
+from being managed and published in [Data Platforms](layers/provider.md) to being exposed and finally presented to end users in [Service Platforms](layers/platform.md).
+Within that breadth, this documentation **goes deepest on the Service Platforms**, because that is where development work will focus in the near future.
+For Data Platforms, this documentation can rely more on existing solutions.
 
 These chapters are also meant to **create a shared language and understanding** across the network:
 a [common vocabulary](#taxonomy) for the components and patterns that builders, operators, and decision-makers can use when discussing what the Stack does and how it fits together.
 Naming the parts is the prerequisite for talking about them coherently across teams and organisations.
 
-## Scope
+## Reading guide
 
-**This is**: a bridge from the report’s architectural vocabulary to running code. Names concrete components (existing and proposed), default operational patterns, and the foundational technologies the Stack depends on.
+**This is**: the Stack described across the four layers above, at the engineering level: concrete components (existing and proposed), the default operational patterns that compose them, the standards they rest on, and the foundational technologies they depend on.
 
-**This isn’t**: a restatement of the report. The report describes *what* should happen at each step of a [Service Platform](../glossary.md#service-platform); this guidance proposes *how*, at the engineering level, with named patterns and packages.
+**This isn’t**: a description of any single product, nor a restatement of an existing document.
+
+**Relation to [*Van data naar dienst*](https://zenodo.org/records/17541400)** (NDE, November 2025): the report is a vision covering **two of the four layers**, discussing only what happens inside a [Service Platform](../glossary.md#service-platform). For those two layers this guidance is a bridge from the report’s architectural vocabulary to running code: the report describes *what* should happen at each step, the Stack proposes *how*, with named patterns and packages. The Stack’s other layers have no report counterpart.
 
 **Goes beyond the report where useful**: some practical engineering concerns are not in the report, such as semantic search, snapshot-CDC (change data capture) deletion handling, per-source outage resilience, declarative standards-backed pipeline configuration. The Stack picks these up as natural extensions of the report’s framework, flagged in context where they appear so a reader can tell report-grounded content from Stack-direction extensions.
 
-**Primary audience**: builders of [Service Platforms](../glossary.md#service-platform) and [network services](../services/index.md) within the NDE network.
+**Audience**: primarily builders of [Service Platforms](../glossary.md#service-platform) and [network services](../services/index.md) within the NDE network. [Data Providers](../glossary.md#data-provider) are a secondary audience: the [Publication Layer](layers/provider.md#publication-layer) is in scope, but what they publish is specified in [Requirements](../requirements.md) rather than here.
 
 **Status of contents**: many components are proposals (`@lde/*` or `@ndes/*` packages that do not exist yet). The [function-mapping table](layers/platform.md#function-mapping) marks them as such. Patterns labelled “Proposed” have been discussed but not endorsed.
 
@@ -43,7 +48,7 @@ The Stack uses a small vocabulary consistently.
 | **Component** | Software the Stack provides | `@lde/*` packages, `@ndes/*` packages                                                                                                                                 |
 | **Pattern** | Operational mechanic | [Blue/green Rebuild](patterns.md#bluegreen-rebuild), [SCHEMA-AP-NDE-first](patterns.md#schema-ap-nde-first), [Ports & Adapters](patterns.md#adapters)                        |
 | **Service** | A running instance of a Component, deployed with a specific configuration | A [Service Platform](../glossary.md#service-platform) running the search projection with its own SHACL and search configuration                                       |
-| **Network service** | An NDE-operated, network-wide endpoint the Stack **builds on** rather than provides: consumed via its canonical URL, not deployed by Stack users | [Dataset Register](../services/dataset-register/), [Network of Terms](../services/network-of-terms/), [Dataset Knowledge Graph](../services/dataset-knowledge-graph/) |
+| **Network service** | An NDE-operated, network-wide endpoint the Stack **builds on** rather than provides: consumed via its canonical URL, not deployed by Stack users. DERA’s [netwerkvoorziening](https://dera.netwerkdigitaalerfgoed.nl/index.php/Netwerkvoorziening) | [Dataset Register](../services/dataset-register/), [Network of Terms](../services/network-of-terms/), [Dataset Knowledge Graph](../services/dataset-knowledge-graph/) |
 | **Standard** | A network commitment the Stack adopts | SCHEMA-AP-NDE, LDES, IIIF, DCAT-AP 3.0 / Schema.org Dataset                                                                                                        |
 | **Foundational technology** | Upstream open-source dependency outside NDE governance | QLever, Typesense, nginx, Fastify, Mercurius                                                                                                                          |
 
@@ -57,8 +62,8 @@ The Stack provides the components below – the software a builder deploys. Thes
 | **[Knowledge Graph Pipeline](layers/platform.md#knowledge-graph-pipeline)** | Data | Builds a queryable knowledge graph from selected datasets |
 | **[Search APIs](layers/platform.md#search-apis)** *(proposed)* | Data | Search and filter API that Presentation Layers consume |
 | **[Knowledge Graph APIs](layers/platform.md#knowledge-graph-apis)** | Data | Query interfaces for the Stack’s knowledge graphs: [DKG](../services/dataset-knowledge-graph/) *(operational)*, Term Backlink Graph *(proposed)*, Knowledge Graph voor Termen *(proposed)*, and any self-operated KG a Service Platform builds |
-| **[Change Stream Producer](layers/platform.md#change-stream-producer)** *(proposed)* | Data | Publishes a Service Platform’s data changes as a feed other systems can subscribe to |
-| **[Heritage UI Components](layers/platform.md#presentation-layer)** *(future)* | Presentation | Reusable display components |
+| **[Change Stream Producer](layers/platform.md#change-stream-producer)** *(proposed)* | Publication → Data | Detects changes in [Data Layers](layers/provider.md#publication-layer) that do not publish a change stream themselves, and republishes them as the LDES feed Service Platforms can subscribe to                                               |
+| **[Heritage UI Components](layers/platform.md#presentation-layer)** *(future)* | Presentation | Reusable display components                                                                                                                                                                                                                    |
 
 ## Foundational technologies
 
@@ -83,7 +88,11 @@ Three distinct bodies of source data (substrates) underlie the Stack. Each pipel
 | --- |-------------------------------------------------------------------------------------------------| --- |--------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | A. [Dataset descriptions](../glossary.md#dataset-description) | DCAT-AP metadata *about* datasets (titles, publishers, [distributions](../glossary.md#distribution), licenses, subjects)       | Publishers’ DCAT-AP descriptions, harvested by the [NDE Datasetregister](https://datasetregister.netwerkdigitaalerfgoed.nl/) | Small, metadata-only. Refresh frequently (daily)             | Enumeration for B: which datasets exist and where their distributions live. Catalog [Search Pipeline](layers/platform#search-pipeline) over the descriptions themselves (the Dataset Register browser), enriched with DKG facets |
 | B. [Metadata records](../glossary.md#metadata-record) | Metadata records *inside* each distribution (instances of `CreativeWork`, `Person`, `Place`, …) | Per-dataset SPARQL endpoint or RDF dump | Large, per-dataset. Refresh per source on last modified date | Object [Search Pipeline](layers/platform#search-pipeline) (records inside distributions); [Dataset Knowledge Graph](../services/dataset-knowledge-graph/); Term Backlink Graph (data-model-agnostic vocab walk) |
-| C. [Terms](../glossary.md#terminology-source) | Terms and the relations between them, across terminology sources                                | Terminology sources, aggregated by the [NDE Network of Terms](https://termennetwerk.netwerkdigitaalerfgoed.nl/) | Medium, vocabulary-scoped. Refresh on vocab updates          | The report’s “Knowledge Graph voor Termen” (function 5)                                                                                                       |
+| C. [Terms](../glossary.md#term) | Terms and the relations between them, across terminology sources                                | [Terminology sources](../glossary.md#terminology-source), aggregated by the [NDE Network of Terms](https://termennetwerk.netwerkdigitaalerfgoed.nl/) | Medium, vocabulary-scoped. The set of sources is stable, but terms change (GTAA tracks current events); refresh per source on update | The report’s “Knowledge Graph voor Termen” (function 5)                                                                                                       |
+
+**In DERA terms.** The substrates map onto DERA’s [bedrijfsobjecten](https://dera.netwerkdigitaalerfgoed.nl/index.php/Bedrijfsobjecten): **C** is *Term* (“aanduiding van een entiteit of onderwerp opgenomen in terminologiebron”) held in a *Terminologiebron*; **A** and **B** are both *Metadata* (“gegevens die context, inhoud, structuur en vorm van informatie en het beheer ervan beschrijven”), with B describing *Informatieobjecten* and *Cultuurhistorische objecten*.
+
+One discrepancy worth signalling to the DERA-Architectuurraad: **DERA does not distinguish A from B.** Its *Dataset* is “verzameling van metadata, al dan niet aangevuld met informatieobjecten” – the collection itself – and it names no object for the DCAT-AP description record *about* a dataset, which is what the [Datasetregister](../services/dataset-register/) actually harvests. In DERA’s model both a dataset description and an object description are simply *Metadata*. The Stack splits them because they differ in source, scale, cadence, and consumers, as the table above shows.
 
 Observations that fall out of this separation:
 

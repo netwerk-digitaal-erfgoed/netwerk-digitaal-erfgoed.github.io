@@ -14,6 +14,8 @@ Data management and Publication are run by [Data Providers](../../glossary.md#da
 
 [Data Providers](../../glossary.md#data-provider) make their data available via standardised channels so [Service Platforms](../../glossary.md#service-platform), [consumers](../../glossary.md#consumer), and [network services](../../services/index.md) can discover, fetch, and process it.
 
+This layer is DERA’s [Publicatie](https://dera.netwerkdigitaalerfgoed.nl/index.php/Publicatie): “zorgdragen dat erfgoedinformatie toegankelijk wordt gemaakt voor afnemers”. Unlike the [Data Layer](platform.md#data-layer), it sits inside DERA’s existing scope, so the terms below are shared rather than Stack-specific.
+
 ### Patterns applied at this layer
 
 The Publication Layer is the source-side of several cross-cutting patterns defined in the [Patterns chapter](../patterns.md):
@@ -36,3 +38,11 @@ The Publication Layer is built on standards published outside this Stack documen
 
 - **[NDE Dataset Register](../../services/dataset-register/)** – every Publication-layer dataset gets registered here. See [Register datasets](../../publish/register.md).
 - **[NDE Network of Terms](../../services/network-of-terms/)** – Data Providers ideally link to canonical terms during publication, so Service Platforms receive already-enriched data. See [Publish with terms](../../publish/terms.md).
+
+### Software at this layer
+
+The Stack provides no software of its own here: [Data Providers](../../glossary.md#data-provider) fill this layer with existing products, and one product typically covers both Data management and Publication.
+
+**[Omeka-S](https://omeka.org/s/)** is one such product. [*Van data naar dienst*](https://zenodo.org/records/17541400) describes it as “een open source, semantisch collectiebeheersysteem, waaraan je verschillende modules kunt toevoegen om het systeem NDE-compatibel te maken” – so the standards above are met by adding modules, not by replacing the system. At the [Gouda Tijdmachine](https://www.goudatijdmachine.nl/) it “fungeert als het collectiebeheersysteem” and “ook als publicatieomgeving van de collectiedata”, publishing a dump and a SPARQL endpoint. Two modules connect it to the [network services](#network-services-consumed-at-this-layer) above: [NdeTermennetwerk](https://github.com/omeka-s-modules/NdeTermennetwerk) for linking descriptions to terms, and LinkedDataSets for registering datasets in the Dataset Register.
+
+What a [collection management system](../../glossary.md#collection-management-system) must do to be [NDE-compatible](../../glossary.md#nde-compatible) is specified in [Requirements](../../requirements.md), not here.
