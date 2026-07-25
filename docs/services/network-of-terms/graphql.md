@@ -337,6 +337,8 @@ query {
 
 Each URI is routed to the source whose `url` prefix it starts with. Sources declare one or more URL prefixes in the catalog, and the Network of Terms picks the matching source for every URI in the request. If no source claims the prefix, the `source` field returns an `Error` for that URI.
 
+When several sources are subsets of one broader source in the same URI space (for example ‘Wikidata: persons’ and ‘Wikidata: all entities’), only the broadest source claims the prefix, so lookups report that broadest source. Sources that share a prefix without such a broader source (such as the GTAA sub-schemes) are told apart by the term’s `skos:inScheme` value instead.
+
 ## Discover reconciliation endpoints
 
 Sources that offer a [Reconciliation API](reconciliation.md) advertise it via the `features` field. Each feature has a `type` and a `url`; the entry with `type: RECONCILIATION` carries the endpoint URL to configure in OpenRefine.
@@ -375,9 +377,9 @@ The Network of Terms uses two language controls:
 |-----------------------|---------------------------------------------------------------------------------------|----------------------------------------------------------------|
 | Used for              | Catalog metadata (sources, genres, creators)                                          | Term labels (`prefLabel`, `altLabel`, etc.)                    |
 | Input shape           | Ranked list with quality values, per [RFC 9110](https://www.rfc-editor.org/rfc/rfc9110.html#field.accept-language) (e.g. `en, nl;q=0.8`) | Ordered list of preferred languages          |
-| Output shape          | One `String` per field — the server selects a single best match                       | Each term-label field is a list of `{ language, value }` pairs on `TranslatedTerms` |
+| Output shape          | One `String` per field – the server selects a single best match                       | Each term-label field is a list of `{ language, value }` pairs on `TranslatedTerms` |
 | Unknown language      | Silently falls back to `nl`                                                           | Raises a GraphQL error (closed enum)                           |
-| Multilingual output?  | No — one chosen language wins                                                         | Yes — every requested language with available data is returned |
+| Multilingual output?  | No – one chosen language wins                                                         | Yes – every requested language with available data is returned |
 
 ### Which fields are affected
 
