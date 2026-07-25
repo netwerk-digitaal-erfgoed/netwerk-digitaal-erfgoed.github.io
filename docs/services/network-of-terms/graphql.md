@@ -375,9 +375,9 @@ The Network of Terms uses two language controls:
 |-----------------------|---------------------------------------------------------------------------------------|----------------------------------------------------------------|
 | Used for              | Catalog metadata (sources, genres, creators)                                          | Term labels (`prefLabel`, `altLabel`, etc.)                    |
 | Input shape           | Ranked list with quality values, per [RFC 9110](https://www.rfc-editor.org/rfc/rfc9110.html#field.accept-language) (e.g. `en, nl;q=0.8`) | Ordered list of preferred languages          |
-| Output shape          | One `String` per field — the server selects a single best match                       | Each term-label field is a list of `{ language, value }` pairs on `TranslatedTerms` |
+| Output shape          | One `String` per field – the server selects a single best match                       | Each term-label field is a list of `{ language, value }` pairs on `TranslatedTerms` |
 | Unknown language      | Silently falls back to `nl`                                                           | Raises a GraphQL error (closed enum)                           |
-| Multilingual output?  | No — one chosen language wins                                                         | Yes — every requested language with available data is returned |
+| Multilingual output?  | No – one chosen language wins                                                         | Yes – every requested language with available data is returned |
 
 ### Which fields are affected
 
@@ -514,6 +514,9 @@ results. If a term has no labels in any of the preferred languages, it is still
 returned, but its label fields (`prefLabel`, `altLabel`, `hiddenLabel`, `definition`,
 `scopeNote`) fall back as follows:
 
+* If the source provides literals tagged `mul` ([Wikidata’s ‘default for all
+  languages’](https://www.wikidata.org/wiki/Help:Default_values_for_labels_and_aliases)),
+  they are returned in the first preferred language.
 * If the source provides untagged literals for the field, they are returned and treated
   as Dutch (`nl`).
 * Otherwise, the field is returned as an empty list.
