@@ -10,7 +10,7 @@ This chapter proposes engineering choices, naming conventions, and operational p
 
 ## Introduction
 
-The **NDE Stack** is the working name given here to the **ecosystem of [NDE-compatible](../glossary.md#nde-compatible) [components](#components)** and the **[operational patterns](patterns.md)** that compose them, grounded in the network’s shared [standards](#taxonomy): SCHEMA-AP-NDE, LDES, IIIF, DCAT-AP.
+The **NDE Stack** is the working name given here to the **ecosystem of [components](#components) the Stack provides**, the **[NDE-compatible products](#taxonomy)** that fill its layers, and the **[operational patterns](patterns.md)** that compose them, grounded in the network’s shared [standards](#taxonomy): SCHEMA-AP-NDE, LDES, IIIF, DCAT-AP.
 The Stack’s goal is to **help software developers in the NDE network solve shared functionality once** rather than reinventing it in each project.
 It is what NDE offers builders to work *with*; the NDE-operated [network services](#taxonomy) it works *on* – the [Dataset Register](../services/dataset-register/), [Network of Terms](../services/network-of-terms/), and [Dataset Knowledge Graph](../services/dataset-knowledge-graph/) – are composed and consumed, not part of the Stack a builder deploys.
 Most of what appears here is new: proposed components and patterns yet to be built.
@@ -49,6 +49,7 @@ The Stack uses a small vocabulary consistently.
 | **Pattern** | Operational mechanic | [Blue/green Rebuild](patterns.md#bluegreen-rebuild), [SCHEMA-AP-NDE-first](patterns.md#schema-ap-nde-first), [Ports & Adapters](patterns.md#adapters)                        |
 | **Service** | A running instance of a Component, deployed with a specific configuration | A [Service Platform](../glossary.md#service-platform) running the search projection with its own SHACL and search configuration                                       |
 | **Network service** | An NDE-operated, network-wide endpoint the Stack **builds on** rather than provides: consumed via its canonical URL, not deployed by Stack users. DERA’s [netwerkvoorziening](https://dera.netwerkdigitaalerfgoed.nl/index.php/Netwerkvoorziening) | [Dataset Register](../services/dataset-register/), [Network of Terms](../services/network-of-terms/), [Dataset Knowledge Graph](../services/dataset-knowledge-graph/) |
+| **NDE-compatible product** | Third-party software that fills a layer by being [NDE-compatible](../glossary.md#nde-compatible): part of the ecosystem, provided by its vendor rather than the Stack, its requirements specified in [Requirements](../requirements.md) rather than here | Omeka-S, collection management systems, annotation stores |
 | **Standard** | A network commitment the Stack adopts | SCHEMA-AP-NDE, LDES, IIIF, DCAT-AP 3.0 / Schema.org Dataset                                                                                                        |
 | **Foundational technology** | Upstream open-source dependency outside NDE governance | QLever, Typesense, nginx, Fastify, Mercurius                                                                                                                          |
 

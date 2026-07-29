@@ -41,7 +41,7 @@ The Publication Layer is built on standards published outside this Stack documen
 
 ### Software at this layer
 
-The Stack provides no software of its own here: [Data Providers](../../glossary.md#data-provider) fill this layer with existing products, and one product typically covers both Data management and Publication.
+The Stack builds no software of its own here; instead this layer is filled by [NDE-compatible products](../index.md#taxonomy) – third-party software that is part of the ecosystem by being NDE-compatible, not by being provided by the Stack. One product typically covers both Data management and Publication.
 
 **[Omeka-S](https://omeka.org/s/)** is one such product. [*Van data naar dienst*](https://zenodo.org/records/17541400) describes it as “een open source, semantisch collectiebeheersysteem, waaraan je verschillende modules kunt toevoegen om het systeem NDE-compatibel te maken” – so the standards above are met by adding modules, not by replacing the system. At the [Gouda Tijdmachine](https://www.goudatijdmachine.nl/) it “fungeert als het collectiebeheersysteem” and “ook als publicatieomgeving van de collectiedata”, publishing a dump and a SPARQL endpoint. Two modules connect it to the [network services](#network-services-consumed-at-this-layer) above: [NdeTermennetwerk](https://github.com/omeka-s-modules/NdeTermennetwerk) for linking descriptions to terms, and LinkedDataSets for registering datasets in the Dataset Register.
 
