@@ -44,7 +44,7 @@ Each Summary attaches the following information to a `void:Dataset` – a mix of
 | Failed samples | `prov:qualifiedUsage` → `prov:Usage` with `prov:entity` + `failure:reason` on the sampling/validation `prov:Activity` | For the subject-URI resolution and IIIF manifest checks, the identity of each *failed* sample, so a low ratio can be triaged down to the individual broken URI/URL and its reason. See [Failed samples](#failed-samples) |
 | Distributions | `void:sparqlEndpoint`, `void:dataDump`, plus HTTP-validated status | Which distributions currently work and at what size |
 | Example resources | `void:exampleResource` | Concrete starting points for exploration |
-| SCHEMA-AP-NDE conformance | `dqv:QualityMeasurement` + `prov:Activity` | Whether a sample of resources passes the [SCHEMA-AP-NDE](https://docs.nde.nl/schema-profile/) SHACL shapes. Three metrics are emitted: `schema-ap-nde-sample-conformance` (boolean), `quads-validated` (number of sampled triples), and `samples-per-class` (sample cap). Combine `quads-validated > 0` with `conformance = true` to mean *"tested and passed"*; `quads-validated = 0` means the profile didn't apply (e.g. the dataset uses Linked.Art or EDM). The full per-resource SHACL report is served in the store as a separate named graph per dataset, so the failing constraints per resource are queryable alongside the summary. Every validated dataset has a report; a conforming one is an empty report (`sh:conforms true`, no results). |
+| SCHEMA-AP-NDE conformance | `dqv:QualityMeasurement` + `prov:Activity` | Whether a sample of resources passes the [SCHEMA-AP-NDE](https://docs.nde.nl/schema-profile/) SHACL shapes. Three metrics are emitted: `schema-ap-nde-sample-conformance` (boolean), `quads-validated` (number of sampled triples), and `samples-per-class` (sample cap). Combine `quads-validated > 0` with `conformance = true` to mean *"tested and passed"*; `quads-validated = 0` means the profile didn't apply (e.g. the dataset uses Linked.Art or EDM). The full per-resource SHACL report is served in the store as a separate named graph per dataset, so the failing constraints per resource are [queryable](#retrieving-schema-ap-nde-violations) alongside the summary. Every validated dataset has a report; a conforming one is an empty report (`sh:conforms true`, no results). |
 
 For the exact output each row produces, see the [analysis CONSTRUCT queries](https://github.com/netwerk-digitaal-erfgoed/dataset-knowledge-graph/tree/main/queries/analysis) that generate it; the [sample queries](#sample-queries) below show live results.
 
@@ -60,7 +60,7 @@ The hash is an MD5 of the class or property URI, so each partition is uniquely a
 
 ## Sample queries
 
-One example per analysis. Each link opens the query pre‑loaded in the [Knowledge Graph query UI](https://qlever.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph) — click *Run* to execute. The aggregate [datastory](https://datastories.demo.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph/index.html) demonstrates more advanced combinations.
+One example per analysis. Each link opens the query pre‑loaded in the [Knowledge Graph query UI](https://qlever.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph) – click *Run* to execute. The aggregate [datastory](https://datastories.demo.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph/index.html) demonstrates more advanced combinations.
 
 ### Size
 
@@ -143,7 +143,7 @@ LIMIT 50
 
 ### Datatypes used for `schema:Person`/`schema:name`
 
-Which XSD datatypes appear in `schema:name` values on `schema:Person` resources — useful for spotting unexpected datatype mixes.
+Which XSD datatypes appear in `schema:name` values on `schema:Person` resources – useful for spotting unexpected datatype mixes.
 
 ```sparql
 PREFIX void: <http://rdfs.org/ns/void#>
@@ -195,7 +195,7 @@ ORDER BY DESC(?count)
 
 ### Object classes linked from `schema:Book`/`schema:author`
 
-Which classes are the targets of `schema:author` on `schema:Book` resources, and how often each class is linked — shows how `Book` connects to other things in the data.
+Which classes are the targets of `schema:author` on `schema:Book` resources, and how often each class is linked – shows how `Book` connects to other things in the data.
 
 ```sparql
 PREFIX void: <http://rdfs.org/ns/void#>
@@ -221,7 +221,7 @@ ORDER BY DESC(?count)
 
 ### Outgoing linksets to terminology sources
 
-Every cross-dataset and cross-vocabulary linkset emitted by the pipeline, with the number of triples in each — shows how datasets connect to terminology sources and to one another.
+Every cross-dataset and cross-vocabulary linkset emitted by the pipeline, with the number of triples in each – shows how datasets connect to terminology sources and to one another.
 
 ```sparql
 PREFIX void: <http://rdfs.org/ns/void#>
@@ -239,7 +239,7 @@ LIMIT 50
 
 ### Subject URI spaces
 
-The most common URI namespaces used for subject resources across all datasets — shows where the network's identifiers live.
+The most common URI namespaces used for subject resources across all datasets – shows where the network's identifiers live.
 
 ```sparql
 PREFIX void: <http://rdfs.org/ns/void#>
@@ -333,7 +333,7 @@ ORDER BY DESC(?datasetCount)
 
 Datasets that publish [IIIF Presentation API](http://iiif.io/api/presentation/) manifests under the SCHEMA-AP-NDE convention, with the number of distinct manifests detected (`manifests`) alongside how many of a dereferenced sample actually resolved to a valid Presentation Manifest (`validated` out of `sampled`).
 
-The `dcterms:conformsTo` marker is *declared*; the `manifests-validated` / `manifests-sampled` measurements are *observed* — both hang off the same IIIF subset, so one query returns them together. `validated > 0` means working manifests; `validated = 0` alongside a declared subset means the dataset claims IIIF but every sampled manifest failed to resolve.
+The `dcterms:conformsTo` marker is *declared*; the `manifests-validated` / `manifests-sampled` measurements are *observed* – both hang off the same IIIF subset, so one query returns them together. `validated > 0` means working manifests; `validated = 0` alongside a declared subset means the dataset claims IIIF but every sampled manifest failed to resolve.
 
 ```sparql
 PREFIX void: <http://rdfs.org/ns/void#>
@@ -410,7 +410,7 @@ SELECT * WHERE {
 
 ### Example resources per dataset
 
-A handful of `void:exampleResource` URIs per dataset — concrete starting points for exploration.
+A handful of `void:exampleResource` URIs per dataset – concrete starting points for exploration.
 
 ```sparql
 PREFIX void: <http://rdfs.org/ns/void#>
@@ -442,9 +442,69 @@ SELECT * WHERE {
 
 [▶ Run in the query UI](https://qlever.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph?query=PREFIX%20dcterms%3A%20%3Chttp%3A//purl.org/dc/terms/%3E%0APREFIX%20dqv%3A%20%3Chttp%3A//www.w3.org/ns/dqv%23%3E%0APREFIX%20nde%3A%20%3Chttps%3A//def.nde.nl/metric%23%3E%0ASELECT%20%2A%20WHERE%20%7B%0A%20%20%3Fdataset%20dqv%3AhasQualityMeasurement%0A%20%20%20%20%5B%20dqv%3Avalue%20true%20%3B%0A%20%20%20%20%20%20dcterms%3AconformsTo%20%3Chttps%3A//docs.nde.nl/schema-profile/%3E%20%5D%20%2C%0A%20%20%20%20%5B%20dqv%3AisMeasurementOf%20nde%3Aquads-validated%20%3B%0A%20%20%20%20%20%20dqv%3Avalue%20%3Fn%20%5D%20.%0A%20%20FILTER%20%28%3Fn%20%3E%200%29%0A%7D)
 
-The `?n > 0` filter excludes datasets that use a different data model and to which the profile doesn't apply at all (where SHACL returns *vacuously true*). To find datasets that tried the profile and failed, swap `dqv:value true` for `dqv:value false`.
+The `?n > 0` filter excludes datasets that use a different data model and to which the profile doesn't apply at all (where SHACL returns *vacuously true*). To find datasets that tried the profile and failed, swap `dqv:value true` for `dqv:value false`; [Retrieving SCHEMA-AP-NDE violations](#retrieving-schema-ap-nde-violations) then takes you from a failing dataset to the constraints it breaks.
 
 Conformance counts only `sh:Violation` results: SCHEMA-AP-NDE’s `sh:Warning` constraints are SHOULD-level, so a sample that trips only warnings still reports `schema-ap-nde-sample-conformance = true`. The warnings are not lost – they stay in the full per-resource SHACL report written alongside the summary – they just don’t flip the conformance boolean.
+
+### Retrieving SCHEMA-AP-NDE violations
+
+The conformance boolean tells you *that* a dataset failed, not *which* resource broke *which* constraint. For that, the full SHACL validation report is served in the store, in its own named graph per dataset:
+
+```
+https://data.netwerkdigitaalerfgoed.nl/dkg/shacl-validation/{URL-encoded dataset IRI}
+```
+
+Every validated dataset has such a graph; a conforming dataset simply has an empty report (`sh:conforms true`, no results). The contents are a standard [SHACL validation report](https://www.w3.org/TR/shacl/#validation-report): `sh:focusNode` (the resource at fault), `sh:resultPath`, `sh:value`, `sh:sourceShape`, `sh:sourceConstraintComponent`, `sh:resultSeverity`, and `sh:resultMessage` where the shape defines one. Both severities are present, so filter on `sh:Violation` to match what the conformance measurement counts.
+
+Because the report lives in its own graph and its report node is not the dataset IRI, you reach it through `GRAPH` – and you can derive the graph IRI from the dataset IRI rather than looking it up:
+
+```sparql
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+SELECT ?focusNode ?path ?value ?constraint ?message WHERE {
+  BIND(<http://data.beeldengeluid.nl/id/dataset/0026> AS ?dataset)
+  BIND(IRI(CONCAT("https://data.netwerkdigitaalerfgoed.nl/dkg/shacl-validation/",
+    ENCODE_FOR_URI(STR(?dataset)))) AS ?graph)
+  GRAPH ?graph {
+    ?result a sh:ValidationResult ;
+      sh:resultSeverity sh:Violation ;
+      sh:focusNode ?focusNode ;
+      sh:sourceConstraintComponent ?constraint .
+    OPTIONAL { ?result sh:resultPath ?path }
+    OPTIONAL { ?result sh:value ?value }
+    OPTIONAL { ?result sh:resultMessage ?message }
+  }
+}
+LIMIT 50
+```
+
+[▶ Run in the query UI](https://qlever.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph?query=PREFIX%20sh%3A%20%3Chttp%3A//www.w3.org/ns/shacl%23%3E%0ASELECT%20%3FfocusNode%20%3Fpath%20%3Fvalue%20%3Fconstraint%20%3Fmessage%20WHERE%20%7B%0A%20%20BIND%28%3Chttp%3A//data.beeldengeluid.nl/id/dataset/0026%3E%20AS%20%3Fdataset%29%0A%20%20BIND%28IRI%28CONCAT%28%22https%3A//data.netwerkdigitaalerfgoed.nl/dkg/shacl-validation/%22%2C%0A%20%20%20%20ENCODE_FOR_URI%28STR%28%3Fdataset%29%29%29%29%20AS%20%3Fgraph%29%0A%20%20GRAPH%20%3Fgraph%20%7B%0A%20%20%20%20%3Fresult%20a%20sh%3AValidationResult%20%3B%0A%20%20%20%20%20%20sh%3AresultSeverity%20sh%3AViolation%20%3B%0A%20%20%20%20%20%20sh%3AfocusNode%20%3FfocusNode%20%3B%0A%20%20%20%20%20%20sh%3AsourceConstraintComponent%20%3Fconstraint%20.%0A%20%20%20%20OPTIONAL%20%7B%20%3Fresult%20sh%3AresultPath%20%3Fpath%20%7D%0A%20%20%20%20OPTIONAL%20%7B%20%3Fresult%20sh%3Avalue%20%3Fvalue%20%7D%0A%20%20%20%20OPTIONAL%20%7B%20%3Fresult%20sh%3AresultMessage%20%3Fmessage%20%7D%0A%20%20%7D%0A%7D%0ALIMIT%2050)
+
+One caveat on that `BIND`: the pipeline percent-encodes the dataset IRI leaving `!'()*` unescaped, where SPARQL’s `ENCODE_FOR_URI` escapes them. For the rare dataset IRI containing one of those characters, match the graph by prefix instead:
+
+```sparql
+FILTER (STRSTARTS(STR(?graph), "https://data.netwerkdigitaalerfgoed.nl/dkg/shacl-validation/"))
+```
+
+Leaving the graph unbound aggregates across every validated dataset – for instance, the constraints the network trips most often:
+
+```sparql
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+SELECT ?path ?constraint (COUNT(*) AS ?violations) WHERE {
+  GRAPH ?graph {
+    ?result a sh:ValidationResult ;
+      sh:resultSeverity sh:Violation ;
+      sh:sourceConstraintComponent ?constraint ;
+      sh:resultPath ?path .
+  }
+}
+GROUP BY ?path ?constraint
+ORDER BY DESC(?violations)
+LIMIT 25
+```
+
+[▶ Run in the query UI](https://qlever.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph?query=PREFIX%20sh%3A%20%3Chttp%3A//www.w3.org/ns/shacl%23%3E%0ASELECT%20%3Fpath%20%3Fconstraint%20%28COUNT%28%2A%29%20AS%20%3Fviolations%29%20WHERE%20%7B%0A%20%20GRAPH%20%3Fgraph%20%7B%0A%20%20%20%20%3Fresult%20a%20sh%3AValidationResult%20%3B%0A%20%20%20%20%20%20sh%3AresultSeverity%20sh%3AViolation%20%3B%0A%20%20%20%20%20%20sh%3AsourceConstraintComponent%20%3Fconstraint%20%3B%0A%20%20%20%20%20%20sh%3AresultPath%20%3Fpath%20.%0A%20%20%7D%0A%7D%0AGROUP%20BY%20%3Fpath%20%3Fconstraint%0AORDER%20BY%20DESC%28%3Fviolations%29%0ALIMIT%2025)
+
+Remember that the report covers the validated *sample* only (`samples-per-class` resources per target class), not the entire dataset: it tells you which constraints a dataset breaks, not how many resources in it break them.
 
 ## Access
 
