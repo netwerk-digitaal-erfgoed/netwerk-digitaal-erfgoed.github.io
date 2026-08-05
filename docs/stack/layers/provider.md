@@ -8,7 +8,7 @@ sidebar_position: 1
 Part of the Stack documentation ([overview](../index.md)). Not yet endorsed by NDE.
 :::
 
-Data management and Publication are run by [Data Providers](../../glossary.md#data-provider). Data management is source-internal and out of scope here. Publication is the source-side externalisation that turns internal data into something the network can consume.
+Data management and Publication are run by [Data Providers](../../glossary.md#data-provider). Data management is DERA’s [Beheer](https://dera.netwerkdigitaalerfgoed.nl/index.php/Beheer) (“het in stand houden van erfgoedinformatie en het verrijken daarvan met aanvullende informatie”): source-internal, and out of scope here. Publication is the source-side externalisation that turns internal data into something the network can consume. The function of each layer is DERA’s to define; this chapter references DERA for that and documents the engineering.
 
 ## Publication Layer
 
