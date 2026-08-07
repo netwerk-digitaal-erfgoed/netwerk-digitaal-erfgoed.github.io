@@ -8,11 +8,13 @@ sidebar_position: 1
 Part of the Stack documentation ([overview](../index.md)). Not yet endorsed by NDE.
 :::
 
-Data management and Publication are run by [Data Providers](../../glossary.md#data-provider). Data management is source-internal and out of scope here. Publication is the source-side externalisation that turns internal data into something the network can consume.
+Data management and Publication are run by [Data Providers](../../glossary.md#data-provider). Data management is DERA’s [Beheer](https://dera.netwerkdigitaalerfgoed.nl/index.php/Beheer) (“het in stand houden van erfgoedinformatie en het verrijken daarvan met aanvullende informatie”): source-internal, and out of scope here. Publication is the source-side externalisation that turns internal data into something the network can consume. The function of each layer is DERA’s to define; this chapter references DERA for that and documents the engineering.
 
 ## Publication Layer
 
 [Data Providers](../../glossary.md#data-provider) make their data available via standardised channels so [Service Platforms](../../glossary.md#service-platform), [consumers](../../glossary.md#consumer), and [network services](../../services/index.md) can discover, fetch, and process it.
+
+This layer is DERA’s [Publicatie](https://dera.netwerkdigitaalerfgoed.nl/index.php/Publicatie): “zorgdragen dat erfgoedinformatie toegankelijk wordt gemaakt voor afnemers”. Unlike the [Data Layer](platform.md#data-layer), it sits inside DERA’s existing scope, so the terms below are shared rather than Stack-specific.
 
 ### Patterns applied at this layer
 
@@ -36,3 +38,11 @@ The Publication Layer is built on standards published outside this Stack documen
 
 - **[NDE Dataset Register](../../services/dataset-register/)** – every Publication-layer dataset gets registered here. See [Register datasets](../../publish/register.md).
 - **[NDE Network of Terms](../../services/network-of-terms/)** – Data Providers ideally link to canonical terms during publication, so Service Platforms receive already-enriched data. See [Publish with terms](../../publish/terms.md).
+
+### Software at this layer
+
+The Stack builds no software of its own here; instead this layer is filled by [NDE-compatible products](../index.md#taxonomy) – third-party software that is part of the ecosystem by being NDE-compatible, not by being provided by the Stack. One product typically covers both Data management and Publication.
+
+**[Omeka-S](https://omeka.org/s/)** is one such product. [*Van data naar dienst*](https://zenodo.org/records/17541400) describes it as “een open source, semantisch collectiebeheersysteem, waaraan je verschillende modules kunt toevoegen om het systeem NDE-compatibel te maken” – so the standards above are met by adding modules, not by replacing the system. At the [Gouda Tijdmachine](https://www.goudatijdmachine.nl/) it “fungeert als het collectiebeheersysteem” and “ook als publicatieomgeving van de collectiedata”, publishing a dump and a SPARQL endpoint. Two modules connect it to the [network services](#network-services-consumed-at-this-layer) above: [NdeTermennetwerk](https://github.com/omeka-s-modules/NdeTermennetwerk) for linking descriptions to terms, and LinkedDataSets for registering datasets in the Dataset Register.
+
+What a [collection management system](../../glossary.md#collection-management-system) must do to be [NDE-compatible](../../glossary.md#nde-compatible) is specified in [Requirements](../../requirements.md), not here.
