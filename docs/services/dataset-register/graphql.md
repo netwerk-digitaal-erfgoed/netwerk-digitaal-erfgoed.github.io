@@ -84,10 +84,17 @@ datasets(
 ): DatasetSearchResult!
 ```
 
-- **`where`** filters by exact values. Keyword-style fields (`id`, `publisher`, `format`, `class`,
-  `terminology_source`, `catalog`, `status`) take a `StringFilter` – `{ in: […] }`,
-  which unions the listed values – and `size` takes an `IntRange` (`{ min, max }`). For example,
-  `where: { format: { in: ["group:rdf"] } }` returns datasets with any RDF distribution.
+- **`where`** filters by exact values. Every filter is `{ in: […] }`, which unions the listed
+  values; its *type* says what those values are:
+  - **IRIs** – `id` (`DatasetFilter`), `publisher` (`AgentFilter`), `terminology_source`
+    (`VocabularyFilter`), and `class` and `catalog` (`IRIFilter`, where no entity type names
+    them). These also accept the `group:…` tokens the Register mints alongside real IRIs
+    (`group:person` on `class`): they are absolute IRIs in their own right.
+  - **Tokens** – `format` and `status` (`KeywordFilter`).
+  - `size` takes an `IntRange` (`{ min, max }`).
+
+  For example, `where: { format: { in: ["group:rdf"] } }` returns datasets with any RDF
+  distribution.
   The automated checks the Register performs on the datasets themselves are boolean fields and
   take a plain `Boolean`: `where: { nde_schema_ap: true }` returns the datasets of which a sample
   of the resources conforms to the NDE Schema.org Application Profile.
@@ -119,7 +126,9 @@ lookup to render a facet or a result card.
 
 Three bucket shapes appear, by the kind of field faceted:
 
-- **`ValueBucket`** (`value: String!`, `count`, optional `label`) for the keyword and IRI facets;
+- **`IRIBucket`** (`value: IRI!`, `count`, optional `label`) for the facets keyed on IRIs
+  (`publisher`, `class`, `terminology_source`), and **`ValueBucket`** (`value: String!`, the same
+  otherwise) for the token facets (`format`, `status`);
 - **`RangeBucket`** (`min`, `max`, `count`) for `size`, which facets into fixed bins rather than
   one bucket per value;
 - **`BooleanBucket`** (`value: Boolean!`, `count`) for the automated-check facets (`iiif`,
