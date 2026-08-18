@@ -36,17 +36,9 @@ Set the `Accept-Language` header (for example `nl` or `en`) to choose the prefer
 multilingual strings and for the labels resolved on facets and references. The API returns the
 requested language first, falling back to the others it has.
 
-**A playground is built in.** Open the endpoint in a browser
-(`GET https://datasetregister.netwerkdigitaalerfgoed.nl/graphql`) for an interactive GraphiQL
-client, or fetch the schema contract directly as SDL:
-
-```shell
-curl 'https://datasetregister.netwerkdigitaalerfgoed.nl/graphql?sdl'
-```
-
-Introspection is enabled too, so you can equally point [Altair](https://altairgraphql.dev) or any
-other GraphQL IDE at the endpoint. Cross-origin requests are allowed, so a browser client may
-call the endpoint directly.
+**Introspection is enabled**, so you can explore the whole schema with any GraphQL IDE – point
+[GraphiQL](https://github.com/graphql/graphiql) or [Altair](https://altairgraphql.dev) at the
+endpoint to browse types, fields and arguments interactively.
 
 ## Example
 
@@ -54,13 +46,7 @@ call the endpoint directly.
 curl -X POST https://datasetregister.netwerkdigitaalerfgoed.nl/graphql \
   -H 'Content-Type: application/json' \
   -H 'Accept-Language: nl' \
-  --data '{"query":"{ datasets(query: \"kaarten\", perPage: 5) { pagination { total } items { title { language value } publisher { id label { value } } } facets { publisher { value count label { value } } format { value count } } } }"}'
-```
-
-Paging metadata comes back under `pagination`:
-
-```graphql
-pagination { total page perPage }
+  --data '{"query":"{ datasets(query: \"kaarten\", perPage: 5) { total items { title { language value } publisher { name { value } } } facets { publisher { value count label { value } } format { value count } } } }"}'
 ```
 
 Each result item carries the dataset’s title, description, publisher, formats, size and more, as
@@ -84,22 +70,13 @@ datasets(
 ): DatasetSearchResult!
 ```
 
-- **`where`** filters by exact values. Every filter is `{ in: […] }`, which unions the listed
-  values; its *type* says what those values are:
-  - **IRIs** – `id` (`DatasetFilter`), `publisher` (`AgentFilter`), `terminology_source`
-    (`VocabularyFilter`), and `class` and `catalog` (`IRIFilter`, where no entity type names
-    them). These also accept the `group:…` tokens the Register mints alongside real IRIs
-    (`group:person` on `class`): they are absolute IRIs in their own right.
-  - **Tokens** – `format` and `status` (`KeywordFilter`).
-  - `size` takes an `IntRange` (`{ min, max }`).
-
-  For example, `where: { format: { in: ["group:rdf"] } }` returns datasets with any RDF
-  distribution.
+- **`where`** filters by exact values. Keyword-style fields (`publisher`, `format`, `class`,
+  `terminology_source`, `keyword`, `catalog`, `status`) take a `StringFilter` – `{ in: […] }`,
+  which unions the listed values – and `size` takes an `IntRange` (`{ min, max }`). For example,
+  `where: { format: { in: ["group:rdf"] } }` returns datasets with any RDF distribution.
   The automated checks the Register performs on the datasets themselves are boolean fields and
   take a plain `Boolean`: `where: { nde_schema_ap: true }` returns the datasets of which a sample
   of the resources conforms to the NDE Schema.org Application Profile.
-  Sibling keys combine with AND. To widen across fields instead, use the `or` key, which matches a
-  dataset satisfying **any** of its criteria.
 - **`orderBy`** takes a `field` (`RELEVANCE`, `TITLE`, `DATE_POSTED`, `SIZE`, `STATUS_RANK`) and a
   `direction` (`ASC`/`DESC`).
 - By default only **currently valid** datasets are returned. Pass a `status` filter (for example
@@ -124,24 +101,11 @@ facets {
 Because labels arrive with the buckets, a client never has to perform a separate IRI-to-label
 lookup to render a facet or a result card.
 
-Three bucket shapes appear, by the kind of field faceted:
-
-- **`IRIBucket`** (`value: IRI!`, `count`, optional `label`) for the facets keyed on IRIs
-  (`publisher`, `class`, `terminology_source`), and **`ValueBucket`** (`value: String!`, the same
-  otherwise) for the token facets (`format`, `status`);
-- **`RangeBucket`** (`min`, `max`, `count`) for `size`, which facets into fixed bins rather than
-  one bucket per value;
-- **`BooleanBucket`** (`value: Boolean!`, `count`) for the automated-check facets (`iiif`,
-  `nde_schema_ap`, `linked_data`, `terms`, `persistent_uris`). Note `value` is a real boolean
-  here, not the string `"true"`.
-
 ## Reference collections
 
 Besides `datasets`, the schema exposes search queries over the reference entities the facets are
-keyed by – `organizations`, `classs` and `terminologySources` – for building autocompletes or
-lookups. Each takes the same `query`/`where`/`orderBy`/`page`/`perPage` arguments and returns
-items carrying an `id` and a multilingual `label`. Explore them through introspection or the
-playground.
+keyed by – `organizations` and `terminologySources` – for building autocompletes or lookups.
+Explore them through introspection.
 
 ## Data model
 
