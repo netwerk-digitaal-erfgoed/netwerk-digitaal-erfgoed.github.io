@@ -526,6 +526,52 @@ returned, but its label fields (`prefLabel`, `altLabel`, `hiddenLabel`, `definit
 The languages you can actually get back depend on what each source provides: see the
 `inLanguage` field when [listing sources](#list-terminology-sources).
 
+### Structured term types: `Concept`, `Person` and `Place`
+
+`TranslatedTerm` is a GraphQL *interface*. Every multilingual result implements it, so
+`... on TranslatedTerm` keeps matching every term, but each term also has a concrete
+type that says what kind of thing it describes:
+
+* `Concept` – a term whose source identifies it as nothing more specific. SKOS remains
+  the frame, so every term is a `skos:Concept`; this is the type for the terms that are
+  only that. Reach for `... on TranslatedTerm` when you want *any* term – places and
+  persons are `skos:Concept`s too, but they do not match `... on Concept`.
+* `Person` – a term that describes a person.
+* `Place` – a term that describes a place. Adds `latitude` and `longitude`, in the
+  WGS 84 coordinate reference system. Both are nullable: a source may type a term as a
+  place without publishing its coordinates.
+
+Select the extra fields with an inline fragment on the concrete type:
+
+```graphql title="Read the coordinates of places" {9-12}
+query {
+  lookup(uris: ["https://sws.geonames.org/2751283/"], languages: [nl, en]) {
+    result {
+      __typename
+      ... on TranslatedTerm {
+        uri
+        prefLabel { language value }
+      }
+      ... on Place {
+        latitude
+        longitude
+      }
+      ... on Error {
+        message
+      }
+    }
+  }
+}
+```
+
+Typing comes from the source query, which asserts it explicitly – it is never inferred
+from the presence of coordinates or from the source’s catalog genre, since a source may
+cover several genres. Sources that publish structured data keep publishing the
+concatenated `scopeNote` as well, so nothing that reads `scopeNote` today breaks.
+
+Monolingual `Term` results (returned when you omit `languages`) are not affected: `Term`
+has no subtypes and never gains structured fields.
+
 ## Response times
 
 Response times from the Network of Terms will vary depending on how fast each terminology source returns results for the
