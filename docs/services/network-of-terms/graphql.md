@@ -345,6 +345,116 @@ That size is not the same everywhere. A lookup answers with every label, note an
 
 Requests of more than 1000 URIs are refused. That is a safety valve, not a working limit: a request that large keeps the slowest source busy for minutes.
 
+### Looking up terms in several languages
+
+Add the `languages` argument, and each result is a `TranslatedTerm` instead of a `Term`,
+with every label field a list of `{ language, value }` pairs. Note that the fragment
+matches the term itself – `lookup` has no plural wrapper, unlike
+[`terms`](#multilingual-results-translatedterm).
+
+```graphql title="Look up a term with labels in both Dutch and English" {4,9}
+query {
+  lookup(
+    uris: ["https://data.cultureelerfgoed.nl/term/id/cht/15e29ea3-1b4b-4fb2-b970-a0c485330384"],
+    languages: [nl, en]
+  ) {
+    uri
+    result {
+      __typename
+      ... on TranslatedTerm {
+        uri
+        prefLabel { language value }
+        altLabel { language value }
+        broader {
+          uri
+          prefLabel { language value }
+        }
+      }
+      ... on Error {
+        message
+      }
+    }
+  }
+}
+```
+
+:::warning Do not switch on `__typename`
+
+Select `... on Error { message }` to tell a failure from a term, rather than comparing
+`__typename` against a string such as `"TranslatedTerm"`. `Error` is an interface over
+every error the API can return (`NotFoundError`, `TimeoutError`, `ServerError`,
+`SourceNotFoundError`), so the fragment keeps working when a new error type is added,
+and a client that tests for the error case treats everything else as a term.
+
+Comparing `__typename` to a fixed string is the fragile half of the same choice: it
+breaks silently – no GraphQL error, just a branch that stops being taken – whenever a
+result type is renamed or a union member is replaced.
+
+:::
+
+## What a term denotes
+
+SKOS describes the term: its labels, its place in the hierarchy, its mappings to other
+vocabularies. Some sources also describe the *thing the term denotes* – for a place,
+where it is. That lives on the `place` field, which both `Term` and `TranslatedTerm`
+carry:
+
+```graphql title="Coordinates of the place a term denotes" {8-11}
+query {
+  lookup(uris: ["https://sws.geonames.org/2751283/"], languages: [nl, en]) {
+    result {
+      ... on TranslatedTerm {
+        prefLabel { language value }
+        broader { uri prefLabel { language value } }
+        place {
+          latitude
+          longitude
+        }
+      }
+      ... on Error {
+        message
+      }
+    }
+  }
+}
+```
+
+```json title="Response (abridged)"
+{
+  "__typename": "TranslatedTerm",
+  "prefLabel": [
+    { "language": "nl", "value": "Maastricht (NL)" },
+    { "language": "en", "value": "Maastricht (NL)" }
+  ],
+  "broader": [{ "uri": "https://sws.geonames.org/2751596/" }],
+  "place": { "latitude": 50.84833, "longitude": 5.68889 }
+}
+```
+
+`latitude` and `longitude` are in the WGS 84 coordinate reference system. Both are
+nullable: sources are not validated, so a coordinate that is absent, empty or not a
+number comes back as `null` rather than raising an error that would drop the whole term
+from the result.
+
+`place` itself is `null` when the source describes no place. That covers both a term
+that denotes something else entirely and a place the source publishes no usable
+coordinate for – nothing distinguishes the two, so do not read significance into it.
+
+The place hierarchy stays on `broader` and `narrower`, where a client that walks
+hierarchies already looks for it. Only the coordinates move to `place`.
+
+:::note Only what SKOS cannot express
+
+This layer carries what SKOS has no way to state, and nothing else. Coordinates qualify;
+a place’s position in its hierarchy does not, because `skos:broader` and `skos:narrower`
+already state it. Stating it twice would only invite the two to disagree.
+
+Typing comes from the source query, which asserts it explicitly – it is never inferred
+from the presence of coordinates or from the source’s catalog genre, since a source may
+cover several genres.
+
+:::
+
 ## Discover reconciliation endpoints
 
 Sources that offer a [Reconciliation API](reconciliation.md) advertise it via the `features` field. Each feature has a `type` and a `url`; the entry with `type: RECONCILIATION` carries the endpoint URL to configure in OpenRefine.
@@ -383,7 +493,7 @@ The Network of Terms uses two language controls:
 |-----------------------|---------------------------------------------------------------------------------------|----------------------------------------------------------------|
 | Used for              | Catalog metadata (sources, genres, creators)                                          | Term labels (`prefLabel`, `altLabel`, etc.)                    |
 | Input shape           | Ranked list with quality values, per [RFC 9110](https://www.rfc-editor.org/rfc/rfc9110.html#field.accept-language) (e.g. `en, nl;q=0.8`) | Ordered list of preferred languages          |
-| Output shape          | One `String` per field – the server selects a single best match                       | Each term-label field is a list of `{ language, value }` pairs on `TranslatedTerms` |
+| Output shape          | One `String` per field – the server selects a single best match                       | Each term-label field is a list of `{ language, value }` pairs on `TranslatedTerm` |
 | Unknown language      | Silently falls back to `nl`                                                           | Raises a GraphQL error (closed enum)                           |
 | Multilingual output?  | No – one chosen language wins                                                         | Yes – every requested language with available data is returned |
 
@@ -425,7 +535,7 @@ takes a list of values from the `Language` enum, in order of preference.
 
 **Passing `languages` changes the result type.** Without it, term results come back as
 `Terms` with each label field as a plain `[String!]`. With it, results come back as
-[`TranslatedTerms`](#multilingual-results-translatedterms) and each label field is a
+[`TranslatedTerm`s](#multilingual-results-translatedterm) and each label field is a
 list of `{ language, value }` pairs covering every requested language that the source
 provides data for. This is the only way to get a multilingual response from the API.
 
@@ -459,13 +569,23 @@ The recommended pattern for forward-compatible clients:
 When the Network of Terms adds a new language to its catalog, a fresh introspection
 picks it up without any change to the API contract on the client side.
 
-### Multilingual results: `TranslatedTerms`
+### Multilingual results: `TranslatedTerm`
 
 Passing `languages` is what turns the API multilingual. Both
-[search](#search-terms) and [lookup](#look-up-terms-by-uri) queries switch to
-`TranslatedTerms` as soon as the argument is present, exposing each label as a
-`{ language, value }` pair so translations can be rendered side by side. Without
-`languages`, you get plain `Terms` with `[String!]` labels in a single language.
+[search](#search-terms) and [lookup](#look-up-terms-by-uri) queries switch as soon as
+the argument is present, exposing each label as a `{ language, value }` pair so
+translations can be rendered side by side. Without `languages`, you get single-language
+labels as `[String!]`.
+
+The two queries wrap it differently, which matters when you write the fragment:
+
+| Query    | Without `languages`       | With `languages`                              |
+|----------|---------------------------|-----------------------------------------------|
+| `terms`  | `Terms`, holding `[Term]` | `TranslatedTerms`, holding `[TranslatedTerm]` |
+| `lookup` | `Term` – one per URI      | `TranslatedTerm` – one per URI                |
+
+So a search selects through a wrapper (`... on TranslatedTerms { terms { … } }`), while
+a lookup matches the term itself (`... on TranslatedTerm { … }`).
 
 ```graphql title="Return results in both English and Dutch" {8,16,19-23} showLineNumbers
 query {
@@ -531,52 +651,6 @@ returned, but its label fields (`prefLabel`, `altLabel`, `hiddenLabel`, `definit
 
 The languages you can actually get back depend on what each source provides: see the
 `inLanguage` field when [listing sources](#list-terminology-sources).
-
-### Structured term types: `Concept`, `Person` and `Place`
-
-`TranslatedTerm` is a GraphQL *interface*. Every multilingual result implements it, so
-`... on TranslatedTerm` keeps matching every term, but each term also has a concrete
-type that says what kind of thing it describes:
-
-* `Concept` – a term whose source identifies it as nothing more specific. SKOS remains
-  the frame, so every term is a `skos:Concept`; this is the type for the terms that are
-  only that. Reach for `... on TranslatedTerm` when you want *any* term – places and
-  persons are `skos:Concept`s too, but they do not match `... on Concept`.
-* `Person` – a term that describes a person.
-* `Place` – a term that describes a place. Adds `latitude` and `longitude`, in the
-  WGS 84 coordinate reference system. Both are nullable: a source may type a term as a
-  place without publishing its coordinates.
-
-Select the extra fields with an inline fragment on the concrete type:
-
-```graphql title="Read the coordinates of places" {9-12}
-query {
-  lookup(uris: ["https://sws.geonames.org/2751283/"], languages: [nl, en]) {
-    result {
-      __typename
-      ... on TranslatedTerm {
-        uri
-        prefLabel { language value }
-      }
-      ... on Place {
-        latitude
-        longitude
-      }
-      ... on Error {
-        message
-      }
-    }
-  }
-}
-```
-
-Typing comes from the source query, which asserts it explicitly – it is never inferred
-from the presence of coordinates or from the source’s catalog genre, since a source may
-cover several genres. Sources that publish structured data keep publishing the
-concatenated `scopeNote` as well, so nothing that reads `scopeNote` today breaks.
-
-Monolingual `Term` results (returned when you omit `languages`) are not affected: `Term`
-has no subtypes and never gains structured fields.
 
 ## Response times
 
