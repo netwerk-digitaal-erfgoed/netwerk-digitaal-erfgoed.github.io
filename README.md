@@ -9,3 +9,9 @@ To view the documentation locally:
 ```shell
 npm run start
 ```
+
+To view the Dutch documentation:
+
+```shell
+npm run start -- --locale nl
+```

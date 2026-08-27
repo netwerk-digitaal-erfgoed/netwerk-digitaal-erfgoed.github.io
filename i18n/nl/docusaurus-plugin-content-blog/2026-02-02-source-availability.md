@@ -47,6 +47,6 @@ Voor ontwikkelaars is het `status`-veld beschikbaar in elke GraphQL-query die br
 
 ## Relatie met de NDE-statuspagina
 
-Deze functionaliteit is een aanvulling op de [NDE-statuspagina](https://status.netwerkdigitaalerfgoed.nl) die we [onlangs hebben gelanceerd](/blog/2026/02/05/status-page).
+Deze functionaliteit is een aanvulling op de [NDE-statuspagina](https://status.netwerkdigitaalerfgoed.nl) die we [onlangs hebben gelanceerd](./2026-02-05-status-page.md).
 De statuspagina bewaakt het Termennetwerk als dienst, terwijl het `status`-veld de individuele terminologiebronnen bewaakt die het Termennetwerk bevraagt.
 Samen geven ze een compleet beeld van de beschikbaarheid.
