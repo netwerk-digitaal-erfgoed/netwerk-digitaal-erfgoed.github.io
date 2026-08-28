@@ -339,6 +339,12 @@ Each URI is routed to the source whose `url` prefix it starts with. Sources decl
 
 When several sources are subsets of one broader source in the same URI space (for example ‘Wikidata: persons’ and ‘Wikidata: all entities’), only the broadest source claims the prefix, so lookups report that broadest source. Sources that share a prefix without such a broader source (such as the GTAA sub-schemes) are told apart by the term’s `skos:inScheme` value instead.
 
+There is no practical limit on the number of URIs in one request, and no need to split a large one yourself: the Network of Terms groups the URIs by the source that claims their prefix and queries each source in batches, sizing those batches to what the source will take.
+
+That size is not the same everywhere. A lookup answers with every label, note and related term of every URI it is given, so a batch that one source answers in a second is more than another will accept – and a source accepts less when it is busy. Rather than fix a number per source, the Network of Terms lowers a source’s batch size when it fails to answer one and raises it again when it does, so a request of many URIs takes as few queries as each source allows.
+
+Requests of more than 1000 URIs are refused. That is a safety valve, not a working limit: a request that large keeps the slowest source busy for minutes.
+
 ## Discover reconciliation endpoints
 
 Sources that offer a [Reconciliation API](reconciliation.md) advertise it via the `features` field. Each feature has a `type` and a `url`; the entry with `type: RECONCILIATION` carries the endpoint URL to configure in OpenRefine.
