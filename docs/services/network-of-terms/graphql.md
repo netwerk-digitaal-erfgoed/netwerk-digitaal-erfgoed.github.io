@@ -184,8 +184,8 @@ A term object has:
   that denotes something other than a place, or a place its source says nothing more about, has no
   `place`. It also carries an `additionalType`: what kind of place this is, as a URI in the source’s
   own vocabulary – a GeoNames feature code such as `https://www.geonames.org/ontology#P.PPLA`. Those
-  vocabularies are not harmonised across sources, and most publish the URI without a label, so
-  `label` is often empty and a client either recognises the vocabulary or joins to it itself. The
+  vocabularies are not harmonised across sources, and most publish the URI without a name, so
+  `name` is often empty and a client either recognises the vocabulary or joins to it itself. The
   place’s position in the place hierarchy is not repeated here: it stays on `broader` and `narrower`.
 
 In [collection management systems](../../glossary.md#collection-management-system), the term’s URI is used to link data to the term.
