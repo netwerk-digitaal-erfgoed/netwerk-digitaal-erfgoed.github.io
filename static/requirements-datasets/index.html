@@ -1490,7 +1490,7 @@ Possible extra rowspan handling
 </style>
   <meta content="Bikeshed version ac92c2f0d, updated Fri Aug 21 16:01:29 2026 -0700" name="generator">
   <link href="https://docs.nde.nl/requirements-datasets/" rel="canonical">
-  <meta content="43982a9c2614e0c15d07244715579743fe885992" name="revision">
+  <meta content="5144c8b83158784e9243c72aea9ea9080f44f7e8" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>
 td, th {
@@ -3112,45 +3112,60 @@ The Dataset Register uses this IRI to identify the distribution as an API.</p>
       <th>IRI
     <tbody>
      <tr>
-      <th scope="row">GraphQL
+      <th scope="row"><a href="https://spec.graphql.org/">GraphQL</a>
       <td>Protocol
       <td>API
-      <td>https://spec.graphql.org/
+      <td><code>https://spec.graphql.org/</code>
      <tr>
-      <th scope="row">Linked Art
+      <th scope="row"><a href="https://iiif.io/api/discovery/1.0/">IIIF Change Discovery</a>
+      <td>Protocol
+      <td>API
+      <td><code>https://iiif.io/api/discovery/1.0/</code>
+     <tr>
+      <th scope="row"><a href="https://w3id.org/ldes/specification">LDES</a>
+      <td>Protocol
+      <td>API
+      <td><code>https://w3id.org/ldes/specification</code>
+     <tr>
+      <th scope="row"><a href="https://linked.art/model/">Linked Art</a>
       <td>Application profile
       <td>API, download
-      <td>https://linked.art/model/
+      <td><code>https://linked.art/model/</code>
      <tr>
-      <th scope="row">OAI-PMH
+      <th scope="row"><a href="https://linked.art/api/1.0/search/">Linked Art Search</a>
       <td>Protocol
       <td>API
-      <td>http://www.openarchives.org/pmh/
+      <td><code>https://linked.art/api/1.0/search/</code>
      <tr>
-      <th scope="row">OpenAPI REST
+      <th scope="row"><a href="http://www.openarchives.org/pmh/">OAI-PMH</a>
       <td>Protocol
       <td>API
-      <td>https://spec.openapis.org/oas/v3.2.0.html
+      <td><code>http://www.openarchives.org/pmh/</code>
+     <tr>
+      <th scope="row"><a href="https://spec.openapis.org/oas/v3.2.0.html">OpenAPI REST</a>
+      <td>Protocol
+      <td>API
+      <td><code>https://spec.openapis.org/oas/v3.2.0.html</code>
      <tr>
       <th scope="row"><a data-link-type="biblio" href="#biblio-schema-ap-nde" title="Schema.org Application Profile for Datasets">[SCHEMA-AP-NDE]</a>
       <td>Application profile
       <td>API, download
-      <td>https://docs.nde.nl/schema-profile/
+      <td><code>https://docs.nde.nl/schema-profile/</code>
      <tr>
-      <th scope="row">SPARQL
+      <th scope="row"><a href="https://www.w3.org/TR/sparql11-protocol/">SPARQL</a>
       <td>Protocol
       <td>API
-      <td>https://www.w3.org/TR/sparql11-protocol/
+      <td><code>https://www.w3.org/TR/sparql11-protocol/</code>
      <tr>
-      <th scope="row">TPF
+      <th scope="row"><a href="https://linkeddatafragments.org/specification/triple-pattern-fragments/">TPF</a>
       <td>Protocol
       <td>API
-      <td>https://linkeddatafragments.org/specification/triple-pattern-fragments/
+      <td><code>https://linkeddatafragments.org/specification/triple-pattern-fragments/</code>
      <tr>
-      <th scope="row">WMS
+      <th scope="row"><a href="https://www.ogc.org/standards/wms/">WMS</a>
       <td>Protocol
       <td>API
-      <td>https://www.ogc.org/standards/wms/
+      <td><code>https://www.ogc.org/standards/wms/</code>
    </table>
    <div class="example" id="example-50d92e51">
     <a class="self-link" href="#example-50d92e51"></a>
@@ -3565,7 +3580,8 @@ even if that resource is the same on all pages.</p>
                 
      <tr>
       <th scope="row"><a href="schema:usageInfo">schema:usageInfo</a>
-      <td>A link to the documentation: for downloads, the application profile, vocabulary or ontology; for <a data-link-type="dfn" href="#web-api" id="ref-for-web-api④">web API</a>s (such as SPARQL or OAI-PMH), the protocol specification. See <a href="#usage-information">§ 4.4.2 Usage information</a>.
+      <td>A link to the documentation: for downloads, the application profile, vocabulary or ontology; for <a data-link-type="dfn" href="#web-api" id="ref-for-web-api④">web API</a>s (such as SPARQL or OAI-PMH), the protocol specification.
+                It lets consumers tell a full data dump from an API that exposes only part of the data. See <a href="#usage-information">§ 4.4.2 Usage information</a>.
       <td>0..n
       <td>
                 Recommended
