@@ -9,7 +9,7 @@ The Dutch [Digital Heritage Network](https://netwerkdigitaalerfgoed.nl/en) (NDE)
 
 It is a collaboration between heritage institutions, both large and small. NDE:
 
-* publishes [Requirements](requirements.md) and best practices that improve interoperability   
+* publishes [Requirements](requirements/index.md) and best practices that improve interoperability   
 * offers [Services](services/index.md) that help you manage, use and share heritage data.
 
 ## Getting Started

@@ -1,0 +1,15 @@
+---
+sidebar_position: 2
+---
+
+# GraphQL API
+
+:::note
+
+This is a placeholder.
+
+:::
+
+## Introduction
+
+This specification defines how data layers and presentation layers exchange information using GraphQL.
