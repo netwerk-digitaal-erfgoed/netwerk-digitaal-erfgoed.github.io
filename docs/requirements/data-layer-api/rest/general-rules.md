@@ -1,4 +1,5 @@
 ---
+slug: /data-layer-api/rest/general-rules
 sidebar_position: 2
 ---
 

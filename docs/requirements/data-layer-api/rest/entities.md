@@ -1,4 +1,5 @@
 ---
+slug: /data-layer-api/rest/entities
 sidebar_position: 4
 ---
 

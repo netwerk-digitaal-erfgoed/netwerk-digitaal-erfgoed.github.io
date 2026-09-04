@@ -1,4 +1,5 @@
 ---
+slug: /data-layer-api/rest/extensions
 sidebar_position: 6
 ---
 

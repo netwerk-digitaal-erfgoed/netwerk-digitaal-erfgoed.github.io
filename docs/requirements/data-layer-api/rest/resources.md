@@ -1,4 +1,5 @@
 ---
+slug: /data-layer-api/rest/resources
 sidebar_position: 3
 ---
 

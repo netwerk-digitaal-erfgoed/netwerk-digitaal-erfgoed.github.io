@@ -1,4 +1,5 @@
 ---
+slug: /data-layer-api/graphql
 sidebar_position: 2
 ---
 

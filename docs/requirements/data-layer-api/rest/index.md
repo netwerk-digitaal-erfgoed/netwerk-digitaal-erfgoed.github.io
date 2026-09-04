@@ -1,4 +1,5 @@
 ---
+slug: /data-layer-api/rest
 sidebar_position: 1
 ---
 

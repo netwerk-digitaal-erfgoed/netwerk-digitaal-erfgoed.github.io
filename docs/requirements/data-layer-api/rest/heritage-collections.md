@@ -1,4 +1,5 @@
 ---
+slug: /data-layer-api/rest/heritage-collections
 sidebar_position: 5
 ---
 

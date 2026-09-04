@@ -1,5 +1,6 @@
 ---
 sidebar_position: 1
+slug: /data-layer-api
 ---
 
 # Data Layer API specification

@@ -1,4 +1,5 @@
 ---
+slug: /data-layer-api/rest/suggestions
 sidebar_position: 8
 ---
 
