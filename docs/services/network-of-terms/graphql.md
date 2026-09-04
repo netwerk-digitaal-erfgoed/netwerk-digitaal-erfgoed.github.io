@@ -462,7 +462,7 @@ what they did, their nationality, and the split of their name into given and fam
 name where the source states it. Their full names stay on `prefLabel` and `altLabel`,
 and their alignments to other sources on `exactMatch`, as for any term.
 
-```graphql title="Birth and death of the person a term denotes" {6-15}
+```graphql title="Birth and death of the person a term denotes" {6-20}
 query {
   lookup(uris: ["https://data.rkd.nl/artists/66219"], languages: [nl]) {
     result {
@@ -475,7 +475,12 @@ query {
           deathDate
           birthPlace { uri name { language value } }
           deathPlace { uri name { language value } }
-          hasOccupation { uri name { language value } }
+          hasOccupation {
+            occupation { uri name { language value } }
+            roleName { language value }
+            startDate
+            endDate
+          }
           nationality { uri name { language value } }
         }
       }
@@ -508,8 +513,18 @@ query {
       }
     ],
     "hasOccupation": [
-      { "uri": null, "name": [{ "language": "nl", "value": "schilder" }] },
-      { "uri": null, "name": [{ "language": "nl", "value": "etser" }] }
+      {
+        "occupation": null,
+        "roleName": [{ "language": "nl", "value": "schilder" }],
+        "startDate": null,
+        "endDate": null
+      },
+      {
+        "occupation": null,
+        "roleName": [{ "language": "nl", "value": "etser" }],
+        "startDate": null,
+        "endDate": null
+      }
     ],
     "nationality": [
       { "uri": null, "name": [{ "language": "nl", "value": "Noord-Nederlands" }] }
@@ -526,12 +541,18 @@ such as `1620~` for circa. The value is passed through as the source states it a
 not validated, so parse it with an EDTF library rather than as a plain date. A source
 that states no date leaves the field `null`.
 
-**Places, occupations and nationality are references**: a `uri` from the source’s own
-vocabulary, the `name` the source gives it, or both. RKDartists identifies a birth place
-in its thesaurus and names it in Dutch and English; it publishes occupations only as
-names, so those come back with `uri: null`. A reference by name alone is one reference
-per name, so a client asking for two languages gets `schilder` and `painter` as separate
-entries. The vocabularies differ per source and are not harmonised.
+**Places and nationality are references**: a `uri` from the source’s own vocabulary, the
+`name` the source gives it, or both. RKDartists identifies a birth place in its thesaurus
+and names it in Dutch and English. A reference by name alone is one reference per name,
+so a client asking for two languages gets `Nederlands` and `Dutch` as separate entries.
+The vocabularies differ per source and are not harmonised.
+
+**Occupations are roles**, in the shape of schema.org’s `Role`: the `occupation` as a
+reference where the source identifies it as a term, the `roleName` where the source only
+names it, and `startDate` and `endDate` as EDTF strings where the source states a
+period. RKDartists publishes occupations only as names, so they come back as `roleName`
+with no period; a source that publishes dated roles, as the STCN does for its printers
+and booksellers, fills all of it.
 
 **Given and family name** are filled by sources that publish them apart, such as the
 NTA and Muziekschatten. RKDartists publishes names whole, so for Rembrandt both are empty
