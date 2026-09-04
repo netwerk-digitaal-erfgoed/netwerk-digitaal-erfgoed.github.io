@@ -458,16 +458,19 @@ cover several genres.
 ### Persons
 
 For a person, the same layer is the `person` field: when they were born and died, where,
-what they did and their nationality. Their names stay on `prefLabel` and `altLabel`, and
-their alignments to other sources on `exactMatch`, as for any term.
+what they did, their nationality, and the split of their name into given and family
+name where the source states it. Their full names stay on `prefLabel` and `altLabel`,
+and their alignments to other sources on `exactMatch`, as for any term.
 
-```graphql title="Birth and death of the person a term denotes" {6-13}
+```graphql title="Birth and death of the person a term denotes" {6-15}
 query {
   lookup(uris: ["https://data.rkd.nl/artists/66219"], languages: [nl]) {
     result {
       ... on TranslatedTerm {
         prefLabel { language value }
         person {
+          givenName { language value }
+          familyName { language value }
           birthDate
           deathDate
           birthPlace { uri name { language value } }
@@ -488,6 +491,8 @@ query {
 {
   "prefLabel": [{ "language": "nl", "value": "Rembrandt" }],
   "person": {
+    "givenName": [],
+    "familyName": [],
     "birthDate": "1606-07-15/1607",
     "deathDate": "1669-10-04",
     "birthPlace": [
@@ -527,6 +532,10 @@ in its thesaurus and names it in Dutch and English; it publishes occupations onl
 names, so those come back with `uri: null`. A reference by name alone is one reference
 per name, so a client asking for two languages gets `schilder` and `painter` as separate
 entries. The vocabularies differ per source and are not harmonised.
+
+**Given and family name** are filled by sources that publish them apart, such as the
+NTA and Muziekschatten. RKDartists publishes names whole, so for Rembrandt both are empty
+and `prefLabel` is the name.
 
 `person` is `null` when the source describes no person, whether because the term denotes
 something else or because the source states none of these facts about the person. The
