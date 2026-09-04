@@ -455,6 +455,83 @@ cover several genres.
 
 :::
 
+### Persons
+
+For a person, the same layer is the `person` field: when they were born and died, where,
+what they did and their nationality. Their names stay on `prefLabel` and `altLabel`, and
+their alignments to other sources on `exactMatch`, as for any term.
+
+```graphql title="Birth and death of the person a term denotes" {6-13}
+query {
+  lookup(uris: ["https://data.rkd.nl/artists/66219"], languages: [nl]) {
+    result {
+      ... on TranslatedTerm {
+        prefLabel { language value }
+        person {
+          birthDate
+          deathDate
+          birthPlace { uri name { language value } }
+          deathPlace { uri name { language value } }
+          hasOccupation { uri name { language value } }
+          nationality { uri name { language value } }
+        }
+      }
+      ... on Error {
+        message
+      }
+    }
+  }
+}
+```
+
+```json title="Response (abridged)"
+{
+  "prefLabel": [{ "language": "nl", "value": "Rembrandt" }],
+  "person": {
+    "birthDate": "1606-07-15/1607",
+    "deathDate": "1669-10-04",
+    "birthPlace": [
+      {
+        "uri": "https://data.rkd.nl/thesaurus/11",
+        "name": [{ "language": "nl", "value": "Leiden (stad)" }]
+      }
+    ],
+    "deathPlace": [
+      {
+        "uri": "https://data.rkd.nl/thesaurus/29",
+        "name": [{ "language": "nl", "value": "Amsterdam (stad)" }]
+      }
+    ],
+    "hasOccupation": [
+      { "uri": null, "name": [{ "language": "nl", "value": "schilder" }] },
+      { "uri": null, "name": [{ "language": "nl", "value": "etser" }] }
+    ],
+    "nationality": [
+      { "uri": null, "name": [{ "language": "nl", "value": "Noord-Nederlands" }] }
+    ]
+  }
+}
+```
+
+**Dates are EDTF strings**, the [Extended Date/Time Format](https://www.loc.gov/standards/datetime/):
+the Library of Congress profile of ISO 8601. Historical persons rarely come with a full
+date, so the field holds whatever precision the source knows – `1606`, `1606-07`,
+`1606-07-15` – an interval such as Rembrandt’s `1606-07-15/1607`, or a qualified date
+such as `1620~` for circa. The value is passed through as the source states it and is
+not validated, so parse it with an EDTF library rather than as a plain date. A source
+that states no date leaves the field `null`.
+
+**Places, occupations and nationality are references**: a `uri` from the source’s own
+vocabulary, the `name` the source gives it, or both. RKDartists identifies a birth place
+in its thesaurus and names it in Dutch and English; it publishes occupations only as
+names, so those come back with `uri: null`. A reference by name alone is one reference
+per name, so a client asking for two languages gets `schilder` and `painter` as separate
+entries. The vocabularies differ per source and are not harmonised.
+
+`person` is `null` when the source describes no person, whether because the term denotes
+something else or because the source states none of these facts about the person. The
+`scopeNote` a source composed from the same data is unchanged.
+
 ## Discover reconciliation endpoints
 
 Sources that offer a [Reconciliation API](reconciliation.md) advertise it via the `features` field. Each feature has a `type` and a `url`; the entry with `type: RECONCILIATION` carries the endpoint URL to configure in OpenRefine.
