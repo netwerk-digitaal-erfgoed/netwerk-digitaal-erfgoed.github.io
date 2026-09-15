@@ -9,14 +9,6 @@ sidebar_position: 2
 
 An API provides an interface for presentation layers to interact with a data layer, decoupling them from specific underlying systems and technologies. To ensure consistent and predictable interactions, a data layer's API must adhere to several rules.
 
-:::note
-
-**To do**:
-
-- Explain the use of the `Accept-Encoding` and `Content-Encoding` HTTP headers (e.g. `gzip`, `br`)?
-
-:::
-
 ## Documentation
 
 The API is as good as the accompanying documentation. The documentation of the API must be easily discoverable, searchable and publicly accessible. It is often the primary resource for developers of presentation layers during implementation.
@@ -148,6 +140,38 @@ The response indicates that the content is in Dutch and that a new request to th
 ## Character encoding
 
 Character encoding defines how characters are converted into bytes by the data layer for transmission to a presentation layer. The data layer _MUST_ encode all API payload responses using [UTF-8](https://www.rfc-editor.org/info/rfc3629/), except for payloads that are binary by nature, such as images.
+
+## Compression
+
+Compression reduces the size of a response body as it is transmitted to a presentation layer, improving performance and reducing bandwidth use. The API _SHOULD_ support compression. This section lists the primary requirements — see [HTTP Semantics](https://www.rfc-editor.org/info/rfc9110/#section-8.4.1) for more information.
+
+1. A presentation layer _MAY_ send the `Accept-Encoding` header in its request to indicate which compression schemes it supports, such as `gzip`, `br`, `deflate` or `zstd`. Its value _MUST_ conform to the [HTTP semantics](https://www.rfc-editor.org/info/rfc9110/#field.accept-encoding).
+1. If a presentation layer sends the `Accept-Encoding` header, the API _MAY_ compress the response body using one of the schemes the presentation layer supports. The API _MUST_ then send the `Content-Encoding` header to indicate which scheme it used; its value _MUST_ conform to the [HTTP semantics](https://www.rfc-editor.org/info/rfc9110/#field.content-encoding).
+1. If a presentation layer does not send the `Accept-Encoding` header, or requests only schemes the API does not support, the API _MUST_ send the response body uncompressed, without a `Content-Encoding` header.
+1. The API _MUST_ send the `Vary: Accept-Encoding` header to indicate to a presentation layer that responses can differ based on the value of the `Accept-Encoding` request header. This informs a presentation layer that changing the value of the `Accept-Encoding` header in a request will yield a differently compressed representation of a resource.
+
+### Example
+
+An example request from a presentation layer:
+
+```http
+GET /v1/entities/objects/1234 HTTP/2
+Host: example.org
+Accept-Encoding: gzip, br
+```
+
+This tells the API that the presentation layer can handle the compressed response body with either `gzip` or `br`.
+
+An example of the response headers of the API:
+
+```http
+HTTP/2 200 OK
+Content-Type: application/json
+Content-Encoding: br
+Vary: Accept-Encoding
+```
+
+The response indicates that the body is a JSON representation compressed with Brotli (`br`). The `Vary: Accept-Encoding` header indicates that a new request to the same resource with a different `Accept-Encoding` header value will result in a differently compressed representation of the resource.
 
 ## Caching
 
