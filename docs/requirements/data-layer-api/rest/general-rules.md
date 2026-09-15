@@ -14,7 +14,6 @@ An API provides an interface for presentation layers to interact with a data lay
 **To do**:
 
 - Explain the use of the `Accept-Encoding` and `Content-Encoding` HTTP headers (e.g. `gzip`, `br`)?
-- Explain the rules about the character encoding of payloads, i.e. UTF-8?
 
 :::
 
@@ -145,6 +144,10 @@ Vary: Accept-Language
 ```
 
 The response indicates that the content is in Dutch and that a new request to the same resource with a different `Accept-Language` header value will result in a different representation of the resource.
+
+## Character encoding
+
+Character encoding defines how characters are converted into bytes by the data layer for transmission to a presentation layer. The data layer _MUST_ encode all API payload responses using [UTF-8](https://www.rfc-editor.org/info/rfc3629/), except for payloads that are binary by nature, such as images.
 
 ## Caching
 
