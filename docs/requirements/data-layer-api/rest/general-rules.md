@@ -172,33 +172,24 @@ The response indicates that this resource can be cached for 1 hour (`max-age=360
 
 ## Rate limiting
 
-Rate limiting is a traffic control mechanism that caps the number of requests a presentation layer can make to the API within a specific timeframe. It protects the data layer's infrastructure from overload and abuse. See [Retry-After](https://www.rfc-editor.org/info/rfc9110/#name-retry-after) and [RateLimit header fields for HTTP](https://datatracker.ietf.org/doc/html/draft-ietf-httpapi-ratelimit-headers) for more information.
+Rate limiting is a traffic control mechanism that caps the number of requests a presentation layer can make to the API within a specific time window. It protects the data layer's infrastructure from overload and abuse. This section lists the primary requirements — see [Retry-After](https://www.rfc-editor.org/info/rfc9110/#name-retry-after) and [RateLimit header fields for HTTP](https://datatracker.ietf.org/doc/html/draft-ietf-httpapi-ratelimit-headers) for more information.
 
-:::note
-
-**To do**: align the rules and examples with the [Internet-Draft definitions](https://datatracker.ietf.org/doc/html/draft-ietf-httpapi-ratelimit-headers).
-
-:::
-
-1. The API _SHOULD_ support rate limiting. The data layer chooses a strategy that best fits its situation. For example, the data layer may choose a rate limiting algorithm such as Token Bucket, Fixed Window Counter or Sliding Window. The data layer may also choose a method for identifying presentation layers, for example based on IP address or the `User-Agent` header.
-1. The API _SHOULD_ send the `RateLimit-Limit` header to indicate the requests quota in the current timeframe.
-1. The API _SHOULD_ send the `RateLimit-Remaining` header to indicate the remaining requests quota in the current timeframe.
-1. The API _SHOULD_ send the `RateLimit-Reset` header to indicate how much time remains in the current timeframe before the requests quota is reset.
-1. The API _SHOULD_ send a `429 Too Many Requests` status code if a presentation layer has sent too many requests within the current timeframe.
-1. The API _SHOULD_ send the `Retry-After` header if a presentation layer has sent too many requests within the current timeframe, to indicate how long the presentation layer ought to wait before making a new request.
+1. The API _SHOULD_ support rate limiting. The data layer chooses a policy that best fits its situation. For example, the data layer may choose a rate limiting algorithm such as Token Bucket, Fixed Window Counter or Sliding Window. The data layer may also choose a method for identifying presentation layers, for example based on IP address or the `User-Agent` header.
+1. The API _SHOULD_ send the `RateLimit-Policy` and `RateLimit` headers to communicate its rate limiting policy and the current limits for a particular presentation layer.
+1. The API _SHOULD_ send a `429 Too Many Requests` status code if a presentation layer has sent too many requests within the current time window.
+1. The API _SHOULD_ send the `Retry-After` header if a presentation layer has sent too many requests within the current time window, to indicate how long the presentation layer ought to wait before making a new request.
 
 ### Example
 
-An example of the response headers of the API when no rate limit has been reached:
+An example of the response headers of the API:
 
 ```http
 HTTP/2 200 OK
-RateLimit-Limit: 100
-RateLimit-Remaining: 75
-RateLimit-Reset: 60
+RateLimit-Policy: "default";q=100;w=60
+RateLimit: "default";r=50;t=30
 ```
 
-The response indicates that it can send up to 100 requests in the current timeframe, that it already has sent 25 requests and that 75 are remaining, and that the rate limit will be reset in 60 seconds.
+The `RateLimit-Policy` indicates that a presentation layer may send up to 100 requests (`q=100`) per 60 seconds (`w=60`). The `RateLimit` shows 50 of those remain (`r=50`) and that they may be used within the next 30 seconds (`t=30`).
 
 An example of the response headers of the API when a rate limit has been reached:
 
@@ -207,7 +198,7 @@ HTTP/2 429 Too Many Requests
 Retry-After: 120
 ```
 
-The response indicates that it has made too many requests and that it can try again after 120 seconds.
+The response indicates that a presentation layer has made too many requests and that it can try again after 120 seconds.
 
 ## Cross-Origin Resource Sharing (CORS)
 
