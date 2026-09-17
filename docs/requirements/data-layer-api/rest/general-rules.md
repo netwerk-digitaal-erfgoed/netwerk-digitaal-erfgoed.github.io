@@ -44,9 +44,7 @@ API-Version: 1.2.3
 
 The response indicates that the exact version of the API is `1.2.3`.
 
-The data layer _MUST_ facilitate the transition between versions. For example, the data layer _SHOULD_ publish a deprecation schedule and a changelog.
-
-See [Versioning](https://logius-standaarden.github.io/API-Design-Rules/#versioning) in the API Design Rules for more information.
+The data layer _MUST_ facilitate the transition between versions. For example, the data layer _SHOULD_ publish a deprecation schedule and a changelog. See [Versioning](https://logius-standaarden.github.io/API-Design-Rules/#versioning) in the API Design Rules for more information.
 
 ## Status codes
 
