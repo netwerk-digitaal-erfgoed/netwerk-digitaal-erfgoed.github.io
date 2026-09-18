@@ -177,7 +177,16 @@ A term object has:
 * `scopeNote` that provides additional information
 * `seeAlso` that links to a web page for humans about the term
 * `broader`, `narrower`, and `related` terms that are related to the term
-* `exactMatch`es that link to terms in other terminology sources.
+* `exactMatch`es that link to terms in other terminology sources
+* a `place` that the term denotes, if its source describes one. It carries the place’s own `name`
+  – the name the source holds, without any disambiguating suffix that `prefLabel` may append –
+  its `latitude` and `longitude`, and its `addressCountry` as an ISO 3166-1 alpha-2 code. A term
+  that denotes something other than a place, or a place its source says nothing more about, has no
+  `place`. It also carries an `additionalType`: what kind of place this is, as a URI in the source’s
+  own vocabulary – a GeoNames feature code such as `https://www.geonames.org/ontology#P.PPLA`. Those
+  vocabularies are not harmonised across sources, and most publish the URI without a name, so
+  `name` is often empty and a client either recognises the vocabulary or joins to it itself. The
+  place’s position in the place hierarchy is not repeated here: it stays on `broader` and `narrower`.
 
 In [collection management systems](../../glossary.md#collection-management-system), the term’s URI is used to link data to the term.
 
