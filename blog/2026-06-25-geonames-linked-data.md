@@ -152,12 +152,13 @@ Each phase fails, retries and scales on its own.
 flowchart TD
   subgraph GN["GeoNames"]
     direction LR
-    A["allCountries.zip (13.3M rows)"]
+    A["allCountries.zip (13.5M rows)"]
+    AN["alternateNamesV2 (19.2M rows in scope)"]
     AS["admin1/2 codes"]
   end
   subgraph GHA["GitHub Actions"]
     direction LR
-    B["split -l 1M"] --> M["map per chunk (×14)"] --> N["cat → geonames.nt"]
+    B["split -l 1M (×34)"] --> M["map per chunk (4 at a time)"] --> N["cat → geonames.nt"]
     AC["admin-codes.ttl"] -.->|join| M
   end
   subgraph K8S["Kubernetes"]
@@ -165,8 +166,9 @@ flowchart TD
     D["blue/green TDB2 + Lucene"] --> E["Fuseki"] --> F["Network of Terms"]
   end
   A --> B
+  AN --> B
   AS --> AC
-  N --> C[("geonames.zip on S3")]
+  N --> C[("geonames.nt.gz + .zip on S3")]
   C --> D
 ```
 
@@ -193,7 +195,7 @@ The build stage runs on a free GitHub-hosted runner (public repos): 4 vCPUs, **1
 - **Memory.** The dataset was too large to load in one go, and at the time SPARQL Anything could not stream a CSV in usable batches: `fx:slice true` sliced one row per query, unusably slow.
 - **Disk.** Spilling to disk did not help: `fx:ondisk` first materialises *all* triples, and the on-disk store grew without bound, straight past the runner’s 14 GB. On roomier hardware we watched it reach **51 GB** with still no output after 2h before we killed it.
 
-We reported the missing per-query batch size as [#624](https://github.com/SPARQL-Anything/sparql.anything/issues/624), and **SPARQL Anything 1.2 added it**: `fx:slice.size 1000` streams a source in batches of 1000 rows, mapping a 1M-row chunk about **7× faster** at lower memory. We still split the TSV first (`split -l 1M`) and run one chunk per process, though – the `CONSTRUCT` output is assembled in memory before it is written (so peak memory tracks the *total* output, which we reported separately as [#635](https://github.com/SPARQL-Anything/sparql.anything/issues/635)), and a fresh JVM per chunk is what caps that. Split and slice do different jobs: **slice for speed, split for memory.**
+We reported the missing per-query batch size as [#624](https://github.com/SPARQL-Anything/sparql.anything/issues/624), and **SPARQL Anything 1.2 added it**: `fx:slice.size 1000` streams a source in batches of 1000 rows, mapping a 1M-row chunk about **7× faster** at lower memory. We still split the TSVs first (`split -l 1M`) and run one chunk per process, though – 34 chunks today across the two tables, four JVMs at a time on the runner’s 4 vCPUs, about 17 minutes of the run – the `CONSTRUCT` output is assembled in memory before it is written (so peak memory tracks the *total* output, which we reported separately as [#635](https://github.com/SPARQL-Anything/sparql.anything/issues/635)), and a fresh JVM per chunk is what caps that. Split and slice do different jobs: **slice for speed, split for memory.**
 
 ## Verify
 
