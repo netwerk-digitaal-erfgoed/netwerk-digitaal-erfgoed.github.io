@@ -14,6 +14,10 @@ rdf:
   label: "RDF"
   permalink: /rdf
 
+sparql:
+  label: "SPARQL"
+  permalink: /sparql
+
 persistent-http-uris:
   label: "Persistent HTTP uris"
   permalink: /persistent-http-uris

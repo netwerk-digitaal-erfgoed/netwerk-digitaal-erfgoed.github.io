@@ -1,7 +1,7 @@
 ---
 title: Turning GeoNames into linked data
 authors: ddeboer
-tags: [network-of-terms, rdf]
+tags: [network-of-terms, rdf, sparql, services]
 ---
 
 A while ago we [added worldwide GeoNames to the Network of Terms](/blog/2025/05/29/geonames). That post announced the *what*; this one is the *how*, because getting [GeoNames](https://www.geonames.org/) in there was less obvious than it sounds.
