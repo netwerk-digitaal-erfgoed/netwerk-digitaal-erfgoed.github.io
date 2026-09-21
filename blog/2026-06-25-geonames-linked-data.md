@@ -38,15 +38,14 @@ But – and this is the point – it **does not extend the SPARQL grammar** (unl
 SPARQL only works on RDF, and we have a TSV. So how? With an ordinary `CONSTRUCT`:
 
 ```sparql
-PREFIX gn: <http://www.geonames.org/ontology#>
+PREFIX gn: <https://www.geonames.org/ontology#>
 PREFIX fx: <http://sparql.xyz/facade-x/ns/>
 PREFIX xyz: <http://sparql.xyz/facade-x/data/>
-PREFIX apf: <http://jena.apache.org/ARQ/property#>
 
 CONSTRUCT {
   ?uri a gn:Feature ;
     gn:name ?name ;
-    gn:alternateName ?alt .
+    gn:countryCode ?countryCode .
 }
 WHERE {
   SERVICE <x-sparql-anything:> {
@@ -56,8 +55,7 @@ WHERE {
       fx:csv.quote-char "false" . # GeoNames TSV is unquoted; see below
     ?s xyz:geonameid ?id ;
       xyz:name ?name ;
-      xyz:alternatenames ?alts .
-    ?alt apf:strSplit (?alts ",") . # no split in pure SPARQL, so use Jena
+      xyz:country%20code ?countryCode . # a space in a header becomes %20
     BIND(URI(CONCAT("https://sws.geonames.org/", ?id, "/")) AS ?uri)
   }
 }
@@ -68,6 +66,7 @@ SPARQL Anything is a Jena ARQ extension that **intercepts** the `SERVICE` keywor
 you put the source and some parameters there, and SPARQL Anything does the actual conversion for you.
 Those parameters are the `fx:properties` line: `fx:properties` is a reserved ‘magic’ subject, and every predicate-object pair you hang off it is read as a configuration option for the triplifier rather than as a pattern to match against the data. So here it says: read `geonames.tsv`, treat it as tab-delimited (`fx:csv.delimiter "\t"`), and take the first row as column headers (`fx:csv.headers true`) – which is what lets you refer to columns by name as `xyz:geonameid`, `xyz:name` and so on.
 Note that we reuse the existing GeoNames IRIs (`https://sws.geonames.org/{id}/`) rather than minting our own.
+Names in other languages come from a second, similar query: the main table’s `alternatenames` column is a comma-separated list without language codes, so we map the separate `alternateNamesV2` table instead and emit language-tagged `gn:alternateName`, `gn:officialName`, `gn:shortName`, `gn:colloquialName` and `gn:historicalName`.
 
 You run it from the command line:
 
@@ -175,7 +174,7 @@ flowchart TD
 
 ### Build 
 
-**Harvest and conversion run outside our hosting cluster**, on GitHub Actions with a scheduled workflow. Weekly and automatically, it harvests the GeoNames dump, converts it to RDF and publishes [`geonames.zip`](https://geonames.ams3.digitaloceanspaces.com/geonames.zip) to S3. That file is public, and it is the point: anyone can download the converted GeoNames RDF and load it into their own store. Our serve stage is just one consumer of it. You do not have to run the conversion yourself.
+**Harvest and conversion run outside our hosting cluster**, on GitHub Actions with a scheduled workflow. Weekly and automatically, it harvests the GeoNames dump, converts it to RDF and publishes [`geonames.nt.gz`](https://geonames.ams3.digitaloceanspaces.com/geonames.nt.gz) to S3: about 860 MB of N-Triples, next to a [`geonames.zip`](https://geonames.ams3.digitaloceanspaces.com/geonames.zip) we keep for existing consumers. The last run took 27 minutes. Those files are public, and that is the point: anyone can download the converted GeoNames RDF and load it into their own store. Our serve stage is just one consumer of it. You do not have to run the conversion yourself.
 
 Because SPARQL Anything is SPARQL, you can **federate:** pull in other data mid-query. We use this for the administrative codes: in the main file, parent relationships are only given as codes, which we want to resolve to GeoNames URIs. So we first convert the admin-code lookup tables to RDF (themselves a SPARQL Anything conversion), then the places query joins against that `admin-codes.ttl` to produce `gn:parentADM1` and `gn:parentADM2`. A caveat: federating per row to a *remote* endpoint over 13M rows is impractical (latency, rate limits), so load bounded lookup tables locally instead.
 
@@ -183,7 +182,7 @@ Because SPARQL Anything is SPARQL, you can **federate:** pull in other data mid-
 
 ### Serve
 
-**Indexing runs in-cluster, [blue/green](/stack/patterns#bluegreen-rebuild).** A [Kubernetes](https://github.com/netwerk-digitaal-erfgoed/infrastructure) job downloads `geonames.zip` and builds a fresh TDB2 store plus Lucene index on a staging volume (green), while Fuseki keeps serving the current production index (blue). That build takes ~28 min. Then a swap: stop Fuseki, move staging to prod, restart – near-zero downtime. The result (134M+ triples / 13M features) is served from Fuseki, which we need for its Lucene full-text search.
+**Indexing runs in-cluster, [blue/green](/stack/patterns#bluegreen-rebuild).** A [Kubernetes](https://github.com/netwerk-digitaal-erfgoed/infrastructure) job downloads `geonames.zip` and builds a fresh TDB2 store plus Lucene index on a staging volume (green), while Fuseki keeps serving the current production index (blue). That build takes about two hours: roughly an hour for the TDB2 load, the rest for the text index. Then a swap: stop Fuseki, move staging to prod, restart – near-zero downtime. The result (134.8M triples / 13.37M features) is served from Fuseki, which we need for its Lucene full-text search.
 
 And then the goal is reached: GeoNames is searchable in the Network of Terms.
 
@@ -213,7 +212,7 @@ On 30 Nov 2025 the output had 12.27M features; with the quote fix it was 13.33M:
 ## One language, one skillset
 
 SPARQL Anything is a lightweight conversion step; you build the pipeline around it yourself. Roughly positioned against the alternatives, it sits at the single-tool end: more standardised mapping languages like RML ask you to learn a language of their own; orchestrators like [rdf-connect](https://github.com/rdf-connect) wrap such steps into full pipelines; complete suites like [TriplyETL](https://docs.triply.cc/triply-etl/) add validation and a store, but are commercial and closed. SPARQL Anything reuses the SPARQL you already know, and nothing more.
-[LD Elements](https://ldelements.org), a set of composable building blocks for your linked data apps and pipelines, [now supports SPARQL Anything](https://ldelements.org/reference/sparql-anything#lde-sparql-anything).
+[LD Elements](https://ldelements.org), a set of composable building blocks for your linked data apps and pipelines, [now supports SPARQL Anything](https://ldelements.org/reference/sparql-anything#lde-sparql-anything) – and since September 2026 the weekly GeoNames harvest runs on it.
 
 ---
 
