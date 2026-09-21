@@ -9,8 +9,7 @@ A while ago we [added worldwide GeoNames to the Network of Terms](/blog/2025/05/
 GeoNames has no usable RDF. There is official ‘RDF’, but it dates from 2020, it is broken RDF/XML and incomplete anyway.
 There’s also per-resource RDF, but that’s hard to work with for 13M+ resources.
 So we fell back to the TSV dump: messy, but recent and complete.
-This is the story of converting that TSV to RDF using nothing but the SPARQL we already know:
-no bespoke scripts, no separate mapping language.
+This is the story of converting that TSV to RDF using only the SPARQL we already know.
 And of why the pipeline around the conversion is what turns a one-off experiment into an actual service.
 
 <!-- truncate -->
@@ -184,7 +183,7 @@ Because SPARQL Anything is SPARQL, you can **federate:** pull in other data mid-
 
 ### Serve
 
-**Indexing runs in-cluster, [blue/green](/stack/patterns#bluegreen-rebuild).** A [Kubernetes](https://github.com/netwerk-digitaal-erfgoed/infrastructure) job downloads `geonames.zip` and builds a fresh TDB2 store plus Lucene index on a staging volume (green), while Fuseki keeps serving the current production index (blue). That build takes ~28 min. Then a swap: stop Fuseki, move staging to prod, restart – near-zero downtime. The result (137M triples / 13M features) is served from Fuseki, which we need for its Lucene full-text search.
+**Indexing runs in-cluster, [blue/green](/stack/patterns#bluegreen-rebuild).** A [Kubernetes](https://github.com/netwerk-digitaal-erfgoed/infrastructure) job downloads `geonames.zip` and builds a fresh TDB2 store plus Lucene index on a staging volume (green), while Fuseki keeps serving the current production index (blue). That build takes ~28 min. Then a swap: stop Fuseki, move staging to prod, restart – near-zero downtime. The result (134M+ triples / 13M features) is served from Fuseki, which we need for its Lucene full-text search.
 
 And then the goal is reached: GeoNames is searchable in the Network of Terms.
 
@@ -213,11 +212,8 @@ On 30 Nov 2025 the output had 12.27M features; with the quote fix it was 13.33M:
 
 ## One language, one skillset
 
-SPARQL Anything is not the whole puzzle – just a lightweight conversion step that you build a pipeline around yourself. Roughly positioned against the alternatives, it sits at the single-tool end: more standardised mapping languages like RML ask you to learn a language of their own; orchestrators like [rdf-connect](https://github.com/rdf-connect) wrap such steps into full pipelines; complete suites like [TriplyETL](https://docs.triply.cc/triply-etl/) add validation and a store, but are commercial and closed. SPARQL Anything reuses the SPARQL you already know, and nothing more.
+SPARQL Anything is a lightweight conversion step; you build the pipeline around it yourself. Roughly positioned against the alternatives, it sits at the single-tool end: more standardised mapping languages like RML ask you to learn a language of their own; orchestrators like [rdf-connect](https://github.com/rdf-connect) wrap such steps into full pipelines; complete suites like [TriplyETL](https://docs.triply.cc/triply-etl/) add validation and a store, but are commercial and closed. SPARQL Anything reuses the SPARQL you already know, and nothing more.
 [LD Elements](https://ldelements.org), a set of composable building blocks for your linked data apps and pipelines, [now supports SPARQL Anything](https://ldelements.org/reference/sparql-anything#lde-sparql-anything).
-
-So: apply the knowledge you already have about querying RDF to non-RDF sources. One language, one skillset. 
-But make it a real *service*: a repeatable, automated pipeline that refreshes and indexes the data on its own, not a one-off experiment on your laptop.
 
 ---
 
