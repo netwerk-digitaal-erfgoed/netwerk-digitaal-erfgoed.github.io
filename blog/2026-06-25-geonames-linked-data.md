@@ -199,10 +199,10 @@ And then the goal is reached: GeoNames is searchable in the Network of Terms.
 
 ## Hitting the limits
 
-The build stage runs on a free GitHub-hosted runner (public repos): 4 vCPUs, **16 GB of RAM** and **14 GB of SSD**, and both the memory and the disk became ceilings.
+The build stage runs on a free GitHub-hosted runner (public repos): 4 vCPUs and **16 GB of RAM**, and both the memory and the disk became ceilings. Disk is the vaguer of the two: GitHub documents 14 GB of SSD, but that is the free space it guarantees rather than a limit, and our own job peaks at about 39 GB without ever running out – `map.sh` keeps every per-chunk `.nt` file while `cat` writes the 16 GB whole.
 
 - **Memory.** The dataset was too large to load in one go, and at the time SPARQL Anything could not stream a CSV in usable batches: `fx:slice true` sliced one row per query, unusably slow.
-- **Disk.** Spilling to disk did not help: `fx:ondisk` first materialises *all* triples, and the on-disk store grew without bound, straight past the runner’s 14 GB. On roomier hardware we watched it reach **51 GB** with still no output after 2h before we killed it.
+- **Disk.** Spilling to disk did not help: `fx:ondisk` first materialises *all* triples, and the on-disk store grew without bound, past everything the runner had free. On roomier hardware we watched it reach **51 GB** with still no output after 2h before we killed it.
 
 We reported the missing per-query batch size as [#624](https://github.com/SPARQL-Anything/sparql.anything/issues/624), and **SPARQL Anything 1.2 added it**: `fx:slice.size "1000"` streams a source in batches of 1000 rows, mapping a 1M-row chunk about **7× faster** at lower memory. We still split the TSVs first (`split -l 1M`) and run one chunk per process, though: the `CONSTRUCT` output is assembled in memory before it is written, so peak memory tracks the *total* output, which we reported separately as [#635](https://github.com/SPARQL-Anything/sparql.anything/issues/635). A fresh JVM per chunk is what caps that. Today that comes to 34 chunks across the two tables, four JVMs at a time on the runner’s 4 vCPUs, about 17 minutes of the run. Split and slice do different jobs: **slice for speed, split for memory.**
 
