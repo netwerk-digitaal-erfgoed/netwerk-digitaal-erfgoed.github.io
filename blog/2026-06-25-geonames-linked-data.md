@@ -68,6 +68,8 @@ Those parameters are the `fx:properties` line: `fx:properties` is a reserved ‘
 Note that we reuse the existing GeoNames IRIs (`https://sws.geonames.org/{id}/`) rather than minting our own.
 Names in other languages come from a second, similar query: the main table’s `alternatenames` column is a comma-separated list without language codes, so we map the separate `alternateNamesV2` table instead and emit language-tagged `gn:alternateName`, `gn:officialName`, `gn:shortName`, `gn:colloquialName` and `gn:historicalName`.
 
+That table carries more than names. Rows whose `isolanguage` reads `wkdt` hold a Wikidata QID instead, which we publish as `schema:sameAs` – 1.11M links, where GeoNames’ own RDF offers none. Deliberately not `owl:sameAs` or `skos:exactMatch`: 340 QIDs are claimed by more than one feature, because Wikidata models the three Tihange reactors as a single power station where GeoNames has three reactors, and an entailing predicate would merge their coordinates and populations. `schema:sameAs` states the link GeoNames does assert – its definition names a ‘Wikidata entry’ – and entails nothing about identity. The object keeps the `http` scheme, since `http://www.wikidata.org/entity/` is the only form Wikidata’s dumps and query service use, and RDF compares IRIs as strings.
+
 You run it from the command line:
 
 ```bash
@@ -141,7 +143,7 @@ The pipeline falls into two stages that meet at a single handoff:
 
 We keep them apart on purpose.
 The build is a heavy, bursty batch job (GBs of data, a fresh JVM per chunk) that has no business competing with the live query service for memory and CPU, so it runs outside the cluster on free GitHub-hosted runners. 
-And because the two stages communicate only through `geonames.zip` on S3, the conversion can be slow, retried or even fail without ever disturbing the endpoint people are querying. 
+And because the two stages communicate only through `geonames.nt.gz` and `geonames.zip` on S3, the conversion can be slow, retried or even fail without ever disturbing the endpoint people are querying. 
 Each phase fails, retries and scales on its own.
 
 <details>
@@ -184,7 +186,7 @@ Because SPARQL Anything is SPARQL, you can **federate:** pull in other data mid-
 
 ### Serve
 
-**Indexing runs in-cluster, [blue/green](/stack/patterns#bluegreen-rebuild).** A [Kubernetes](https://github.com/netwerk-digitaal-erfgoed/infrastructure) job downloads `geonames.zip` and builds a fresh TDB2 store plus Lucene index on a staging volume (green), while Fuseki keeps serving the current production index (blue). That build takes about two hours: roughly an hour for the TDB2 load, the rest for the text index. Then a swap: stop Fuseki, move staging to prod, restart – near-zero downtime. The result (134.8M triples / 13.37M features) is served from Fuseki, which we need for its Lucene full-text search.
+**Indexing runs in-cluster, [blue/green](/stack/patterns#bluegreen-rebuild).** A [Kubernetes](https://github.com/netwerk-digitaal-erfgoed/infrastructure) job downloads `geonames.nt.gz` and builds a fresh TDB2 store plus Lucene index on a staging volume (green), while Fuseki keeps serving the current production index (blue). `tdb2.xloader` reads the gzip as it is, so the 16 GB of plain N-Triples inside it never lands on disk. That build takes about two hours: roughly an hour for the TDB2 load, the rest for the text index. Then a swap: stop Fuseki, move staging to prod, restart: near-zero downtime. The result (134.8M triples / 13.37M features) is served from Fuseki, which we need for its Lucene full-text search.
 
 And then the goal is reached: GeoNames is searchable in the Network of Terms.
 
