@@ -1,7 +1,7 @@
 ---
 title: Publishing dataset descriptions with a SPARQL CONSTRUCT query
 authors: [coret, ddeboer]
-tags: [rdf, dataset-register]
+tags: [rdf, dataset-register, sparql]
 ---
 
 If you already publish linked data, you don’t need a separate file for your [dataset description](https://docs.nde.nl/requirements-datasets/): the [NDE Dataset Register](https://datasetregister.netwerkdigitaalerfgoed.nl/?lang=en) can read it straight from your triplestore with a `SPARQL CONSTRUCT` query.
