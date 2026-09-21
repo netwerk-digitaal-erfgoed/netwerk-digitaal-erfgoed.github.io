@@ -35,7 +35,7 @@ But – and this is the point – it **does not extend the SPARQL grammar** (unl
 
 ## Applying it to GeoNames
 
-SPARQL only works on RDF, and we have a TSV. So how? With an ordinary `CONSTRUCT`:
+SPARQL only works on RDF, and we have a TSV. We bridge that with an ordinary `CONSTRUCT`:
 
 ```sparql
 PREFIX gn: <https://www.geonames.org/ontology#>
