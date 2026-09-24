@@ -1488,9 +1488,9 @@ Possible extra rowspan handling
 		}
 	}
 </style>
-  <meta content="Bikeshed version ac92c2f0d, updated Fri Aug 21 16:01:29 2026 -0700" name="generator">
+  <meta content="Bikeshed version ea4009a02, updated Thu Sep 17 15:24:44 2026 -0700" name="generator">
   <link href="https://docs.nde.nl/requirements-datasets/" rel="canonical">
-  <meta content="ceb4529009092f32a853971ef7e1efe1277c16a0" name="revision">
+  <meta content="f154e31c83362055fa1febe7a41b69f2c8cc528d" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>
 td, th {
@@ -2292,7 +2292,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <p data-fill-with="logo"></p>
    <h1 class="no-ref p-name" id="title">Requirements for Datasets</h1>
    <h2 class="heading no-num no-ref no-toc settled" id="profile-and-date"><span class="content">Living Standard,
-    <time class="dt-updated" datetime="2026-09-10">10 September 2026</time></span></h2>
+    <time class="dt-updated" datetime="2026-09-24">24 September 2026</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -2312,7 +2312,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <p class="copyright" data-fill-with="copyright"><a href="http://creativecommons.org/publicdomain/zero/1.0/" rel="license"><img alt="CC0" height="15" src="https://licensebuttons.net/p/zero/1.0/80x15.png" width="80"></a>
 To the extent possible under law, the editors have waived all copyright
 and related or neighboring rights to this work.
-In addition, as of 10 September 2026,
+In addition, as of 24 September 2026,
 the editors have made this specification available under the
 <a href="https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0" rel="license">Open Web Foundation Agreement Version 1.0</a>,
 which is available at https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0.
@@ -2386,7 +2386,11 @@ By following these requirements, publishers enable users to find and use their d
         <li><a href="#dataset-example"><span class="secno">4.6.5</span> <span class="content">Full example</span></a>
        </ol>
      </ol>
-    <li><a href="#tools"><span class="secno">5</span> <span class="content">Tools</span></a>
+    <li>
+     <a href="#tools"><span class="secno">5</span> <span class="content">Tools</span></a>
+     <ol class="toc">
+      <li><a href="#validating-yourself"><span class="secno">5.1</span> <span class="content">Running the shapes yourself</span></a>
+     </ol>
     <li>
      <a href="#changes"><span class="secno">6</span> <span class="content">Changes</span></a>
      <ol class="toc">
@@ -3765,6 +3769,33 @@ even if that resource is the same on all pages.</p>
    <p><em>This section is non-normative.</em></p>
    <p>Developers can use the <a href="https://datasetregister.netwerkdigitaalerfgoed.nl/api/">NDE Register API</a> to validate datasets and catalogs against the requirements described in this document.
 The <a data-link-type="biblio" href="#biblio-shacl" title="Shapes Constraint Language (SHACL)">[SHACL]</a> shape graph used to validate datasets and catalogs is available at <a href="https://datasetregister.netwerkdigitaalerfgoed.nl/api/shacl">/shacl</a>.</p>
+   <h3 class="heading settled" data-level="5.1" id="validating-yourself"><span class="secno">5.1. </span><span class="content">Running the shapes yourself</span><a class="self-link" href="#validating-yourself"></a></h3>
+   <p>The shapes target Schema.org properties in the <code>https://schema.org/</code> namespace.
+Schema.org’s own JSON-LD context maps its terms to <code>http://schema.org/</code>,
+so a <a data-link-type="dfn" href="#dataset-description" id="ref-for-dataset-description①②">dataset description</a> validated against that context matches no shape at all
+and the report comes back <code>sh:conforms true</code> without anything having been checked.
+Since Schema.org release 30.1 that context also no longer types <code>mainEntityOfPage</code>, <code>license</code>
+and the date properties, which turns values that should be IRIs and dates into plain strings.</p>
+   <p>To validate your own file – and only to validate it, not to publish it –
+point its <code>@context</code> at <a href="https://def.nde.nl/context.jsonld">https://def.nde.nl/context.jsonld</a>.
+That context declares the same prefixes as Schema.org’s
+and restores the typings the shapes rely on,
+so you get the report the <a href="https://datasetregister.netwerkdigitaalerfgoed.nl/api/">Register API</a> gives you.</p>
+   <div class="example" id="example-90e80237">
+    <a class="self-link" href="#example-90e80237"></a>
+    
+<pre class="highlight"><c- p>{</c->
+  <c- f>"@context"</c-><c- p>:</c-> <c- u>"https://def.nde.nl/context.jsonld"</c-><c- p>,</c->
+  <c- f>"@id"</c-><c- p>:</c-> <c- u>"https://example.org/dataset"</c-><c- p>,</c->
+  <c- f>"@type"</c-><c- p>:</c-> <c- u>"Dataset"</c-><c- p>,</c->
+  <c- f>"name"</c-><c- p>:</c-> <c- p>{</c-><c- f>"@value"</c-><c- p>:</c-> <c- u>"My dataset"</c-><c- p>,</c-> <c- f>"@language"</c-><c- p>:</c-> <c- u>"nl"</c-><c- p>},</c->
+  <c- f>"mainEntityOfPage"</c-><c- p>:</c-> <c- u>"https://example.org/about-this-dataset"</c->
+<c- p>}</c->
+</pre>
+   </div>
+   <p>Keep serving your <a data-link-type="dfn" href="#dataset-description" id="ref-for-dataset-description①③">dataset description</a> itself with <code>"@context": "https://schema.org/"</code>:
+the Register substitutes the context on its side when it reads your description,
+so there is nothing to change in what you publish.</p>
    <p>Google’s <a href="https://search.google.com/test/rich-results">Rich Results Test</a> (previously Structured Data Testing Tool)
 can help with testing RDF metadata in general.</p>
    <h2 class="heading settled" data-level="6" id="changes"><span class="secno">6. </span><span class="content">Changes</span><a class="self-link" href="#changes"></a></h2>
@@ -4114,7 +4145,7 @@ can help with testing RDF metadata in general.</p>
   <h3 class="heading no-num no-ref settled" id="normative"><span class="content">Normative References</span><a class="self-link" href="#normative"></a></h3>
   <dl>
    <dt id="biblio-bcp47">[BCP47]
-   <dd>A. Phillips, Ed.; M. Davis, Ed.. <a href="https://www.rfc-editor.org/info/rfc5646/"><cite>Tags for Identifying Languages</cite></a>. September 2009. Best Current Practice. URL: <a href="https://www.rfc-editor.org/info/rfc5646/">https://www.rfc-editor.org/info/rfc5646/</a>
+   <dd>Addison Phillips; Mark Davis. <a href="https://www.rfc-editor.org/info/bcp47"><cite>Tags for Identifying Languages</cite></a>. September 2009. Best Current Practice. URL: <a href="https://www.rfc-editor.org/info/bcp47">https://www.rfc-editor.org/info/bcp47</a>
    <dt id="biblio-dera">[DERA]
    <dd><a href="https://dera.netwerkdigitaalerfgoed.nl"><cite>Digital Heritage Reference Architecture</cite></a>. URL: <a href="https://dera.netwerkdigitaalerfgoed.nl">https://dera.netwerkdigitaalerfgoed.nl</a>
    <dt id="biblio-dwbp">[DWBP]
@@ -4364,7 +4395,7 @@ let dfnPanelData = {
 "consumer": {"dfnID":"consumer","dfnText":"Consumer","external":false,"refSections":[{"refs":[{"id":"ref-for-consumer"}],"title":"1. Introduction"},{"refs":[{"id":"ref-for-consumer\u2460"}],"title":"4.1.2. Durable identifiers"},{"refs":[{"id":"ref-for-consumer\u2461"}],"title":"4.1.3. Resolvable dataset IRIs"},{"refs":[{"id":"ref-for-consumer\u2462"}],"title":"4.1.4. Information remains available"},{"refs":[{"id":"ref-for-consumer\u2463"}],"title":"4.2. Dataset information"},{"refs":[{"id":"ref-for-consumer\u2464"}],"title":"4.2.4. Versions"},{"refs":[{"id":"ref-for-consumer\u2465"}],"title":"4.3.2. Contact information"},{"refs":[{"id":"ref-for-consumer\u2466"}],"title":"4.4. Distributions"},{"refs":[{"id":"ref-for-consumer\u2467"}],"title":"4.4.1. Creation and modification dates"},{"refs":[{"id":"ref-for-consumer\u2468"}],"title":"4.5. Data catalog"}],"url":"#consumer"},
 "data-catalog": {"dfnID":"data-catalog","dfnText":"Data catalog","external":false,"refSections":[{"refs":[{"id":"ref-for-data-catalog"}],"title":"4.5. Data catalog"},{"refs":[{"id":"ref-for-data-catalog\u2460"}],"title":"4.5.1. Pagination"}],"url":"#data-catalog"},
 "dataset": {"dfnID":"dataset","dfnText":"Dataset","external":false,"refSections":[{"refs":[{"id":"ref-for-dataset"}],"title":"1. Introduction"},{"refs":[{"id":"ref-for-dataset\u2460"},{"id":"ref-for-dataset\u2461"},{"id":"ref-for-dataset\u2462"},{"id":"ref-for-dataset\u2463"}],"title":"2. Definitions"},{"refs":[{"id":"ref-for-dataset\u2464"}],"title":"3. Conceptual model"},{"refs":[{"id":"ref-for-dataset\u2465"}],"title":"4.1.2. Durable identifiers"},{"refs":[{"id":"ref-for-dataset\u2466"}],"title":"4.1.3. Resolvable dataset IRIs"},{"refs":[{"id":"ref-for-dataset\u2467"}],"title":"4.2. Dataset information"},{"refs":[{"id":"ref-for-dataset\u2468"}],"title":"4.3. Creator/publisher information"}],"url":"#dataset"},
-"dataset-description": {"dfnID":"dataset-description","dfnText":"Dataset description","external":false,"refSections":[{"refs":[{"id":"ref-for-dataset-description"}],"title":"1. Introduction"},{"refs":[{"id":"ref-for-dataset-description\u2460"}],"title":"2. Definitions"},{"refs":[{"id":"ref-for-dataset-description\u2461"}],"title":"4.1. Available in RDF"},{"refs":[{"id":"ref-for-dataset-description\u2462"},{"id":"ref-for-dataset-description\u2463"},{"id":"ref-for-dataset-description\u2464"}],"title":"4.1.1. Content-Type"},{"refs":[{"id":"ref-for-dataset-description\u2465"},{"id":"ref-for-dataset-description\u2466"}],"title":"4.1.3. Resolvable dataset IRIs"},{"refs":[{"id":"ref-for-dataset-description\u2467"}],"title":"4.2.3. Creation, publication and modification dates"},{"refs":[{"id":"ref-for-dataset-description\u2468"}],"title":"4.2.4. Versions"},{"refs":[{"id":"ref-for-dataset-description\u2460\u24ea"}],"title":"4.5. Data catalog"},{"refs":[{"id":"ref-for-dataset-description\u2460\u2460"}],"title":"4.6.5. Full example"}],"url":"#dataset-description"},
+"dataset-description": {"dfnID":"dataset-description","dfnText":"Dataset description","external":false,"refSections":[{"refs":[{"id":"ref-for-dataset-description"}],"title":"1. Introduction"},{"refs":[{"id":"ref-for-dataset-description\u2460"}],"title":"2. Definitions"},{"refs":[{"id":"ref-for-dataset-description\u2461"}],"title":"4.1. Available in RDF"},{"refs":[{"id":"ref-for-dataset-description\u2462"},{"id":"ref-for-dataset-description\u2463"},{"id":"ref-for-dataset-description\u2464"}],"title":"4.1.1. Content-Type"},{"refs":[{"id":"ref-for-dataset-description\u2465"},{"id":"ref-for-dataset-description\u2466"}],"title":"4.1.3. Resolvable dataset IRIs"},{"refs":[{"id":"ref-for-dataset-description\u2467"}],"title":"4.2.3. Creation, publication and modification dates"},{"refs":[{"id":"ref-for-dataset-description\u2468"}],"title":"4.2.4. Versions"},{"refs":[{"id":"ref-for-dataset-description\u2460\u24ea"}],"title":"4.5. Data catalog"},{"refs":[{"id":"ref-for-dataset-description\u2460\u2460"}],"title":"4.6.5. Full example"},{"refs":[{"id":"ref-for-dataset-description\u2460\u2461"},{"id":"ref-for-dataset-description\u2460\u2462"}],"title":"5.1. Running the shapes yourself"}],"url":"#dataset-description"},
 "distribution": {"dfnID":"distribution","dfnText":"Distribution","external":false,"refSections":[{"refs":[{"id":"ref-for-distribution"}],"title":"2. Definitions"},{"refs":[{"id":"ref-for-distribution\u2460"}],"title":"3. Conceptual model"},{"refs":[{"id":"ref-for-distribution\u2461"}],"title":"4.4. Distributions"},{"refs":[{"id":"ref-for-distribution\u2462"}],"title":"4.4.1. Creation and modification dates"}],"url":"#distribution"},
 "machine-readability": {"dfnID":"machine-readability","dfnText":"Machine-readability","external":false,"refSections":[{"refs":[{"id":"ref-for-machine-readability"}],"title":"1. Introduction"},{"refs":[{"id":"ref-for-machine-readability\u2460"}],"title":"4.1. Available in RDF"}],"url":"#machine-readability"},
 "publisher": {"dfnID":"publisher","dfnText":"Publisher","external":false,"refSections":[{"refs":[{"id":"ref-for-publisher"}],"title":"1. Introduction"},{"refs":[{"id":"ref-for-publisher\u2460"},{"id":"ref-for-publisher\u2461"}],"title":"2. Definitions"},{"refs":[{"id":"ref-for-publisher\u2462"}],"title":"3. Conceptual model"},{"refs":[{"id":"ref-for-publisher\u2463"}],"title":"4.1. Available in RDF"},{"refs":[{"id":"ref-for-publisher\u2464"}],"title":"4.2.4. Versions"},{"refs":[{"id":"ref-for-publisher\u2465"}],"title":"4.3. Creator/publisher information"},{"refs":[{"id":"ref-for-publisher\u2466"}],"title":"4.5.1. Pagination"}],"url":"#publisher"},
