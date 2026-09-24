@@ -218,6 +218,8 @@ The GeoNames TSV does not use quoting, so a literal `"` is just an ordinary char
 
 We pinned it with a test: the fixtures carry a row for `City's Stadion "Tomorri"`, and [`test.sh`](https://github.com/netwerk-digitaal-erfgoed/geonames-rdf/blob/main/test.sh) maps them and diffs the result against a checked-in expected file, so the quote fix cannot regress unnoticed. The run guards itself too: a chunk that fails to map aborts the whole run, and the ontology conversion is checked for emptiness – SPARQL Anything exits 0 when `--load` cannot read its file, logging the problem, writing nothing and stopping, which `set -e` never catches.
 
+Since September 2026 the whole file is checked too: the workflow refuses to publish fewer than 134M triples, and records the count in the run summary. The floor comes from the smallest loss worth catching, one chunk – an alternate-names chunk yields 0.94M triples where a places chunk yields 8.7M – so it sits 0.6% under the last run rather than at a round number. Getting it wrong is cheap in one direction only: a false alarm costs a red run and an email, with last week’s file still published, while a loss that slips through is served for weeks. It is the guard the quote bug needed.
+
 What did this cost?
 On 30 Nov 2025 the output had 12.27M features; with the quote fix it was 13.33M: about 1.06M extra places recovered. 
 **One quote character cost a million places.**
