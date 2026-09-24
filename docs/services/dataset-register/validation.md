@@ -77,6 +77,34 @@ it flips to `false` on warnings and infos too, which is stricter than what the r
 For the exact JSON-LD and Turtle shapes of the report, see the `Valid` and `Invalid` response
 schemas in the [OpenAPI specification](https://datasetregister.netwerkdigitaalerfgoed.nl/api/).
 
+### JSON-LD: substitute the context
+
+The shapes target Schema.org properties in the `https://schema.org/` namespace, while
+Schema.org’s own JSON-LD context maps its terms to `http://schema.org/`. A description parsed
+with that context matches no shape at all, so the report comes back `sh:conforms true` with
+nothing having been checked – a clean result that means nothing.
+
+Schema.org release 30.1 also removed the type coercions from that context, so
+`mainEntityOfPage`, `license`, `usageInfo` and the date properties now parse as plain strings
+where they used to parse as IRIs and dates.
+
+When you validate a JSON-LD description yourself, point its `@context` at
+`https://def.nde.nl/context.jsonld`:
+
+```json
+{
+  "@context": "https://def.nde.nl/context.jsonld",
+  "@id": "https://example.org/dataset",
+  "@type": "Dataset",
+  "mainEntityOfPage": "https://example.org/about-this-dataset"
+}
+```
+
+That context declares the same prefixes as Schema.org’s and restores the coercions, so you get
+the report the API gives you. The Register substitutes it on its side when it reads a
+description, so keep publishing yours with `"@context": "https://schema.org/"`. Descriptions in
+Turtle and the other RDF syntaxes carry no context and need no substitution.
+
 ## Distribution health
 
 The Register models a distribution’s health as a derived **usability** verdict over two separately-produced signals:
