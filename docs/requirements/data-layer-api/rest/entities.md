@@ -3,7 +3,6 @@ slug: /data-layer-api/rest/entities
 sidebar_position: 4
 ---
 
-
 # Entities
 
 ## Introduction
@@ -108,20 +107,20 @@ None.
 
 The response body _MUST_ contain at least the following fields:
 
-| Name            | Data type                              | Cardinality | Description                                                                                                          |
-| --------------- | -------------------------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------- |
-| `id`            | string                                 | 1           | The identifier of the collection.                                                                                    |
-| `type`          | string                                 | 1           | The type of the collection. It _MUST_ be `RootEntityCollection`.                                                     |
-| `name`          | string                                 | 1           | A short, human-readable name of the collection.                                                                      |
-| `totalItems`    | number                                 | 1           | The total number of entity collections in the collection.                                                            |
-| `items`         | array                                  | 1           | A list of all entity collections. The API defines the order.                                                         |
-| `items[*]`      | RootEntityCollection, EntityCollection | 1           | An entity collection.                                                                                                |
-| `items[*].id`   | string                                 | 1           | The identifier of the entity collection.                                                                             |
-| `items[*].type` | string                                 | 1           | The type of the entity collection. It _MUST_ be one of `RootEntityCollection`, `EntityCollection`.                   |
-| `items[*].name` | string                                 | 1           | A short, human-readable name of the entity collection.                                                               |
-| `partOf`        | RootEntityCollection                   | 0 or 1      | The root collection of which this collection is a part. Not set if this collection is the top-level root collection. |
-| `partOf.id`     | string                                 | 1           | The identifier of the root collection.                                                                               |
-| `partOf.type`   | string                                 | 1           | The type of the root collection. It _MUST_ be `RootEntityCollection`.                                                |
+| Name            | Data type                              | Cardinality | Description                                                                                                     |
+| --------------- | -------------------------------------- | ----------- | --------------------------------------------------------------------------------------------------------------- |
+| `id`            | string                                 | 1           | The identifier of the collection.                                                                               |
+| `type`          | string                                 | 1           | The type of the collection. It _MUST_ be `RootEntityCollection`.                                                |
+| `name`          | string                                 | 1           | A short, human-readable name of the collection.                                                                 |
+| `totalItems`    | number                                 | 1           | The total number of entity collections in the collection.                                                       |
+| `items`         | array                                  | 1           | A list of all entity collections. The API defines the order.                                                    |
+| `items[*]`      | RootEntityCollection, EntityCollection | 1           | An entity collection.                                                                                           |
+| `items[*].id`   | string                                 | 1           | The identifier of the entity collection.                                                                        |
+| `items[*].type` | string                                 | 1           | The type of the entity collection. It _MUST_ be one of `RootEntityCollection`, `EntityCollection`.              |
+| `items[*].name` | string                                 | 1           | A short, human-readable name of the entity collection.                                                          |
+| `partOf`        | RootEntityCollection                   | 0 or 1      | The collection of which this collection is a part. Not set if this collection is the top-level root collection. |
+| `partOf.id`     | string                                 | 1           | The identifier of the collection.                                                                               |
+| `partOf.type`   | string                                 | 1           | The type of the collection. It _MUST_ be `RootEntityCollection`.                                                |
 
 ### Example
 
@@ -224,9 +223,9 @@ The response body _MUST_ contain at least the following fields:
 | `last`        | EntityPage           | 0 or 1      | The last page in the collection. Not set if the collection is empty or the last page is unknown (e.g. in case of [cursor pagination](resources.md#pagination)). |
 | `last.id`     | string               | 1           | The identifier of last page in the collection.                                                                                                                  |
 | `last.type`   | string               | 1           | The type of the last page in the collection. It _MUST_ be `EntityPage`.                                                                                         |
-| `partOf`      | RootEntityCollection | 1           | The root collection of which this collection is a part.                                                                                                         |
-| `partOf.id`   | string               | 1           | The identifier of the root collection.                                                                                                                          |
-| `partOf.type` | string               | 1           | The type of the root collection. It _MUST_ be `RootEntityCollection`.                                                                                           |
+| `partOf`      | RootEntityCollection | 1           | The collection of which this collection is a part.                                                                                                              |
+| `partOf.id`   | string               | 1           | The identifier of the collection.                                                                                                                               |
+| `partOf.type` | string               | 1           | The type of the collection. It _MUST_ be `RootEntityCollection`.                                                                                                |
 
 ### Example
 

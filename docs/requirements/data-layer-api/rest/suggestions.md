@@ -97,7 +97,7 @@ The response body _MUST_ contain at least the following fields:
 | `items[*].id`   | string               | 1           | The identifier of the suggestion collection.                                                                                                                                                              |
 | `items[*].type` | string               | 1           | The type of the suggestion collection. It _MAY_ be one of `KeywordSuggestionCollection`, `EntitySuggestionCollection`, `CombinedSuggestionCollection` or a suggestion collection type defined by the API. |
 | `items[*].name` | string               | 1           | A short, human-readable name of the suggestion collection.                                                                                                                                                |
-| `partOf`        | ExtensionCollection  | 1           | The extension collection of which this extension is a part.                                                                                                                                               |
+| `partOf`        | ExtensionCollection  | 1           | The extension collection of which this collection is a part.                                                                                                                                              |
 | `partOf.id`     | string               | 1           | The identifier of the extension collection.                                                                                                                                                               |
 | `partOf.type`   | string               | 1           | The type of the extension collection. It _MUST_ be `ExtensionCollection`.                                                                                                                                 |
 
@@ -195,9 +195,9 @@ The response body _MUST_ contain at least the following fields:
 | `items[*].value`      | KeywordSuggestion        | 1           | The suggested keyword.                                                                                                 |
 | `items[*].value.type` | string                   | 1           | The type of the keyword. It _MUST_ be `KeywordSuggestion`.                                                             |
 | `items[*].value.name` | string                   | 1           | The name of the keyword.                                                                                               |
-| `partOf`              | RootSuggestionCollection | 1           | The root suggestion collection of which this suggestion collection is a part.                                          |
-| `partOf.id`           | string                   | 1           | The identifier of the root suggestion collection.                                                                      |
-| `partOf.type`         | string                   | 1           | The type of the root suggestion collection. It _MUST_ be `RootSuggestionCollection`.                                   |
+| `partOf`              | RootSuggestionCollection | 1           | The collection of which this suggestion collection is a part.                                                          |
+| `partOf.id`           | string                   | 1           | The identifier of the collection.                                                                                      |
+| `partOf.type`         | string                   | 1           | The type of the collection. It _MUST_ be `RootSuggestionCollection`.                                                   |
 
 ### Example
 
@@ -293,9 +293,9 @@ The response body _MUST_ contain at least the following fields:
 | `items[*].value.id`   | string                   | 1           | The identifier of the entity.                                                                                          |
 | `items[*].value.type` | string                   | 1           | The [type](entities.md#entity-types) of the entity.                                                                    |
 | `items[*].value.name` | string                   | 1           | The name of the entity.                                                                                                |
-| `partOf`              | RootSuggestionCollection | 1           | The root suggestion collection of which this suggestion collection is a part.                                          |
-| `partOf.id`           | string                   | 1           | The identifier of the root suggestion collection.                                                                      |
-| `partOf.type`         | string                   | 1           | The type of the root suggestion collection. It _MUST_ be `RootSuggestionCollection`.                                   |
+| `partOf`              | RootSuggestionCollection | 1           | The collection of which this suggestion collection is a part.                                                          |
+| `partOf.id`           | string                   | 1           | The identifier of the collection.                                                                                      |
+| `partOf.type`         | string                   | 1           | The type of the collection. It _MUST_ be `RootSuggestionCollection`.                                                   |
 
 The API may expose additional fields about a suggested entity.
 
@@ -403,9 +403,9 @@ The response body _MUST_ contain at least the following fields:
 | `items[*].value.id`   | string                    | 0 or 1      | The identifier of the entity. Not set if the `type` is `KeywordSuggestion`; a keyword has no identity.                 |
 | `items[*].value.type` | string                    | 1           | The type of the keyword (it _MUST_ be `KeywordSuggestion`) or the [type](entities.md#entity-types) of the entity.      |
 | `items[*].value.name` | string                    | 1           | The name of the keyword or entity.                                                                                     |
-| `partOf`              | RootSuggestionCollection  | 1           | The root suggestion collection of which this suggestion collection is a part.                                          |
-| `partOf.id`           | string                    | 1           | The identifier of the root suggestion collection.                                                                      |
-| `partOf.type`         | string                    | 1           | The type of the root suggestion collection. It _MUST_ be `RootSuggestionCollection`.                                   |
+| `partOf`              | RootSuggestionCollection  | 1           | The collection of which this suggestion collection is a part.                                                          |
+| `partOf.id`           | string                    | 1           | The identifier of the collection.                                                                                      |
+| `partOf.type`         | string                    | 1           | The type of the collection. It _MUST_ be `RootSuggestionCollection`.                                                   |
 
 The API may expose additional fields about a suggested entity.
 
