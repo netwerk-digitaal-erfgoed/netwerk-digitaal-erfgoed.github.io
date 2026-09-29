@@ -228,9 +228,9 @@ The response body _MUST_ contain at least the following fields:
 | `last`        | FacetPage           | 0 or 1      | The last page in the collection. Not set if the collection is empty or if the last page is unknown (e.g. in case of [cursor pagination](resources.md#pagination)). |
 | `last.id`     | string              | 1           | The identifier of the last page in the collection.                                                                                                                 |
 | `last.type`   | string              | 1           | The type of the last page in the collection. It _MUST_ be `FacetPage`.                                                                                             |
-| `partOf`      | RootFacetCollection | 1           | The root facet collection of which this facet collection is a part.                                                                                                |
-| `partOf.id`   | string              | 1           | The identifier of the root facet collection.                                                                                                                       |
-| `partOf.type` | string              | 1           | The type of the root facet collection. It _MUST_ be `RootFacetCollection`.                                                                                         |
+| `partOf`      | RootFacetCollection | 1           | The collection of which this facet collection is a part.                                                                                                           |
+| `partOf.id`   | string              | 1           | The identifier of the collection.                                                                                                                                  |
+| `partOf.type` | string              | 1           | The type of the collection. It _MUST_ be `RootFacetCollection`.                                                                                                    |
 
 ### Example
 
@@ -309,26 +309,26 @@ None.
 
 The response body _MUST_ contain at least the following fields:
 
-| Name                  | Data type       | Cardinality | Description                                                                                                                                          |
-| --------------------- | --------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`                  | string          | 1           | The identifier of the current page.                                                                                                                  |
-| `type`                | string          | 1           | The type of the page. It _MUST_ be `FacetPage`.                                                                                                      |
-| `name`                | string          | 1           | A short, human-readable name of the page.                                                                                                            |
-| `items`               | array           | 1           | A list of facet terms.                                                                                                                               |
-| `items[*]`            | FacetTerm       | 1           | A facet term.                                                                                                                                        |
-| `items[*].type`       | string          | 1           | The type of the facet term. It _MUST_ be `FacetTerm`.                                                                                                |
-| `items[*].count`      | number          | 1           | The number of occurrences of the value of the facet term.                                                                                            |
-| `items[*].value`      | Entity          | 1           | The value of the facet term.                                                                                                                         |
-| `items[*].value.type` | string          | 1           | The type of the value of the facet term. It _MUST_ be a type of `Entity`.                                                                            |
-| `items[*].value.id`   | string          | 1           | The identifier of the value of the facet term.                                                                                                       |
-| `items[*].value.name` | string          | 1           | The name of the value of the facet term.                                                                                                             |
-| `prev`                | FacetPage       | 0 or 1      | The previous page in the collection. Not set if there is no previous page.                                                                           |
-| `prev.id`             | string          | 1           | The identifier of the previous page in the collection.                                                                                               |
-| `prev.type`           | string          | 1           | The type of the previous page in the collection. It _MUST_ be `FacetPage`.                                                                           |
-| `next`                | FacetPage       | 0 or 1      | The next page in the collection. Not set if there is no next page.                                                                                   |
-| `next.id`             | string          | 1           | The identifier of the next page in the collection.                                                                                                   |
-| `next.type`           | string          | 1           | The type of the next page in the collection. It _MUST_ be `FacetPage`.                                                                               |
-| `partOf`              | FacetCollection | 1           | The collection of which this page is a part. See the response body of endpoint [Retrieve a facet collection](#endpoint-retrieve-a-facet-collection). |
+| Name                  | Data type       | Cardinality | Description                                                                                                                                                             |
+| --------------------- | --------------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`                  | string          | 1           | The identifier of the current page.                                                                                                                                     |
+| `type`                | string          | 1           | The type of the page. It _MUST_ be `FacetPage`.                                                                                                                         |
+| `name`                | string          | 1           | A short, human-readable name of the page.                                                                                                                               |
+| `items`               | array           | 1           | A list of facet terms.                                                                                                                                                  |
+| `items[*]`            | FacetTerm       | 1           | A facet term.                                                                                                                                                           |
+| `items[*].type`       | string          | 1           | The type of the facet term. It _MUST_ be `FacetTerm`.                                                                                                                   |
+| `items[*].count`      | number          | 1           | The number of occurrences of the value of the facet term.                                                                                                               |
+| `items[*].value`      | Entity          | 1           | The value of the facet term.                                                                                                                                            |
+| `items[*].value.type` | string          | 1           | The type of the value of the facet term. It _MUST_ be a type of `Entity`.                                                                                               |
+| `items[*].value.id`   | string          | 1           | The identifier of the value of the facet term.                                                                                                                          |
+| `items[*].value.name` | string          | 1           | The name of the value of the facet term.                                                                                                                                |
+| `prev`                | FacetPage       | 0 or 1      | The previous page in the collection. Not set if there is no previous page.                                                                                              |
+| `prev.id`             | string          | 1           | The identifier of the previous page in the collection.                                                                                                                  |
+| `prev.type`           | string          | 1           | The type of the previous page in the collection. It _MUST_ be `FacetPage`.                                                                                              |
+| `next`                | FacetPage       | 0 or 1      | The next page in the collection. Not set if there is no next page.                                                                                                      |
+| `next.id`             | string          | 1           | The identifier of the next page in the collection.                                                                                                                      |
+| `next.type`           | string          | 1           | The type of the next page in the collection. It _MUST_ be `FacetPage`.                                                                                                  |
+| `partOf`              | FacetCollection | 1           | The collection to which the items contained by the page belong. See the response body of endpoint [Retrieve a facet collection](#endpoint-retrieve-a-facet-collection). |
 
 ### Example
 

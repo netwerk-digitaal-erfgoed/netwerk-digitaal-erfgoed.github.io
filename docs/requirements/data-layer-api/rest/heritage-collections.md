@@ -95,20 +95,20 @@ None.
 
 The response body _MUST_ contain at least the following fields:
 
-| Name            | Data type                                  | Cardinality | Description                                                                                                          |
-| --------------- | ------------------------------------------ | ----------- | -------------------------------------------------------------------------------------------------------------------- |
-| `id`            | string                                     | 1           | The identifier of the collection.                                                                                    |
-| `type`          | string                                     | 1           | The type of the collection. It _MUST_ be `RootHeritageCollection`.                                                   |
-| `name`          | string                                     | 1           | A short, human-readable name of the collection.                                                                      |
-| `totalItems`    | number                                     | 1           | The total number of heritage collections in the collection.                                                          |
-| `items`         | array                                      | 1           | A list of all heritage collections. The API defines the order.                                                       |
-| `items[*]`      | RootHeritageCollection, HeritageCollection | 1           | A heritage collection.                                                                                               |
-| `items[*].id`   | string                                     | 1           | The identifier of the heritage collection.                                                                           |
-| `items[*].type` | string                                     | 1           | The type of the heritage collection. It _MUST_ be one of `RootHeritageCollection`, `HeritageCollection`.             |
-| `items[*].name` | string                                     | 1           | A short, human-readable name of the heritage collection.                                                             |
-| `partOf`        | RootHeritageCollection                     | 0 or 1      | The root collection of which this collection is a part. Not set if this collection is the top-level root collection. |
-| `partOf.id`     | string                                     | 1           | The identifier of the root collection.                                                                               |
-| `partOf.type`   | string                                     | 1           | The type of the root collection. It _MUST_ be `RootHeritageCollection`.                                              |
+| Name            | Data type                                  | Cardinality | Description                                                                                                     |
+| --------------- | ------------------------------------------ | ----------- | --------------------------------------------------------------------------------------------------------------- |
+| `id`            | string                                     | 1           | The identifier of the collection.                                                                               |
+| `type`          | string                                     | 1           | The type of the collection. It _MUST_ be `RootHeritageCollection`.                                              |
+| `name`          | string                                     | 1           | A short, human-readable name of the collection.                                                                 |
+| `totalItems`    | number                                     | 1           | The total number of heritage collections in the collection.                                                     |
+| `items`         | array                                      | 1           | A list of all heritage collections. The API defines the order.                                                  |
+| `items[*]`      | RootHeritageCollection, HeritageCollection | 1           | A heritage collection.                                                                                          |
+| `items[*].id`   | string                                     | 1           | The identifier of the heritage collection.                                                                      |
+| `items[*].type` | string                                     | 1           | The type of the heritage collection. It _MUST_ be one of `RootHeritageCollection`, `HeritageCollection`.        |
+| `items[*].name` | string                                     | 1           | A short, human-readable name of the heritage collection.                                                        |
+| `partOf`        | RootHeritageCollection                     | 0 or 1      | The collection of which this collection is a part. Not set if this collection is the top-level root collection. |
+| `partOf.id`     | string                                     | 1           | The identifier of the collection.                                                                               |
+| `partOf.type`   | string                                     | 1           | The type of the collection. It _MUST_ be `RootHeritageCollection`.                                              |
 
 ### Example
 
@@ -212,9 +212,9 @@ The response body _MUST_ contain at least the following fields:
 | `last`            | HeritagePage           | 0 or 1      | The last page in the collection. Not set if the collection is empty or the last page is unknown (e.g. in case of [cursor pagination](resources.md#pagination)). |
 | `last.id`         | string                 | 1           | The identifier of the last page in the collection.                                                                                                              |
 | `last.type`       | string                 | 1           | The type of the last page in the collection. It _MUST_ be `HeritagePage`.                                                                                       |
-| `partOf`          | RootHeritageCollection | 1           | The root collection of which this collection is a part.                                                                                                         |
-| `partOf.id`       | string                 | 1           | The identifier of the root collection.                                                                                                                          |
-| `partOf.type`     | string                 | 1           | The type of the root collection. It _MUST_ be `RootHeritageCollection`.                                                                                         |
+| `partOf`          | RootHeritageCollection | 1           | The collection of which this collection is a part.                                                                                                              |
+| `partOf.id`       | string                 | 1           | The identifier of the collection.                                                                                                                               |
+| `partOf.type`     | string                 | 1           | The type of the collection. It _MUST_ be `RootHeritageCollection`.                                                                                              |
 | `extendedBy`      | ExtensionCollection    | 0 or 1      | A collection listing the extensions of the collection. The field _MUST_ be omitted by the API if it does not support extensions.                                |
 | `extendedBy.id`   | string                 | 1           | The identifier of the collection.                                                                                                                               |
 | `extendedBy.type` | string                 | 1           | The type of the collection. It _MUST_ be `ExtensionCollection`                                                                                                  |
@@ -316,22 +316,22 @@ None.
 
 The response body _MUST_ contain at least the following fields:
 
-| Name        | Data type          | Cardinality | Description                                                                                                                                                |
-| ----------- | ------------------ | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`        | string             | 1           | The identifier of the current page.                                                                                                                        |
-| `type`      | string             | 1           | The type of the page. It _MUST_ be `HeritagePage`.                                                                                                         |
-| `name`      | string             | 1           | A short, human-readable name of the page.                                                                                                                  |
-| `items`     | array              | 1           | A list of entities.                                                                                                                                        |
-| `items[*]`  | Entity             | 1           | An entity. All fields of an entity _MUST_ be embedded. See the response body of endpoint [Retrieve an entity](entities.md#endpoint-retrieve-an-entity).    |
-| `facets`    | array              | 0 or 1      | A list of facet pages. The field _MUST_ be omitted if the API does not support facets.                                                                     |
-| `facets[*]` | FacetPage          | 1           | A facet page. **To do**: explain its fields.                                                                                                               |
-| `prev`      | HeritagePage       | 0 or 1      | The previous page in the collection. Not set if there is no previous page.                                                                                 |
-| `prev.id`   | string             | 1           | The identifier of the previous page in the collection.                                                                                                     |
-| `prev.type` | string             | 1           | The type of the previous page in the collection. It _MUST_ be `HeritagePage`.                                                                              |
-| `next`      | HeritagePage       | 0 or 1      | The next page in the collection. Not set if there is no next page.                                                                                         |
-| `next.id`   | string             | 1           | The identifier of the next page in the collection.                                                                                                         |
-| `next.type` | string             | 1           | The type of the next page in the collection. It _MUST_ be `HeritagePage`.                                                                                  |
-| `partOf`    | HeritageCollection | 1           | The collection of which this page is a part. See the response body of endpoint [Retrieve a heritage collection](#endpoint-retrieve-a-heritage-collection). |
+| Name        | Data type          | Cardinality | Description                                                                                                                                                                   |
+| ----------- | ------------------ | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`        | string             | 1           | The identifier of the current page.                                                                                                                                           |
+| `type`      | string             | 1           | The type of the page. It _MUST_ be `HeritagePage`.                                                                                                                            |
+| `name`      | string             | 1           | A short, human-readable name of the page.                                                                                                                                     |
+| `items`     | array              | 1           | A list of entities.                                                                                                                                                           |
+| `items[*]`  | Entity             | 1           | An entity. All fields of an entity _MUST_ be embedded. See the response body of endpoint [Retrieve an entity](entities.md#endpoint-retrieve-an-entity).                       |
+| `facets`    | array              | 0 or 1      | A list of facet pages. The field _MUST_ be omitted if the API does not support facets.                                                                                        |
+| `facets[*]` | FacetPage          | 1           | A facet page. **To do**: explain its fields.                                                                                                                                  |
+| `prev`      | HeritagePage       | 0 or 1      | The previous page in the collection. Not set if there is no previous page.                                                                                                    |
+| `prev.id`   | string             | 1           | The identifier of the previous page in the collection.                                                                                                                        |
+| `prev.type` | string             | 1           | The type of the previous page in the collection. It _MUST_ be `HeritagePage`.                                                                                                 |
+| `next`      | HeritagePage       | 0 or 1      | The next page in the collection. Not set if there is no next page.                                                                                                            |
+| `next.id`   | string             | 1           | The identifier of the next page in the collection.                                                                                                                            |
+| `next.type` | string             | 1           | The type of the next page in the collection. It _MUST_ be `HeritagePage`.                                                                                                     |
+| `partOf`    | HeritageCollection | 1           | The collection to which the items contained by the page belong. See the response body of endpoint [Retrieve a heritage collection](#endpoint-retrieve-a-heritage-collection). |
 
 :::note
 
