@@ -9,25 +9,18 @@ sidebar_position: 3
 
 The API of a data layer is centered around resources. A resource represents a 'thing' of a certain type. It can correspond to anything — from a physical object (e.g. a building or a person) to an abstract concept (e.g. a collection or a type of art work).
 
-## Resource types
+## Data model
 
-This specification defines the following high-level resource types:
+This specification defines the following generic resource types:
 
-| Name            | Description                                                                                                                                                       |
-| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Resource        | A 'thing' of a certain type. All other resource types extend from it.                                                                                             |
-| Root Collection | An ordered list of collections.                                                                                                                                   |
-| Collection      | An ordered list of items. A collection may be a part of a root collection. A collection may consist of pages, containing sublists of the items in the collection. |
-| Page            | An ordered sublist of items within a collection.                                                                                                                  |
-| Item            | A 'thing' of a certain type, but not a Root Collection, Collection or Page.                                                                                       |
+| Name       | Description                                                                                                                                                       |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Resource   | A 'thing' of a certain type. All other resource types extend from it.                                                                                             |
+| Catalog    | An ordered list of collections or further catalogs.                                                                                                               |
+| Collection | An ordered list of resources. A Collection may be a part of a Catalog. A Collection may consist of pages, containing sublists of the resources in the collection. |
+| Page       | An ordered sublist of resources within a Collection.                                                                                                              |
 
 The resource types are extensible. This specification defines, for example, an [Entity Collection](entities.md#data-model) and an [Entity Page](entities.md#data-model), specialized versions of the generic Collection and Page, respectively. Similarly, the API of a data layer may define its own resource types, extending the existing ones.
-
-:::note
-
-**To be discussed**: the name 'Root Collection' is a bit technical and could suggest that it's always at the top. Rename to e.g. 'Base Collection', 'Parent Collection' or 'Collection Series' (per DCAT - 'Dataset Series')?
-
-:::
 
 The following class diagram visualizes the relationships between the resource types:
 
@@ -38,38 +31,47 @@ The following class diagram visualizes the relationships between the resource ty
       hideEmptyMembersBox: true
 ---
 classDiagram
-class Resource
-class RootCollection["Root Collection"]
-class Collection
+
+class Resource {
+  <<abstract>>
+  id
+  type
+  name
+}
+
+class Catalog {
+  totalItems
+}
+
+class Collection {
+  totalItems
+}
+
 class Page
-class Item
 
-Resource <|-- RootCollection
-RootCollection <|-- Collection
+Resource <|-- Catalog
+Resource <|-- Collection
 Resource <|-- Page
-Resource <|-- Item
 
-RootCollection *-- RootCollection : contains
-RootCollection *-- Collection : contains
-RootCollection --> RootCollection : partOf
-Collection --> RootCollection : partOf
-Collection --> Page : first
-Collection --> Page : last
-Collection *-- Item : contains
-Page --> Page : prev
-Page --> Page : next
-Page *-- Item : contains
+Catalog *-- Catalog : items
+Catalog --> Catalog : partOf
+Catalog *-- Collection : items
+Collection --> Catalog : partOf
+Collection --> Page : first, last
+Collection *-- Resource : items
+Page --> Page : prev, next
+Page *-- Resource : items
 ```
 
 ## Resource structure
 
 A Resource, regardless of type, contains at least the following fields:
 
-| Name   | Data type | Cardinality | Description                                                                                                                                          |
-| ------ | --------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`   | string    | 0 or 1      | The identifier of the resource, if known. It _MUST_ be a URI. Optional for volatile, non-persistent resources.                                       |
-| `type` | string    | 1           | The type of the resource. This specification defines a number of [high-level types](#resource-types). The API may additionally define its own types. |
-| `name` | string    | 0 or 1      | The name of the resource, if known and relevant to the resource.                                                                                     |
+| Name   | Data type | Cardinality | Description                                                                                                                               |
+| ------ | --------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`   | string    | 0 or 1      | The identifier of the resource, if known. It _MUST_ be a URI. Optional for volatile, non-persistent resources.                            |
+| `type` | string    | 1           | The type of the resource. This specification defines a number of [types](#resource-types). The API may additionally define its own types. |
+| `name` | string    | 0 or 1      | The name of the resource, if known and relevant to the resource.                                                                          |
 
 Example of the response body:
 
@@ -94,20 +96,20 @@ The response indicates that this resource has identifier `https://example.org/v1
 
 Note the `additionalTypes` list. Every item in this list is also a resource and has the same top-level fields: `id`, `type` and `name`.
 
-## Root Collection structure
+## Catalog structure
 
-A Root Collection contains at least the following fields:
+A Catalog contains at least the following fields:
 
-| Name          | Data type      | Cardinality | Description                                                                                                                                                                                                   |
-| ------------- | -------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`          | string         | 1           | The identifier of the collection. It _MUST_ be a URI.                                                                                                                                                         |
-| `type`        | string         | 1           | The type of the collection. It _MUST_ be `RootCollection` or a specialization.                                                                                                                                |
-| `name`        | string         | 1           | The name of the collection.                                                                                                                                                                                   |
-| `totalItems`  | number         | 0 or 1      | The total number of collections in the collection. This _MAY_ be an estimate, especially in case of a large collection. The field _MAY_ be omitted by the API if the total number is too costly to calculate. |
-| `items`       | array          | 1           | A list of all collections in the collection. Every item _MUST_ be `RootCollection` or `Collection` or a specialization.                                                                                       |
-| `partOf`      | RootCollection | 0 or 1      | The collection of which this collection is a part. Not set if this collection is the top-level root collection.                                                                                               |
-| `partOf.id`   | string         | 1           | The identifier of the collection.                                                                                                                                                                             |
-| `partOf.type` | string         | 1           | The type of the collection. It _MUST_ be `RootCollection` or a specialization.                                                                                                                                |
+| Name          | Data type | Cardinality | Description                                                                                                                                                                  |
+| ------------- | --------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`          | string    | 1           | The identifier of the catalog. It _MUST_ be a URI.                                                                                                                           |
+| `type`        | string    | 1           | The type of the catalog. It _MUST_ be `Catalog` or a specialization.                                                                                                         |
+| `name`        | string    | 1           | The name of the catalog.                                                                                                                                                     |
+| `totalItems`  | number    | 0 or 1      | The total number of collections or catalogs in the catalog. This _MAY_ be an estimate. The field _MAY_ be omitted by the API if the total number is too costly to calculate. |
+| `items`       | array     | 1           | A list of all collections or catalogs in the catalog. Every item _MUST_ be `Collection` or `Catalog` or a specialization.                                                    |
+| `partOf`      | Catalog   | 0 or 1      | The catalog of which this catalog is a part. Not set if this catalog is the top-level catalog.                                                                               |
+| `partOf.id`   | string    | 1           | The identifier of the catalog.                                                                                                                                               |
+| `partOf.type` | string    | 1           | The type of the catalog. It _MUST_ be `Catalog` or a specialization.                                                                                                         |
 
 ### Example
 
@@ -116,8 +118,8 @@ Example of the response body:
 ```json
 {
   "id": "https://example.org/v1/entities",
-  "type": "RootEntityCollection",
-  "name": "Entities",
+  "type": "EntityCatalog",
+  "name": "Entity catalog",
   "totalItems": 2,
   "items": [
     {
@@ -138,22 +140,22 @@ Example of the response body:
 
 A Collection contains at least the following fields:
 
-| Name          | Data type      | Cardinality | Description                                                                                                                                                                                                 |
-| ------------- | -------------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`          | string         | 1           | The identifier of the collection. It _MUST_ be a URI.                                                                                                                                                       |
-| `type`        | string         | 1           | The type of the collection. This specification defines specific types. The API may additionally define its own types.                                                                                       |
-| `name`        | string         | 1           | The name of the collection.                                                                                                                                                                                 |
-| `totalItems`  | number         | 0 or 1      | The total number of resources in the collection. This _MAY_ be an estimate, especially in case of a large collection. The field _MAY_ be omitted by the API if the total number is too costly to calculate. |
-| `items`       | array          | 0 or 1      | A list of resources in the collection. A resource can be of [any type](#resource-types). Not set if the resources are parts of [pages](#page-structure).                                                    |
-| `first`       | Page           | 0 or 1      | The first page in the collection. Not set if the collection is empty.                                                                                                                                       |
-| `first.id`    | string         | 1           | The identifier of the first page in the collection.                                                                                                                                                         |
-| `first.type`  | string         | 1           | The type of the first page in the collection. This specification defines specific types. The API may additionally define its own types.                                                                     |
-| `last`        | Page           | 0 or 1      | The last page in the collection. Not set if the collection is empty or the last page is unknown (e.g. in case of [cursor pagination](resources.md#pagination)).                                             |
-| `last.id`     | string         | 1           | The identifier of the last page in the collection.                                                                                                                                                          |
-| `last.type`   | string         | 1           | The type of the last page in the collection. This specification defines specific types. The API may additionally define its own types .                                                                     |
-| `partOf`      | RootCollection | 1           | The collection of which this collection is a part.                                                                                                                                                          |
-| `partOf.id`   | string         | 1           | The identifier of the collection.                                                                                                                                                                           |
-| `partOf.type` | string         | 1           | The type of the collection. It _MUST_ be `RootCollection` or a specialization.                                                                                                                              |
+| Name          | Data type | Cardinality | Description                                                                                                                                                                                                 |
+| ------------- | --------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`          | string    | 1           | The identifier of the collection. It _MUST_ be a URI.                                                                                                                                                       |
+| `type`        | string    | 1           | The type of the collection. This specification defines specific types. The API may additionally define its own types.                                                                                       |
+| `name`        | string    | 1           | The name of the collection.                                                                                                                                                                                 |
+| `totalItems`  | number    | 0 or 1      | The total number of resources in the collection. This _MAY_ be an estimate, especially in case of a large collection. The field _MAY_ be omitted by the API if the total number is too costly to calculate. |
+| `items`       | array     | 0 or 1      | A list of resources in the collection. A resource can be of [any type](#resource-types). Not set if the resources are parts of [pages](#page-structure).                                                    |
+| `first`       | Page      | 0 or 1      | The first page in the collection. Not set if the collection is empty.                                                                                                                                       |
+| `first.id`    | string    | 1           | The identifier of the first page in the collection.                                                                                                                                                         |
+| `first.type`  | string    | 1           | The type of the first page in the collection. This specification defines specific types. The API may additionally define its own types.                                                                     |
+| `last`        | Page      | 0 or 1      | The last page in the collection. Not set if the collection is empty or the last page is unknown (e.g. in case of [cursor pagination](resources.md#pagination)).                                             |
+| `last.id`     | string    | 1           | The identifier of the last page in the collection.                                                                                                                                                          |
+| `last.type`   | string    | 1           | The type of the last page in the collection. This specification defines specific types. The API may additionally define its own types .                                                                     |
+| `partOf`      | Catalog   | 1           | The catalog of which this collection is a part.                                                                                                                                                             |
+| `partOf.id`   | string    | 1           | The identifier of the catalog.                                                                                                                                                                              |
+| `partOf.type` | string    | 1           | The type of the catalog. It _MUST_ be `Catalog` or a specialization.                                                                                                                                        |
 
 ### Example
 
@@ -167,7 +169,7 @@ Example of the response body when a collection embeds its items directly:
   "totalItems": 2,
   "items": [
     {
-      "type": "SuggestionTerm",
+      "type": "SuggestionItem",
       "relevance": 98,
       "value": {
         "type": "KeywordSuggestion",
@@ -175,7 +177,7 @@ Example of the response body when a collection embeds its items directly:
       }
     },
     {
-      "type": "SuggestionTerm",
+      "type": "SuggestionItem",
       "relevance": 92,
       "value": {
         "type": "KeywordSuggestion",
@@ -185,7 +187,7 @@ Example of the response body when a collection embeds its items directly:
   ],
   "partOf": {
     "id": "https://example.org/v1/collections/objects/extensions/suggestions",
-    "type": "RootSuggestionCollection"
+    "type": "SuggestionCatalog"
   }
 }
 ```
@@ -206,7 +208,7 @@ Example of the response body when the collection is divided into pages:
   },
   "partOf": {
     "id": "https://example.org/v1/entities",
-    "type": "RootEntityCollection"
+    "type": "EntityCatalog"
   }
 }
 ```

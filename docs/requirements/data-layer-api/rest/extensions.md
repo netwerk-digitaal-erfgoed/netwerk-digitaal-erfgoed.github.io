@@ -21,21 +21,35 @@ An extension is supplementary and, therefore, _OPTIONAL_. It's up to a data laye
 
 | Name                 | Description                                                                           |
 | -------------------- | ------------------------------------------------------------------------------------- |
-| Heritage Collection  | A collection of entities.                                                             |
-| Extension Collection | A collection of extensions, adding additional functionality to a heritage collection. |
+| Heritage Collection  | An ordered list of entities.                                                          |
+| Extension Collection | A collection of extensions, adding additional functionality to a Heritage Collection. |
 
-The following entity-relationship diagram visualizes the data model:
+The following class diagram visualizes the data model:
 
 ```mermaid
-erDiagram
-    "Heritage Collection" ||--o| "Extension Collection" : "extended by"
+---
+  config:
+    class:
+      hideEmptyMembersBox: true
+---
+classDiagram
+
+class Collection {
+  <<abstract>>
+  id
+  type
+  name
+  totalItems
+}
+
+class HeritageCollection["Heritage Collection"]
+class ExtensionCollection["Extension Collection"]
+
+Collection <|-- HeritageCollection
+Collection <|-- ExtensionCollection
+
+HeritageCollection --> ExtensionCollection : extendedBy
 ```
-
-:::note
-
-**To be discussed**: replace the ER diagram with a class diagram to make the relationships clearer (e.g. inheritance).
-
-:::
 
 ## Endpoint: Retrieve the extension collection of a heritage collection
 
@@ -45,17 +59,17 @@ This is a discovery endpoint: it allows presentation layers to identify the exte
 
 ### HTTP request
 
-`GET /{version}/{collections}(/{...collections})/{collection}/{extensions}`
+`GET /{version}/{catalog}(/{...catalogs})/{collection}/{extensions}`
 
 ### Path parameters
 
-| Name             | Data type | Cardinality | Description                                                                      |
-| ---------------- | --------- | ----------- | -------------------------------------------------------------------------------- |
-| `version`        | string    | 1           | The version of the API. Example: `v1`.                                           |
-| `collections`    | string    | 1           | The path identifier of the top root heritage collection. Example: `collections`. |
-| `...collections` | string    | 0 or more   | The path identifier(s) of further root heritage collections. Example: `objects`. |
-| `collection`     | string    | 1           | The path identifier of the heritage collection. Example: `masterpieces`.         |
-| `extensions`     | string    | 1           | The path identifier of the extension collection. Example: `extensions`.          |
+| Name          | Data type | Cardinality | Description                                                              |
+| ------------- | --------- | ----------- | ------------------------------------------------------------------------ |
+| `version`     | string    | 1           | The version of the API. Example: `v1`.                                   |
+| `catalog`     | string    | 1           | The path identifier of the top heritage catalog. Example: `collections`. |
+| `...catalogs` | string    | 0 or more   | The path identifier(s) of further heritage catalogs. Example: `objects`. |
+| `collection`  | string    | 1           | The path identifier of the heritage collection. Example: `masterpieces`. |
+| `extensions`  | string    | 1           | The path identifier of the extension collection. Example: `extensions`.  |
 
 ### Query parameters
 
@@ -69,20 +83,20 @@ None.
 
 The response body _MUST_ contain at least the following fields:
 
-| Name            | Data type          | Cardinality | Description                                                                                                           |
-| --------------- | ------------------ | ----------- | --------------------------------------------------------------------------------------------------------------------- |
-| `id`            | string             | 1           | The identifier of the collection.                                                                                     |
-| `type`          | string             | 1           | The type of the collection. It _MUST_ be `ExtensionCollection`.                                                       |
-| `name`          | string             | 1           | A short, human-readable name of the collection.                                                                       |
-| `totalItems`    | number             | 1           | The total number of extensions in the collection.                                                                     |
-| `items`         | array              | 1           | A list of all extensions. The API defines the order.                                                                  |
-| `items[*]`      | resource           | 1           | An extension. This may be any resource.                                                                               |
-| `items[*].id`   | string             | 1           | The identifier of the extension.                                                                                      |
-| `items[*].type` | string             | 1           | The type of the extension. This may be any type. Core types are `RootFacetCollection` and `RootSuggestionCollection`. |
-| `items[*].name` | string             | 1           | A short, human-readable name of the extension.                                                                        |
-| `extends`       | HeritageCollection | 1           | The heritage collection that is extended by this collection.                                                          |
-| `extends.id`    | string             | 1           | The identifier of the heritage collection.                                                                            |
-| `extends.type`  | string             | 1           | The type of the heritage collection. It _MUST_ be `HeritageCollection`.                                               |
+| Name            | Data type          | Cardinality | Description                                                                                             |
+| --------------- | ------------------ | ----------- | ------------------------------------------------------------------------------------------------------- |
+| `id`            | string             | 1           | The identifier of the collection.                                                                       |
+| `type`          | string             | 1           | The type of the collection. It _MUST_ be `ExtensionCollection`.                                         |
+| `name`          | string             | 1           | A short, human-readable name of the collection.                                                         |
+| `totalItems`    | number             | 1           | The total number of extensions in the collection.                                                       |
+| `items`         | array              | 1           | A list of all extensions. The API defines the order.                                                    |
+| `items[*]`      | resource           | 1           | An extension. This may be any resource.                                                                 |
+| `items[*].id`   | string             | 1           | The identifier of the extension.                                                                        |
+| `items[*].type` | string             | 1           | The type of the extension. This may be any type. Core types are `FacetCatalog` and `SuggestionCatalog`. |
+| `items[*].name` | string             | 1           | A short, human-readable name of the extension.                                                          |
+| `extends`       | HeritageCollection | 1           | The heritage collection that is extended by this collection.                                            |
+| `extends.id`    | string             | 1           | The identifier of the heritage collection.                                                              |
+| `extends.type`  | string             | 1           | The type of the heritage collection. It _MUST_ be `HeritageCollection`.                                 |
 
 ### Example
 
@@ -106,12 +120,12 @@ An example of the response body of the API:
   "items": [
     {
       "id": "https://example.org/v1/collections/objects/extensions/facets",
-      "type": "RootFacetCollection",
+      "type": "FacetCatalog",
       "name": "Facets"
     },
     {
       "id": "https://example.org/v1/collections/objects/extensions/suggestions",
-      "type": "RootSuggestionCollection",
+      "type": "SuggestionCatalog",
       "name": "Suggestions"
     }
   ],
@@ -122,4 +136,4 @@ An example of the response body of the API:
 }
 ```
 
-The response indicates that a heritage collection (`objects`) has two extensions: a Root Facet Collection and a Root Suggestion Collection. The presentation layer can use this information to dynamically create a user interface and offer specific functionality to users.
+The response indicates that a heritage collection (`objects`) has two extensions: a Facet Catalog and a Suggestion Catalog. The presentation layer can use this information to dynamically create a user interface and offer specific functionality to users.
