@@ -7,7 +7,7 @@ sidebar_position: 3
 
 ## Introduction
 
-The API of a data layer is centered around resources. A resource represents a 'thing' of a certain type that may be identified by a globally unique [URI](https://www.rfc-editor.org/info/rfc9110/#uri). It can correspond to anything — from a physical object (e.g. a building or a person) to an abstract concept (e.g. a collection or a type of art work).
+The API of a data layer is centered around resources. A resource represents a 'thing' of a certain type. It can correspond to anything — from a physical object (e.g. a building or a person) to an abstract concept (e.g. a collection or a type of art work).
 
 ## Resource types
 
@@ -19,7 +19,7 @@ This specification defines the following high-level resource types:
 | Root Collection | An ordered list of collections.                                                                                                                                   |
 | Collection      | An ordered list of items. A collection may be a part of a root collection. A collection may consist of pages, containing sublists of the items in the collection. |
 | Page            | An ordered sublist of items within a collection.                                                                                                                  |
-| Item            | An object of any kind.                                                                                                                                            |
+| Item            | A 'thing' of a certain type, but not a Root Collection, Collection or Page.                                                                                       |
 
 The resource types are extensible. This specification defines, for example, an [Entity Collection](entities.md#data-model) and an [Entity Page](entities.md#data-model), specialized versions of the generic Collection and Page, respectively. Similarly, the API of a data layer may define its own resource types, extending the existing ones.
 
@@ -32,23 +32,33 @@ The resource types are extensible. This specification defines, for example, an [
 The following class diagram visualizes the relationships between the resource types:
 
 ```mermaid
+---
+  config:
+    class:
+      hideEmptyMembersBox: true
+---
 classDiagram
 class Resource
-class RootCollection
+class RootCollection["Root Collection"]
 class Collection
 class Page
 class Item
 
-Resource <|-- RootCollection : inherits from
-Resource <|-- Collection : inherits from
-Resource <|-- Page : inherits from
-Resource <|-- Item : inherits from
+Resource <|-- RootCollection
+RootCollection <|-- Collection
+Resource <|-- Page
+Resource <|-- Item
 
-RootCollection "1" -- "*" RootCollection
-RootCollection "1" -- "*" Collection
-Collection "0" -- "*" Page
-Page "1" -- "*" Item
-Collection "0" -- "*" Item
+RootCollection *-- RootCollection : contains
+RootCollection *-- Collection : contains
+RootCollection --> RootCollection : partOf
+Collection --> RootCollection : partOf
+Collection --> Page : first
+Collection --> Page : last
+Collection *-- Item : contains
+Page --> Page : prev
+Page --> Page : next
+Page *-- Item : contains
 ```
 
 ## Resource structure
@@ -88,16 +98,16 @@ Note the `additionalTypes` list. Every item in this list is also a resource and 
 
 A Root Collection contains at least the following fields:
 
-| Name          | Data type      | Cardinality | Description                                                                                                             |
-| ------------- | -------------- | ----------- | ----------------------------------------------------------------------------------------------------------------------- |
-| `id`          | string         | 1           | The identifier of the collection. It _MUST_ be a URI.                                                                   |
-| `type`        | string         | 1           | The type of the collection. It _MUST_ be `RootCollection` or a specialization.                                          |
-| `name`        | string         | 1           | The name of the collection.                                                                                             |
-| `totalItems`  | number         | 0 or 1      | The total number of collections in the collection.                                                                      |
-| `items`       | array          | 1           | A list of all collections in the collection. Every item _MUST_ be `RootCollection` or `Collection` or a specialization. |
-| `partOf`      | RootCollection | 0 or 1      | The collection of which this collection is a part. Not set if this collection is the top-level root collection.         |
-| `partOf.id`   | string         | 1           | The identifier of the collection.                                                                                       |
-| `partOf.type` | string         | 1           | The type of the collection. It _MUST_ be `RootCollection` or a specialization.                                          |
+| Name          | Data type      | Cardinality | Description                                                                                                                                                                                                   |
+| ------------- | -------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`          | string         | 1           | The identifier of the collection. It _MUST_ be a URI.                                                                                                                                                         |
+| `type`        | string         | 1           | The type of the collection. It _MUST_ be `RootCollection` or a specialization.                                                                                                                                |
+| `name`        | string         | 1           | The name of the collection.                                                                                                                                                                                   |
+| `totalItems`  | number         | 0 or 1      | The total number of collections in the collection. This _MAY_ be an estimate, especially in case of a large collection. The field _MAY_ be omitted by the API if the total number is too costly to calculate. |
+| `items`       | array          | 1           | A list of all collections in the collection. Every item _MUST_ be `RootCollection` or `Collection` or a specialization.                                                                                       |
+| `partOf`      | RootCollection | 0 or 1      | The collection of which this collection is a part. Not set if this collection is the top-level root collection.                                                                                               |
+| `partOf.id`   | string         | 1           | The identifier of the collection.                                                                                                                                                                             |
+| `partOf.type` | string         | 1           | The type of the collection. It _MUST_ be `RootCollection` or a specialization.                                                                                                                                |
 
 ### Example
 
