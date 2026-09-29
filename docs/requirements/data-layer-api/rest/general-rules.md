@@ -7,7 +7,7 @@ sidebar_position: 2
 
 ## Introduction
 
-An API provides an interface for presentation layers to interact with a data layer, decoupling them from specific underlying systems and technologies. To ensure consistent and predictable interactions, a data layer's API must adhere to several rules.
+An API provides an interface for presentation layers to interact with a data layer, decoupling them from specific underlying systems and technologies. The API of a data layer must adhere to several rules to ensure consistent and predictable interactions.
 
 ## Documentation
 
@@ -146,7 +146,7 @@ Compression reduces the size of a response body as it is transmitted to a presen
 1. A presentation layer _MAY_ send the `Accept-Encoding` header in its request to indicate which compression schemes it supports, such as `gzip`, `br`, `deflate` or `zstd`. Its value _MUST_ conform to the [HTTP semantics](https://www.rfc-editor.org/info/rfc9110/#field.accept-encoding).
 1. If a presentation layer sends the `Accept-Encoding` header, the API _MAY_ compress the response body using one of the schemes the presentation layer supports. The API _MUST_ then send the `Content-Encoding` header to indicate which scheme it used; its value _MUST_ conform to the [HTTP semantics](https://www.rfc-editor.org/info/rfc9110/#field.content-encoding).
 1. If a presentation layer does not send the `Accept-Encoding` header, or requests only schemes the API does not support, the API _MUST_ send the response body uncompressed, without a `Content-Encoding` header.
-1. The API _MUST_ send the `Vary: Accept-Encoding` header to indicate to a presentation layer that responses can differ based on the value of the `Accept-Encoding` request header. This informs a presentation layer that changing the value of the `Accept-Encoding` header in a request will yield a differently compressed representation of a resource.
+1. If the API supports compression, it _MUST_ send the `Vary: Accept-Encoding` header to indicate to a presentation layer that responses can differ based on the value of the `Accept-Encoding` request header. This informs a presentation layer that changing the value of the `Accept-Encoding` header in a request will yield a differently compressed representation of a resource.
 
 ### Example
 
@@ -169,7 +169,7 @@ Content-Encoding: br
 Vary: Accept-Encoding
 ```
 
-The response indicates that the body is a JSON representation compressed with Brotli (`br`). The `Vary: Accept-Encoding` header indicates that a new request to the same resource with a different `Accept-Encoding` header value will result in a differently compressed representation of the resource.
+The `Content-Encoding: br` header indicates that the body is compressed with Brotli (`br`). The `Vary: Accept-Encoding` header indicates that a new request to the same resource with a different `Accept-Encoding` header value will result in a differently compressed representation of the resource.
 
 ## Caching
 
@@ -333,7 +333,7 @@ Access should only be restricted to designated presentation layers under specifi
 
 The data layer should be able to monitor the usage of its API and advise presentation layers in optimizing their implementations. The data layer should therefore be able to identify individual presentation layers.
 
-1. A presentation layer _SHOULD_ send the `User-Agent` header in its requests. The header value _SHOULD_ consist of the name of the system of the presentation layer, the version of its system and the URL of the owner of the presentation layer. The value _SHOULD_ look like this: `system/version (url)`, e.g. `MyApp/1.7.6 (https://mymuseum.nl)`. See the [HTTP semantics](https://www.rfc-editor.org/info/rfc9110/#field.user-agent) for more information.
+1. A presentation layer _SHOULD_ send the `User-Agent` header in its requests. The header value _SHOULD_ consist of the name of the system of the presentation layer, the version of its system and the URL of the owner of the presentation layer. The value _SHOULD_ look like this: `system/version (url)`, e.g. `MyApp/1.7.6 (https://mymuseum.nl)`. See [HTTP semantics](https://www.rfc-editor.org/info/rfc9110/#field.user-agent) for more information.
 1. The API _MAY_ respond with a `400 Bad Request` status code if the `User-Agent` header in the request is missing or invalid.
 
 ### Example
