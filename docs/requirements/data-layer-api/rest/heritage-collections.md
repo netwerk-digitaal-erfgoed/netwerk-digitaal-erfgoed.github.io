@@ -21,30 +21,58 @@ A data layer may add extra functionality to a heritage collection. For example: 
 
 ## Data model
 
-| Name                     | Description                                                                          |
-| ------------------------ | ------------------------------------------------------------------------------------ |
-| Root Heritage Collection | A collection of heritage collections.                                                |
-| Heritage Collection      | A collection of entities, pointing to heritage pages containing the actual entities. |
-| Heritage Page            | A subcollection of entities, part of a heritage collection.                          |
-| Entity                   | An identifiable 'thing' relevant to heritage. See [Entities](entities.md).           |
-| Extension Collection     | A collection of extensions, adding extra functionality to a heritage collection.     |
+| Name                 | Description                                                                      |
+| -------------------- | -------------------------------------------------------------------------------- |
+| Heritage Catalog     | An ordered list of heritage collections.                                         |
+| Heritage Collection  | An ordered list of entities.                                                     |
+| Heritage Page        | An ordered sublist of entities within a Heritage Collection.                     |
+| Entity               | An identifiable 'thing' relevant to heritage. See [Entities](entities.md).       |
+| Extension Collection | A collection of extensions, adding extra functionality to a Heritage Collection. |
 
-The following entity-relationship diagram visualizes the data model:
+The following class diagram visualizes the data model:
 
 ```mermaid
-erDiagram
-    "Root Heritage Collection" ||--o{ "Root Heritage Collection" : "has part"
-    "Root Heritage Collection" ||--o{ "Heritage Collection" : "has part"
-    "Heritage Collection" ||--o{ "Heritage Page" : "has part"
-    "Heritage Page" ||--o{ "Entity" : "has part"
-    "Heritage Collection" ||--o| "Extension Collection" : "extended by"
+---
+  config:
+    class:
+      hideEmptyMembersBox: true
+---
+classDiagram
+
+class HeritageCatalog["Heritage Catalog"] {
+  id
+  type
+  name
+  totalItems
+}
+
+class HeritageCollection["Heritage Collection"] {
+  id
+  type
+  name
+  totalItems
+}
+
+class ExtensionCollection["Extension Collection"]
+
+class HeritagePage["Heritage Page"]
+
+class Entity {
+  id
+  type
+  name
+}
+
+HeritageCatalog *-- HeritageCatalog : items
+HeritageCatalog --> HeritageCatalog : partOf
+HeritageCatalog *-- HeritageCollection : items
+HeritageCollection --> HeritageCatalog : partOf
+HeritageCollection --> ExtensionCollection : extendedBy
+HeritageCollection --> HeritagePage : first, last
+HeritagePage --> HeritageCollection : partOf
+HeritagePage --> HeritagePage : prev, next
+HeritagePage *-- Entity : items
 ```
-
-:::note
-
-**To be discussed**: replace the ER diagram with a class diagram to make the relationships clearer (e.g. inheritance).
-
-:::
 
 ## Filter types
 
@@ -63,25 +91,25 @@ The data layer decides which filters should be implemented in its API. The data 
 
 :::
 
-## Endpoint: Retrieve a root heritage collection
+## Endpoint: Retrieve a heritage catalog
 
-The endpoint retrieves a root heritage collection. The API _MUST_ implement this endpoint, even if the API does not provide heritage collections or supports just one.
+The endpoint retrieves a heritage catalog. The API _MUST_ implement this endpoint, even if the API does not provide heritage collections or supports just one.
 
-A heritage collection can serve as the root for nested heritage collections. For example: a heritage collection named 'Persons' might have two heritage collections as its members: a collection named 'Painters' and a collection named 'Writers'. It's up to the data layer to define the nesting of collections, depending on its situation.
+A heritage catalog serves as the root for heritage collections. For example: a heritage catalog named 'Persons' might have two heritage collections as its members: a collection named 'Painters' and a collection named 'Writers'. It's up to the data layer to define the nesting of catalogs and collections, depending on its situation.
 
-This is a discovery endpoint: it allows presentation layers to identify the heritage collections and their endpoint URIs.
+This is a discovery endpoint: it allows presentation layers to identify the supported heritage collections and their endpoint URIs.
 
 ### HTTP request
 
-`GET /{version}/{collections}(/{...collections})`
+`GET /{version}/{catalog}(/{...catalogs})`
 
 ### Path parameters
 
-| Name             | Data type | Cardinality | Description                                                                      |
-| ---------------- | --------- | ----------- | -------------------------------------------------------------------------------- |
-| `version`        | string    | 1           | The version of the API. Example: `v1`.                                           |
-| `collections`    | string    | 1           | The path identifier of the top root heritage collection. Example: `collections`. |
-| `...collections` | string    | 0 or more   | The path identifier(s) of further root heritage collections. Example: `objects`. |
+| Name          | Data type | Cardinality | Description                                                              |
+| ------------- | --------- | ----------- | ------------------------------------------------------------------------ |
+| `version`     | string    | 1           | The version of the API. Example: `v1`.                                   |
+| `catalog`     | string    | 1           | The path identifier of the top heritage catalog. Example: `collections`. |
+| `...catalogs` | string    | 0 or more   | The path identifier(s) of further heritage catalogs. Example: `objects`. |
 
 ### Query parameters
 
@@ -95,20 +123,20 @@ None.
 
 The response body _MUST_ contain at least the following fields:
 
-| Name            | Data type                                  | Cardinality | Description                                                                                                     |
-| --------------- | ------------------------------------------ | ----------- | --------------------------------------------------------------------------------------------------------------- |
-| `id`            | string                                     | 1           | The identifier of the collection.                                                                               |
-| `type`          | string                                     | 1           | The type of the collection. It _MUST_ be `RootHeritageCollection`.                                              |
-| `name`          | string                                     | 1           | A short, human-readable name of the collection.                                                                 |
-| `totalItems`    | number                                     | 1           | The total number of heritage collections in the collection.                                                     |
-| `items`         | array                                      | 1           | A list of all heritage collections. The API defines the order.                                                  |
-| `items[*]`      | RootHeritageCollection, HeritageCollection | 1           | A heritage collection.                                                                                          |
-| `items[*].id`   | string                                     | 1           | The identifier of the heritage collection.                                                                      |
-| `items[*].type` | string                                     | 1           | The type of the heritage collection. It _MUST_ be one of `RootHeritageCollection`, `HeritageCollection`.        |
-| `items[*].name` | string                                     | 1           | A short, human-readable name of the heritage collection.                                                        |
-| `partOf`        | RootHeritageCollection                     | 0 or 1      | The collection of which this collection is a part. Not set if this collection is the top-level root collection. |
-| `partOf.id`     | string                                     | 1           | The identifier of the collection.                                                                               |
-| `partOf.type`   | string                                     | 1           | The type of the collection. It _MUST_ be `RootHeritageCollection`.                                              |
+| Name            | Data type                           | Cardinality | Description                                                                                                  |
+| --------------- | ----------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------ |
+| `id`            | string                              | 1           | The identifier of the catalog.                                                                               |
+| `type`          | string                              | 1           | The type of the catalog. It _MUST_ be `HeritageCatalog`.                                                     |
+| `name`          | string                              | 1           | A short, human-readable name of the catalog.                                                                 |
+| `totalItems`    | number                              | 1           | The total number of heritage collections or catalogs in the catalog.                                         |
+| `items`         | array                               | 1           | A list of all heritage collections or catalogs. The API defines the order.                                   |
+| `items[*]`      | HeritageCatalog, HeritageCollection | 1           | A heritage collection or catalog.                                                                            |
+| `items[*].id`   | string                              | 1           | The identifier of the heritage collection or catalog.                                                        |
+| `items[*].type` | string                              | 1           | The type of the heritage collection or catalog. It _MUST_ be one of `HeritageCollection`, `HeritageCatalog`. |
+| `items[*].name` | string                              | 1           | A short, human-readable name of the heritage collection or catalog.                                          |
+| `partOf`        | HeritageCatalog                     | 0 or 1      | The catalog of which this catalog is a part. Not set if this catalog is the top-level catalog.               |
+| `partOf.id`     | string                              | 1           | The identifier of the catalog.                                                                               |
+| `partOf.type`   | string                              | 1           | The type of the catalog. It _MUST_ be `HeritageCatalog`.                                                     |
 
 ### Example
 
@@ -117,33 +145,33 @@ An example of the response body of the API:
 ```json
 {
   "id": "https://example.org/v1/collections",
-  "type": "RootHeritageCollection",
-  "name": "Collections",
+  "type": "HeritageCatalog",
+  "name": "Heritage catalog",
   "totalItems": 2,
   "items": [
     {
       "id": "https://example.org/v1/collections/masterpieces",
       "type": "HeritageCollection",
-      "name": "Collection with masterpieces"
+      "name": "Masterpieces"
     },
     {
       "id": "https://example.org/v1/collections/persons",
-      "type": "RootHeritageCollection",
-      "name": "Collection with persons"
+      "type": "HeritageCatalog",
+      "name": "Persons"
     }
   ]
 }
 ```
 
-The response indicates that the API has two heritage collections that are a part of the root collection: one for 'Masterpieces' and one for 'Persons'.
+The response indicates that the API has two items that are a part of the catalog: one for 'Masterpieces' and one for 'Persons'.
 
-A heritage collection can be a root for nested collections. Example response for the 'Persons' collection:
+A catalog can be a root for nested catalogs. Example response for the 'Persons' catalog:
 
 ```json
 {
   "id": "https://example.org/v1/collections/persons",
-  "type": "RootHeritageCollection",
-  "name": "Collection with persons",
+  "type": "HeritageCatalog",
+  "name": "Persons",
   "totalItems": 2,
   "items": [
     {
@@ -159,12 +187,12 @@ A heritage collection can be a root for nested collections. Example response for
   ],
   "partOf": {
     "id": "https://example.org/v1/collections",
-    "type": "RootHeritageCollection"
+    "type": "HeritageCatalog"
   }
 }
 ```
 
-The response indicates that the 'Persons' collection is a root collection and that it contains two heritage collections: one for 'Painters' and one for 'Writers'.
+The response indicates that the 'Persons' catalog contains two heritage collections: one for 'Painters' and one for 'Writers'.
 
 ## Endpoint: Retrieve a heritage collection
 
@@ -172,16 +200,16 @@ The endpoint retrieves a heritage collection.
 
 ### HTTP request
 
-`GET /{version}/{collections}(/{...collections})/{collection}`
+`GET /{version}/{catalog}(/{...catalogs})/{collection}`
 
 ### Path parameters
 
-| Name             | Data type | Cardinality | Description                                                                      |
-| ---------------- | --------- | ----------- | -------------------------------------------------------------------------------- |
-| `version`        | string    | 1           | The version of the API. Example: `v1`.                                           |
-| `collections`    | string    | 1           | The path identifier of the top root heritage collection. Example: `collections`. |
-| `...collections` | string    | 0 or more   | The path identifier(s) of further root heritage collections. Example: `objects`. |
-| `collection`     | string    | 1           | The path identifier of the heritage collection. Example: `masterpieces`.         |
+| Name          | Data type | Cardinality | Description                                                              |
+| ------------- | --------- | ----------- | ------------------------------------------------------------------------ |
+| `version`     | string    | 1           | The version of the API. Example: `v1`.                                   |
+| `catalog`     | string    | 1           | The path identifier of the top heritage catalog. Example: `collections`. |
+| `...catalogs` | string    | 0 or more   | The path identifier(s) of further heritage catalogs. Example: `objects`. |
+| `collection`  | string    | 1           | The path identifier of the heritage collection. Example: `masterpieces`. |
 
 ### Query parameters
 
@@ -200,24 +228,24 @@ None.
 
 The response body _MUST_ contain at least the following fields:
 
-| Name              | Data type              | Cardinality | Description                                                                                                                                                     |
-| ----------------- | ---------------------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`              | string                 | 1           | The identifier of the collection.                                                                                                                               |
-| `type`            | string                 | 1           | The type of the collection. It _MUST_ be `HeritageCollection`.                                                                                                  |
-| `name`            | string                 | 1           | A short, human-readable name of the collection.                                                                                                                 |
-| `totalItems`      | number                 | 0 or 1      | The total number of entities in the collection. May be an estimate. Not set if it is too costly to calculate.                                                   |
-| `first`           | HeritagePage           | 0 or 1      | The first page in the collection. Not set if the collection is empty.                                                                                           |
-| `first.id`        | string                 | 1           | The identifier of the first page in the collection.                                                                                                             |
-| `first.type`      | string                 | 1           | The type of the first page in the collection. It _MUST_ be `HeritagePage`.                                                                                      |
-| `last`            | HeritagePage           | 0 or 1      | The last page in the collection. Not set if the collection is empty or the last page is unknown (e.g. in case of [cursor pagination](resources.md#pagination)). |
-| `last.id`         | string                 | 1           | The identifier of the last page in the collection.                                                                                                              |
-| `last.type`       | string                 | 1           | The type of the last page in the collection. It _MUST_ be `HeritagePage`.                                                                                       |
-| `partOf`          | RootHeritageCollection | 1           | The collection of which this collection is a part.                                                                                                              |
-| `partOf.id`       | string                 | 1           | The identifier of the collection.                                                                                                                               |
-| `partOf.type`     | string                 | 1           | The type of the collection. It _MUST_ be `RootHeritageCollection`.                                                                                              |
-| `extendedBy`      | ExtensionCollection    | 0 or 1      | A collection listing the extensions of the collection. The field _MUST_ be omitted by the API if it does not support extensions.                                |
-| `extendedBy.id`   | string                 | 1           | The identifier of the collection.                                                                                                                               |
-| `extendedBy.type` | string                 | 1           | The type of the collection. It _MUST_ be `ExtensionCollection`                                                                                                  |
+| Name              | Data type           | Cardinality | Description                                                                                                                                                     |
+| ----------------- | ------------------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`              | string              | 1           | The identifier of the collection.                                                                                                                               |
+| `type`            | string              | 1           | The type of the collection. It _MUST_ be `HeritageCollection`.                                                                                                  |
+| `name`            | string              | 1           | A short, human-readable name of the collection.                                                                                                                 |
+| `totalItems`      | number              | 0 or 1      | The total number of entities in the collection. May be an estimate. Not set if it is too costly to calculate.                                                   |
+| `first`           | HeritagePage        | 0 or 1      | The first page in the collection. Not set if the collection is empty.                                                                                           |
+| `first.id`        | string              | 1           | The identifier of the first page in the collection.                                                                                                             |
+| `first.type`      | string              | 1           | The type of the first page in the collection. It _MUST_ be `HeritagePage`.                                                                                      |
+| `last`            | HeritagePage        | 0 or 1      | The last page in the collection. Not set if the collection is empty or the last page is unknown (e.g. in case of [cursor pagination](resources.md#pagination)). |
+| `last.id`         | string              | 1           | The identifier of the last page in the collection.                                                                                                              |
+| `last.type`       | string              | 1           | The type of the last page in the collection. It _MUST_ be `HeritagePage`.                                                                                       |
+| `partOf`          | HeritageCatalog     | 1           | The catalog of which this collection is a part.                                                                                                                 |
+| `partOf.id`       | string              | 1           | The identifier of the catalog.                                                                                                                                  |
+| `partOf.type`     | string              | 1           | The type of the catalog. It _MUST_ be `HeritageCatalog`.                                                                                                        |
+| `extendedBy`      | ExtensionCollection | 0 or 1      | A collection listing the extensions of the collection. The field _MUST_ be omitted by the API if it does not support extensions.                                |
+| `extendedBy.id`   | string              | 1           | The identifier of the collection.                                                                                                                               |
+| `extendedBy.type` | string              | 1           | The type of the collection. It _MUST_ be `ExtensionCollection`                                                                                                  |
 
 ### Example
 
@@ -227,7 +255,7 @@ An example of the response body of the API:
 {
   "id": "https://example.org/v1/collections/masterpieces",
   "type": "HeritageCollection",
-  "name": "Collection with masterpieces",
+  "name": "Masterpieces",
   "totalItems": 195,
   "first": {
     "id": "https://example.org/v1/collections/masterpieces?page=1",
@@ -239,7 +267,7 @@ An example of the response body of the API:
   },
   "partOf": {
     "id": "https://example.org/v1/collections",
-    "type": "RootHeritageCollection"
+    "type": "HeritageCatalog"
   },
   "extendedBy": {
     "id": "https://example.org/v1/collections/masterpieces/extensions",
@@ -254,16 +282,16 @@ The endpoint retrieves a page in a heritage collection. The API _MUST_ implement
 
 ### HTTP request
 
-`GET /{version}/{collections}(/{...collections})/{collection}?page={page}`
+`GET /{version}/{catalog}(/{...catalogs})/{collection}?page={page}`
 
 ### Path parameters
 
-| Name             | Data type | Cardinality | Description                                                                      |
-| ---------------- | --------- | ----------- | -------------------------------------------------------------------------------- |
-| `version`        | string    | 1           | The version of the API. Example: `v1`.                                           |
-| `collections`    | string    | 1           | The path identifier of the top root heritage collection. Example: `collections`. |
-| `...collections` | string    | 0 or more   | The path identifier(s) of further root heritage collections. Example: `objects`. |
-| `collection`     | string    | 1           | The path identifier of the heritage collection. Example: `masterpieces`.         |
+| Name          | Data type | Cardinality | Description                                                              |
+| ------------- | --------- | ----------- | ------------------------------------------------------------------------ |
+| `version`     | string    | 1           | The version of the API. Example: `v1`.                                   |
+| `catalog`     | string    | 1           | The path identifier of the top heritage catalog. Example: `collections`. |
+| `...catalogs` | string    | 0 or more   | The path identifier(s) of further heritage catalogs. Example: `objects`. |
+| `collection`  | string    | 1           | The path identifier of the heritage collection. Example: `masterpieces`. |
 
 ### Query parameters
 
@@ -372,8 +400,26 @@ An example of the response body:
     "type": "HeritagePage"
   },
   "partOf": {
-    // Omitted for brevity — see the response body of endpoint
-    // "Retrieve a heritage collection"
+    "id": "https://example.org/v1/collections/masterpieces",
+    "type": "HeritageCollection",
+    "name": "Masterpieces",
+    "totalItems": 195,
+    "first": {
+      "id": "https://example.org/v1/collections/masterpieces?page=1",
+      "type": "HeritagePage"
+    },
+    "last": {
+      "id": "https://example.org/v1/collections/masterpieces?page=20",
+      "type": "HeritagePage"
+    },
+    "partOf": {
+      "id": "https://example.org/v1/collections",
+      "type": "HeritageCatalog"
+    },
+    "extendedBy": {
+      "id": "https://example.org/v1/collections/masterpieces/extensions",
+      "type": "ExtensionCollection"
+    }
   }
 }
 ```
@@ -394,7 +440,7 @@ An example of the response body if the API supports [facets](facets.md):
       "name": "Made in century",
       "items": [
         {
-          "type": "FacetTerm",
+          "type": "FacetItem",
           "count": 8,
           "value": {
             "id": "https://example.org/v1/entities/concepts/1234",
@@ -415,7 +461,7 @@ An example of the response body if the API supports [facets](facets.md):
       "name": "Creator",
       "items": [
         {
-          "type": "FacetTerm",
+          "type": "FacetItem",
           "count": 12,
           "value": {
             "id": "https://example.org/v1/entities/persons/1234",

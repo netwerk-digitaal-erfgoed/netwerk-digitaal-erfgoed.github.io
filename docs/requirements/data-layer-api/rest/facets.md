@@ -51,29 +51,55 @@ The following table lists some common facets:
 
 ## Data model
 
-| Name                  | Description                                                                               |
-| --------------------- | ----------------------------------------------------------------------------------------- |
-| Root Facet Collection | A collection of facet collections.                                                        |
-| Facet Collection      | A collection of categorized values, pointing to facet pages containing the actual values. |
-| Facet Page            | A subcollection of categorized values, part of a facet collection.                        |
-| Facet Term            | A selectable option within a facet page, pointing to an entity.                           |
-| Entity                | An identifiable 'thing' relevant to heritage. See [Entities](entities.md).                |
+| Name             | Description                                                                |
+| ---------------- | -------------------------------------------------------------------------- |
+| Facet Catalog    | An ordered list of facet collections.                                      |
+| Facet Collection | An ordered list of facet items.                                            |
+| Facet Page       | An ordered sublist of facet items within a Facet Collection.               |
+| Facet Item       | A selectable option within a Facet Page, pointing to an Entity.            |
+| Entity           | An identifiable 'thing' relevant to heritage. See [Entities](entities.md). |
 
-The following entity-relationship diagram visualizes the data model:
+The following class diagram visualizes the data model:
 
 ```mermaid
-erDiagram
-    "Root Facet Collection" ||--o{ "Facet Collection" : "has part"
-    "Facet Collection" ||--o{ "Facet Page" : "has part"
-    "Facet Page" ||--o{ "Facet Term" : "has part"
-    "Facet Term" ||--|| "Entity" : "contains"
+---
+  config:
+    class:
+      hideEmptyMembersBox: true
+---
+classDiagram
+
+class FacetCatalog["Facet Catalog"] {
+  id
+  type
+  name
+  totalItems
+}
+
+class FacetCollection["Facet Collection"] {
+  id
+  type
+  name
+  totalItems
+}
+
+class FacetPage["Facet Page"]
+class FacetItem["Facet Item"]
+
+class Entity {
+  id
+  type
+  name
+}
+
+FacetCatalog *-- FacetCollection : items
+FacetCollection --> FacetCatalog : partOf
+FacetCollection --> FacetPage : first, last
+FacetPage --> FacetCollection : partOf
+FacetPage --> FacetPage : prev, next
+FacetPage *-- FacetItem : items
+FacetItem "1" *-- "1" Entity  : value
 ```
-
-:::note
-
-**To be discussed**: replace the ER diagram with a class diagram to make the relationships clearer (e.g. inheritance).
-
-:::
 
 ## Identification of facet items
 
@@ -86,26 +112,26 @@ erDiagram
 
 :::
 
-## Endpoint: Retrieve a root facet collection
+## Endpoint: Retrieve a facet catalog
 
-The endpoint retrieves the facet collections belonging to a heritage collection. The API _MUST_ implement this endpoint if it supports facets.
+The endpoint retrieves a facet catalog belonging to a heritage collection. The API _MUST_ implement this endpoint if it supports facets.
 
-This is a discovery endpoint: it allows presentation layers to identify the facet collections and their endpoint URIs.
+This is a discovery endpoint: it allows presentation layers to identify the supported facet collections and their endpoint URIs.
 
 ### HTTP request
 
-`GET /{version}/{collections}(/{...collections})/{collection}/{extensions}/{facets}`
+`GET /{version}/{catalog}(/{...catalogs})/{collection}/{extensions}/{facets}`
 
 ### Path parameters
 
-| Name             | Data type | Cardinality | Description                                                                      |
-| ---------------- | --------- | ----------- | -------------------------------------------------------------------------------- |
-| `version`        | string    | 1           | The version of the API. Example: `v1`.                                           |
-| `collections`    | string    | 1           | The path identifier of the top root heritage collection. Example: `collections`. |
-| `...collections` | string    | 0 or more   | The path identifier(s) of further root heritage collections. Example: `objects`. |
-| `collection`     | string    | 1           | The path identifier of the heritage collection. Example: `masterpieces`.         |
-| `extensions`     | string    | 1           | The path identifier of the extension collection. Example: `extensions`.          |
-| `facets`         | string    | 1           | The path identifier of the root facet collection. Example: `facets`.             |
+| Name          | Data type | Cardinality | Description                                                              |
+| ------------- | --------- | ----------- | ------------------------------------------------------------------------ |
+| `version`     | string    | 1           | The version of the API. Example: `v1`.                                   |
+| `catalog`     | string    | 1           | The path identifier of the top heritage catalog. Example: `collections`. |
+| `...catalogs` | string    | 0 or more   | The path identifier(s) of further heritage catalogs. Example: `objects`. |
+| `collection`  | string    | 1           | The path identifier of the heritage collection. Example: `masterpieces`. |
+| `extensions`  | string    | 1           | The path identifier of the extension collection. Example: `extensions`.  |
+| `facets`      | string    | 1           | The path identifier of the facet catalog. Example: `facets`.             |
 
 ### Query parameters
 
@@ -121,10 +147,10 @@ The response body _MUST_ contain at least the following fields:
 
 | Name            | Data type           | Cardinality | Description                                                               |
 | --------------- | ------------------- | ----------- | ------------------------------------------------------------------------- |
-| `id`            | string              | 1           | The identifier of the collection.                                         |
-| `type`          | string              | 1           | The type of the collection. It _MUST_ be `RootFacetCollection`.           |
-| `name`          | string              | 1           | A short, human-readable name of the collection.                           |
-| `totalItems`    | number              | 1           | The total number of facets in the collection.                             |
+| `id`            | string              | 1           | The identifier of the catalog.                                            |
+| `type`          | string              | 1           | The type of the catalog. It _MUST_ be `FacetCatalog`.                     |
+| `name`          | string              | 1           | A short, human-readable name of the catalog.                              |
+| `totalItems`    | number              | 1           | The total number of facet collections in the catalog.                     |
 | `items`         | array               | 1           | A list of all facet collections. The API defines the order.               |
 | `items[*]`      | FacetCollection     | 1           | A facet collection.                                                       |
 | `items[*].id`   | string              | 1           | The identifier of the facet collection.                                   |
@@ -143,14 +169,14 @@ GET /v1/collections/objects/extensions/facets HTTP/2
 Host: example.org
 ```
 
-The request indicates that the API should return the root facet collection of a heritage collection (`objects`).
+The request indicates that the API should return the facet catalog of a heritage collection (`objects`).
 
 An example of the response body of the API:
 
 ```json
 {
   "id": "https://example.org/v1/collections/objects/extensions/facets",
-  "type": "RootFacetCollection",
+  "type": "FacetCatalog",
   "name": "Facets",
   "totalItems": 2,
   "items": [
@@ -172,7 +198,7 @@ An example of the response body of the API:
 }
 ```
 
-The response indicates that the API has two facet collections that are a part of the root collection: 'Made in century' and 'Creator'.
+The response indicates that the API has two facet collections that are a part of the facet catalog: 'Made in century' and 'Creator'.
 
 ## Endpoint: Retrieve a facet collection
 
@@ -180,27 +206,27 @@ The endpoint retrieves a facet collection. The API _MUST_ implement this endpoin
 
 ### HTTP request
 
-`GET /{version}/{collections}(/{...collections})/{collection}/{extensions}/{facets}/{facet}`
+`GET /{version}/{catalog}(/{...catalogs})/{collection}/{extensions}/{facets}/{facet}`
 
 ### Path parameters
 
-| Name             | Data type | Cardinality | Description                                                                      |
-| ---------------- | --------- | ----------- | -------------------------------------------------------------------------------- |
-| `version`        | string    | 1           | The version of the API. Example: `v1`.                                           |
-| `collections`    | string    | 1           | The path identifier of the top root heritage collection. Example: `collections`. |
-| `...collections` | string    | 0 or more   | The path identifier(s) of further root heritage collections. Example: `objects`. |
-| `collection`     | string    | 1           | The path identifier of the heritage collection. Example: `masterpieces`.         |
-| `extensions`     | string    | 1           | The path identifier of the extension collection. Example: `extensions`.          |
-| `facets`         | string    | 1           | The path identifier of the root facet collection. Example: `facets`.             |
-| `facet`          | string    | 1           | The path identifier of the facet collection. Example: `creators`, `centuries`.   |
+| Name          | Data type | Cardinality | Description                                                                    |
+| ------------- | --------- | ----------- | ------------------------------------------------------------------------------ |
+| `version`     | string    | 1           | The version of the API. Example: `v1`.                                         |
+| `catalog`     | string    | 1           | The path identifier of the top heritage catalog. Example: `collections`.       |
+| `...catalogs` | string    | 0 or more   | The path identifier(s) of further heritage catalogs. Example: `objects`.       |
+| `collection`  | string    | 1           | The path identifier of the heritage collection. Example: `masterpieces`.       |
+| `extensions`  | string    | 1           | The path identifier of the extension collection. Example: `extensions`.        |
+| `facets`      | string    | 1           | The path identifier of the facet catalog. Example: `facets`.                   |
+| `facet`       | string    | 1           | The path identifier of the facet collection. Example: `creators`, `centuries`. |
 
 ### Query parameters
 
 | Name      | Data type | Cardinality | Description                                                                                                                                                                                             |
 | --------- | --------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `q`       | string    | 0 or 1      | A keyword query for filtering the facet terms. Minimum length: defined by the data layer (e.g. 3 characters). Maximum length: defined by the API (e.g. 25 characters).                                  |
-| `size`    | number    | 0 or 1      | The maximum number of facet terms to retrieve. Minimum: 1. Default: 10. Maximum: defined by the API (e.g. 100).                                                                                         |
-| `orderBy` | string    | 0 or 1      | The sorting order of the facet terms. One of `count`, `value`. Default: `count:desc` (most frequent term first). The API defines which value is used to sort by `value` (e.g. the `name` of an entity). |
+| `q`       | string    | 0 or 1      | A keyword query for filtering the facet items. Minimum length: defined by the data layer (e.g. 3 characters). Maximum length: defined by the API (e.g. 25 characters).                                  |
+| `size`    | number    | 0 or 1      | The maximum number of facet items to retrieve. Minimum: 1. Default: 10. Maximum: defined by the API (e.g. 100).                                                                                         |
+| `orderBy` | string    | 0 or 1      | The sorting order of the facet items. One of `count`, `value`. Default: `count:desc` (most frequent item first). The API defines which value is used to sort by `value` (e.g. the `name` of an entity). |
 
 :::note
 
@@ -216,21 +242,21 @@ None.
 
 The response body _MUST_ contain at least the following fields:
 
-| Name          | Data type           | Cardinality | Description                                                                                                                                                        |
-| ------------- | ------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `id`          | string              | 1           | The identifier of the collection.                                                                                                                                  |
-| `type`        | string              | 1           | The type of the collection. It _MUST_ be `FacetCollection`.                                                                                                        |
-| `name`        | string              | 1           | A short, human-readable name of the collection.                                                                                                                    |
-| `totalItems`  | number              | 0 or 1      | The total number of facet terms in the collection. May be an estimate. Not set if it is too costly to calculate.                                                   |
-| `first`       | FacetPage           | 0 or 1      | The first page in the collection. Not set if the collection is empty.                                                                                              |
-| `first.id`    | string              | 1           | The identifier of the first page in the collection.                                                                                                                |
-| `first.type`  | string              | 1           | The type of the first page in the collection. It _MUST_ be `FacetPage`.                                                                                            |
-| `last`        | FacetPage           | 0 or 1      | The last page in the collection. Not set if the collection is empty or if the last page is unknown (e.g. in case of [cursor pagination](resources.md#pagination)). |
-| `last.id`     | string              | 1           | The identifier of the last page in the collection.                                                                                                                 |
-| `last.type`   | string              | 1           | The type of the last page in the collection. It _MUST_ be `FacetPage`.                                                                                             |
-| `partOf`      | RootFacetCollection | 1           | The collection of which this facet collection is a part.                                                                                                           |
-| `partOf.id`   | string              | 1           | The identifier of the collection.                                                                                                                                  |
-| `partOf.type` | string              | 1           | The type of the collection. It _MUST_ be `RootFacetCollection`.                                                                                                    |
+| Name          | Data type    | Cardinality | Description                                                                                                                                                        |
+| ------------- | ------------ | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `id`          | string       | 1           | The identifier of the collection.                                                                                                                                  |
+| `type`        | string       | 1           | The type of the collection. It _MUST_ be `FacetCollection`.                                                                                                        |
+| `name`        | string       | 1           | A short, human-readable name of the collection.                                                                                                                    |
+| `totalItems`  | number       | 0 or 1      | The total number of facet items in the collection. May be an estimate. Not set if it is too costly to calculate.                                                   |
+| `first`       | FacetPage    | 0 or 1      | The first page in the collection. Not set if the collection is empty.                                                                                              |
+| `first.id`    | string       | 1           | The identifier of the first page in the collection.                                                                                                                |
+| `first.type`  | string       | 1           | The type of the first page in the collection. It _MUST_ be `FacetPage`.                                                                                            |
+| `last`        | FacetPage    | 0 or 1      | The last page in the collection. Not set if the collection is empty or if the last page is unknown (e.g. in case of [cursor pagination](resources.md#pagination)). |
+| `last.id`     | string       | 1           | The identifier of the last page in the collection.                                                                                                                 |
+| `last.type`   | string       | 1           | The type of the last page in the collection. It _MUST_ be `FacetPage`.                                                                                             |
+| `partOf`      | FacetCatalog | 1           | The collection of which this facet collection is a part.                                                                                                           |
+| `partOf.id`   | string       | 1           | The identifier of the collection.                                                                                                                                  |
+| `partOf.type` | string       | 1           | The type of the collection. It _MUST_ be `FacetCatalog`.                                                                                                           |
 
 ### Example
 
@@ -261,7 +287,7 @@ An example of the response body of the API:
   },
   "partOf": {
     "id": "https://example.org/v1/collections/objects/extensions/facets",
-    "type": "RootFacetCollection"
+    "type": "FacetCatalog"
   }
 }
 ```
@@ -272,28 +298,28 @@ The endpoint retrieves a page in a facet collection. The API _MUST_ implement th
 
 ### HTTP request
 
-`GET /{version}/{collections}(/{...collections})/{collection}/{extensions}/{facets}/{facet}?page={page}`
+`GET /{version}/{catalog}(/{...catalogs})/{collection}/{extensions}/{facets}/{facet}?page={page}`
 
 ### Path parameters
 
-| Name             | Data type | Cardinality | Description                                                                      |
-| ---------------- | --------- | ----------- | -------------------------------------------------------------------------------- |
-| `version`        | string    | 1           | The version of the API. Example: `v1`.                                           |
-| `collections`    | string    | 1           | The path identifier of the top root heritage collection. Example: `collections`. |
-| `...collections` | string    | 0 or more   | The path identifier(s) of further root heritage collections. Example: `objects`. |
-| `collection`     | string    | 1           | The path identifier of the heritage collection. Example: `masterpieces`.         |
-| `extensions`     | string    | 1           | The path identifier of the extension collection. Example: `extensions`.          |
-| `facets`         | string    | 1           | The path identifier of the root facet collection. Example: `facets`.             |
-| `facet`          | string    | 1           | The path identifier of the facet collection. Example: `creators`, `centuries`.   |
+| Name          | Data type | Cardinality | Description                                                                    |
+| ------------- | --------- | ----------- | ------------------------------------------------------------------------------ |
+| `version`     | string    | 1           | The version of the API. Example: `v1`.                                         |
+| `catalog`     | string    | 1           | The path identifier of the top heritage catalog. Example: `collections`.       |
+| `...catalogs` | string    | 0 or more   | The path identifier(s) of further heritage catalogs. Example: `objects`.       |
+| `collection`  | string    | 1           | The path identifier of the heritage collection. Example: `masterpieces`.       |
+| `extensions`  | string    | 1           | The path identifier of the extension collection. Example: `extensions`.        |
+| `facets`      | string    | 1           | The path identifier of the facet catalog. Example: `facets`.                   |
+| `facet`       | string    | 1           | The path identifier of the facet collection. Example: `creators`, `centuries`. |
 
 ### Query parameters
 
 | Name      | Data type | Cardinality | Description                                                                                                                                                                                             |
 | --------- | --------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `page`    | string    | 1           | The identifier of the page: a page number or cursor, depending on the [pagination strategy](resources.md#pagination) of the API.                                                                        |
-| `q`       | string    | 0 or 1      | A keyword query for filtering the facet terms. Minimum length: defined by the data layer (e.g. 3 characters). Maximum length: defined by the API (e.g. 25 characters).                                  |
-| `size`    | number    | 0 or 1      | The maximum number of facet terms to retrieve. Minimum: 1. Default: 10. Maximum: defined by the API (e.g. 100).                                                                                         |
-| `orderBy` | string    | 0 or 1      | The sorting order of the facet terms. One of `count`, `value`. Default: `count:desc` (most frequent term first). The API defines which value is used to sort by `value` (e.g. the `name` of an entity). |
+| `q`       | string    | 0 or 1      | A keyword query for filtering the facet items. Minimum length: defined by the data layer (e.g. 3 characters). Maximum length: defined by the API (e.g. 25 characters).                                  |
+| `size`    | number    | 0 or 1      | The maximum number of facet items to retrieve. Minimum: 1. Default: 10. Maximum: defined by the API (e.g. 100).                                                                                         |
+| `orderBy` | string    | 0 or 1      | The sorting order of the facet items. One of `count`, `value`. Default: `count:desc` (most frequent item first). The API defines which value is used to sort by `value` (e.g. the `name` of an entity). |
 
 :::note
 
@@ -314,14 +340,14 @@ The response body _MUST_ contain at least the following fields:
 | `id`                  | string          | 1           | The identifier of the current page.                                                                                                                                     |
 | `type`                | string          | 1           | The type of the page. It _MUST_ be `FacetPage`.                                                                                                                         |
 | `name`                | string          | 1           | A short, human-readable name of the page.                                                                                                                               |
-| `items`               | array           | 1           | A list of facet terms.                                                                                                                                                  |
-| `items[*]`            | FacetTerm       | 1           | A facet term.                                                                                                                                                           |
-| `items[*].type`       | string          | 1           | The type of the facet term. It _MUST_ be `FacetTerm`.                                                                                                                   |
-| `items[*].count`      | number          | 1           | The number of occurrences of the value of the facet term.                                                                                                               |
-| `items[*].value`      | Entity          | 1           | The value of the facet term.                                                                                                                                            |
-| `items[*].value.type` | string          | 1           | The type of the value of the facet term. It _MUST_ be a type of `Entity`.                                                                                               |
-| `items[*].value.id`   | string          | 1           | The identifier of the value of the facet term.                                                                                                                          |
-| `items[*].value.name` | string          | 1           | The name of the value of the facet term.                                                                                                                                |
+| `items`               | array           | 1           | A list of facet items.                                                                                                                                                  |
+| `items[*]`            | FacetItem       | 1           | A facet item.                                                                                                                                                           |
+| `items[*].type`       | string          | 1           | The type of the facet item. It _MUST_ be `FacetItem`.                                                                                                                   |
+| `items[*].count`      | number          | 1           | The number of occurrences of the value of the facet item.                                                                                                               |
+| `items[*].value`      | Entity          | 1           | The value of the facet item.                                                                                                                                            |
+| `items[*].value.type` | string          | 1           | The type of the value of the facet item. It _MUST_ be a type of `Entity`.                                                                                               |
+| `items[*].value.id`   | string          | 1           | The identifier of the value of the facet item.                                                                                                                          |
+| `items[*].value.name` | string          | 1           | The name of the value of the facet item.                                                                                                                                |
 | `prev`                | FacetPage       | 0 or 1      | The previous page in the collection. Not set if there is no previous page.                                                                                              |
 | `prev.id`             | string          | 1           | The identifier of the previous page in the collection.                                                                                                                  |
 | `prev.type`           | string          | 1           | The type of the previous page in the collection. It _MUST_ be `FacetPage`.                                                                                              |
@@ -350,7 +376,7 @@ An example of the response body of the API:
   "name": "Creator",
   "items": [
     {
-      "type": "FacetTerm",
+      "type": "FacetItem",
       "count": 12,
       "value": {
         "id": "https://example.org/v1/entities/persons/1234",
@@ -360,7 +386,7 @@ An example of the response body of the API:
       }
     },
     {
-      "type": "FacetTerm",
+      "type": "FacetItem",
       "count": 8,
       "value": {
         "id": "https://example.org/v1/entities/persons/5678",
@@ -380,8 +406,22 @@ An example of the response body of the API:
     "type": "FacetPage"
   },
   "partOf": {
-    // Omitted for brevity — see the response body of endpoint
-    // "Retrieve a facet collection"
+    "id": "https://example.org/v1/collections/objects/extensions/facets/creators",
+    "type": "FacetCollection",
+    "name": "Creator",
+    "totalItems": 195,
+    "first": {
+      "id": "https://example.org/v1/collections/objects/extensions/facets/creators?page=1",
+      "type": "FacetPage"
+    },
+    "last": {
+      "id": "https://example.org/v1/collections/objects/extensions/facets/creators?page=20",
+      "type": "FacetPage"
+    },
+    "partOf": {
+      "id": "https://example.org/v1/collections/objects/extensions/facets",
+      "type": "FacetCatalog"
+    }
   }
 }
 ```

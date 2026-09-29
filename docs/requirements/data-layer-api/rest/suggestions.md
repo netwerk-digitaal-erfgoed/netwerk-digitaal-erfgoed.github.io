@@ -15,36 +15,71 @@ Suggestions are an _OPTIONAL_ [extension](extensions.md). A data layer may choos
 
 ## Data model
 
-| Name                           | Description                                                                                                                                 |
-| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| Root Suggestion Collection     | A collection of suggestion collections.                                                                                                     |
-| Suggestion Collection          | A collection of suggestions.                                                                                                                |
-| Keyword Suggestion Collection  | A collection of keyword suggestions. Specialization of Suggestion Collection.                                                               |
-| Entity Suggestion Collection   | A collection of entity suggestions. Specialization of Suggestion Collection.                                                                |
-| Combined Suggestion Collection | A collection of keyword and entity suggestions. Specialization of Suggestion Collection.                                                    |
-| Suggestion Term                | A selectable option within a suggestion collection, e.g. a keyword or entity.                                                               |
-| Keyword Suggestion             | A keyword matching a suggestion query, e.g. 'windmill'. The keyword can be used as input to search for entities and find all that match it. |
-| Entity                         | An [entity](entities.md) matching a suggestion query, e.g. a heritage object named 'A Watermill'.                                           |
+| Name                           | Description                                                                                                                                         |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Suggestion Catalog             | An ordered list of suggestion collections.                                                                                                          |
+| Suggestion Collection          | An ordered list of suggestion items.                                                                                                                |
+| Keyword Suggestion Collection  | An ordered list of keyword suggestions. Specialization of Suggestion Collection.                                                                    |
+| Entity Suggestion Collection   | An ordered list of entities. Specialization of Suggestion Collection.                                                                               |
+| Combined Suggestion Collection | An ordered list of keyword suggestions and entities. Specialization of Suggestion Collection.                                                       |
+| Suggestion Item                | A selectable option within a Suggestion Collection, pointing to a Keyword Suggestion or an Entity.                                                  |
+| Keyword Suggestion             | A keyword matching a suggestion query, e.g. 'windmill'. The keyword can be used as input to search for entities and find all that match it.         |
+| Entity                         | An identifiable 'thing' relevant to heritage, matching a suggestion query, e.g. a heritage object named 'A Watermill'. See [Entities](entities.md). |
 
-The following entity-relationship diagram visualizes the data model:
+The following class diagram visualizes the data model:
 
 ```mermaid
-erDiagram
-    "Root Suggestion Collection" ||--o| "Keyword Suggestion Collection" : "has part"
-    "Root Suggestion Collection" ||--o| "Entity Suggestion Collection" : "has part"
-    "Root Suggestion Collection" ||--o| "Combined Suggestion Collection" : "has part"
-    "Keyword Suggestion Collection" ||--o{ "Suggestion Term" : "has part"
-    "Entity Suggestion Collection" ||--o{ "Suggestion Term" : "has part"
-    "Combined Suggestion Collection" ||--o{ "Suggestion Term" : "has part"
-    "Suggestion Term" ||--o| "Keyword Suggestion" : "contains"
-    "Suggestion Term" ||--o| "Entity" : "contains"
+---
+  config:
+    class:
+      hideEmptyMembersBox: true
+---
+classDiagram
+
+class SuggestionCatalog["Suggestion Catalog"] {
+  id
+  type
+  name
+  totalItems
+}
+
+class SuggestionCollection["Suggestion Collection"] {
+  <<abstract>>
+  id
+  type
+  name
+  totalItems
+}
+
+class KeywordSuggestionCollection["Keyword Suggestion Collection"]
+class EntitySuggestionCollection["Entity Suggestion Collection"]
+class CombinedSuggestionCollection["Combined Suggestion Collection"]
+
+class SuggestionItem["Suggestion Item"] {
+  type
+  relevance
+}
+
+class KeywordSuggestion["Keyword Suggestion"] {
+  type
+  name
+}
+
+class Entity {
+  id
+  type
+  name
+}
+
+SuggestionCatalog *-- SuggestionCollection : items
+SuggestionCollection <|-- KeywordSuggestionCollection
+SuggestionCollection <|-- EntitySuggestionCollection
+SuggestionCollection <|-- CombinedSuggestionCollection
+
+SuggestionCollection *-- SuggestionItem : items
+SuggestionItem "1" *-- "0..1" KeywordSuggestion : value
+SuggestionItem "1" *-- "0..1" Entity  : value
 ```
-
-:::note
-
-**To be discussed**: replace the ER diagram with a class diagram to make the relationships clearer (e.g. inheritance).
-
-:::
 
 ## Search strategies
 
@@ -53,26 +88,26 @@ Suggestions can be found by using different search strategies. The data layer de
 1. **Prefix search**. Prefix search restricts results to strings that start with the user's input. For example, the query `mil` will return `mill`, but not `windmill`. This strategy is optimized for speed and predictability; it is best suited for scenarios where users are searching for specific entities by their primary name or when the data layer wants to encourage an 'autocomplete-as-you-type' experience starting from the first letter.
 1. **Infix search**. Infix search is a more flexible matching that looks for a query anywhere within a string. For example, the query `mil` will return `mill` and `windmill`. This is the recommended strategy when the data layer wants users to discover entities using parts of a name, even if they do not know exactly how the name begins. Be aware that infix search can be more computationally expensive than prefix search.
 
-## Endpoint: Retrieve a root suggestion collection
+## Endpoint: Retrieve a suggestion catalog
 
-The endpoint retrieves a root suggestion collection belonging to a heritage collection. The API _MUST_ implement this endpoint if it supports suggestions.
+The endpoint retrieves a suggestion catalog belonging to a heritage collection. The API _MUST_ implement this endpoint if it supports suggestions.
 
-This is a discovery endpoint: it allows presentation layers to identify the suggestion collections and their endpoint URIs.
+This is a discovery endpoint: it allows presentation layers to identify the supported suggestion collections and their endpoint URIs.
 
 ### HTTP request
 
-`GET /{version}/{collections}(/{...collections})/{collection}/{extensions}/{suggestions}`
+`GET /{version}/{catalog}(/{...catalogs})/{collection}/{extensions}/{suggestions}`
 
 ### Path parameters
 
-| Name             | Data type | Cardinality | Description                                                                      |
-| ---------------- | --------- | ----------- | -------------------------------------------------------------------------------- |
-| `version`        | string    | 1           | The version of the API. Example: `v1`.                                           |
-| `collections`    | string    | 1           | The path identifier of the top root heritage collection. Example: `collections`. |
-| `...collections` | string    | 0 or more   | The path identifier(s) of further root heritage collections. Example: `objects`. |
-| `collection`     | string    | 1           | The path identifier of the heritage collection. Example: `masterpieces`.         |
-| `extensions`     | string    | 1           | The path identifier of the extension collection. Example: `extensions`.          |
-| `suggestions`    | string    | 1           | The path identifier of the root suggestion collection. Example: `suggestions`.   |
+| Name          | Data type | Cardinality | Description                                                              |
+| ------------- | --------- | ----------- | ------------------------------------------------------------------------ |
+| `version`     | string    | 1           | The version of the API. Example: `v1`.                                   |
+| `catalog`     | string    | 1           | The path identifier of the top heritage catalog. Example: `collections`. |
+| `...catalogs` | string    | 0 or more   | The path identifier(s) of further heritage catalogs. Example: `objects`. |
+| `collection`  | string    | 1           | The path identifier of the heritage collection. Example: `masterpieces`. |
+| `extensions`  | string    | 1           | The path identifier of the extension collection. Example: `extensions`.  |
+| `suggestions` | string    | 1           | The path identifier of the suggestion catalog. Example: `suggestions`.   |
 
 ### Query parameters
 
@@ -86,20 +121,20 @@ None.
 
 The response body _MUST_ contain at least the following fields:
 
-| Name            | Data type            | Cardinality | Description                                                                                                                                                                                               |
-| --------------- | -------------------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`            | string               | 1           | The identifier of the collection.                                                                                                                                                                         |
-| `type`          | string               | 1           | The type of the collection. It _MUST_ be `RootSuggestionCollection`.                                                                                                                                      |
-| `name`          | string               | 1           | A short, human-readable name of the collection.                                                                                                                                                           |
-| `totalItems`    | number               | 1           | The total number of suggestion collections in the collection.                                                                                                                                             |
-| `items`         | array                | 1           | A list of all suggestion collections. The API defines the order.                                                                                                                                          |
-| `items[*]`      | SuggestionCollection | 1           | A suggestion collection.                                                                                                                                                                                  |
-| `items[*].id`   | string               | 1           | The identifier of the suggestion collection.                                                                                                                                                              |
-| `items[*].type` | string               | 1           | The type of the suggestion collection. It _MAY_ be one of `KeywordSuggestionCollection`, `EntitySuggestionCollection`, `CombinedSuggestionCollection` or a suggestion collection type defined by the API. |
-| `items[*].name` | string               | 1           | A short, human-readable name of the suggestion collection.                                                                                                                                                |
-| `partOf`        | ExtensionCollection  | 1           | The extension collection of which this collection is a part.                                                                                                                                              |
-| `partOf.id`     | string               | 1           | The identifier of the extension collection.                                                                                                                                                               |
-| `partOf.type`   | string               | 1           | The type of the extension collection. It _MUST_ be `ExtensionCollection`.                                                                                                                                 |
+| Name            | Data type            | Cardinality | Description                                                                                                                                                                                                |
+| --------------- | -------------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`            | string               | 1           | The identifier of the suggestion catalog.                                                                                                                                                                  |
+| `type`          | string               | 1           | The type of the suggestion catalog. It _MUST_ be `SuggestionCatalog`.                                                                                                                                      |
+| `name`          | string               | 1           | A short, human-readable name of the suggestion catalog.                                                                                                                                                    |
+| `totalItems`    | number               | 1           | The total number of suggestion collections in the suggestion catalog.                                                                                                                                      |
+| `items`         | array                | 1           | A list of all suggestion collections. The API defines the order.                                                                                                                                           |
+| `items[*]`      | SuggestionCollection | 1           | A suggestion collection.                                                                                                                                                                                   |
+| `items[*].id`   | string               | 1           | The identifier of the suggestion collection.                                                                                                                                                               |
+| `items[*].type` | string               | 1           | The type of the suggestion collection. It _MUST_ be one of `KeywordSuggestionCollection`, `EntitySuggestionCollection`, `CombinedSuggestionCollection` or a suggestion collection type defined by the API. |
+| `items[*].name` | string               | 1           | A short, human-readable name of the suggestion collection.                                                                                                                                                 |
+| `partOf`        | ExtensionCollection  | 1           | The extension collection of which this collection is a part.                                                                                                                                               |
+| `partOf.id`     | string               | 1           | The identifier of the extension collection.                                                                                                                                                                |
+| `partOf.type`   | string               | 1           | The type of the extension collection. It _MUST_ be `ExtensionCollection`.                                                                                                                                  |
 
 ### Example
 
@@ -117,7 +152,7 @@ An example of the response body of the API:
 ```json
 {
   "id": "https://example.org/v1/collections/objects/extensions/suggestions",
-  "type": "RootSuggestionCollection",
+  "type": "SuggestionCatalog",
   "name": "Suggestions",
   "totalItems": 3,
   "items": [
@@ -152,27 +187,27 @@ The endpoint retrieves a list of keywords matching a query. A presentation layer
 
 ### HTTP request
 
-`GET /{version}/{collections}(/{...collections})/{collection}/{extensions}/{suggestions}/{suggestion}`
+`GET /{version}/{catalog}(/{...catalogs})/{collection}/{extensions}/{suggestions}/{suggestion}`
 
 ### Path parameters
 
-| Name             | Data type | Cardinality | Description                                                                      |
-| ---------------- | --------- | ----------- | -------------------------------------------------------------------------------- |
-| `version`        | string    | 1           | The version of the API. Example: `v1`.                                           |
-| `collections`    | string    | 1           | The path identifier of the top root heritage collection. Example: `collections`. |
-| `...collections` | string    | 0 or more   | The path identifier(s) of further root heritage collections. Example: `objects`. |
-| `collection`     | string    | 1           | The path identifier of the heritage collection. Example: `masterpieces`.         |
-| `extensions`     | string    | 1           | The path identifier of the extension collection. Example: `extensions`.          |
-| `suggestions`    | string    | 1           | The path identifier of the root suggestion collection. Example: `suggestions`.   |
-| `suggestion`     | string    | 1           | The path identifier of the keyword suggestion collection. Example: `keywords`.   |
+| Name          | Data type | Cardinality | Description                                                                    |
+| ------------- | --------- | ----------- | ------------------------------------------------------------------------------ |
+| `version`     | string    | 1           | The version of the API. Example: `v1`.                                         |
+| `catalog`     | string    | 1           | The path identifier of the top heritage catalog. Example: `collections`.       |
+| `...catalogs` | string    | 0 or more   | The path identifier(s) of further heritage catalogs. Example: `objects`.       |
+| `collection`  | string    | 1           | The path identifier of the heritage collection. Example: `masterpieces`.       |
+| `extensions`  | string    | 1           | The path identifier of the extension collection. Example: `extensions`.        |
+| `suggestions` | string    | 1           | The path identifier of the suggestion catalog. Example: `suggestions`.         |
+| `suggestion`  | string    | 1           | The path identifier of the keyword suggestion collection. Example: `keywords`. |
 
 ### Query parameters
 
 | Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                                 |
 | --------- | --------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `q`       | string    | 1           | A keyword query for filtering the suggestion terms. Minimum length: defined by the data layer (e.g. 3 characters). Maximum length: defined by the API (e.g. 25 characters). The API defines how the query is matched, e.g. by using prefix or infix search. |
-| `size`    | number    | 0 or 1      | The maximum number of suggestion terms to retrieve. Minimum: 1. Default: 10. Maximum: defined by the API (e.g. 25).                                                                                                                                         |
-| `orderBy` | string    | 0 or 1      | The sorting order of the suggestion terms. It _MUST_ be one of `relevance`, `value`. Default: `relevance:desc` (most relevant suggestion first). The API defines which value is used to sort by `value` (e.g. the `name` of a keyword).                     |
+| `q`       | string    | 1           | A keyword query for filtering the suggestion items. Minimum length: defined by the data layer (e.g. 3 characters). Maximum length: defined by the API (e.g. 25 characters). The API defines how the query is matched, e.g. by using prefix or infix search. |
+| `size`    | number    | 0 or 1      | The maximum number of suggestion items to retrieve. Minimum: 1. Default: 10. Maximum: defined by the API (e.g. 25).                                                                                                                                         |
+| `orderBy` | string    | 0 or 1      | The sorting order of the suggestion items. It _MUST_ be one of `relevance`, `value`. Default: `relevance:desc` (most relevant suggestion first). The API defines which value is used to sort by `value` (e.g. the `name` of a keyword).                     |
 
 ### Request body
 
@@ -182,22 +217,22 @@ None.
 
 The response body _MUST_ contain at least the following fields:
 
-| Name                  | Data type                | Cardinality | Description                                                                                                            |
-| --------------------- | ------------------------ | ----------- | ---------------------------------------------------------------------------------------------------------------------- |
-| `id`                  | string                   | 1           | The identifier of the collection.                                                                                      |
-| `type`                | string                   | 1           | The type of the collection. It _MUST_ be `KeywordSuggestionCollection`.                                                |
-| `name`                | string                   | 1           | A short, human-readable name of the collection.                                                                        |
-| `totalItems`          | number                   | 1           | The total number of suggestion terms in the collection.                                                                |
-| `items`               | array                    | 1           | A list of suggestion terms. Empty if no suggestions matched the query.                                                 |
-| `items[*]`            | SuggestionTerm           | 1           | A suggestion term.                                                                                                     |
-| `items[*].type`       | string                   | 1           | The type of the suggestion term. It _MUST_ be `SuggestionTerm`.                                                        |
-| `items[*].relevance`  | number                   | 1           | The relevance of the suggestion to the query. It _MUST_ be a whole number between 0 (not relevant) and 100 (relevant). |
-| `items[*].value`      | KeywordSuggestion        | 1           | The suggested keyword.                                                                                                 |
-| `items[*].value.type` | string                   | 1           | The type of the keyword. It _MUST_ be `KeywordSuggestion`.                                                             |
-| `items[*].value.name` | string                   | 1           | The name of the keyword.                                                                                               |
-| `partOf`              | RootSuggestionCollection | 1           | The collection of which this suggestion collection is a part.                                                          |
-| `partOf.id`           | string                   | 1           | The identifier of the collection.                                                                                      |
-| `partOf.type`         | string                   | 1           | The type of the collection. It _MUST_ be `RootSuggestionCollection`.                                                   |
+| Name                  | Data type         | Cardinality | Description                                                                                                            |
+| --------------------- | ----------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `id`                  | string            | 1           | The identifier of the collection.                                                                                      |
+| `type`                | string            | 1           | The type of the collection. It _MUST_ be `KeywordSuggestionCollection`.                                                |
+| `name`                | string            | 1           | A short, human-readable name of the collection.                                                                        |
+| `totalItems`          | number            | 1           | The total number of suggestion items in the collection.                                                                |
+| `items`               | array             | 1           | A list of suggestion items. Empty if no suggestions matched the query.                                                 |
+| `items[*]`            | SuggestionItem    | 1           | A suggestion item.                                                                                                     |
+| `items[*].type`       | string            | 1           | The type of the suggestion item. It _MUST_ be `SuggestionItem`.                                                        |
+| `items[*].relevance`  | number            | 1           | The relevance of the suggestion to the query. It _MUST_ be a whole number between 0 (not relevant) and 100 (relevant). |
+| `items[*].value`      | KeywordSuggestion | 1           | The suggested keyword.                                                                                                 |
+| `items[*].value.type` | string            | 1           | The type of the keyword. It _MUST_ be `KeywordSuggestion`.                                                             |
+| `items[*].value.name` | string            | 1           | The name of the keyword.                                                                                               |
+| `partOf`              | SuggestionCatalog | 1           | The suggestion catalog of which this suggestion collection is a part.                                                  |
+| `partOf.id`           | string            | 1           | The identifier of the suggestion catalog.                                                                              |
+| `partOf.type`         | string            | 1           | The type of the suggestion catalog. It _MUST_ be `SuggestionCatalog`.                                                  |
 
 ### Example
 
@@ -220,7 +255,7 @@ An example of the response body of the API:
   "totalItems": 2,
   "items": [
     {
-      "type": "SuggestionTerm",
+      "type": "SuggestionItem",
       "relevance": 98,
       "value": {
         "type": "KeywordSuggestion",
@@ -228,7 +263,7 @@ An example of the response body of the API:
       }
     },
     {
-      "type": "SuggestionTerm",
+      "type": "SuggestionItem",
       "relevance": 92,
       "value": {
         "type": "KeywordSuggestion",
@@ -238,7 +273,7 @@ An example of the response body of the API:
   ],
   "partOf": {
     "id": "https://example.org/v1/collections/objects/extensions/suggestions",
-    "type": "RootSuggestionCollection"
+    "type": "SuggestionCatalog"
   }
 }
 ```
@@ -249,27 +284,27 @@ The endpoint retrieves a list of entities matching a query. An entity in the lis
 
 ### HTTP request
 
-`GET /{version}/{collections}(/{...collections})/{collection}/{extensions}/{suggestions}/{suggestion}`
+`GET /{version}/{catalog}(/{...catalogs})/{collection}/{extensions}/{suggestions}/{suggestion}`
 
 ### Path parameters
 
-| Name             | Data type | Cardinality | Description                                                                      |
-| ---------------- | --------- | ----------- | -------------------------------------------------------------------------------- |
-| `version`        | string    | 1           | The version of the API. Example: `v1`.                                           |
-| `collections`    | string    | 1           | The path identifier of the top root heritage collection. Example: `collections`. |
-| `...collections` | string    | 0 or more   | The path identifier(s) of further root heritage collections. Example: `objects`. |
-| `collection`     | string    | 1           | The path identifier of the heritage collection. Example: `masterpieces`.         |
-| `extensions`     | string    | 1           | The path identifier of the extension collection. Example: `extensions`.          |
-| `suggestions`    | string    | 1           | The path identifier of the root suggestion collection. Example: `suggestions`.   |
-| `suggestion`     | string    | 1           | The path identifier of the entity suggestion collection. Example: `entities`.    |
+| Name          | Data type | Cardinality | Description                                                                   |
+| ------------- | --------- | ----------- | ----------------------------------------------------------------------------- |
+| `version`     | string    | 1           | The version of the API. Example: `v1`.                                        |
+| `catalog`     | string    | 1           | The path identifier of the top heritage catalog. Example: `collections`.      |
+| `...catalogs` | string    | 0 or more   | The path identifier(s) of further heritage catalogs. Example: `objects`.      |
+| `collection`  | string    | 1           | The path identifier of the heritage collection. Example: `masterpieces`.      |
+| `extensions`  | string    | 1           | The path identifier of the extension collection. Example: `extensions`.       |
+| `suggestions` | string    | 1           | The path identifier of the suggestion catalog. Example: `suggestions`.        |
+| `suggestion`  | string    | 1           | The path identifier of the entity suggestion collection. Example: `entities`. |
 
 ### Query parameters
 
 | Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                                 |
 | --------- | --------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `q`       | string    | 1           | A keyword query for filtering the suggestion terms. Minimum length: defined by the data layer (e.g. 3 characters). Maximum length: defined by the API (e.g. 25 characters). The API defines how the query is matched, e.g. by using prefix or infix search. |
-| `size`    | number    | 0 or 1      | The maximum number of suggestion terms to retrieve. Minimum: 1. Default: 10. Maximum: defined by the API (e.g. 25).                                                                                                                                         |
-| `orderBy` | string    | 0 or 1      | The sorting order of the suggestion terms. One of `relevance`, `value`. Default: `relevance:desc` (most relevant suggestion first). The API defines which value is used to sort by `value` (e.g. the `name` of an entity).                                  |
+| `q`       | string    | 1           | A keyword query for filtering the suggestion items. Minimum length: defined by the data layer (e.g. 3 characters). Maximum length: defined by the API (e.g. 25 characters). The API defines how the query is matched, e.g. by using prefix or infix search. |
+| `size`    | number    | 0 or 1      | The maximum number of suggestion items to retrieve. Minimum: 1. Default: 10. Maximum: defined by the API (e.g. 25).                                                                                                                                         |
+| `orderBy` | string    | 0 or 1      | The sorting order of the suggestion items. One of `relevance`, `value`. Default: `relevance:desc` (most relevant suggestion first). The API defines which value is used to sort by `value` (e.g. the `name` of an entity).                                  |
 
 ### Request body
 
@@ -279,23 +314,23 @@ None.
 
 The response body _MUST_ contain at least the following fields:
 
-| Name                  | Data type                | Cardinality | Description                                                                                                            |
-| --------------------- | ------------------------ | ----------- | ---------------------------------------------------------------------------------------------------------------------- |
-| `id`                  | string                   | 1           | The identifier of the collection.                                                                                      |
-| `type`                | string                   | 1           | The type of the collection. It _MUST_ be `EntitySuggestionCollection`.                                                 |
-| `name`                | string                   | 1           | A short, human-readable name of the collection.                                                                        |
-| `totalItems`          | number                   | 1           | The total number of suggestion terms in the collection.                                                                |
-| `items`               | array                    | 1           | A list of suggestions terms. Empty if no suggestions matched the query.                                                |
-| `items[*]`            | SuggestionTerm           | 1           | A suggestion term.                                                                                                     |
-| `items[*].type`       | string                   | 1           | The type of the suggestion term. It _MUST_ be `SuggestionTerm`.                                                        |
-| `items[*].relevance`  | number                   | 1           | The relevance of the suggestion to the query. It _MUST_ be a whole number between 0 (not relevant) and 100 (relevant). |
-| `items[*].value`      | Entity                   | 1           | The suggested entity.                                                                                                  |
-| `items[*].value.id`   | string                   | 1           | The identifier of the entity.                                                                                          |
-| `items[*].value.type` | string                   | 1           | The [type](entities.md#entity-types) of the entity.                                                                    |
-| `items[*].value.name` | string                   | 1           | The name of the entity.                                                                                                |
-| `partOf`              | RootSuggestionCollection | 1           | The collection of which this suggestion collection is a part.                                                          |
-| `partOf.id`           | string                   | 1           | The identifier of the collection.                                                                                      |
-| `partOf.type`         | string                   | 1           | The type of the collection. It _MUST_ be `RootSuggestionCollection`.                                                   |
+| Name                  | Data type         | Cardinality | Description                                                                                                            |
+| --------------------- | ----------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `id`                  | string            | 1           | The identifier of the collection.                                                                                      |
+| `type`                | string            | 1           | The type of the collection. It _MUST_ be `EntitySuggestionCollection`.                                                 |
+| `name`                | string            | 1           | A short, human-readable name of the collection.                                                                        |
+| `totalItems`          | number            | 1           | The total number of suggestion items in the collection.                                                                |
+| `items`               | array             | 1           | A list of suggestions items. Empty if no suggestions matched the query.                                                |
+| `items[*]`            | SuggestionItem    | 1           | A suggestion item.                                                                                                     |
+| `items[*].type`       | string            | 1           | The type of the suggestion item. It _MUST_ be `SuggestionItem`.                                                        |
+| `items[*].relevance`  | number            | 1           | The relevance of the suggestion to the query. It _MUST_ be a whole number between 0 (not relevant) and 100 (relevant). |
+| `items[*].value`      | Entity            | 1           | The suggested entity.                                                                                                  |
+| `items[*].value.id`   | string            | 1           | The identifier of the entity.                                                                                          |
+| `items[*].value.type` | string            | 1           | The [type](entities.md#entity-types) of the entity.                                                                    |
+| `items[*].value.name` | string            | 1           | The name of the entity.                                                                                                |
+| `partOf`              | SuggestionCatalog | 1           | The suggestion catalog of which this suggestion collection is a part.                                                  |
+| `partOf.id`           | string            | 1           | The identifier of the suggestion catalog.                                                                              |
+| `partOf.type`         | string            | 1           | The type of the suggestion catalog. It _MUST_ be `SuggestionCatalog`.                                                  |
 
 The API may expose additional fields about a suggested entity.
 
@@ -320,7 +355,7 @@ An example of the response body of the API:
   "totalItems": 2,
   "items": [
     {
-      "type": "SuggestionTerm",
+      "type": "SuggestionItem",
       "relevance": 98,
       "value": {
         "id": "https://example.org/v1/entities/objects/1234",
@@ -330,7 +365,7 @@ An example of the response body of the API:
       }
     },
     {
-      "type": "SuggestionTerm",
+      "type": "SuggestionItem",
       "relevance": 92,
       "value": {
         "id": "https://example.org/v1/entities/objects/5678",
@@ -342,7 +377,7 @@ An example of the response body of the API:
   ],
   "partOf": {
     "id": "https://example.org/v1/collections/objects/extensions/suggestions",
-    "type": "RootSuggestionCollection"
+    "type": "SuggestionCatalog"
   }
 }
 ```
@@ -351,35 +386,29 @@ An example of the response body of the API:
 
 The endpoint retrieves a list of both keywords and entities matching a query. The API determines the distribution between keywords and entities returned (e.g. proportional or based on relevance). The endpoint is _OPTIONAL_: it _MAY_ be implemented by the API.
 
-:::note
-
-**To be discussed**: is this endpoint useful or do the separate endpoints - one for keywords, one for entities - suffice?
-
-:::
-
 ### HTTP request
 
-`GET /{version}/{collections}(/{...collections})/{collection}/{extensions}/{suggestions}/{suggestion}`
+`GET /{version}/{catalog}(/{...catalogs})/{collection}/{extensions}/{suggestions}/{suggestion}`
 
 ### Path parameters
 
-| Name             | Data type | Cardinality | Description                                                                                   |
-| ---------------- | --------- | ----------- | --------------------------------------------------------------------------------------------- |
-| `version`        | string    | 1           | The version of the API. Example: `v1`.                                                        |
-| `collections`    | string    | 1           | The path identifier of the top root heritage collection. Example: `collections`.              |
-| `...collections` | string    | 0 or more   | The path identifier(s) of further root heritage collections. Example: `objects`.              |
-| `collection`     | string    | 1           | The path identifier of the heritage collection. Example: `masterpieces`.                      |
-| `extensions`     | string    | 1           | The path identifier of the extension collection. Example: `extensions`.                       |
-| `suggestions`    | string    | 1           | The path identifier of the root suggestion collection. Example: `suggestions`.                |
-| `suggestion`     | string    | 1           | The path identifier of the keyword and entity suggestion collection. Example: `combinations`. |
+| Name          | Data type | Cardinality | Description                                                                                   |
+| ------------- | --------- | ----------- | --------------------------------------------------------------------------------------------- |
+| `version`     | string    | 1           | The version of the API. Example: `v1`.                                                        |
+| `catalog`     | string    | 1           | The path identifier of the top heritage catalog. Example: `collections`.                      |
+| `...catalogs` | string    | 0 or more   | The path identifier(s) of further heritage catalogs. Example: `objects`.                      |
+| `collection`  | string    | 1           | The path identifier of the heritage collection. Example: `masterpieces`.                      |
+| `extensions`  | string    | 1           | The path identifier of the extension collection. Example: `extensions`.                       |
+| `suggestions` | string    | 1           | The path identifier of the suggestion catalog. Example: `suggestions`.                        |
+| `suggestion`  | string    | 1           | The path identifier of the keyword and entity suggestion collection. Example: `combinations`. |
 
 ### Query parameters
 
 | Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                                        |
 | --------- | --------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `q`       | string    | 1           | A keyword query for filtering the suggestion terms. Minimum length: defined by the data layer (e.g. 3 characters). Maximum length: defined by the data layer (e.g. 25 characters). The API defines how the query is matched, e.g. by using prefix or infix search. |
-| `size`    | number    | 0 or 1      | The maximum number of suggestion terms to retrieve. Default: 10. Maximum: 25.                                                                                                                                                                                      |
-| `orderBy` | string    | 0 or 1      | The sorting order of the suggestion terms. One of `relevance`, `value`. Default: `relevance:desc` (most relevant suggestion first). The API defines which value is used to sort by `value` (e.g. the `name` of a keyword or the `name` of an entity).              |
+| `q`       | string    | 1           | A keyword query for filtering the suggestion items. Minimum length: defined by the data layer (e.g. 3 characters). Maximum length: defined by the data layer (e.g. 25 characters). The API defines how the query is matched, e.g. by using prefix or infix search. |
+| `size`    | number    | 0 or 1      | The maximum number of suggestion items to retrieve. Default: 10. Maximum: 25.                                                                                                                                                                                      |
+| `orderBy` | string    | 0 or 1      | The sorting order of the suggestion items. One of `relevance`, `value`. Default: `relevance:desc` (most relevant suggestion first). The API defines which value is used to sort by `value` (e.g. the `name` of a keyword or the `name` of an entity).              |
 
 ### Request body
 
@@ -394,18 +423,18 @@ The response body _MUST_ contain at least the following fields:
 | `id`                  | string                    | 1           | The identifier of the collection.                                                                                      |
 | `type`                | string                    | 1           | The type of the collection. It _MUST_ be `CombinedSuggestionCollection`.                                               |
 | `name`                | string                    | 1           | A short, human-readable name of the collection.                                                                        |
-| `totalItems`          | number                    | 1           | The total number of suggestion terms in the collection.                                                                |
-| `items`               | array                     | 1           | A list of suggestions terms. Empty if no suggestions matched the query.                                                |
-| `items[*]`            | SuggestionTerm            | 1           | A suggestion term.                                                                                                     |
-| `items[*].type`       | string                    | 1           | The type of the suggestion term. It _MUST_ be `SuggestionTerm`.                                                        |
+| `totalItems`          | number                    | 1           | The total number of suggestion items in the collection.                                                                |
+| `items`               | array                     | 1           | A list of suggestions items. Empty if no suggestions matched the query.                                                |
+| `items[*]`            | SuggestionItem            | 1           | A suggestion item.                                                                                                     |
+| `items[*].type`       | string                    | 1           | The type of the suggestion item. It _MUST_ be `SuggestionItem`.                                                        |
 | `items[*].relevance`  | number                    | 1           | The relevance of the suggestion to the query. It _MUST_ be a whole number between 0 (not relevant) and 100 (relevant). |
 | `items[*].value`      | KeywordSuggestion, Entity | 1           | The suggested keyword or entity.                                                                                       |
 | `items[*].value.id`   | string                    | 0 or 1      | The identifier of the entity. Not set if the `type` is `KeywordSuggestion`; a keyword has no identity.                 |
 | `items[*].value.type` | string                    | 1           | The type of the keyword (it _MUST_ be `KeywordSuggestion`) or the [type](entities.md#entity-types) of the entity.      |
 | `items[*].value.name` | string                    | 1           | The name of the keyword or entity.                                                                                     |
-| `partOf`              | RootSuggestionCollection  | 1           | The collection of which this suggestion collection is a part.                                                          |
-| `partOf.id`           | string                    | 1           | The identifier of the collection.                                                                                      |
-| `partOf.type`         | string                    | 1           | The type of the collection. It _MUST_ be `RootSuggestionCollection`.                                                   |
+| `partOf`              | SuggestionCatalog         | 1           | The suggestion catalog of which this suggestion collection is a part.                                                  |
+| `partOf.id`           | string                    | 1           | The identifier of the suggestion catalog.                                                                              |
+| `partOf.type`         | string                    | 1           | The type of the suggestion catalog. It _MUST_ be `SuggestionCatalog`.                                                  |
 
 The API may expose additional fields about a suggested entity.
 
@@ -430,7 +459,7 @@ An example of the response body of the API:
   "totalItems": 2,
   "items": [
     {
-      "type": "SuggestionTerm",
+      "type": "SuggestionItem",
       "relevance": 98,
       "value": {
         "type": "KeywordSuggestion",
@@ -438,7 +467,7 @@ An example of the response body of the API:
       }
     },
     {
-      "type": "SuggestionTerm",
+      "type": "SuggestionItem",
       "relevance": 95,
       "value": {
         "id": "https://example.org/v1/entities/objects/1234",
@@ -450,7 +479,7 @@ An example of the response body of the API:
   ],
   "partOf": {
     "id": "https://example.org/v1/collections/objects/extensions/suggestions",
-    "type": "RootSuggestionCollection"
+    "type": "SuggestionCatalog"
   }
 }
 ```
