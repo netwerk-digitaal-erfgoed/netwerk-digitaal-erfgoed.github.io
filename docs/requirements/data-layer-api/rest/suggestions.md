@@ -141,7 +141,7 @@ The response body _MUST_ contain at least the following fields:
 An example request from a presentation layer:
 
 ```http
-GET /v1/collections/objects/extensions/suggestions HTTP/2
+GET /v1/collections/objects/extensions/suggestions
 Host: example.org
 ```
 
@@ -239,7 +239,7 @@ The response body _MUST_ contain at least the following fields:
 An example request from a presentation layer:
 
 ```http
-GET /v1/collections/objects/extensions/suggestions/keywords?q=mil HTTP/2
+GET /v1/collections/objects/extensions/suggestions/keywords?q=mil
 Host: example.org
 ```
 
@@ -339,7 +339,7 @@ The API may expose additional fields about a suggested entity.
 An example request from a presentation layer:
 
 ```http
-GET /v1/collections/objects/extensions/suggestions/entities?q=mil HTTP/2
+GET /v1/collections/objects/extensions/suggestions/entities?q=mil
 Host: example.org
 ```
 
@@ -443,7 +443,7 @@ The API may expose additional fields about a suggested entity.
 An example request from a presentation layer:
 
 ```http
-GET /v1/collections/objects/extensions/suggestions/combinations?q=mil HTTP/2
+GET /v1/collections/objects/extensions/suggestions/combinations?q=mil
 Host: example.org
 ```
 

@@ -29,7 +29,7 @@ The API may evolve over time. It _MUST_ be versioned as follows:
 An example request from a presentation layer:
 
 ```http
-GET /v1/entities/objects/1234 HTTP/2
+GET /v1/entities/objects/1234
 Host: example.org
 ```
 
@@ -85,7 +85,7 @@ The API _MUST_ use media types to enable open and extensible content negotiation
 An example request from a presentation layer:
 
 ```http
-GET /v1/entities/objects/1234 HTTP/2
+GET /v1/entities/objects/1234
 Host: example.org
 Accept: application/json
 ```
@@ -118,7 +118,7 @@ Heritage information is available in one or more languages, such as Dutch or Eng
 An example request from a presentation layer:
 
 ```http
-GET /v1/entities/objects/1234 HTTP/2
+GET /v1/entities/objects/1234
 Host: example.org
 Accept-Language: nl
 ```
@@ -137,11 +137,11 @@ The response indicates that the content is in Dutch and that a new request to th
 
 ## Character encoding
 
-Character encoding defines how characters are converted into bytes by the data layer for transmission to a presentation layer. The data layer _MUST_ encode all API payload responses using [UTF-8](https://www.rfc-editor.org/info/rfc3629/), except for payloads that are binary by nature, such as images.
+Character encoding defines how characters are converted into bytes by the data layer for transmission to a presentation layer. The API _MUST_ encode all payload responses using [UTF-8](https://www.rfc-editor.org/info/rfc3629/), except for payloads that are binary by nature, such as images.
 
 ## Compression
 
-Compression reduces the size of a response body as it is transmitted to a presentation layer, improving performance and reducing bandwidth use. The API _SHOULD_ support compression. This section lists the primary requirements — see [HTTP Semantics](https://www.rfc-editor.org/info/rfc9110/#section-8.4.1) for more information.
+Compression reduces the size of a response body as it is transmitted to a presentation layer, improving performance and reducing bandwidth use. The API _SHOULD_ support compression. This section lists the primary requirements — see the [HTTP Semantics](https://www.rfc-editor.org/info/rfc9110/#section-8.4.1) for more information.
 
 1. A presentation layer _MAY_ send the `Accept-Encoding` header in its request to indicate which compression schemes it supports, such as `gzip`, `br`, `deflate` or `zstd`. Its value _MUST_ conform to the [HTTP semantics](https://www.rfc-editor.org/info/rfc9110/#field.accept-encoding).
 1. If a presentation layer sends the `Accept-Encoding` header, the API _MAY_ compress the response body using one of the schemes the presentation layer supports. The API _MUST_ then send the `Content-Encoding` header to indicate which scheme it used; its value _MUST_ conform to the [HTTP semantics](https://www.rfc-editor.org/info/rfc9110/#field.content-encoding).
@@ -153,7 +153,7 @@ Compression reduces the size of a response body as it is transmitted to a presen
 An example request from a presentation layer:
 
 ```http
-GET /v1/entities/objects/1234 HTTP/2
+GET /v1/entities/objects/1234
 Host: example.org
 Accept-Encoding: gzip, br
 ```
@@ -230,7 +230,7 @@ The response indicates that a presentation layer has made too many requests and 
 Cross-Origin Resource Sharing (CORS) is a mechanism that allows browser-based presentation layers to interact with the API. The API _MUST_ support CORS by following the relevant requirements of the [CORS specification](https://fetch.spec.whatwg.org/#http-cors-protocol). This section lists the primary requirements.
 
 1. A browser-based presentation layer _MUST_ send the `Origin` header to indicate the origin (scheme, hostname, and optionally port) that caused the request to the API.
-1. The API _MUST_ send the `Access-Control-Allow-Origin` header. The value _SHOULD_ be `*` to allow access to the API from any origin. If the API [limits access](#open-access) (e.g. via the `Authorization` header), a specific origin _MUST_ be provided instead of `*`, and the `Access-Control-Allow-Credentials: true` header _MUST_ be send.
+1. The API _MUST_ send the `Access-Control-Allow-Origin` header. The value _SHOULD_ be `*` to allow access to the API from any origin. If the API [restricts access](#open-access), a specific origin _MUST_ be provided instead of `*`, and the `Access-Control-Allow-Credentials: true` header _MUST_ be send.
 1. If the API sends a response with an `Access-Control-Allow-Origin` value with an explicit origin (rather than the `*` wildcard), the API _MUST_ also send the `Vary: Origin` header to indicate to a presentation layer that responses can differ based on the value of the `Origin` request header.
 1. The API _MUST_ send the `Access-Control-Allow-Methods` header to specify which HTTP methods are permitted for cross-origin requests.
 1. The API _MUST_ send the `Access-Control-Allow-Headers` header to specify which HTTP headers are permitted for cross-origin requests.
@@ -241,7 +241,7 @@ Cross-Origin Resource Sharing (CORS) is a mechanism that allows browser-based pr
 An example of a preflight request from a presentation layer:
 
 ```http
-OPTIONS /v1/entities/objects/1234 HTTP/2
+OPTIONS /v1/entities/objects/1234
 Host: example.org
 Origin: https://mywebsite.nl
 Access-Control-Request-Method: GET
@@ -262,7 +262,7 @@ Access-Control-Max-Age: 7200
 An example of a regular, non-preflight request from a presentation layer:
 
 ```http
-GET /v1/entities/objects/1234 HTTP/2
+GET /v1/entities/objects/1234
 Host: example.org
 Origin: https://mywebsite.nl
 ```
@@ -333,7 +333,7 @@ Access should only be restricted to designated presentation layers under specifi
 
 The data layer should be able to monitor the usage of its API and advise presentation layers in optimizing their implementations. The data layer should therefore be able to identify individual presentation layers.
 
-1. A presentation layer _SHOULD_ send the `User-Agent` header in its requests. The header value _SHOULD_ consist of the name of the system of the presentation layer, the version of its system and the URL of the owner of the presentation layer. The value _SHOULD_ look like this: `system/version (url)`, e.g. `MyApp/1.7.6 (https://mymuseum.nl)`. See [HTTP semantics](https://www.rfc-editor.org/info/rfc9110/#field.user-agent) for more information.
+1. A presentation layer _SHOULD_ send the `User-Agent` header in its requests. The header value _SHOULD_ consist of the name of the system of the presentation layer, the version of its system and the URL of the owner of the presentation layer. The value _SHOULD_ look like this: `system/version (url)`, e.g. `MyApp/1.7.6 (https://mymuseum.nl)`. See the [HTTP semantics](https://www.rfc-editor.org/info/rfc9110/#field.user-agent) for more information.
 1. The API _MAY_ respond with a `400 Bad Request` status code if the `User-Agent` header in the request is missing or invalid.
 
 ### Example
@@ -341,7 +341,7 @@ The data layer should be able to monitor the usage of its API and advise present
 An example request from a presentation layer:
 
 ```http
-GET /v1/entities/objects/1234 HTTP/2
+GET /v1/entities/objects/1234
 Host: example.org
 User-Agent: MyApp/1.7.6 (https://mymuseum.nl)
 ```

@@ -165,7 +165,7 @@ The response body _MUST_ contain at least the following fields:
 An example request from a presentation layer:
 
 ```http
-GET /v1/collections/objects/extensions/facets HTTP/2
+GET /v1/collections/objects/extensions/facets
 Host: example.org
 ```
 
@@ -263,7 +263,7 @@ The response body _MUST_ contain at least the following fields:
 An example request from a presentation layer:
 
 ```http
-GET /v1/collections/objects/extensions/facets/creators HTTP/2
+GET /v1/collections/objects/extensions/facets/creators
 Host: example.org
 ```
 
@@ -361,7 +361,7 @@ The response body _MUST_ contain at least the following fields:
 An example request from a presentation layer:
 
 ```http
-GET /v1/collections/objects/extensions/facets/creators?page=3 HTTP/2
+GET /v1/collections/objects/extensions/facets/creators?page=3
 Host: example.org
 ```
 
