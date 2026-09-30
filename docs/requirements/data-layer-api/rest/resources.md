@@ -262,10 +262,11 @@ The response indicates that this page contains items (`items`), is related to a 
 
 **To do**: explain how resources must be identified with URIs:
 
-- See the general requirements of the REST API Design Rules, e.g. plural names (`/entities`, not `/entity`), lower case names (`/entities`, not `/Entities`), dashes (`/heritage-objects`, not `/heritageObjects`), slashes to denote hierarchy (`/entities/persons`, not `/entities-persons`);
+- See the general requirements of the REST API Design Rules, e.g. plural names (`/entities`, not `/entity`), lower case names (`/entities`, not `/Entities`), dashes (`/heritage-objects`, not `/heritageObjects`), slashes to denote hierarchy (`/collections/persons`, not `/collections-persons`);
 - Use camel case in query parameters (`?filterBy=dateCreated`, not `?filter-by=date-created`);
 - Individual resources must have deterministic IDs if they come from publication systems of data providers;
 - URIs must still be treated as if they were opaque strings ("the URI patterns are to facilitate developers understanding the API, not to facilitate software to interact with it").
 - A slash in the URI of a collection expresses its place in the collection tree, the same way a slash in a URI expresses a hierarchy elsewhere. The URI of a collection should therefore reflect the path from the root to it, and the `partOf` of a collection should agree with it. A client must not derive either from the URI, though, because it is the API that decides.
+- The URI of a published resource is dereferenceable: a `GET` request on it _MUST_ return that resource.
 
 :::
