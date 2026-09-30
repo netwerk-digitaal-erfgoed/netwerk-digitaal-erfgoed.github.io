@@ -103,7 +103,7 @@ The response body _MUST_ contain at least the following fields:
 An example request from a presentation layer:
 
 ```http
-GET /v1/collections/objects/extensions HTTP/2
+GET /v1/collections/objects/extensions
 Host: example.org
 ```
 

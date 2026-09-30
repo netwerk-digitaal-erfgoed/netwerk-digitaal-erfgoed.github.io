@@ -117,7 +117,7 @@ This is a discovery endpoint: it allows presentation layers to identify the supp
 
 ### HTTP request
 
-`GET /{version}/{catalog}(/{...entities})`
+`GET /{version}/{catalog}(/{...catalogs})`
 
 ### Path parameters
 
@@ -125,7 +125,7 @@ This is a discovery endpoint: it allows presentation layers to identify the supp
 | ------------- | --------- | ----------- | ---------------------------------------------------------------------- |
 | `version`     | string    | 1           | The version of the API. Example: `v1`.                                 |
 | `catalog`     | string    | 1           | The path identifier of the top entity catalog. Example: `entities`.    |
-| `...entities` | string    | 0 or more   | The path identifier(s) of further entity catalogs. Example: `objects`. |
+| `...catalogs` | string    | 0 or more   | The path identifier(s) of further entity catalogs. Example: `objects`. |
 
 ### Query parameters
 
@@ -216,7 +216,7 @@ The endpoint retrieves an entity collection.
 
 ### HTTP request
 
-`GET /{version}/{catalog}(/{...entities})/{entity}`
+`GET /{version}/{catalog}(/{...catalogs})/{collection}`
 
 ### Path parameters
 
@@ -224,8 +224,8 @@ The endpoint retrieves an entity collection.
 | ------------- | --------- | ----------- | ---------------------------------------------------------------------- |
 | `version`     | string    | 1           | The version of the API. Example: `v1`.                                 |
 | `catalog`     | string    | 1           | The path identifier of the top entity catalog. Example: `entities`.    |
-| `...entities` | string    | 0 or more   | The path identifier(s) of further entity catalogs. Example: `objects`. |
-| `entity`      | string    | 1           | The path identifier of the entity collection. Example: `books`.        |
+| `...catalogs` | string    | 0 or more   | The path identifier(s) of further entity catalogs. Example: `objects`. |
+| `collection`  | string    | 1           | The path identifier of the entity collection. Example: `books`.        |
 
 ### Query parameters
 
@@ -290,7 +290,7 @@ The endpoint retrieves a page in an entity collection. The API _MUST_ implement 
 
 ### HTTP request
 
-`GET /{version}/{catalog}(/{...entities})/{entity}?page={page}`
+`GET /{version}/{catalog}(/{...catalogs})/{collection}?page={page}`
 
 ### Path parameters
 
@@ -298,8 +298,8 @@ The endpoint retrieves a page in an entity collection. The API _MUST_ implement 
 | ------------- | --------- | ----------- | ---------------------------------------------------------------------- |
 | `version`     | string    | 1           | The version of the API. Example: `v1`.                                 |
 | `catalog`     | string    | 1           | The path identifier of the top entity catalog. Example: `entities`.    |
-| `...entities` | string    | 0 or more   | The path identifier(s) of further entity catalogs. Example: `objects`. |
-| `entity`      | string    | 1           | The path identifier of the entity collection. Example: `books`.        |
+| `...catalogs` | string    | 0 or more   | The path identifier(s) of further entity catalogs. Example: `objects`. |
+| `collection`  | string    | 1           | The path identifier of the entity collection. Example: `books`.        |
 
 ### Query parameters
 
@@ -392,7 +392,7 @@ The endpoint retrieves an entity. The API _MUST_ implement this endpoint.
 
 ### HTTP request
 
-`GET /{version}/{catalog}(/{...entities})/{entity}/{id}`
+`GET /{version}/{catalog}(/{...catalogs})/{collection}/{id}`
 
 ### Path parameters
 
@@ -400,8 +400,8 @@ The endpoint retrieves an entity. The API _MUST_ implement this endpoint.
 | ------------- | --------- | ----------- | ---------------------------------------------------------------------- |
 | `version`     | string    | 1           | The version of the API. Example: `v1`.                                 |
 | `catalog`     | string    | 1           | The path identifier of the top entity catalog. Example: `entities`.    |
-| `...entities` | string    | 0 or more   | The path identifier(s) of further entity catalogs. Example: `objects`. |
-| `entity`      | string    | 1           | The path identifier of the entity collection. Example: `books`.        |
+| `...catalogs` | string    | 0 or more   | The path identifier(s) of further entity catalogs. Example: `objects`. |
+| `collection`  | string    | 1           | The path identifier of the entity collection. Example: `books`.        |
 | `id`          | string    | 1           | The path identifier of the entity.                                     |
 
 ### Query parameters
@@ -427,7 +427,7 @@ The response body _MUST_ contain at least the fields underneath. Additional fiel
 An example request from a presentation layer:
 
 ```http
-GET /v1/entities/objects/1234 HTTP/2
+GET /v1/entities/objects/1234
 Host: example.org
 ```
 

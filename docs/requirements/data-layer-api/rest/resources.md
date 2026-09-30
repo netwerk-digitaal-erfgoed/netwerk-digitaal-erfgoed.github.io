@@ -73,6 +73,8 @@ A Resource, regardless of type, contains at least the following fields:
 | `type` | string    | 1           | The type of the resource. This specification defines a number of [types](#resource-types). The API may additionally define its own types. |
 | `name` | string    | 0 or 1      | The name of the resource, if known and relevant to the resource.                                                                          |
 
+### Example
+
 Example of the response body:
 
 ```json
