@@ -3,24 +3,27 @@ slug: /data-layer-api/rest/collections
 sidebar_position: 6
 ---
 
-# Collections
+# Curated collections
 
 ## Introduction
 
-A collection is a grouping of [entities](entities.md). It is the main way for a presentation layer to browse and search the entities of a data layer. A data layer can include any entity of any type in a heritage collection. A data layer can also create any number of collections, nested in any way, depending on the requirements of presentation layers.
+A **curated collection** is a grouping of [entities](entities.md). It is the main way for a presentation layer to browse and search the entities of a data layer. A data layer can include any entity of any type in a curated collection, and can create any number of curated collections, nested in any way, depending on the requirements of presentation layers.
 
-For example: a data layer may have one collection for all entities of type 'heritage object' — the full collection. The data layer may also have a 'Masterpieces' collection, with a selection of the finest entities from the full collection. The data layer may also have a 'Great for kids' collection, with a selection of the entities from the full collection that are interesting for children. The data layer decides how the entities are selected and put into a collection: entities may be hand-picked, derived by a query, or assembled by aggregating other collections.
+For example: a data layer may have a collection for all entities of type 'heritage object'. The data layer may also have a 'Masterpieces' collection with the finest entities. The data layer may also have a 'Great for kids' collection with entities that are interesting for children. The data layer decides how the entities are selected and put into a collection: entities may be hand-picked, derived by a query, or assembled by aggregating other collections.
 
-A data layer may add extra functionality to a collection. For example: users of a presentation layer may want to find entities in the 'Masterpieces' collection using faceted search. Such add-on functionality can be defined as an [extension](extensions.md).
+A curated collection is a specialization of the generic [Collection](resources.md#collection-structure) that [Resources](resources.md) defines. A curated collection holds further curated collections and entities, and nothing else. This specification uses the word _collection_ for a curated collection throughout the rest of this page, and `CuratedCollection` for the type.
+
+A data layer may add extra functionality to a curated collection. For example: users of a presentation layer may want to find entities in the 'Masterpieces' collection using faceted search. Such add-on functionality can be defined as an [extension](extensions.md).
 
 ## Data model
 
-| Name                 | Description                                                                                                                                   |
-| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| Collection           | An ordered list of entities or further collections. A Collection may consist of pages, containing sublists of the entities in the collection. |
-| Page                 | An ordered sublist of entities within a Collection.                                                                                           |
-| Extension Collection | A collection of extensions, adding extra functionality to a Collection. See [Extensions](extensions.md).                                      |
-| Entity               | An identifiable 'thing' relevant to heritage. See [Entities](entities.md).                                                                    |
+| Name                 | Description                                                                                                                              |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| Collection           | An ordered list of resources. The generic type, of which a Curated Collection is a specialization. See [Resources](resources.md).        |
+| Curated Collection   | An ordered list of entities or further curated collections. It may consist of pages, containing sublists of the items in the collection. |
+| Page                 | An ordered sublist of the items in a Collection.                                                                                         |
+| Extension Collection | A collection of extensions, adding extra functionality to a Collection. See [Extensions](extensions.md).                                 |
+| Entity               | An identifiable 'thing' relevant to heritage. See [Entities](entities.md).                                                               |
 
 The following class diagram visualizes the data model:
 
@@ -32,12 +35,14 @@ The following class diagram visualizes the data model:
 ---
 classDiagram
 
-class Collection {
+class Collection["Collection"] {
   id
   type
   name
   total items
 }
+
+class CuratedCollection["Curated Collection"]
 
 class Page
 
@@ -50,13 +55,15 @@ class Entity {
   name
 }
 
-Collection *-- Collection : items
-Collection --> Collection : part of
-Collection --> ExtensionCollection : extended by
-Collection --> Page : first, last
-Collection *-- Entity : items
-Page --> Collection : part of
+Collection <|-- CuratedCollection
+CuratedCollection *-- CuratedCollection : items
+CuratedCollection --> CuratedCollection : part of
+CuratedCollection --> ExtensionCollection : extended by
+CuratedCollection --> Page : first, last
+CuratedCollection *-- Entity : items
+Page --> CuratedCollection : part of
 Page --> Page : previous, next
+Page *-- CuratedCollection : items
 Page *-- Entity : items
 ```
 
@@ -123,9 +130,9 @@ Options could be [Feed Item Query Language](https://datatracker.ietf.org/doc/htm
 
 ## Endpoint: Retrieve the root collection
 
-The endpoint retrieves the root of the collection tree. The API _MUST_ implement this endpoint, even if the API provides no collections.
+The endpoint retrieves the root collection: the curated collection that is not a part of another collection. Its items are curated collections, entities, or a mixture of both. The API _MUST_ implement this endpoint, even if the root collection is the only collection it offers: a data layer that does not nest its collections offers its entities as the items of the root collection.
 
-The root collection is the entry point into the API: it allows a presentation layer to identify the collections the data layer offers and their endpoint URIs. A data layer exposes its root at `GET /{version}/collections`, so that a presentation layer can assume where the tree begins. It's up to the data layer to define what the tree holds and how the collections are nested.
+The root collection is the entry point into the API: it allows a presentation layer to identify the collections and entities the data layer offers, and their endpoint URIs. A data layer exposes its root at `GET /{version}/collections`, so that a presentation layer can assume where the tree begins. It's up to the data layer to define what the tree holds and how the collections are nested.
 
 ### HTTP request
 
@@ -149,24 +156,24 @@ None.
 
 The response body _MUST_ contain at least the following fields:
 
-| Name              | Data type           | Cardinality | Description                                                                                                                                                                                                                                                   |
-| ----------------- | ------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`              | string              | 1           | The identifier of the collection.                                                                                                                                                                                                                             |
-| `type`            | string              | 1           | The type of the collection. It _MUST_ be `Collection` or a specialization.                                                                                                                                                                                    |
-| `name`            | string              | 1           | The name of the collection.                                                                                                                                                                                                                                   |
-| `totalItems`      | number              | 0 or 1      | The total number of items in the collection, being its further collections, its entities, or both. May be an estimate. Not set if it is too costly to calculate.                                                                                              |
-| `items`           | array               | 0 or 1      | A list of the items in the collection. Not set if the items are parts of [pages](#endpoint-retrieve-a-page-in-a-collection).                                                                                                                                  |
-| `items[*]`        | Collection, Entity  | 1           | A `Collection` or a specialization or an `Entity`. Not set if the items are parts of [pages](#endpoint-retrieve-a-page-in-a-collection).                                                                                                                      |
-| `first`           | Page                | 0 or 1      | The first page in the collection. Not set if the collection is empty or if it is not divided into [pages](#endpoint-retrieve-a-page-in-a-collection).                                                                                                         |
-| `first.id`        | string              | 1           | The identifier of the first page in the collection.                                                                                                                                                                                                           |
-| `first.type`      | string              | 1           | The type of the first page in the collection. It _MUST_ be `Page` or a specialization.                                                                                                                                                                        |
-| `last`            | Page                | 0 or 1      | The last page in the collection. Not set if the collection is empty, if the collection is not divided into [pages](#endpoint-retrieve-a-page-in-a-collection), or if the last page is unknown (e.g. in case of [cursor pagination](resources.md#pagination)). |
-| `last.id`         | string              | 1           | The identifier of the last page in the collection.                                                                                                                                                                                                            |
-| `last.type`       | string              | 1           | The type of the last page in the collection. It _MUST_ be `Page` or a specialization.                                                                                                                                                                         |
-| `extendedBy`      | ExtensionCollection | 0 or 1      | A collection listing the extensions of the collection. The field _MUST_ be omitted if the collection has no extensions.                                                                                                                                       |
-| `extendedBy.id`   | string              | 1           | The identifier of the extension collection.                                                                                                                                                                                                                   |
-| `extendedBy.type` | string              | 1           | The type of the extension collection. It _MUST_ be `ExtensionCollection`.                                                                                                                                                                                     |
-| `conformsTo`      | array               | 0 or 1      | The URIs of the capabilities the API implements for this collection. See [Capability discovery](#capability-discovery).                                                                                                                                       |
+| Name              | Data type                 | Cardinality | Description                                                                                                                                                                                                                                                   |
+| ----------------- | ------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`              | string                    | 1           | The identifier of the collection.                                                                                                                                                                                                                             |
+| `type`            | string                    | 1           | The type of the collection. It _MUST_ be `CuratedCollection` or a specialization.                                                                                                                                                                             |
+| `name`            | string                    | 1           | The name of the collection.                                                                                                                                                                                                                                   |
+| `totalItems`      | number                    | 0 or 1      | The total number of items in the collection, being its further collections, its entities, or both. May be an estimate. Not set if it is too costly to calculate.                                                                                              |
+| `items`           | array                     | 0 or 1      | A list of the items in the collection. Not set if the items are parts of [pages](#endpoint-retrieve-a-page-in-a-collection).                                                                                                                                  |
+| `items[*]`        | CuratedCollection, Entity | 1           | A `CuratedCollection` or a specialization, or an `Entity`. Not set if the items are parts of [pages](#endpoint-retrieve-a-page-in-a-collection).                                                                                                              |
+| `first`           | Page                      | 0 or 1      | The first page in the collection. Not set if the collection is empty or if it is not divided into [pages](#endpoint-retrieve-a-page-in-a-collection).                                                                                                         |
+| `first.id`        | string                    | 1           | The identifier of the first page in the collection.                                                                                                                                                                                                           |
+| `first.type`      | string                    | 1           | The type of the first page in the collection. It _MUST_ be `Page` or a specialization.                                                                                                                                                                        |
+| `last`            | Page                      | 0 or 1      | The last page in the collection. Not set if the collection is empty, if the collection is not divided into [pages](#endpoint-retrieve-a-page-in-a-collection), or if the last page is unknown (e.g. in case of [cursor pagination](resources.md#pagination)). |
+| `last.id`         | string                    | 1           | The identifier of the last page in the collection.                                                                                                                                                                                                            |
+| `last.type`       | string                    | 1           | The type of the last page in the collection. It _MUST_ be `Page` or a specialization.                                                                                                                                                                         |
+| `extendedBy`      | ExtensionCollection       | 0 or 1      | A collection listing the extensions of the collection. The field _MUST_ be omitted if the collection has no extensions.                                                                                                                                       |
+| `extendedBy.id`   | string                    | 1           | The identifier of the extension collection.                                                                                                                                                                                                                   |
+| `extendedBy.type` | string                    | 1           | The type of the extension collection. It _MUST_ be `ExtensionCollection`.                                                                                                                                                                                     |
+| `conformsTo`      | array                     | 0 or 1      | The URIs of the capabilities the API implements for this collection. See [Capability discovery](#capability-discovery).                                                                                                                                       |
 
 Note: the response body carries no `partOf` field - the root collection is not a part of another collection.
 
@@ -177,23 +184,23 @@ An example of the response body of the API:
 ```json
 {
   "id": "https://example.org/v1/collections",
-  "type": "Collection",
+  "type": "CuratedCollection",
   "name": "Collections",
   "totalItems": 3,
   "items": [
     {
       "id": "https://example.org/v1/collections/objects",
-      "type": "Collection",
+      "type": "CuratedCollection",
       "name": "Heritage objects"
     },
     {
       "id": "https://example.org/v1/collections/masterpieces",
-      "type": "Collection",
+      "type": "CuratedCollection",
       "name": "Masterpieces"
     },
     {
       "id": "https://example.org/v1/collections/persons",
-      "type": "Collection",
+      "type": "CuratedCollection",
       "name": "Persons"
     }
   ]
@@ -207,24 +214,24 @@ A collection can hold further collections. Example response for the 'Persons' co
 ```json
 {
   "id": "https://example.org/v1/collections/persons",
-  "type": "Collection",
+  "type": "CuratedCollection",
   "name": "Persons",
   "totalItems": 2,
   "items": [
     {
       "id": "https://example.org/v1/collections/persons/painters",
-      "type": "Collection",
+      "type": "CuratedCollection",
       "name": "Painters"
     },
     {
       "id": "https://example.org/v1/collections/persons/writers",
-      "type": "Collection",
+      "type": "CuratedCollection",
       "name": "Writers"
     }
   ],
   "partOf": {
     "id": "https://example.org/v1/collections",
-    "type": "Collection",
+    "type": "CuratedCollection",
     "name": "Collections"
   }
 }
@@ -265,28 +272,28 @@ None.
 
 The response body _MUST_ contain at least the following fields:
 
-| Name              | Data type           | Cardinality | Description                                                                                                                                                                                                                                                   |
-| ----------------- | ------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`              | string              | 1           | The identifier of the collection.                                                                                                                                                                                                                             |
-| `type`            | string              | 1           | The type of the collection. It _MUST_ be `Collection` or a specialization.                                                                                                                                                                                    |
-| `name`            | string              | 1           | The name of the collection.                                                                                                                                                                                                                                   |
-| `totalItems`      | number              | 0 or 1      | The total number of items in the collection, being its further collections, its entities, or both. May be an estimate. Not set if it is too costly to calculate.                                                                                              |
-| `items`           | array               | 0 or 1      | A list of the items in the collection. Not set if the items are parts of [pages](#endpoint-retrieve-a-page-in-a-collection).                                                                                                                                  |
-| `items[*]`        | Collection, Entity  | 1           | A `Collection` or a specialization or an `Entity`. Not set if the items are parts of [pages](#endpoint-retrieve-a-page-in-a-collection).                                                                                                                      |
-| `first`           | Page                | 0 or 1      | The first page in the collection. Not set if the collection is empty or if it is not divided into [pages](#endpoint-retrieve-a-page-in-a-collection).                                                                                                         |
-| `first.id`        | string              | 1           | The identifier of the first page in the collection.                                                                                                                                                                                                           |
-| `first.type`      | string              | 1           | The type of the first page in the collection. It _MUST_ be `Page` or a specialization.                                                                                                                                                                        |
-| `last`            | Page                | 0 or 1      | The last page in the collection. Not set if the collection is empty, if the collection is not divided into [pages](#endpoint-retrieve-a-page-in-a-collection), or if the last page is unknown (e.g. in case of [cursor pagination](resources.md#pagination)). |
-| `last.id`         | string              | 1           | The identifier of the last page in the collection.                                                                                                                                                                                                            |
-| `last.type`       | string              | 1           | The type of the last page in the collection. It _MUST_ be `Page` or a specialization.                                                                                                                                                                         |
-| `partOf`          | Collection          | 0 or 1      | The collection of which this collection is a part. Not set if this collection is the [root collection](#endpoint-retrieve-the-root-collection).                                                                                                               |
-| `partOf.id`       | string              | 1           | The identifier of the collection.                                                                                                                                                                                                                             |
-| `partOf.type`     | string              | 1           | The type of the collection. It _MUST_ be `Collection` or a specialization.                                                                                                                                                                                    |
-| `partOf.name`     | string              | 1           | The name of the collection.                                                                                                                                                                                                                                   |
-| `extendedBy`      | ExtensionCollection | 0 or 1      | A collection listing the extensions of the collection. The field _MUST_ be omitted if the collection has no extensions.                                                                                                                                       |
-| `extendedBy.id`   | string              | 1           | The identifier of the extension collection.                                                                                                                                                                                                                   |
-| `extendedBy.type` | string              | 1           | The type of the extension collection. It _MUST_ be `ExtensionCollection`.                                                                                                                                                                                     |
-| `conformsTo`      | array               | 0 or 1      | The URIs of the capabilities the API implements for this collection. See [Capability discovery](#capability-discovery).                                                                                                                                       |
+| Name              | Data type                 | Cardinality | Description                                                                                                                                                                                                                                                   |
+| ----------------- | ------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`              | string                    | 1           | The identifier of the collection.                                                                                                                                                                                                                             |
+| `type`            | string                    | 1           | The type of the collection. It _MUST_ be `CuratedCollection` or a specialization.                                                                                                                                                                             |
+| `name`            | string                    | 1           | The name of the collection.                                                                                                                                                                                                                                   |
+| `totalItems`      | number                    | 0 or 1      | The total number of items in the collection, being its further collections, its entities, or both. May be an estimate. Not set if it is too costly to calculate.                                                                                              |
+| `items`           | array                     | 0 or 1      | A list of the items in the collection. Not set if the items are parts of [pages](#endpoint-retrieve-a-page-in-a-collection).                                                                                                                                  |
+| `items[*]`        | CuratedCollection, Entity | 1           | A `CuratedCollection` or a specialization, or an `Entity`. Not set if the items are parts of [pages](#endpoint-retrieve-a-page-in-a-collection).                                                                                                              |
+| `first`           | Page                      | 0 or 1      | The first page in the collection. Not set if the collection is empty or if it is not divided into [pages](#endpoint-retrieve-a-page-in-a-collection).                                                                                                         |
+| `first.id`        | string                    | 1           | The identifier of the first page in the collection.                                                                                                                                                                                                           |
+| `first.type`      | string                    | 1           | The type of the first page in the collection. It _MUST_ be `Page` or a specialization.                                                                                                                                                                        |
+| `last`            | Page                      | 0 or 1      | The last page in the collection. Not set if the collection is empty, if the collection is not divided into [pages](#endpoint-retrieve-a-page-in-a-collection), or if the last page is unknown (e.g. in case of [cursor pagination](resources.md#pagination)). |
+| `last.id`         | string                    | 1           | The identifier of the last page in the collection.                                                                                                                                                                                                            |
+| `last.type`       | string                    | 1           | The type of the last page in the collection. It _MUST_ be `Page` or a specialization.                                                                                                                                                                         |
+| `partOf`          | CuratedCollection         | 0 or 1      | The collection of which this collection is a part. Not set if this collection is the [root collection](#endpoint-retrieve-the-root-collection).                                                                                                               |
+| `partOf.id`       | string                    | 1           | The identifier of the collection.                                                                                                                                                                                                                             |
+| `partOf.type`     | string                    | 1           | The type of the collection. It _MUST_ be `CuratedCollection` or a specialization.                                                                                                                                                                             |
+| `partOf.name`     | string                    | 1           | The name of the collection.                                                                                                                                                                                                                                   |
+| `extendedBy`      | ExtensionCollection       | 0 or 1      | A collection listing the extensions of the collection. The field _MUST_ be omitted if the collection has no extensions.                                                                                                                                       |
+| `extendedBy.id`   | string                    | 1           | The identifier of the extension collection.                                                                                                                                                                                                                   |
+| `extendedBy.type` | string                    | 1           | The type of the extension collection. It _MUST_ be `ExtensionCollection`.                                                                                                                                                                                     |
+| `conformsTo`      | array                     | 0 or 1      | The URIs of the capabilities the API implements for this collection. See [Capability discovery](#capability-discovery).                                                                                                                                       |
 
 ### Example
 
@@ -295,7 +302,7 @@ An example of the response body of a collection:
 ```json
 {
   "id": "https://example.org/v1/collections/objects",
-  "type": "Collection",
+  "type": "CuratedCollection",
   "name": "Heritage objects",
   "totalItems": 195,
   "first": {
@@ -308,7 +315,7 @@ An example of the response body of a collection:
   },
   "partOf": {
     "id": "https://example.org/v1/collections",
-    "type": "Collection",
+    "type": "CuratedCollection",
     "name": "Collections"
   },
   "conformsTo": ["https://specs.nde.nl/rest/v1/keyword-search"]
@@ -322,7 +329,7 @@ Another collection has the same structure. Which capabilities a collection has i
 ```json
 {
   "id": "https://example.org/v1/collections/masterpieces",
-  "type": "Collection",
+  "type": "CuratedCollection",
   "name": "Masterpieces",
   "totalItems": 195,
   "first": {
@@ -335,7 +342,7 @@ Another collection has the same structure. Which capabilities a collection has i
   },
   "partOf": {
     "id": "https://example.org/v1/collections",
-    "type": "Collection",
+    "type": "CuratedCollection",
     "name": "Collections"
   },
   "extendedBy": {
@@ -351,7 +358,7 @@ Another collection has the same structure. Which capabilities a collection has i
 
 ## Endpoint: Retrieve a page in a collection
 
-The endpoint retrieves a page in a collection. The API _MUST_ implement this endpoint for every collection it divides into [pages](collections#endpoint-retrieve-a-collection).
+The endpoint retrieves a page in a collection. The API _MUST_ implement this endpoint for every collection it divides into [pages](#endpoint-retrieve-a-page-in-a-collection).
 
 ### HTTP request
 
@@ -384,31 +391,31 @@ None.
 
 The response body _MUST_ contain at least the following fields:
 
-| Name                | Data type          | Cardinality | Description                                                                                                                                                                                                                                                    |
-| ------------------- | ------------------ | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`                | string             | 1           | The identifier of the current page.                                                                                                                                                                                                                            |
-| `type`              | string             | 1           | The type of the page. It _MUST_ be `Page` or a specialization.                                                                                                                                                                                                 |
-| `name`              | string             | 1           | The name of the page.                                                                                                                                                                                                                                          |
-| `items`             | array              | 1           | A list of the items in the collection that fall on this page.                                                                                                                                                                                                  |
-| `items[*]`          | Collection, Entity | 1           | A `Collection` or a specialization or an `Entity`. If an `Entity`: all fields _MUST_ be embedded - see the response body of endpoint [Retrieve an entity](entities.md#endpoint-retrieve-an-entity).                                                            |
-| `extensions`        | array              | 0 or 1      | The results of the extensions requested via the query parameters, such as `facet` or `q`. The field _MUST_ be omitted if no extensions were requested. See [Extensions on a page](#extensions-on-a-page).                                                      |
-| `prev`              | Page               | 0 or 1      | The previous page in the collection. Not set if there is no previous page.                                                                                                                                                                                     |
-| `prev.id`           | string             | 1           | The identifier of the previous page in the collection.                                                                                                                                                                                                         |
-| `prev.type`         | string             | 1           | The type of the previous page in the collection. It _MUST_ be `Page` or a specialization.                                                                                                                                                                      |
-| `next`              | Page               | 0 or 1      | The next page in the collection. Not set if there is no next page.                                                                                                                                                                                             |
-| `next.id`           | string             | 1           | The identifier of the next page in the collection.                                                                                                                                                                                                             |
-| `next.type`         | string             | 1           | The type of the next page in the collection. It _MUST_ be `Page` or a specialization.                                                                                                                                                                          |
-| `partOf`            | Collection         | 1           | The collection to which the items contained by the page belong.                                                                                                                                                                                                |
-| `partOf.id`         | string             | 1           | The identifier of the collection.                                                                                                                                                                                                                              |
-| `partOf.type`       | string             | 1           | The type of the collection. It _MUST_ be `Collection` or a specialization.                                                                                                                                                                                     |
-| `partOf.name`       | string             | 1           | The name of the collection.                                                                                                                                                                                                                                    |
-| `partOf.totalItems` | number             | 0 or 1      | The total number of items in the collection, being its further collections, its resources, or both. This _MAY_ be an estimate, especially in case of a large collection. The field _MAY_ be omitted by the API if the total number is too costly to calculate. |
-| `partOf.first`      | Page               | 1           | The first page in the collection.                                                                                                                                                                                                                              |
-| `partOf.first.id`   | string             | 1           | The identifier of the first page in the collection.                                                                                                                                                                                                            |
-| `partOf.first.type` | string             | 1           | The type of the first page in the collection. It _MUST_ be `Page` or a specialization.                                                                                                                                                                         |
-| `partOf.last`       | Page               | 0 or 1      | The last page in the collection. Not set if the last page is unknown (e.g. in case of [cursor pagination](#pagination)).                                                                                                                                       |
-| `partOf.last.id`    | string             | 1           | The identifier of the last page in the collection.                                                                                                                                                                                                             |
-| `partOf.last.type`  | string             | 1           | The type of the last page in the collection. It _MUST_ be `Page` or a specialization.                                                                                                                                                                          |
+| Name                | Data type                 | Cardinality | Description                                                                                                                                                                                                                                                    |
+| ------------------- | ------------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`                | string                    | 1           | The identifier of the current page.                                                                                                                                                                                                                            |
+| `type`              | string                    | 1           | The type of the page. It _MUST_ be `Page` or a specialization.                                                                                                                                                                                                 |
+| `name`              | string                    | 1           | The name of the page.                                                                                                                                                                                                                                          |
+| `items`             | array                     | 1           | A list of the items in the collection that fall on this page.                                                                                                                                                                                                  |
+| `items[*]`          | CuratedCollection, Entity | 1           | A `CuratedCollection` or a specialization, or an `Entity`. If an `Entity`: all fields _MUST_ be embedded - see the response body of endpoint [Retrieve an entity](entities.md#endpoint-retrieve-an-entity).                                                    |
+| `extensions`        | array                     | 0 or 1      | The results of the extensions requested via the query parameters, such as `facet` or `q`. The field _MUST_ be omitted if no extensions were requested. See [Extensions on a page](#extensions-on-a-page).                                                      |
+| `prev`              | Page                      | 0 or 1      | The previous page in the collection. Not set if there is no previous page.                                                                                                                                                                                     |
+| `prev.id`           | string                    | 1           | The identifier of the previous page in the collection.                                                                                                                                                                                                         |
+| `prev.type`         | string                    | 1           | The type of the previous page in the collection. It _MUST_ be `Page` or a specialization.                                                                                                                                                                      |
+| `next`              | Page                      | 0 or 1      | The next page in the collection. Not set if there is no next page.                                                                                                                                                                                             |
+| `next.id`           | string                    | 1           | The identifier of the next page in the collection.                                                                                                                                                                                                             |
+| `next.type`         | string                    | 1           | The type of the next page in the collection. It _MUST_ be `Page` or a specialization.                                                                                                                                                                          |
+| `partOf`            | CuratedCollection         | 1           | The collection to which the items contained by the page belong.                                                                                                                                                                                                |
+| `partOf.id`         | string                    | 1           | The identifier of the collection.                                                                                                                                                                                                                              |
+| `partOf.type`       | string                    | 1           | The type of the collection. It _MUST_ be `CuratedCollection` or a specialization.                                                                                                                                                                              |
+| `partOf.name`       | string                    | 1           | The name of the collection.                                                                                                                                                                                                                                    |
+| `partOf.totalItems` | number                    | 0 or 1      | The total number of items in the collection, being its further collections, its resources, or both. This _MAY_ be an estimate, especially in case of a large collection. The field _MAY_ be omitted by the API if the total number is too costly to calculate. |
+| `partOf.first`      | Page                      | 1           | The first page in the collection.                                                                                                                                                                                                                              |
+| `partOf.first.id`   | string                    | 1           | The identifier of the first page in the collection.                                                                                                                                                                                                            |
+| `partOf.first.type` | string                    | 1           | The type of the first page in the collection. It _MUST_ be `Page` or a specialization.                                                                                                                                                                         |
+| `partOf.last`       | Page                      | 0 or 1      | The last page in the collection. Not set if the last page is unknown (e.g. in case of [cursor pagination](resources.md#pagination)).                                                                                                                           |
+| `partOf.last.id`    | string                    | 1           | The identifier of the last page in the collection.                                                                                                                                                                                                             |
+| `partOf.last.type`  | string                    | 1           | The type of the last page in the collection. It _MUST_ be `Page` or a specialization.                                                                                                                                                                          |
 
 ### Example
 
@@ -444,7 +451,7 @@ An example of the response body:
   },
   "partOf": {
     "id": "https://example.org/v1/collections/masterpieces",
-    "type": "Collection",
+    "type": "CuratedCollection",
     "name": "Masterpieces",
     "totalItems": 195,
     "first": {
