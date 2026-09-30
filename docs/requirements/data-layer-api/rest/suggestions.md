@@ -11,7 +11,7 @@ A suggestion is a keyword or name displayed as a user types. For example: if a u
 
 Suggestions are tied to a particular [curated collection](collections.md), ensuring that results remain within the context of that collection.
 
-Suggestions are an _OPTIONAL_ [extension](extensions.md). A data layer may choose whether or not to implement them. A data layer advertises the suggestion collections it supports as [items of the extension collection](extensions.md#endpoint-retrieve-the-extension-collection-of-a-heritage-collection) of the curated collection, which is how a presentation layer discovers which of them it can offer.
+Suggestions are an _OPTIONAL_ [extension](extensions.md). A data layer may choose whether or not to implement them. A data layer advertises the suggestion collections it supports for a curated collection as [items of its extension collection](extensions.md#endpoint-retrieve-the-extension-collection-of-a-curated-collection).
 
 ## Data model
 
@@ -26,8 +26,6 @@ Suggestions are an _OPTIONAL_ [extension](extensions.md). A data layer may choos
 | Suggestion Item                | A selectable option within a Suggestion Collection, pointing to a Keyword Suggestion or an Entity.                                                   |
 | Keyword Suggestion             | A keyword matching a suggestion query, e.g. 'windmill'. The keyword can be used as input to search for entities and find all that match it.          |
 | Entity                         | An identifiable 'thing' relevant to heritage, matching a suggestion query, e.g. a heritage object named 'A Watermill'. See [Entities](entities.md).  |
-
-`Suggestion Collection` is abstract - there is no suggestion collection whose `type` is `SuggestionCollection`. A presentation layer therefore cannot request one by name: it requests one of the three concrete types below, and it discovers which of them a data layer supports from its extension collection.
 
 The following class diagram visualizes the data model:
 
@@ -118,11 +116,11 @@ The endpoint retrieves a list of keywords matching a query. A presentation layer
 
 ### Query parameters
 
-| Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                                 |
-| --------- | --------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `q`       | string    | 1           | A keyword query for filtering the suggestion items. Minimum length: defined by the data layer (e.g. 3 characters). Maximum length: defined by the API (e.g. 25 characters). The API defines how the query is matched, e.g. by using prefix or infix search. |
-| `size`    | number    | 0 or 1      | The maximum number of suggestion items to retrieve. Minimum: 1. Default: 10. Maximum: defined by the API (e.g. 25).                                                                                                                                         |
-| `orderBy` | string    | 0 or 1      | The sorting order of the suggestion items. It _MUST_ be one of `relevance`, `value`. Default: `relevance:desc` (most relevant suggestion first). The API defines which value is used to sort by `value` (e.g. the `name` of a keyword).                     |
+| Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                          |
+| --------- | --------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `q`       | string    | 1           | A keyword query for filtering the suggestion items. Minimum length: defined by the API (e.g. 3 characters). Maximum length: defined by the API (e.g. 25 characters). The API defines how the query is matched, e.g. by using prefix or infix search. |
+| `size`    | number    | 0 or 1      | The maximum number of suggestion items to retrieve. Minimum: 1. Default: 10. Maximum: defined by the API (e.g. 25).                                                                                                                                  |
+| `orderBy` | string    | 0 or 1      | The sorting order of the suggestion items. It _MUST_ be one of `relevance`, `value`. Default: `relevance:desc` (most relevant suggestion first). The API defines which value is used to sort by `value` (e.g. the `name` of a keyword).              |
 
 ### Request body
 
@@ -213,11 +211,11 @@ The endpoint retrieves a list of entities matching a query. An entity in the lis
 
 ### Query parameters
 
-| Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                                 |
-| --------- | --------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `q`       | string    | 1           | A keyword query for filtering the suggestion items. Minimum length: defined by the data layer (e.g. 3 characters). Maximum length: defined by the API (e.g. 25 characters). The API defines how the query is matched, e.g. by using prefix or infix search. |
-| `size`    | number    | 0 or 1      | The maximum number of suggestion items to retrieve. Minimum: 1. Default: 10. Maximum: defined by the API (e.g. 25).                                                                                                                                         |
-| `orderBy` | string    | 0 or 1      | The sorting order of the suggestion items. One of `relevance`, `value`. Default: `relevance:desc` (most relevant suggestion first). The API defines which value is used to sort by `value` (e.g. the `name` of an entity).                                  |
+| Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                          |
+| --------- | --------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `q`       | string    | 1           | A keyword query for filtering the suggestion items. Minimum length: defined by the API (e.g. 3 characters). Maximum length: defined by the API (e.g. 25 characters). The API defines how the query is matched, e.g. by using prefix or infix search. |
+| `size`    | number    | 0 or 1      | The maximum number of suggestion items to retrieve. Minimum: 1. Default: 10. Maximum: defined by the API (e.g. 25).                                                                                                                                  |
+| `orderBy` | string    | 0 or 1      | The sorting order of the suggestion items. One of `relevance`, `value`. Default: `relevance:desc` (most relevant suggestion first). The API defines which value is used to sort by `value` (e.g. the `name` of an entity).                           |
 
 ### Request body
 
@@ -315,11 +313,11 @@ The endpoint retrieves a list of both keywords and entities matching a query. Th
 
 ### Query parameters
 
-| Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                                        |
-| --------- | --------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `q`       | string    | 1           | A keyword query for filtering the suggestion items. Minimum length: defined by the data layer (e.g. 3 characters). Maximum length: defined by the data layer (e.g. 25 characters). The API defines how the query is matched, e.g. by using prefix or infix search. |
-| `size`    | number    | 0 or 1      | The maximum number of suggestion items to retrieve. Default: 10. Maximum: 25.                                                                                                                                                                                      |
-| `orderBy` | string    | 0 or 1      | The sorting order of the suggestion items. One of `relevance`, `value`. Default: `relevance:desc` (most relevant suggestion first). The API defines which value is used to sort by `value` (e.g. the `name` of a keyword or the `name` of an entity).              |
+| Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                           |
+| --------- | --------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `q`       | string    | 1           | A keyword query for filtering the suggestion items. Minimum length: defined by the API (e.g. 3 characters). Maximum length: defined by the API (e.g. 25 characters). The API defines how the query is matched, e.g. by using prefix or infix search.  |
+| `size`    | number    | 0 or 1      | The maximum number of suggestion items to retrieve. Default: 10. Maximum: 25.                                                                                                                                                                         |
+| `orderBy` | string    | 0 or 1      | The sorting order of the suggestion items. One of `relevance`, `value`. Default: `relevance:desc` (most relevant suggestion first). The API defines which value is used to sort by `value` (e.g. the `name` of a keyword or the `name` of an entity). |
 
 ### Request body
 

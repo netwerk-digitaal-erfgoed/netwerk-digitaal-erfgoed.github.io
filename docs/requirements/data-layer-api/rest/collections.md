@@ -124,7 +124,7 @@ Options could be [Feed Item Query Language](https://datatracker.ietf.org/doc/htm
 
 :::note
 
-**To do**: think of a way to express the ID of a `facet` in the query string. A facet ID like `creators` is a shorthand for its full URI but currently does not exist in the [facet collection](facets.md#endpoint-retrieve-a-facet-catalog). Full URIs - such as `https://example.org/v1/collections/masterpieces/extensions/facets/creators` - are rather verbose.
+**To do**: think of a way to express the ID of a `facet` in the query string. A facet ID like `creators` is a shorthand for its full URI but currently does not exist in the [facet collection](facets.md#endpoint-retrieve-a-facet-collection). Full URIs - such as `https://example.org/v1/collections/masterpieces/extensions/creators` - are rather verbose.
 
 :::
 
@@ -163,7 +163,7 @@ The response body _MUST_ contain at least the following fields:
 | `name`            | string                    | 1           | The name of the collection.                                                                                                                                                                                                                                   |
 | `totalItems`      | number                    | 0 or 1      | The total number of items in the collection, being its further collections, its entities, or both. May be an estimate. Not set if it is too costly to calculate.                                                                                              |
 | `items`           | array                     | 0 or 1      | A list of the items in the collection. Not set if the items are parts of [pages](#endpoint-retrieve-a-page-in-a-collection).                                                                                                                                  |
-| `items[*]`        | CuratedCollection, Entity | 1           | A `CuratedCollection` or a specialization, or an `Entity`. Not set if the items are parts of [pages](#endpoint-retrieve-a-page-in-a-collection).                                                                                                              |
+| `items[*]`        | CuratedCollection, Entity | 1           | A `CuratedCollection` or a specialization, or a specialization of `Entity`. Not set if the items are parts of [pages](#endpoint-retrieve-a-page-in-a-collection).                                                                                             |
 | `first`           | Page                      | 0 or 1      | The first page in the collection. Not set if the collection is empty or if it is not divided into [pages](#endpoint-retrieve-a-page-in-a-collection).                                                                                                         |
 | `first.id`        | string                    | 1           | The identifier of the first page in the collection.                                                                                                                                                                                                           |
 | `first.type`      | string                    | 1           | The type of the first page in the collection. It _MUST_ be `Page` or a specialization.                                                                                                                                                                        |
@@ -279,7 +279,7 @@ The response body _MUST_ contain at least the following fields:
 | `name`            | string                    | 1           | The name of the collection.                                                                                                                                                                                                                                   |
 | `totalItems`      | number                    | 0 or 1      | The total number of items in the collection, being its further collections, its entities, or both. May be an estimate. Not set if it is too costly to calculate.                                                                                              |
 | `items`           | array                     | 0 or 1      | A list of the items in the collection. Not set if the items are parts of [pages](#endpoint-retrieve-a-page-in-a-collection).                                                                                                                                  |
-| `items[*]`        | CuratedCollection, Entity | 1           | A `CuratedCollection` or a specialization, or an `Entity`. Not set if the items are parts of [pages](#endpoint-retrieve-a-page-in-a-collection).                                                                                                              |
+| `items[*]`        | CuratedCollection, Entity | 1           | A `CuratedCollection` or a specialization, or a specialization of `Entity`. Not set if the items are parts of [pages](#endpoint-retrieve-a-page-in-a-collection).                                                                                             |
 | `first`           | Page                      | 0 or 1      | The first page in the collection. Not set if the collection is empty or if it is not divided into [pages](#endpoint-retrieve-a-page-in-a-collection).                                                                                                         |
 | `first.id`        | string                    | 1           | The identifier of the first page in the collection.                                                                                                                                                                                                           |
 | `first.type`      | string                    | 1           | The type of the first page in the collection. It _MUST_ be `Page` or a specialization.                                                                                                                                                                        |
@@ -293,6 +293,7 @@ The response body _MUST_ contain at least the following fields:
 | `extendedBy`      | ExtensionCollection       | 0 or 1      | A collection listing the extensions of the collection. The field _MUST_ be omitted if the collection has no extensions.                                                                                                                                       |
 | `extendedBy.id`   | string                    | 1           | The identifier of the extension collection.                                                                                                                                                                                                                   |
 | `extendedBy.type` | string                    | 1           | The type of the extension collection. It _MUST_ be `ExtensionCollection`.                                                                                                                                                                                     |
+| `extendedBy.name` | string                    | 1           | The name of the extension collection.                                                                                                                                                                                                                         |
 | `conformsTo`      | array                     | 0 or 1      | The URIs of the capabilities the API implements for this collection. See [Capability discovery](#capability-discovery).                                                                                                                                       |
 
 ### Example
@@ -347,7 +348,8 @@ Another collection has the same structure. Which capabilities a collection has i
   },
   "extendedBy": {
     "id": "https://example.org/v1/collections/masterpieces/extensions",
-    "type": "ExtensionCollection"
+    "type": "ExtensionCollection",
+    "name": "Extensions"
   },
   "conformsTo": [
     "https://specs.nde.nl/rest/v1/keyword-search",
@@ -397,7 +399,7 @@ The response body _MUST_ contain at least the following fields:
 | `type`              | string                    | 1           | The type of the page. It _MUST_ be `Page` or a specialization.                                                                                                                                                                                                 |
 | `name`              | string                    | 1           | The name of the page.                                                                                                                                                                                                                                          |
 | `items`             | array                     | 1           | A list of the items in the collection that fall on this page.                                                                                                                                                                                                  |
-| `items[*]`          | CuratedCollection, Entity | 1           | A `CuratedCollection` or a specialization, or an `Entity`. If an `Entity`: all fields _MUST_ be embedded - see the response body of endpoint [Retrieve an entity](entities.md#endpoint-retrieve-an-entity).                                                    |
+| `items[*]`          | CuratedCollection, Entity | 1           | A `CuratedCollection` or a specialization, or a specialization of `Entity`. If an `Entity`: all fields _MUST_ be embedded - see the response body of endpoint [Retrieve an entity](entities.md#endpoint-retrieve-an-entity).                                   |
 | `extensions`        | array                     | 0 or 1      | The results of the extensions requested via the query parameters, such as `facet` or `q`. The field _MUST_ be omitted if no extensions were requested. See [Extensions on a page](#extensions-on-a-page).                                                      |
 | `prev`              | Page                      | 0 or 1      | The previous page in the collection. Not set if there is no previous page.                                                                                                                                                                                     |
 | `prev.id`           | string                    | 1           | The identifier of the previous page in the collection.                                                                                                                                                                                                         |
@@ -468,13 +470,11 @@ An example of the response body:
 
 ### Extensions on a page
 
-A page can carry the results of extensions, such as facets. Because extensions apply to any collection, the page has a single, generic `extensions` field, rather than a dedicated field per extension.
-
-A presentation layer selects the extensions it understands by inspecting the `type` of each entry, for example `FacetPage` or `SuggestionCollection`. The alternative - a dedicated `facets` field, and a new field for every extension added in the future - couples the page structure to specific extensions and makes it ever-growing.
+A page can carry the results of extensions, such as facets. Because extensions apply to any collection, the page has a single, generic `extensions` field, rather than a dedicated field per extension. A presentation layer selects the extensions it understands by inspecting the `type` of each entry, for example `FacetPage`.
 
 :::note
 
-**To be discussed**: is a generic `extensions` field not too cumbersome for a presentation layer? If it is, the page can keep a dedicated `facets` field for the most common extension, at the cost of the coupling described above.
+**To be discussed**: is a generic `extensions` field not too cumbersome for a presentation layer? If it is, the page can keep a dedicated `facets` field for the most common extension, at the cost of tight-coupling.
 
 :::
 
@@ -496,7 +496,7 @@ An example of the response body if the presentation layer requested facets via `
   ],
   "extensions": [
     {
-      "id": "https://example.org/v1/collections/masterpieces/extensions/facets/centuries?page=1&size=5&orderBy=value:desc,count:desc&context=...",
+      "id": "https://example.org/v1/collections/masterpieces/extensions/centuries?page=1&size=5&orderBy=value:desc,count:desc&context=...",
       "type": "FacetPage",
       "name": "Made in century",
       "items": [
@@ -512,12 +512,12 @@ An example of the response body if the presentation layer requested facets via `
         // Other items...
       ],
       "next": {
-        "id": "https://example.org/v1/collections/masterpieces/extensions/facets/centuries?page=2&size=5&orderBy=value:desc,count:desc&context=...",
+        "id": "https://example.org/v1/collections/masterpieces/extensions/centuries?page=2&size=5&orderBy=value:desc,count:desc&context=...",
         "type": "FacetPage"
       }
     },
     {
-      "id": "https://example.org/v1/collections/masterpieces/extensions/facets/creators?page=1&size=8&orderBy=count:desc,value:asc&context=...",
+      "id": "https://example.org/v1/collections/masterpieces/extensions/creators?page=1&size=8&orderBy=count:desc,value:asc&context=...",
       "type": "FacetPage",
       "name": "Creator",
       "items": [
@@ -534,7 +534,7 @@ An example of the response body if the presentation layer requested facets via `
         // Other items...
       ],
       "next": {
-        "id": "https://example.org/v1/collections/masterpieces/extensions/facets/creators?page=2&size=8&orderBy=count:desc,value:asc&context=...",
+        "id": "https://example.org/v1/collections/masterpieces/extensions/creators?page=2&size=8&orderBy=count:desc,value:asc&context=...",
         "type": "FacetPage"
       }
     }
