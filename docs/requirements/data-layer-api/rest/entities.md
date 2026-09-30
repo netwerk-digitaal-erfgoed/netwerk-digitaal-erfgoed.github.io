@@ -1,23 +1,56 @@
 ---
 slug: /data-layer-api/rest/entities
-sidebar_position: 4
+sidebar_position: 5
 ---
 
 # Entities
 
 ## Introduction
 
-An entity is an identifiable 'thing' relevant to heritage. For example: 'The Night Watch' (a painting), 'Rembrandt' (a person), 'Amsterdam' (a place) and 'Brabantine Gothic' (a concept) are all 'things'.
+An entity is an identifiable 'thing' relevant to heritage. For example: 'The Night Watch' (a painting), 'Rembrandt' (a person), 'Amsterdam' (a place) and 'Brabantine Gothic' (a concept) are all entities.
 
-Entities are grouped into entity collections — groupings of entities of the same type. For example: all persons are a part of the 'persons' collection.
+An entity has a URI of its own, independent of the collections it is a part of. The identifier of an entity is unique across all entity types and does not contain the type of the entity.
 
-Entities can also be grouped into different types of collections. For example: 'The Night Watch' can be a part of the collection 'Masterpieces' and of the collection 'Paintings from the 17th century'. These collections are called heritage collections: selections of entities that are relevant to presentation layers. These differ from entity collections and are outlined on their [own page](heritage-collections.md).
+Entities can be grouped into [curated collections](collections.md). For example: all persons can be a part of the 'persons' collection, while 'The Night Watch' can be a part of the 'Masterpieces' collection and of the 'Paintings from the 17th century' collection. An entity can be a part of any number of collections, and of no collection at all. It is up to the data layer to decide how it groups its entities: a collection is a selection, not a type.
 
-:::note
+## Data model
 
-**To be discussed**: is the distinction between 'entity collections' and 'heritage collections' necessary? Or is an 'entity collection' an example of a 'heritage collection', a specific grouping defined by a data layer?
+An entity is a [Resource](resources.md#resource-structure): it has an `id`, a `type` and a `name`, and it is identified with a URI. `Entity` is abstract - there is no entity whose `type` is `Entity`. Every entity has one of the concrete entity types that a data layer defines. Those types are not defined by this specification: a data layer publishes the ones it uses as part of its [type vocabulary](types.md).
 
-:::
+An entity specializes a Resource without adding a field: it makes the `id` and the `name` of a Resource mandatory, where a Resource may leave them out.
+
+The following class diagram visualizes how the entity types relate to a Resource and to each other. It shows two examples of the concrete types a data layer can define:
+
+```mermaid
+---
+  config:
+    class:
+      hideEmptyMembersBox: true
+---
+classDiagram
+
+class Resource["Resource"] {
+  <<abstract>>
+  id
+  type
+  name
+}
+
+class Entity["Entity"] {
+  <<abstract>>
+  id
+  type
+  name
+}
+
+class HeritageObject["HeritageObject"]
+
+class Person["Person"]
+
+Resource <|-- Entity : type
+Entity <|-- HeritageObject : type
+Entity <|-- Person : type
+```
 
 ## Entity types
 
@@ -52,357 +85,23 @@ The following table provides examples of common entity types:
 
 - Describe the recommended data models (e.g. for a heritage object, a person, a place) using e.g. Schema.org concepts;
 - Explain data modeling requirements, e.g. each entity must refer to the data provider's publication system from which it came, and must have a license;
-- Move this section outside of the REST API documentation - it also applies to GraphQL?
 
 :::
 
-## Data model
-
-| Name              | Description                                                 |
-| ----------------- | ----------------------------------------------------------- |
-| Entity Catalog    | An ordered list of entity collections.                      |
-| Entity Collection | An ordered list of entities.                                |
-| Entity Page       | An ordered sublist of entities within an Entity Collection. |
-| Entity            | An identifiable 'thing' relevant to heritage.               |
-
-The following class diagram visualizes the data model:
-
-```mermaid
----
-  config:
-    class:
-      hideEmptyMembersBox: true
----
-classDiagram
-
-class EntityCatalog["Entity Catalog"] {
-  id
-  type
-  name
-  totalItems
-}
-
-class EntityCollection["Entity Collection"] {
-  id
-  type
-  name
-  totalItems
-}
-
-class EntityPage["Entity Page"]
-
-class Entity {
-  id
-  type
-  name
-}
-
-EntityCatalog *-- EntityCatalog : items
-EntityCatalog --> EntityCatalog : partOf
-EntityCatalog *-- EntityCollection : items
-EntityCollection --> EntityCatalog : partOf
-EntityCollection --> EntityPage : first, last
-EntityPage --> EntityCollection : partOf
-EntityPage --> EntityPage : prev, next
-EntityPage *-- Entity : items
-```
-
-## Endpoint: Retrieve an entity catalog
-
-The endpoint retrieves an entity catalog. The API _MUST_ implement this endpoint, even if the API supports just one entity collection.
-
-An entity catalog serves as the root for entity collections. For example: an entity catalog named 'Heritage objects' might have two entity collections as its members: a collection named 'Books' and a collection named 'Buildings'. It's up to the data layer to define the nesting of collections, depending on its situation.
-
-This is a discovery endpoint: it allows presentation layers to identify the supported entity collections and their endpoint URIs.
-
-### HTTP request
-
-`GET /{version}/{catalog}(/{...catalogs})`
-
-### Path parameters
-
-| Name          | Data type | Cardinality | Description                                                            |
-| ------------- | --------- | ----------- | ---------------------------------------------------------------------- |
-| `version`     | string    | 1           | The version of the API. Example: `v1`.                                 |
-| `catalog`     | string    | 1           | The path identifier of the top entity catalog. Example: `entities`.    |
-| `...catalogs` | string    | 0 or more   | The path identifier(s) of further entity catalogs. Example: `objects`. |
-
-### Query parameters
-
-None.
-
-### Request body
-
-None.
-
-### Response body
-
-The response body _MUST_ contain at least the following fields:
-
-| Name            | Data type                       | Cardinality | Description                                                                                            |
-| --------------- | ------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------ |
-| `id`            | string                          | 1           | The identifier of the catalog.                                                                         |
-| `type`          | string                          | 1           | The type of the catalog. It _MUST_ be `EntityCatalog`.                                                 |
-| `name`          | string                          | 1           | A short, human-readable name of the catalog.                                                           |
-| `totalItems`    | number                          | 1           | The total number of entity collections or catalog in the catalog.                                      |
-| `items`         | array                           | 1           | A list of all entity collections or catalogs. The API defines the order.                               |
-| `items[*]`      | EntityCatalog, EntityCollection | 1           | An entity collection or catalog.                                                                       |
-| `items[*].id`   | string                          | 1           | The identifier of the entity collection or catalog.                                                    |
-| `items[*].type` | string                          | 1           | The type of the entity collection or catalog. It _MUST_ be one of `EntityCollection`, `EntityCatalog`. |
-| `items[*].name` | string                          | 1           | A short, human-readable name of the entity collection or catalog.                                      |
-| `partOf`        | EntityCatalog                   | 0 or 1      | The catalog of which this catalog is a part. Not set if this catalog is the top-level catalog.         |
-| `partOf.id`     | string                          | 1           | The identifier of the catalog.                                                                         |
-| `partOf.type`   | string                          | 1           | The type of the catalog. It _MUST_ be `EntityCatalog`.                                                 |
-
-### Example
-
-An example of the response body of the API:
-
-```json
-{
-  "id": "https://example.org/v1/entities",
-  "type": "EntityCatalog",
-  "name": "Entity catalog",
-  "totalItems": 2,
-  "items": [
-    {
-      "id": "https://example.org/v1/entities/objects",
-      "type": "EntityCatalog",
-      "name": "Heritage objects"
-    },
-    {
-      "id": "https://example.org/v1/entities/persons",
-      "type": "EntityCollection",
-      "name": "Persons"
-    }
-  ]
-}
-```
-
-The response indicates that the API has two items that are a part of the catalog: a catalog for 'Heritage objects' and a collection for 'Persons'.
-
-A catalog can be a root for nested catalogs. Example response for the 'Heritage objects' catalog:
-
-```json
-{
-  "id": "https://example.org/v1/entities/objects",
-  "type": "EntityCatalog",
-  "name": "Heritage objects",
-  "totalItems": 2,
-  "items": [
-    {
-      "id": "https://example.org/v1/entities/objects/books",
-      "type": "EntityCollection",
-      "name": "Books"
-    },
-    {
-      "id": "https://example.org/v1/entities/objects/buildings",
-      "type": "EntityCollection",
-      "name": "Buildings"
-    }
-  ],
-  "partOf": {
-    "id": "https://example.org/v1/entities",
-    "type": "EntityCatalog"
-  }
-}
-```
-
-The response indicates that the 'Heritage objects' catalog contains two entity collections: one for 'Books' and one for 'Buildings'.
-
-## Endpoint: Retrieve an entity collection
-
-The endpoint retrieves an entity collection.
-
-### HTTP request
-
-`GET /{version}/{catalog}(/{...catalogs})/{collection}`
-
-### Path parameters
-
-| Name          | Data type | Cardinality | Description                                                            |
-| ------------- | --------- | ----------- | ---------------------------------------------------------------------- |
-| `version`     | string    | 1           | The version of the API. Example: `v1`.                                 |
-| `catalog`     | string    | 1           | The path identifier of the top entity catalog. Example: `entities`.    |
-| `...catalogs` | string    | 0 or more   | The path identifier(s) of further entity catalogs. Example: `objects`. |
-| `collection`  | string    | 1           | The path identifier of the entity collection. Example: `books`.        |
-
-### Query parameters
-
-| Name      | Data type | Cardinality | Description                                                                                                                                                                                                    |
-| --------- | --------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `q`       | string    | 0 or 1      | A keyword query for filtering the entities. Minimum length: defined by the API (e.g. 1 character). Maximum length: defined by the API (e.g. 100 characters).                                                   |
-| `size`    | number    | 0 or 1      | The maximum number of entities to retrieve. Minimum: 1. Default: 10. Maximum: defined by the API (e.g. 100).                                                                                                   |
-| `orderBy` | string    | 0 or 1      | The sorting order of the entities. One of `relevance`, `value`. Default: `relevance:desc` (most relevant entity first). The API defines which value is used to sort by `value` (e.g. the `name` of an entity). |
-
-### Request body
-
-None.
-
-### Response body
-
-The response body _MUST_ contain at least the following fields:
-
-| Name          | Data type     | Cardinality | Description                                                                                                                                                     |
-| ------------- | ------------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`          | string        | 1           | The identifier of the collection.                                                                                                                               |
-| `type`        | string        | 1           | The type of the collection. It _MUST_ be `EntityCollection`.                                                                                                    |
-| `name`        | string        | 1           | A short, human-readable name of the collection.                                                                                                                 |
-| `totalItems`  | number        | 0 or 1      | The total number of entities in the collection. May be an estimate. Not set if it is too costly to calculate.                                                   |
-| `first`       | EntityPage    | 0 or 1      | The first page in the collection. Not set if the collection is empty.                                                                                           |
-| `first.id`    | string        | 1           | The identifier of the first page in the collection.                                                                                                             |
-| `first.type`  | string        | 1           | The type of the first page in the collection. It _MUST_ be `EntityPage`.                                                                                        |
-| `last`        | EntityPage    | 0 or 1      | The last page in the collection. Not set if the collection is empty or the last page is unknown (e.g. in case of [cursor pagination](resources.md#pagination)). |
-| `last.id`     | string        | 1           | The identifier of last page in the collection.                                                                                                                  |
-| `last.type`   | string        | 1           | The type of the last page in the collection. It _MUST_ be `EntityPage`.                                                                                         |
-| `partOf`      | EntityCatalog | 1           | The catalog of which this collection is a part.                                                                                                                 |
-| `partOf.id`   | string        | 1           | The identifier of the catalog.                                                                                                                                  |
-| `partOf.type` | string        | 1           | The type of the catalog. It _MUST_ be `EntityCatalog`.                                                                                                          |
-
-### Example
-
-An example of the response body of the API:
-
-```json
-{
-  "id": "https://example.org/v1/entities/objects",
-  "type": "EntityCollection",
-  "name": "Heritage objects",
-  "totalItems": 195,
-  "first": {
-    "id": "https://example.org/v1/entities/objects?page=1",
-    "type": "EntityPage"
-  },
-  "last": {
-    "id": "https://example.org/v1/entities/objects?page=20",
-    "type": "EntityPage"
-  },
-  "partOf": {
-    "id": "https://example.org/v1/entities",
-    "type": "EntityCatalog"
-  }
-}
-```
-
-## Endpoint: Retrieve a page in an entity collection
-
-The endpoint retrieves a page in an entity collection. The API _MUST_ implement this endpoint.
-
-### HTTP request
-
-`GET /{version}/{catalog}(/{...catalogs})/{collection}?page={page}`
-
-### Path parameters
-
-| Name          | Data type | Cardinality | Description                                                            |
-| ------------- | --------- | ----------- | ---------------------------------------------------------------------- |
-| `version`     | string    | 1           | The version of the API. Example: `v1`.                                 |
-| `catalog`     | string    | 1           | The path identifier of the top entity catalog. Example: `entities`.    |
-| `...catalogs` | string    | 0 or more   | The path identifier(s) of further entity catalogs. Example: `objects`. |
-| `collection`  | string    | 1           | The path identifier of the entity collection. Example: `books`.        |
-
-### Query parameters
-
-| Name      | Data type | Cardinality | Description                                                                                                                                                                                                    |
-| --------- | --------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `page`    | string    | 1           | The identifier of the page: a page number or cursor, depending on the [pagination strategy](resources.md#pagination) of the API.                                                                               |
-| `q`       | string    | 0 or 1      | A keyword query for filtering the entities. Minimum length: defined by the API (e.g. 1 character). Maximum length: defined by the API (e.g. 100 characters).                                                   |
-| `size`    | number    | 0 or 1      | The maximum number of entities to retrieve. Minimum: 1. Default: 10. Maximum: defined by the API (e.g. 100).                                                                                                   |
-| `orderBy` | string    | 0 or 1      | The sorting order of the entities. One of `relevance`, `value`. Default: `relevance:desc` (most relevant entity first). The API defines which value is used to sort by `value` (e.g. the `name` of an entity). |
-
-### Request body
-
-None.
-
-### Response body
-
-The response body _MUST_ contain at least the following fields:
-
-| Name        | Data type        | Cardinality | Description                                                                                                                                                         |
-| ----------- | ---------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`        | string           | 1           | The identifier of the current page.                                                                                                                                 |
-| `type`      | string           | 1           | The type of the page. It _MUST_ be `EntityPage`.                                                                                                                    |
-| `name`      | string           | 1           | A short, human-readable name of the page.                                                                                                                           |
-| `items`     | array            | 1           | A list of entities.                                                                                                                                                 |
-| `items[*]`  | Entity           | 1           | An entity. All fields of an entity _MUST_ be embedded. See the response body of endpoint [Retrieve an entity](#endpoint-retrieve-an-entity).                        |
-| `prev`      | EntityPage       | 0 or 1      | The previous page in the collection. Not set if there is no previous page.                                                                                          |
-| `prev.id`   | string           | 1           | The identifier of the previous page in the collection.                                                                                                              |
-| `prev.type` | string           | 1           | The type of the previous page in the collection. It _MUST_ be `EntityPage`.                                                                                         |
-| `next`      | EntityPage       | 0 or 1      | The next page in the collection. Not set if there is no next page.                                                                                                  |
-| `next.id`   | string           | 1           | The identifier of the next page in the collection.                                                                                                                  |
-| `next.type` | string           | 1           | The type of the next page in the collection. It _MUST_ be `EntityPage`.                                                                                             |
-| `partOf`    | EntityCollection | 1           | The collection of which this page is a part. See the response body of endpoint [Retrieve an entity collection](entities.md#endpoint-retrieve-an-entity-collection). |
-
-### Example
-
-An example of the response body:
-
-```json
-{
-  "id": "https://example.org/v1/entities/objects?page=3",
-  "type": "EntityPage",
-  "name": "Heritage objects",
-  "items": [
-    {
-      "id": "https://example.org/v1/entities/objects/1234",
-      "type": "HeritageObject",
-      "name": "The Night Watch"
-      // Other fields...
-    },
-    {
-      "id": "https://example.org/v1/entities/objects/5678",
-      "type": "HeritageObject",
-      "name": "Ford V8 Cabriolet"
-      // Other fields...
-    }
-    // Other items...
-  ],
-  "prev": {
-    "id": "https://example.org/v1/entities/objects?page=2",
-    "type": "EntityPage"
-  },
-  "next": {
-    "id": "https://example.org/v1/entities/objects?page=4",
-    "type": "EntityPage"
-  },
-  "partOf": {
-    "id": "https://example.org/v1/entities/objects",
-    "type": "EntityCollection",
-    "name": "Heritage objects",
-    "totalItems": 195,
-    "first": {
-      "id": "https://example.org/v1/entities/objects?page=1",
-      "type": "EntityPage"
-    },
-    "last": {
-      "id": "https://example.org/v1/entities/objects?page=20",
-      "type": "EntityPage"
-    },
-    "partOf": {
-      "id": "https://example.org/v1/entities",
-      "type": "EntityCatalog"
-    }
-  }
-}
-```
-
 ## Endpoint: Retrieve an entity
 
-The endpoint retrieves an entity. The API _MUST_ implement this endpoint.
+The endpoint retrieves an entity. The API _MUST_ implement this endpoint if it publishes at least one entity.
 
 ### HTTP request
 
-`GET /{version}/{catalog}(/{...catalogs})/{collection}/{id}`
+`GET /{version}/entities/{id}`
 
 ### Path parameters
 
-| Name          | Data type | Cardinality | Description                                                            |
-| ------------- | --------- | ----------- | ---------------------------------------------------------------------- |
-| `version`     | string    | 1           | The version of the API. Example: `v1`.                                 |
-| `catalog`     | string    | 1           | The path identifier of the top entity catalog. Example: `entities`.    |
-| `...catalogs` | string    | 0 or more   | The path identifier(s) of further entity catalogs. Example: `objects`. |
-| `collection`  | string    | 1           | The path identifier of the entity collection. Example: `books`.        |
-| `id`          | string    | 1           | The path identifier of the entity.                                     |
+| Name      | Data type | Cardinality | Description                                         |
+| --------- | --------- | ----------- | --------------------------------------------------- |
+| `version` | string    | 1           | The version of the API. Example: `v1`.              |
+| `id`      | string    | 1           | The path identifier of the entity. Example: `1234`. |
 
 ### Query parameters
 
@@ -416,33 +115,33 @@ None.
 
 The response body _MUST_ contain at least the fields underneath. Additional fields depend on the data model of the entity, defined by the API.
 
-| Name   | Data type | Cardinality | Description                                       |
-| ------ | --------- | ----------- | ------------------------------------------------- |
-| `id`   | string    | 1           | The identifier of the entity. It _MUST_ be a URI. |
-| `type` | string    | 1           | The type of the entity.                           |
-| `name` | string    | 1           | The name of the entity.                           |
+| Name   | Data type | Cardinality | Description                   |
+| ------ | --------- | ----------- | ----------------------------- |
+| `id`   | string    | 1           | The identifier of the entity. |
+| `type` | string    | 1           | The type of the entity.       |
+| `name` | string    | 1           | The name of the entity.       |
 
 ### Example
 
 An example request from a presentation layer:
 
 ```http
-GET /v1/entities/objects/1234
+GET /v1/entities/1234
 Host: example.org
 ```
 
-The request indicates that the API should return an entity in a specific collection (`objects`) with ID `1234`.
+The request indicates that the API should return the entity with ID `1234`.
 
 The response body depends on the data model of the entity. An example:
 
 ```json
 {
-  "id": "https://example.org/v1/entities/objects/1234",
+  "id": "https://example.org/v1/entities/1234",
   "type": "HeritageObject",
   "name": "The Night Watch",
   "additionalTypes": [
     {
-      "id": "https://example.org/v1/entities/concepts/1122",
+      "id": "https://example.org/v1/entities/1122",
       "type": "Concept",
       "name": "Painting"
     }
@@ -451,14 +150,14 @@ The response body depends on the data model of the entity. An example:
   "dateCreated": "1642",
   "creators": [
     {
-      "id": "https://example.org/v1/entities/persons/5678",
+      "id": "https://example.org/v1/entities/5678",
       "type": "Person",
       "name": "Rembrandt"
     }
   ],
   "locationsCreated": [
     {
-      "id": "https://example.org/v1/entities/places/9012",
+      "id": "https://example.org/v1/entities/9012",
       "type": "Place",
       "name": "Amsterdam"
     }
@@ -468,3 +167,9 @@ The response body depends on the data model of the entity. An example:
 ```
 
 The response indicates that this entity is a type of 'Heritage object' with name 'The Night Watch'. It is linked to other entities of types 'Concept', 'Person' and 'Place'.
+
+:::note
+
+**To be discussed**: an entity response does not expose the collections the entity is a member of. A presentation layer can therefore not offer a 'more like this' or 'more from this collection' functionality. Consider adding an optional field to the entity structure listing the [curated collections](collections.md) the entity is a part of?
+
+:::

@@ -29,7 +29,7 @@ The API may evolve over time. It _MUST_ be versioned as follows:
 An example request from a presentation layer:
 
 ```http
-GET /v1/entities/objects/1234
+GET /v1/entities/1234
 Host: example.org
 ```
 
@@ -85,7 +85,7 @@ The API _MUST_ use media types to enable open and extensible content negotiation
 An example request from a presentation layer:
 
 ```http
-GET /v1/entities/objects/1234
+GET /v1/entities/1234
 Host: example.org
 Accept: application/json
 ```
@@ -118,7 +118,7 @@ Heritage information is available in one or more languages, such as Dutch or Eng
 An example request from a presentation layer:
 
 ```http
-GET /v1/entities/objects/1234
+GET /v1/entities/1234
 Host: example.org
 Accept-Language: nl
 ```
@@ -153,7 +153,7 @@ Compression reduces the size of a response body as it is transmitted to a presen
 An example request from a presentation layer:
 
 ```http
-GET /v1/entities/objects/1234
+GET /v1/entities/1234
 Host: example.org
 Accept-Encoding: gzip, br
 ```
@@ -241,7 +241,7 @@ Cross-Origin Resource Sharing (CORS) is a mechanism that allows browser-based pr
 An example of a preflight request from a presentation layer:
 
 ```http
-OPTIONS /v1/entities/objects/1234
+OPTIONS /v1/entities/1234
 Host: example.org
 Origin: https://mywebsite.nl
 Access-Control-Request-Method: GET
@@ -262,7 +262,7 @@ Access-Control-Max-Age: 7200
 An example of a regular, non-preflight request from a presentation layer:
 
 ```http
-GET /v1/entities/objects/1234
+GET /v1/entities/1234
 Host: example.org
 Origin: https://mywebsite.nl
 ```
@@ -341,7 +341,7 @@ The data layer should be able to monitor the usage of its API and advise present
 An example request from a presentation layer:
 
 ```http
-GET /v1/entities/objects/1234
+GET /v1/entities/1234
 Host: example.org
 User-Agent: MyApp/1.7.6 (https://mymuseum.nl)
 ```
