@@ -3,7 +3,6 @@ slug: /data-layer-api/rest
 sidebar_position: 1
 ---
 
-
 # REST API
 
 ## Introduction
@@ -30,26 +29,6 @@ The specification follows these considerations:
 - Explain that the API specification uses capability discovery patterns; it makes API implementations dynamic and self-documenting. This is essential for a generic, extensible specification that can be used by all sorts of data layers.
 - Specify the root endpoint of the API, e.g. `/v1`. This endpoint allows presentation layers to discover the entry points and capabilities of the API (e.g. `/v1/entities`, `/v1/collections`).
 - Specify how a data layer can extend the capabilities of its API using the patterns in the specification, e.g. with custom functionality or resources. Add examples.
-- Add a capability discovery field to the root endpoint (e.g. `/v1`) and - optionally - to each relevant resource (e.g. `/v1/collections/masterpieces`)? This allows presentation layers to detect which functionality from this specification a data layer has implemented, possibly per resource. For example:
-
-:::
-
-```json
-{
-  "id": "https://example.org/v1/collections/masterpieces",
-  "type": "HeritageCollection",
-  "name": "Masterpieces",
-  "conformsTo": [
-    "https://specs.nde.nl/rest/v1/cursor-pagination",
-    "https://specs.nde.nl/rest/v1/keyword-search",
-    "https://specs.nde.nl/rest/v1/filtering",
-    "https://specs.nde.nl/rest/v1/facets",
-    "https://specs.nde.nl/rest/v1/suggestions",
-    "https://specs.nde.nl/rest/v1/highlighting",
-    "https://specs.example.org/v1/custom-functionality"
-  ]
-}
-```
 
 :::note
 

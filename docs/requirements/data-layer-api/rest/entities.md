@@ -1,6 +1,6 @@
 ---
 slug: /data-layer-api/rest/entities
-sidebar_position: 4
+sidebar_position: 5
 ---
 
 # Entities
@@ -11,7 +11,7 @@ An entity is an identifiable 'thing' relevant to heritage. For example: 'The Nig
 
 Entities are grouped into entity collections — groupings of entities of the same type. For example: all persons are a part of the 'persons' collection.
 
-Entities can also be grouped into different types of collections. For example: 'The Night Watch' can be a part of the collection 'Masterpieces' and of the collection 'Paintings from the 17th century'. These collections are called heritage collections: selections of entities that are relevant to presentation layers. These differ from entity collections and are outlined on their [own page](heritage-collections.md).
+Entities can also be grouped into different types of collections. For example: 'The Night Watch' can be a part of the collection 'Masterpieces' and of the collection 'Paintings from the 17th century'. These collections are called heritage collections: selections of entities that are relevant to presentation layers. These differ from entity collections and are outlined on their [own page](collections.md).
 
 :::note
 
@@ -468,3 +468,9 @@ The response body depends on the data model of the entity. An example:
 ```
 
 The response indicates that this entity is a type of 'Heritage object' with name 'The Night Watch'. It is linked to other entities of types 'Concept', 'Person' and 'Place'.
+
+:::note
+
+**To be discussed**: an entity response does not expose the collections the entity is a member of. A presentation layer can therefore not offer a 'more from this collection' functionality. Consider adding an optional field to the entity structure listing the collections the entity is part of?
+
+:::

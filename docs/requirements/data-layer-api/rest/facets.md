@@ -9,7 +9,7 @@ sidebar_position: 7
 
 A facet is a collection of categorized values to narrow down search results. For example, the creators of heritage objects can be organized into a 'Creator' facet.
 
-Facets are tied to a [heritage collection](heritage-collections.md): they are returned in response to a search for entities in a specific collection and do not exist on their own.
+Facets are tied to a particular [collection](collections.md): they are returned in response to a search for entities in a specific collection and do not exist on their own.
 
 Facets are an _OPTIONAL_ [extension](extensions.md). A data layer may choose whether or not to implement them.
 
@@ -230,7 +230,7 @@ The endpoint retrieves a facet collection. The API _MUST_ implement this endpoin
 
 :::note
 
-**To do**: add the query parameters representing the "search context" from the heritage collection (`q` and `filter` from endpoint [Retrieve a page in a heritage collection](heritage-collections.md#endpoint-retrieve-a-page-in-a-heritage-collection)).
+**To do**: add the query parameters representing the "search context" from the heritage collection (`q` and `filter` from endpoint [Retrieve a page in a collection](collections.md#endpoint-retrieve-a-page-in-a-collection)).
 
 :::
 
@@ -323,7 +323,7 @@ The endpoint retrieves a page in a facet collection. The API _MUST_ implement th
 
 :::note
 
-**To do**: add the query parameters representing the "search context" from the heritage collection (`q` and `filter` from endpoint [Retrieve a page in a heritage collection](heritage-collections.md#endpoint-retrieve-a-page-in-a-heritage-collection)).
+**To do**: add the query parameters representing the "search context" from the heritage collection (`q` and `filter` from endpoint [Retrieve a page in a collection](collections.md#endpoint-retrieve-a-page-in-a-collection)).
 
 :::
 

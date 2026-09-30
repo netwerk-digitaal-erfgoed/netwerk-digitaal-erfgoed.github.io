@@ -13,7 +13,7 @@ An extension is supplementary and, therefore, _OPTIONAL_. It's up to a data laye
 
 :::note
 
-**To do**: rethink this section - the concept of 'extensions' may be too difficult. Generalize to, for example, 'capabilities'? See for example search result highlighting, the visual technique that wraps matching query words in HTML tags (like `<em>` or `<mark>`), showing users why a result matches their input. Is there a way to define this functionality as an extension according to the rules on this page, or should it be defined in a different way (see [Capability discovery](index.md#capability-discovery-and-compliance-levels))?
+**To do**: rethink this section - the concept of 'extensions' may be too difficult. Generalize to, for example, 'capabilities'? See for example search result highlighting, the visual technique that wraps matching query words in HTML tags (like `<em>` or `<mark>`), showing users why a result matches their input. Is there a way to define this functionality as an extension according to the rules on this page, or should it be defined in a different way (see [Capability discovery](collections.md#capability-discovery))?
 
 :::
 
@@ -39,7 +39,7 @@ class Collection {
   id
   type
   name
-  totalItems
+  total items
 }
 
 class HeritageCollection["Heritage Collection"]
@@ -48,7 +48,7 @@ class ExtensionCollection["Extension Collection"]
 Collection <|-- HeritageCollection
 Collection <|-- ExtensionCollection
 
-HeritageCollection --> ExtensionCollection : extendedBy
+HeritageCollection --> ExtensionCollection : extended by
 ```
 
 ## Endpoint: Retrieve the extension collection of a heritage collection

@@ -9,7 +9,7 @@ sidebar_position: 8
 
 A suggestion is a keyword or name displayed as a user types. For example: if a user types 'rem', suggestions might be 'Rembrandt' or 'Rem Koolhaas'. Suggestions help users save time. A user can select one of the suggested keywords or names and find entities matching the suggestion. This functionality is also known as autocompletion or typeahead.
 
-Suggestions are tied to a [heritage collection](heritage-collections.md), ensuring that results remain within the context of a specific collection.
+Suggestions are tied to a particular [collection](collections.md), ensuring that results remain within the context of that collection.
 
 Suggestions are an _OPTIONAL_ [extension](extensions.md). A data layer may choose whether or not to implement them.
 
@@ -183,7 +183,7 @@ The response indicates that the API supports three suggestion collections for a 
 
 ## Endpoint: Suggest keywords
 
-The endpoint retrieves a list of keywords matching a query. A presentation layer can use a keyword as input to [search for entities](heritage-collections.md#endpoint-retrieve-a-page-in-a-heritage-collection) and find all entities that match the keyword. The endpoint is _OPTIONAL_: it _MAY_ be implemented by the API.
+The endpoint retrieves a list of keywords matching a query. A presentation layer can use a keyword as input to [search for entities](collections.md#endpoint-retrieve-a-page-in-a-collection) and find all entities that match the keyword. The endpoint is _OPTIONAL_: it _MAY_ be implemented by the API.
 
 ### HTTP request
 
