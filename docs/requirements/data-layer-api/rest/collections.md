@@ -94,6 +94,8 @@ Entities in a collection can be filtered to narrow down results. Supported filte
 
 Filter types are not specific to any collection: a data layer may support them for some of its collections and not for others, or for none. The data layer decides which filters it supports for which collection. The data layer can also add its own, custom filters, for specific use cases.
 
+A facet item can have an [entity](entities.md) as its value, or a `FacetValue`. An entity has an `id`, so a facet filter can refer to it directly. A `FacetValue` has no `id`, because it can stand for several entities at once. A data layer that offers a `FacetValue` _MUST_ support filtering a curated collection on that facet item. This specification does not yet define what such a filter contains, or in which notation. See [Identification of facet items](facets.md#identification-of-facet-items).
+
 :::note
 
 **To be discussed**: is there a standard or common notation to express filter and facet parameters via a query string?

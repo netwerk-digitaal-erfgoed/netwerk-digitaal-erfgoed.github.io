@@ -23,8 +23,8 @@ Suggestions are an _OPTIONAL_ [extension](extensions.md). A data layer may choos
 | Keyword Suggestion Collection  | An ordered list of keyword suggestions. Specialization of Suggestion Collection.                                                                     |
 | Entity Suggestion Collection   | An ordered list of entities. Specialization of Suggestion Collection.                                                                                |
 | Combined Suggestion Collection | An ordered list of keyword suggestions and entities. Specialization of Suggestion Collection.                                                        |
-| Suggestion Item                | A selectable option within a Suggestion Collection, pointing to a Keyword Suggestion or an Entity.                                                   |
-| Keyword Suggestion             | A keyword matching a suggestion query, e.g. 'windmill'. The keyword can be used as input to search for entities and find all that match it.          |
+| Suggestion Item                | A selectable option within a Suggestion Collection, pointing to a Keyword Value or an Entity.                                                        |
+| Keyword Value                  | A keyword matching a suggestion query, e.g. 'windmill'. The keyword can be used as input to search for entities and find all that match it.          |
 | Entity                         | An identifiable 'thing' relevant to heritage, matching a suggestion query, e.g. a heritage object named 'A Watermill'. See [Entities](entities.md).  |
 
 The following class diagram visualizes the data model:
@@ -64,7 +64,7 @@ class SuggestionItem["Suggestion Item"] {
   relevance
 }
 
-class KeywordSuggestion["Keyword Suggestion"] {
+class KeywordValue["Keyword Value"] {
   type
   name
 }
@@ -85,7 +85,7 @@ SuggestionCollection <|-- CombinedSuggestionCollection
 ExtensionCollection *-- SuggestionCollection : items
 
 SuggestionCollection *-- SuggestionItem : items
-SuggestionItem "1" *-- "0..1" KeywordSuggestion : value
+SuggestionItem "1" *-- "0..1" KeywordValue : value
 SuggestionItem "1" *-- "0..1" Entity  : value
 ```
 
@@ -140,8 +140,8 @@ The response body _MUST_ contain at least the following fields:
 | `items[*]`            | SuggestionItem      | 1           | A suggestion item.                                                                                                     |
 | `items[*].type`       | string              | 1           | The type of the suggestion item. It _MUST_ be `SuggestionItem`.                                                        |
 | `items[*].relevance`  | number              | 1           | The relevance of the suggestion to the query. It _MUST_ be a whole number between 0 (not relevant) and 100 (relevant). |
-| `items[*].value`      | KeywordSuggestion   | 1           | The suggested keyword.                                                                                                 |
-| `items[*].value.type` | string              | 1           | The type of the keyword. It _MUST_ be `KeywordSuggestion`.                                                             |
+| `items[*].value`      | KeywordValue        | 1           | The suggested keyword.                                                                                                 |
+| `items[*].value.type` | string              | 1           | The type of the keyword. It _MUST_ be `KeywordValue`.                                                                  |
 | `items[*].value.name` | string              | 1           | The name of the keyword.                                                                                               |
 | `partOf`              | ExtensionCollection | 1           | The extension collection of which this suggestion collection is a part.                                                |
 | `partOf.id`           | string              | 1           | The identifier of the extension collection.                                                                            |
@@ -172,7 +172,7 @@ An example of the response body of the API:
       "type": "SuggestionItem",
       "relevance": 98,
       "value": {
-        "type": "KeywordSuggestion",
+        "type": "KeywordValue",
         "name": "mill"
       }
     },
@@ -180,7 +180,7 @@ An example of the response body of the API:
       "type": "SuggestionItem",
       "relevance": 92,
       "value": {
-        "type": "KeywordSuggestion",
+        "type": "KeywordValue",
         "name": "windmill"
       }
     }
@@ -272,7 +272,7 @@ An example of the response body of the API:
       "type": "SuggestionItem",
       "relevance": 98,
       "value": {
-        "id": "https://example.org/v1/entities/objects/1234",
+        "id": "https://example.org/v1/entities/1234",
         "type": "HeritageObject",
         "name": "A Watermill"
         // Optionally: other fields
@@ -282,7 +282,7 @@ An example of the response body of the API:
       "type": "SuggestionItem",
       "relevance": 92,
       "value": {
-        "id": "https://example.org/v1/entities/objects/5678",
+        "id": "https://example.org/v1/entities/5678",
         "type": "HeritageObject",
         "name": "Windmill at Wijk bij Duurstede"
         // Optionally: other fields
@@ -331,24 +331,24 @@ None.
 
 The response body _MUST_ contain at least the following fields:
 
-| Name                  | Data type                 | Cardinality | Description                                                                                                            |
-| --------------------- | ------------------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------- |
-| `id`                  | string                    | 1           | The identifier of the collection.                                                                                      |
-| `type`                | string                    | 1           | The type of the collection. It _MUST_ be `CombinedSuggestionCollection`.                                               |
-| `name`                | string                    | 1           | The name of the collection.                                                                                            |
-| `totalItems`          | number                    | 1           | The total number of suggestion items in the collection.                                                                |
-| `items`               | array                     | 1           | A list of suggestions items. Empty if no suggestions matched the query.                                                |
-| `items[*]`            | SuggestionItem            | 1           | A suggestion item.                                                                                                     |
-| `items[*].type`       | string                    | 1           | The type of the suggestion item. It _MUST_ be `SuggestionItem`.                                                        |
-| `items[*].relevance`  | number                    | 1           | The relevance of the suggestion to the query. It _MUST_ be a whole number between 0 (not relevant) and 100 (relevant). |
-| `items[*].value`      | KeywordSuggestion, Entity | 1           | The suggested keyword or entity.                                                                                       |
-| `items[*].value.id`   | string                    | 0 or 1      | The identifier of the entity. Not set if the `type` is `KeywordSuggestion`; a keyword has no identity.                 |
-| `items[*].value.type` | string                    | 1           | The type of the keyword (it _MUST_ be `KeywordSuggestion`) or the [type](entities.md#entity-types) of the entity.      |
-| `items[*].value.name` | string                    | 1           | The name of the keyword or entity.                                                                                     |
-| `partOf`              | ExtensionCollection       | 1           | The extension collection of which this suggestion collection is a part.                                                |
-| `partOf.id`           | string                    | 1           | The identifier of the extension collection.                                                                            |
-| `partOf.type`         | string                    | 1           | The type of the extension collection. It _MUST_ be `ExtensionCollection`.                                              |
-| `partOf.name`         | string                    | 1           | The name of the extension collection.                                                                                  |
+| Name                  | Data type            | Cardinality | Description                                                                                                            |
+| --------------------- | -------------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `id`                  | string               | 1           | The identifier of the collection.                                                                                      |
+| `type`                | string               | 1           | The type of the collection. It _MUST_ be `CombinedSuggestionCollection`.                                               |
+| `name`                | string               | 1           | The name of the collection.                                                                                            |
+| `totalItems`          | number               | 1           | The total number of suggestion items in the collection.                                                                |
+| `items`               | array                | 1           | A list of suggestions items. Empty if no suggestions matched the query.                                                |
+| `items[*]`            | SuggestionItem       | 1           | A suggestion item.                                                                                                     |
+| `items[*].type`       | string               | 1           | The type of the suggestion item. It _MUST_ be `SuggestionItem`.                                                        |
+| `items[*].relevance`  | number               | 1           | The relevance of the suggestion to the query. It _MUST_ be a whole number between 0 (not relevant) and 100 (relevant). |
+| `items[*].value`      | Entity, KeywordValue | 1           | The value of the suggestion item: an entity or a keyword.                                                              |
+| `items[*].value.id`   | string               | 0 or 1      | The identifier of the entity. Not set if the `type` is `KeywordValue`; a keyword has no identity.                      |
+| `items[*].value.type` | string               | 1           | The type of the value of the suggestion item. It _MUST_ be `KeywordValue` or a specialization of `Entity`.             |
+| `items[*].value.name` | string               | 1           | The name of the keyword value or entity.                                                                               |
+| `partOf`              | ExtensionCollection  | 1           | The extension collection of which this suggestion collection is a part.                                                |
+| `partOf.id`           | string               | 1           | The identifier of the extension collection.                                                                            |
+| `partOf.type`         | string               | 1           | The type of the extension collection. It _MUST_ be `ExtensionCollection`.                                              |
+| `partOf.name`         | string               | 1           | The name of the extension collection.                                                                                  |
 
 The API _MAY_ expose additional fields about a suggested entity.
 
@@ -376,7 +376,7 @@ An example of the response body of the API:
       "type": "SuggestionItem",
       "relevance": 98,
       "value": {
-        "type": "KeywordSuggestion",
+        "type": "KeywordValue",
         "name": "windmill"
       }
     },
@@ -384,7 +384,7 @@ An example of the response body of the API:
       "type": "SuggestionItem",
       "relevance": 95,
       "value": {
-        "id": "https://example.org/v1/entities/objects/1234",
+        "id": "https://example.org/v1/entities/1234",
         "type": "HeritageObject",
         "name": "A Watermill"
         // Optionally: other fields
