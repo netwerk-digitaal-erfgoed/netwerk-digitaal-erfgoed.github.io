@@ -7,22 +7,22 @@ sidebar_position: 6
 
 ## Introduction
 
-A **curated collection** is a grouping of [entities](entities.md). It is the main way for a presentation layer to browse and search the entities of a data layer. A data layer can include any entity of any type in a curated collection, and can create any number of curated collections, nested in any way, depending on the requirements of presentation layers.
+A curated collection is a grouping of [entities](entities.md). It is the main way for a presentation layer to browse and search the entities of a data layer. A data layer can include any entity of any type in a curated collection, and can create any number of curated collections, nested in any way, depending on the requirements of presentation layers.
 
-For example: a data layer may have a collection for all entities of type 'heritage object'. The data layer may also have a 'Masterpieces' collection with the finest entities. The data layer may also have a 'Great for kids' collection with entities that are interesting for children. The data layer decides how the entities are selected and put into a collection: entities may be hand-picked, derived by a query, or assembled by aggregating other collections.
-
-A curated collection is a specialization of the generic [Collection](resources.md#collection-structure) that [Resources](resources.md) defines. A curated collection holds further curated collections and entities, and nothing else. This specification uses the word _collection_ for a curated collection throughout the rest of this page, and `CuratedCollection` for the type.
+For example: a data layer may have a collection for all entities of type 'Heritage object'. The data layer may also have a 'Masterpieces' collection with its finest art-related entities. The data layer may also have a 'Great for kids' collection with entities that are interesting for children. The data layer decides how the entities are selected and put into a collection: entities may be hand-picked, derived by a query, or assembled by aggregating other collections.
 
 A data layer may add extra functionality to a curated collection. For example: users of a presentation layer may want to find entities in the 'Masterpieces' collection using faceted search. Such add-on functionality can be defined as an [extension](extensions.md).
+
+A curated collection is a specialization of the generic [Collection](resources.md#collection-structure). A curated collection holds further curated collections and entities, and nothing else.
 
 ## Data model
 
 | Name                 | Description                                                                                                                              |
 | -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| Collection           | An ordered list of resources. The generic type, of which a Curated Collection is a specialization. See [Resources](resources.md).        |
+| Collection           | An ordered list of resources. The generic type. See [Resources](resources.md).                                                           |
 | Curated Collection   | An ordered list of entities or further curated collections. It may consist of pages, containing sublists of the items in the collection. |
-| Page                 | An ordered sublist of the items in a Collection.                                                                                         |
-| Extension Collection | A collection of extensions, adding extra functionality to a Collection. See [Extensions](extensions.md).                                 |
+| Page                 | An ordered sublist of the items in a curated collection.                                                                                 |
+| Extension Collection | A collection of extensions, adding extra functionality to a curated collection. See [Extensions](extensions.md).                         |
 | Entity               | An identifiable 'thing' relevant to heritage. See [Entities](entities.md).                                                               |
 
 The following class diagram visualizes the data model:
@@ -69,7 +69,7 @@ Page *-- Entity : items
 
 ## Capability discovery
 
-Collections may have different _capabilities_: functionalities that they support. Every collection advertises its capabilities. This allows presentation layers to discover the functionalities and adapt their user interfaces to it.
+Curated collections may have different _capabilities_: functionalities that they support. Every collection advertises its capabilities. This allows presentation layers to discover the functionalities and adapt their user interfaces to it.
 
 This specification defines the following capabilities:
 
@@ -237,7 +237,7 @@ A collection can hold further collections. Example response for the 'Persons' co
 }
 ```
 
-The response indicates that the 'Persons' collection contains two collections: one for 'Painters' and one for 'Writers'.
+The response indicates that the 'Persons' collection groups two collections: one for 'Painters' and one for 'Writers'.
 
 ## Endpoint: Retrieve a collection
 

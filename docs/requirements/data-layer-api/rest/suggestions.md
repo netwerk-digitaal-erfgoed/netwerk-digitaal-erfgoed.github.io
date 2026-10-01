@@ -146,6 +146,7 @@ The response body _MUST_ contain at least the following fields:
 | `partOf`              | ExtensionCollection | 1           | The extension collection of which this suggestion collection is a part.                                                |
 | `partOf.id`           | string              | 1           | The identifier of the extension collection.                                                                            |
 | `partOf.type`         | string              | 1           | The type of the extension collection. It _MUST_ be `ExtensionCollection`.                                              |
+| `partOf.name`         | string              | 1           | The name of the extension collection.                                                                                  |
 
 ### Example
 
@@ -186,7 +187,8 @@ An example of the response body of the API:
   ],
   "partOf": {
     "id": "https://example.org/v1/collections/objects/extensions",
-    "type": "ExtensionCollection"
+    "type": "ExtensionCollection",
+    "name": "Extensions"
   }
 }
 ```
@@ -242,6 +244,7 @@ The response body _MUST_ contain at least the following fields:
 | `partOf`              | ExtensionCollection | 1           | The extension collection of which this suggestion collection is a part.                                                |
 | `partOf.id`           | string              | 1           | The identifier of the extension collection.                                                                            |
 | `partOf.type`         | string              | 1           | The type of the extension collection. It _MUST_ be `ExtensionCollection`.                                              |
+| `partOf.name`         | string              | 1           | The name of the extension collection.                                                                                  |
 
 The API may expose additional fields about a suggested entity.
 
@@ -288,7 +291,8 @@ An example of the response body of the API:
   ],
   "partOf": {
     "id": "https://example.org/v1/collections/objects/extensions",
-    "type": "ExtensionCollection"
+    "type": "ExtensionCollection",
+    "name": "Extensions"
   }
 }
 ```
@@ -344,6 +348,7 @@ The response body _MUST_ contain at least the following fields:
 | `partOf`              | ExtensionCollection       | 1           | The extension collection of which this suggestion collection is a part.                                                |
 | `partOf.id`           | string                    | 1           | The identifier of the extension collection.                                                                            |
 | `partOf.type`         | string                    | 1           | The type of the extension collection. It _MUST_ be `ExtensionCollection`.                                              |
+| `partOf.name`         | string                    | 1           | The name of the extension collection.                                                                                  |
 
 The API may expose additional fields about a suggested entity.
 
@@ -388,7 +393,8 @@ An example of the response body of the API:
   ],
   "partOf": {
     "id": "https://example.org/v1/collections/objects/extensions",
-    "type": "ExtensionCollection"
+    "type": "ExtensionCollection",
+    "name": "Extensions"
   }
 }
 ```
