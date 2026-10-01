@@ -15,11 +15,9 @@ Entities can be grouped into [curated collections](collections.md). For example:
 
 ## Data model
 
-An entity is a [Resource](resources.md#resource-structure): it has an `id`, a `type` and a `name`, and it is identified with a URI. `Entity` is abstract - there is no entity whose `type` is `Entity`. Every entity has one of the concrete entity types that a data layer defines. Those types are not defined by this specification: a data layer publishes the ones it uses as part of its [type vocabulary](types.md).
+An entity is a specialization of a [Resource](resources.md#resource-structure): it has an `id`, a `type` and a `name`. An entity is abstract: there is no entity whose type is `Entity`. Every entity has one of the concrete types that a data layer defines, published as part of its [type vocabulary](types.md).
 
-An entity specializes a Resource without adding a field: it makes the `id` and the `name` of a Resource mandatory, where a Resource may leave them out.
-
-The following class diagram visualizes how the entity types relate to a Resource and to each other. It shows two examples of the concrete types a data layer can define:
+The following class diagram visualizes how entity types relate to a Resource and to each other. It shows two examples of the concrete types a data layer can define, 'Heritage object' and 'Person':
 
 ```mermaid
 ---
@@ -43,7 +41,7 @@ class Entity["Entity"] {
   name
 }
 
-class HeritageObject["HeritageObject"]
+class HeritageObject["Heritage object"]
 
 class Person["Person"]
 
@@ -166,7 +164,7 @@ The response body depends on the data model of the entity. An example:
 }
 ```
 
-The response indicates that this entity is a type of 'Heritage object' with name 'The Night Watch'. It is linked to other entities of types 'Concept', 'Person' and 'Place'.
+The response indicates that this entity is a `HeritageObject` and has name 'The Night Watch'. It is linked to other entities of types `Concept`, `Person` and `Place`.
 
 :::note
 

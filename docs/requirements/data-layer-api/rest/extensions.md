@@ -11,7 +11,7 @@ An extension is a resource that supplements a curated collection with additional
 
 An extension is supplementary and, therefore, _OPTIONAL_. It's up to a data layer to decide whether or not to implement one.
 
-A presentation layer discovers the extension collection through the curated collection itself: the `extendedBy` field of a curated collection points to its extension collection, and `extendedBy.id` is the URI to request. A collection with no extensions omits `extendedBy`, so a presentation layer knows there are none.
+A presentation layer discovers the extension collection through the curated collection itself: the `extension` field of a curated collection points to its extension collection, and `extension.id` is the URI to request. A collection with no extensions omits `extension`, so a presentation layer knows there are none.
 
 :::note
 
@@ -57,8 +57,8 @@ Collection <|-- ExtensionCollection
 Collection <|-- SuggestionCollection
 Collection <|-- FacetCollection
 
-CuratedCollection --> ExtensionCollection : extended by
-
+CuratedCollection --> ExtensionCollection : extension
+ExtensionCollection --> CuratedCollection : extension of
 ExtensionCollection *-- SuggestionCollection : items
 ExtensionCollection *-- FacetCollection : items
 ```
@@ -94,21 +94,21 @@ None.
 
 The response body _MUST_ contain at least the following fields:
 
-| Name            | Data type         | Cardinality | Description                                                                                                                                                                                                                                                                                                               |
-| --------------- | ----------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`            | string            | 1           | The identifier of the collection.                                                                                                                                                                                                                                                                                         |
-| `type`          | string            | 1           | The type of the collection. It _MUST_ be `ExtensionCollection`.                                                                                                                                                                                                                                                           |
-| `name`          | string            | 1           | The name of the collection.                                                                                                                                                                                                                                                                                               |
-| `totalItems`    | number            | 1           | The total number of extensions in the collection.                                                                                                                                                                                                                                                                         |
-| `items`         | array             | 1           | A list of all extensions. The API defines the order.                                                                                                                                                                                                                                                                      |
-| `items[*]`      | Collection        | 1           | An extension: a collection that provides additional functionality to the curated collection.                                                                                                                                                                                                                              |
-| `items[*].id`   | string            | 1           | The identifier of the extension collection.                                                                                                                                                                                                                                                                               |
-| `items[*].type` | string            | 1           | The type of the extension collection. It _MUST_ be `Collection` or a specialization. A presentation layer recognizes an extension by its type: it is a suggestion collection if its `type` is `SuggestionCollection` or a specialization, and a facet collection if its `type` is `FacetCollection` or a specializationt. |
-| `items[*].name` | string            | 1           | The name of the extension collection.                                                                                                                                                                                                                                                                                     |
-| `extends`       | CuratedCollection | 1           | The curated collection that is extended by this collection.                                                                                                                                                                                                                                                               |
-| `extends.id`    | string            | 1           | The identifier of the curated collection.                                                                                                                                                                                                                                                                                 |
-| `extends.type`  | string            | 1           | The type of the curated collection. It _MUST_ be `CuratedCollection` or a specialization.                                                                                                                                                                                                                                 |
-| `extends.name`  | string            | 1           | The name of the curated collection.                                                                                                                                                                                                                                                                                       |
+| Name               | Data type         | Cardinality | Description                                                                                                                                                                                                                                                                                                              |
+| ------------------ | ----------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `id`               | string            | 1           | The identifier of the collection.                                                                                                                                                                                                                                                                                        |
+| `type`             | string            | 1           | The type of the collection. It _MUST_ be `ExtensionCollection`.                                                                                                                                                                                                                                                          |
+| `name`             | string            | 1           | The name of the collection.                                                                                                                                                                                                                                                                                              |
+| `totalItems`       | number            | 1           | The total number of extensions in the collection.                                                                                                                                                                                                                                                                        |
+| `items`            | array             | 1           | A list of all extensions. The API defines the order.                                                                                                                                                                                                                                                                     |
+| `items[*]`         | Collection        | 1           | An extension: a collection that provides additional functionality to the curated collection.                                                                                                                                                                                                                             |
+| `items[*].id`      | string            | 1           | The identifier of the extension collection.                                                                                                                                                                                                                                                                              |
+| `items[*].type`    | string            | 1           | The type of the extension collection. It _MUST_ be `Collection` or a specialization. A presentation layer recognizes an extension by its type: it is a suggestion collection if its `type` is `SuggestionCollection` or a specialization, and a facet collection if its `type` is `FacetCollection` or a specialization. |
+| `items[*].name`    | string            | 1           | The name of the extension collection.                                                                                                                                                                                                                                                                                    |
+| `extensionOf`      | CuratedCollection | 1           | The curated collection of which this collection is an extension.                                                                                                                                                                                                                                                         |
+| `extensionOf.id`   | string            | 1           | The identifier of the curated collection.                                                                                                                                                                                                                                                                                |
+| `extensionOf.type` | string            | 1           | The type of the curated collection. It _MUST_ be `CuratedCollection` or a specialization.                                                                                                                                                                                                                                |
+| `extensionOf.name` | string            | 1           | The name of the curated collection.                                                                                                                                                                                                                                                                                      |
 
 ### Example
 
@@ -146,7 +146,7 @@ An example of the response body of the API:
       "name": "Keyword suggestions"
     }
   ],
-  "extends": {
+  "extensionOf": {
     "id": "https://example.org/v1/collections/objects",
     "type": "CuratedCollection",
     "name": "Heritage objects"

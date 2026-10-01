@@ -11,15 +11,15 @@ The API of a data layer is centered around resources. A resource represents a 't
 
 ## Data model
 
-This specification defines the following generic resource types:
+This specification defines the following resource types:
 
-| Name       | Description                                                                                                                                                   |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Resource   | A 'thing' of a certain type. All other resource types extend from it.                                                                                         |
-| Collection | An ordered list of resources. A Collection may contain further collections, and may consist of pages, containing sublists of the resources in the collection. |
-| Page       | An ordered sublist of resources within a Collection.                                                                                                          |
+| Name       | Description                                                                                                                                                                                                                                                                   |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Resource   | A 'thing' of a certain type. All other resource types extend from it. A Resource is abstract: there is no resource whose type is `Resource` - it needs a concrete type. This specification defines a number of concrete types. The API may additionally define its own types. |
+| Collection | An ordered list of resources. A Collection may contain further collections, and may consist of pages, containing sublists of the resources in the collection.                                                                                                                 |
+| Page       | An ordered sublist of resources within a Collection.                                                                                                                                                                                                                          |
 
-The resource types are extensible. This specification defines the generic `Collection` and `Page` types, which the data layer API specializes where it needs to. The API may also define its own [resource types](types.md).
+The resource types are extensible. This specification defines the generic `Collection` and `Page` types, which the data layer API specializes where it needs to. The API may also define its own [types](types.md).
 
 The following class diagram visualizes the relationships between the resource types:
 
@@ -87,7 +87,7 @@ Example of the response body:
 }
 ```
 
-The response indicates that this resource has identifier `https://example.org/v1/entities/1234`, is a 'Heritage object' and has name 'The Night Watch'.
+The response indicates that this resource has identifier `https://example.org/v1/entities/1234`, is a `HeritageObject` and has name 'The Night Watch'.
 
 Note the `additionalTypes` list: every item in this list is also a resource and has the same top-level fields: `id`, `type` and `name`.
 
