@@ -121,7 +121,7 @@ The following table lists some common facets:
 
 **To do**: explain how facet items can be identified:
 
-- **By ID**. For example: the name 'Jan de Vries' can be ambiguous in the 'Creator' facet; there can be several persons with that name. If the data layer intends to resolve this, it should identify items by their ID (e.g. `https://example.org/v1/entities/persons/1234`), to make clear the item is about a specific person, regardless of the name of the person.
+- **By ID**. For example: the name 'Jan de Vries' can be ambiguous in the 'Creator' facet; there can be several persons with that name. If the data layer intends to resolve this, it should identify items by their ID (e.g. `https://example.org/v1/entities/1234`), to make clear the item is about a specific person, regardless of the name of the person.
 - **By name or label**. For example: the name 'Jan de Vries' can be ambiguous in the 'Creator' facet. The data layer may decide to not resolve this: identification by ID could mean that several items with the same name appear in the facet list ('Jan de Vries', 'Jan de Vries', 'Jan de Vries'), each with an ID that a user in the presentation layer does not see and/or can interpret. In that case the data layer may identify items by their name, causing distinct persons with the same name to be grouped in one facet item ('Jan de Vries').
 
 :::
@@ -164,26 +164,24 @@ None.
 
 ### Response body
 
-A facet collection is a specialization of `Collection`, so the fields of the generic [collection structure](resources.md#collection-structure) apply in addition to the following. Its `items` are narrowed to facet items.
-
 The response body _MUST_ contain at least the following fields:
 
-| Name          | Data type           | Cardinality | Description                                                                                                                                                        |
-| ------------- | ------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `id`          | string              | 1           | The identifier of the collection.                                                                                                                                  |
-| `type`        | string              | 1           | The type of the collection. It _MUST_ be `FacetCollection` or a specialization.                                                                                    |
-| `name`        | string              | 1           | The name of the collection.                                                                                                                                        |
-| `totalItems`  | number              | 0 or 1      | The total number of facet items in the collection. May be an estimate. Not set if it is too costly to calculate.                                                   |
-| `first`       | FacetPage           | 0 or 1      | The first page in the collection. Not set if the collection is empty.                                                                                              |
-| `first.id`    | string              | 1           | The identifier of the first page in the collection.                                                                                                                |
-| `first.type`  | string              | 1           | The type of the first page in the collection. It _MUST_ be `FacetPage` or a specialization.                                                                        |
-| `last`        | FacetPage           | 0 or 1      | The last page in the collection. Not set if the collection is empty or if the last page is unknown (e.g. in case of [cursor pagination](resources.md#pagination)). |
-| `last.id`     | string              | 1           | The identifier of the last page in the collection.                                                                                                                 |
-| `last.type`   | string              | 1           | The type of the last page in the collection. It _MUST_ be `FacetPage` or a specialization.                                                                         |
-| `partOf`      | ExtensionCollection | 1           | The extension collection of which this facet collection is a part.                                                                                                 |
-| `partOf.id`   | string              | 1           | The identifier of the extension collection.                                                                                                                        |
-| `partOf.type` | string              | 1           | The type of the extension collection. It _MUST_ be `ExtensionCollection`.                                                                                          |
-| `partOf.name` | string              | 1           | The name of the extension collection.                                                                                                                              |
+| Name          | Data type           | Cardinality | Description                                                                                                                                                                                                                                     |
+| ------------- | ------------------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`          | string              | 1           | The identifier of the collection.                                                                                                                                                                                                               |
+| `type`        | string              | 1           | The type of the collection. It _MUST_ be `FacetCollection` or a specialization.                                                                                                                                                                 |
+| `name`        | string              | 1           | The name of the collection.                                                                                                                                                                                                                     |
+| `totalItems`  | number              | 0 or 1      | The total number of facet items in the collection. May be an estimate. Not set if it is too costly to calculate.                                                                                                                                |
+| `first`       | FacetPage           | 0 or 1      | The first page in the collection. Not set if the collection is empty or if it is not divided into [pages](resources.md#page-structure).                                                                                                         |
+| `first.id`    | string              | 1           | The identifier of the first page in the collection.                                                                                                                                                                                             |
+| `first.type`  | string              | 1           | The type of the first page in the collection. It _MUST_ be `FacetPage` or a specialization.                                                                                                                                                     |
+| `last`        | FacetPage           | 0 or 1      | The last page in the collection. Not set if the collection is empty, if the collection is not divided into [pages](resources.md#page-structure), or if the last page is unknown (e.g. in case of [cursor pagination](resources.md#pagination)). |
+| `last.id`     | string              | 1           | The identifier of the last page in the collection.                                                                                                                                                                                              |
+| `last.type`   | string              | 1           | The type of the last page in the collection. It _MUST_ be `FacetPage` or a specialization.                                                                                                                                                      |
+| `partOf`      | ExtensionCollection | 1           | The extension collection of which this facet collection is a part.                                                                                                                                                                              |
+| `partOf.id`   | string              | 1           | The identifier of the extension collection.                                                                                                                                                                                                     |
+| `partOf.type` | string              | 1           | The type of the extension collection. It _MUST_ be `ExtensionCollection`.                                                                                                                                                                       |
+| `partOf.name` | string              | 1           | The name of the extension collection.                                                                                                                                                                                                           |
 
 ### Example
 
@@ -196,7 +194,52 @@ Host: example.org
 
 The request indicates that the API should return a facet collection (`creators`) of a curated collection (`objects`).
 
-An example of the response body of the API:
+An example of the response body of the API if the facet collection is not divided into pages:
+
+```json
+{
+  "id": "https://example.org/v1/collections/objects/extensions/creators",
+  "type": "FacetCollection",
+  "name": "Creator",
+  "totalItems": 3,
+  "items": [
+    {
+      "type": "FacetItem",
+      "count": 12,
+      "value": {
+        "id": "https://example.org/v1/entities/1234",
+        "type": "Person",
+        "name": "Arno Haag"
+      }
+    },
+    {
+      "type": "FacetItem",
+      "count": 8,
+      "value": {
+        "id": "https://example.org/v1/entities/5678",
+        "type": "Person",
+        "name": "Hans de Haan"
+      }
+    },
+    {
+      "type": "FacetItem",
+      "count": 2,
+      "value": {
+        "id": "https://example.org/v1/entities/3458",
+        "type": "Person",
+        "name": "John Jansen"
+      }
+    }
+  ],
+  "partOf": {
+    "id": "https://example.org/v1/collections/objects/extensions",
+    "type": "ExtensionCollection",
+    "name": "Extensions"
+  }
+}
+```
+
+An example of the response body of the API for the request above, if the facet collection is divided into pages:
 
 ```json
 {
@@ -222,7 +265,7 @@ An example of the response body of the API:
 
 ## Endpoint: Retrieve a page in a facet collection
 
-The endpoint retrieves a page in a facet collection. The API _MUST_ implement this endpoint if it supports facets.
+The endpoint retrieves a page in a facet collection. The API _MUST_ implement this endpoint for every facet collection it divides into [pages](resources.md#page-structure).
 
 ### HTTP request
 
@@ -258,8 +301,6 @@ The endpoint retrieves a page in a facet collection. The API _MUST_ implement th
 None.
 
 ### Response body
-
-A facet page is a specialization of `Page`, so the fields of the generic [page structure](resources.md#page-structure) apply in addition to the following. Its `items` are narrowed to facet items.
 
 The response body _MUST_ contain at least the following fields:
 

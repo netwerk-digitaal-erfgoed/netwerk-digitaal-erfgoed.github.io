@@ -390,31 +390,35 @@ None.
 
 The response body _MUST_ contain at least the following fields:
 
-| Name                | Data type                 | Cardinality | Description                                                                                                                                                                                                                                                    |
-| ------------------- | ------------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`                | string                    | 1           | The identifier of the current page.                                                                                                                                                                                                                            |
-| `type`              | string                    | 1           | The type of the page. It _MUST_ be `Page` or a specialization.                                                                                                                                                                                                 |
-| `name`              | string                    | 1           | The name of the page.                                                                                                                                                                                                                                          |
-| `items`             | array                     | 1           | A list of the items in the collection that fall on this page.                                                                                                                                                                                                  |
-| `items[*]`          | CuratedCollection, Entity | 1           | A `CuratedCollection` or a specialization, or a specialization of `Entity`. If an `Entity`: all fields _MUST_ be embedded - see the response body of endpoint [Retrieve an entity](entities.md#endpoint-retrieve-an-entity).                                   |
-| `extensions`        | array                     | 0 or 1      | The results of the extensions requested via the query parameters, such as `facet` or `q`. The field _MUST_ be omitted if no extensions were requested. See [Extensions on a page](#extensions-on-a-page).                                                      |
-| `prev`              | Page                      | 0 or 1      | The previous page in the collection. Not set if there is no previous page.                                                                                                                                                                                     |
-| `prev.id`           | string                    | 1           | The identifier of the previous page in the collection.                                                                                                                                                                                                         |
-| `prev.type`         | string                    | 1           | The type of the previous page in the collection. It _MUST_ be `Page` or a specialization.                                                                                                                                                                      |
-| `next`              | Page                      | 0 or 1      | The next page in the collection. Not set if there is no next page.                                                                                                                                                                                             |
-| `next.id`           | string                    | 1           | The identifier of the next page in the collection.                                                                                                                                                                                                             |
-| `next.type`         | string                    | 1           | The type of the next page in the collection. It _MUST_ be `Page` or a specialization.                                                                                                                                                                          |
-| `partOf`            | CuratedCollection         | 1           | The collection to which the items contained by the page belong.                                                                                                                                                                                                |
-| `partOf.id`         | string                    | 1           | The identifier of the collection.                                                                                                                                                                                                                              |
-| `partOf.type`       | string                    | 1           | The type of the collection. It _MUST_ be `CuratedCollection` or a specialization.                                                                                                                                                                              |
-| `partOf.name`       | string                    | 1           | The name of the collection.                                                                                                                                                                                                                                    |
-| `partOf.totalItems` | number                    | 0 or 1      | The total number of items in the collection, being its further collections, its resources, or both. This _MAY_ be an estimate, especially in case of a large collection. The field _MAY_ be omitted by the API if the total number is too costly to calculate. |
-| `partOf.first`      | Page                      | 1           | The first page in the collection.                                                                                                                                                                                                                              |
-| `partOf.first.id`   | string                    | 1           | The identifier of the first page in the collection.                                                                                                                                                                                                            |
-| `partOf.first.type` | string                    | 1           | The type of the first page in the collection. It _MUST_ be `Page` or a specialization.                                                                                                                                                                         |
-| `partOf.last`       | Page                      | 0 or 1      | The last page in the collection. Not set if the last page is unknown (e.g. in case of [cursor pagination](resources.md#pagination)).                                                                                                                           |
-| `partOf.last.id`    | string                    | 1           | The identifier of the last page in the collection.                                                                                                                                                                                                             |
-| `partOf.last.type`  | string                    | 1           | The type of the last page in the collection. It _MUST_ be `Page` or a specialization.                                                                                                                                                                          |
+| Name                 | Data type                 | Cardinality | Description                                                                                                                                                                                                                  |
+| -------------------- | ------------------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`                 | string                    | 1           | The identifier of the current page.                                                                                                                                                                                          |
+| `type`               | string                    | 1           | The type of the page. It _MUST_ be `Page` or a specialization.                                                                                                                                                               |
+| `name`               | string                    | 1           | The name of the page.                                                                                                                                                                                                        |
+| `items`              | array                     | 1           | A list of the items in the collection that fall on this page.                                                                                                                                                                |
+| `items[*]`           | CuratedCollection, Entity | 1           | A `CuratedCollection` or a specialization, or a specialization of `Entity`. If an `Entity`: all fields _MUST_ be embedded - see the response body of endpoint [Retrieve an entity](entities.md#endpoint-retrieve-an-entity). |
+| `extensions`         | array                     | 0 or 1      | The results of the extensions requested via the query parameters, such as `facet` or `q`. The field _MUST_ be omitted if no extensions were requested. See [Extensions on a page](#extensions-on-a-page).                    |
+| `extensions[*]`      | Collection, Page          | 1           | The result of one requested extension. It is a `Collection` or a specialization if the collection of the extension is not divided into [pages](resources.md#page-structure), and a `Page` or a specialization if it is.      |
+| `extensions[*].id`   | string                    | 1           | The identifier of the result.                                                                                                                                                                                                |
+| `extensions[*].type` | string                    | 1           | The type of the result. A presentation layer recognizes the extension by its `type`: it is a facet result if its `type` is `FacetCollection`, `FacetPage`, or a specialization of either.                                    |
+| `extensions[*].name` | string                    | 1           | The name of the result.                                                                                                                                                                                                      |
+| `prev`               | Page                      | 0 or 1      | The previous page in the collection. Not set if there is no previous page.                                                                                                                                                   |
+| `prev.id`            | string                    | 1           | The identifier of the previous page in the collection.                                                                                                                                                                       |
+| `prev.type`          | string                    | 1           | The type of the previous page in the collection. It _MUST_ be `Page` or a specialization.                                                                                                                                    |
+| `next`               | Page                      | 0 or 1      | The next page in the collection. Not set if there is no next page.                                                                                                                                                           |
+| `next.id`            | string                    | 1           | The identifier of the next page in the collection.                                                                                                                                                                           |
+| `next.type`          | string                    | 1           | The type of the next page in the collection. It _MUST_ be `Page` or a specialization.                                                                                                                                        |
+| `partOf`             | CuratedCollection         | 1           | The collection to which the items contained by the page belong.                                                                                                                                                              |
+| `partOf.id`          | string                    | 1           | The identifier of the collection.                                                                                                                                                                                            |
+| `partOf.type`        | string                    | 1           | The type of the collection. It _MUST_ be `CuratedCollection` or a specialization.                                                                                                                                            |
+| `partOf.name`        | string                    | 1           | The name of the collection.                                                                                                                                                                                                  |
+| `partOf.totalItems`  | number                    | 0 or 1      | The total number of items in the collection, being its further collections, its resources, or both. May be an estimate. Not set if it is too costly to calculate.                                                            |
+| `partOf.first`       | Page                      | 1           | The first page in the collection.                                                                                                                                                                                            |
+| `partOf.first.id`    | string                    | 1           | The identifier of the first page in the collection.                                                                                                                                                                          |
+| `partOf.first.type`  | string                    | 1           | The type of the first page in the collection. It _MUST_ be `Page` or a specialization.                                                                                                                                       |
+| `partOf.last`        | Page                      | 0 or 1      | The last page in the collection. Not set if the last page is unknown (e.g. in case of [cursor pagination](resources.md#pagination)).                                                                                         |
+| `partOf.last.id`     | string                    | 1           | The identifier of the last page in the collection.                                                                                                                                                                           |
+| `partOf.last.type`   | string                    | 1           | The type of the last page in the collection. It _MUST_ be `Page` or a specialization.                                                                                                                                        |
 
 ### Example
 
@@ -467,7 +471,9 @@ An example of the response body:
 
 ### Extensions on a page
 
-A page can carry the results of extensions, such as facets. Because extensions apply to any collection, the page has a single, generic `extensions` field, rather than a dedicated field per extension. A presentation layer selects the extensions it understands by inspecting the `type` of each entry, for example `FacetPage`.
+A page can carry the results of extensions, such as facets. Because extensions apply to any collection, the page has a single, generic `extensions` field, rather than a dedicated field per extension. A presentation layer selects the extensions it understands by inspecting the `type` of each entry.
+
+An entry mirrors the collection of its extension. If that collection is divided into pages, the entry is one of its pages, for example a `FacetPage`. If it is not, the entry is the collection itself, for example a `FacetCollection` that lists its facet items inline. A presentation layer therefore has to accept both shapes, and it distinguishes them by the `type` of the entry, as set out in the response body above. It ignores a result of a type it does not recognize.
 
 :::note
 
@@ -481,7 +487,7 @@ A page can carry the results of extensions, such as facets. Because extensions a
 
 :::
 
-An example of the response body if the presentation layer requested facets via `?facet[creators]&facet[centuries]`:
+An example of the response body if the presentation layer requested facets via `?facet[creators]&facet[centuries]&facet[subjects]`. The `centuries` and `creators` facets are divided into pages, so their results are a `FacetPage`. The `subjects` facet is not divided into pages, so its result is a `FacetCollection` that lists its items inline. A presentation layer has to accept both.
 
 ```json
 {
@@ -495,7 +501,7 @@ An example of the response body if the presentation layer requested facets via `
     {
       "id": "https://example.org/v1/collections/masterpieces/extensions/centuries?page=1&size=5&orderBy=value:desc,count:desc&context=...",
       "type": "FacetPage",
-      "name": "Made in century",
+      "name": "Made in century: page 1",
       "items": [
         {
           "type": "FacetItem",
@@ -511,12 +517,22 @@ An example of the response body if the presentation layer requested facets via `
       "next": {
         "id": "https://example.org/v1/collections/masterpieces/extensions/centuries?page=2&size=5&orderBy=value:desc,count:desc&context=...",
         "type": "FacetPage"
+      },
+      "partOf": {
+        "id": "https://example.org/v1/collections/masterpieces/extensions/centuries",
+        "type": "FacetCollection",
+        "name": "Made in century",
+        "first": {
+          "id": "https://example.org/v1/collections/masterpieces/extensions/centuries?page=1&size=5&orderBy=value:desc,count:desc&context=...",
+          "type": "FacetPage"
+        }
+        // `totalItems` and `last` omitted for brevity
       }
     },
     {
       "id": "https://example.org/v1/collections/masterpieces/extensions/creators?page=1&size=8&orderBy=count:desc,value:asc&context=...",
       "type": "FacetPage",
-      "name": "Creator",
+      "name": "Creator: page 1",
       "items": [
         {
           "type": "FacetItem",
@@ -533,6 +549,56 @@ An example of the response body if the presentation layer requested facets via `
       "next": {
         "id": "https://example.org/v1/collections/masterpieces/extensions/creators?page=2&size=8&orderBy=count:desc,value:asc&context=...",
         "type": "FacetPage"
+      },
+      "partOf": {
+        "id": "https://example.org/v1/collections/masterpieces/extensions/creators",
+        "type": "FacetCollection",
+        "name": "Creator",
+        "first": {
+          "id": "https://example.org/v1/collections/masterpieces/extensions/creators?page=1&size=8&orderBy=count:desc,value:asc&context=...",
+          "type": "FacetPage"
+        }
+        // `totalItems` and `last` omitted for brevity
+      }
+    },
+    {
+      "id": "https://example.org/v1/collections/masterpieces/extensions/subjects",
+      "type": "FacetCollection",
+      "name": "Subject",
+      "totalItems": 3,
+      "items": [
+        {
+          "type": "FacetItem",
+          "count": 8,
+          "value": {
+            "id": "https://example.org/v1/entities/4567",
+            "type": "Concept",
+            "name": "Religious art"
+          }
+        },
+        {
+          "type": "FacetItem",
+          "count": 3,
+          "value": {
+            "id": "https://example.org/v1/entities/4568",
+            "type": "Concept",
+            "name": "Portraits"
+          }
+        },
+        {
+          "type": "FacetItem",
+          "count": 1,
+          "value": {
+            "id": "https://example.org/v1/entities/4569",
+            "type": "Concept",
+            "name": "Prints"
+          }
+        }
+      ],
+      "partOf": {
+        "id": "https://example.org/v1/collections/masterpieces/extensions",
+        "type": "ExtensionCollection",
+        "name": "Extensions"
       }
     }
     // Other extensions...
