@@ -69,7 +69,7 @@ Page *-- Entity : items
 
 ## Capability discovery
 
-Curated collections may have different _capabilities_: functionalities that they support. Every collection advertises its capabilities. This allows presentation layers to discover the functionalities and adapt their user interfaces to it.
+Curated collections may have different _capabilities_: functionalities that they support. Every collection advertises its own capabilities. This allows presentation layers to discover the functionalities and adapt their user interfaces to it.
 
 This specification defines the following capabilities:
 
@@ -81,11 +81,7 @@ This specification defines the following capabilities:
 | `https://specs.nde.nl/rest/v1/suggestions`    | The collection supports [suggestions](suggestions.md).                               |
 | `https://specs.nde.nl/rest/v1/highlighting`   | The collection supports text highlighting in string fields matching a keyword query. |
 
-:::note
-
-**To do**: explain in more detail. For example: how can a presentation layer discover the supported capabilities?
-
-:::
+Capabilities are a property of a single collection. A presentation layer _MUST NOT_ infer the capabilities of a collection from the capabilities of its ancestors in the collection tree. This matches a collection's [extensions](extensions.md), which are likewise attached to that collection alone.
 
 ## Filters
 
@@ -173,7 +169,7 @@ The response body _MUST_ contain at least the following fields:
 | `extendedBy`      | ExtensionCollection       | 0 or 1      | A collection listing the extensions of the collection. The field _MUST_ be omitted if the collection has no extensions.                                                                                                                                       |
 | `extendedBy.id`   | string                    | 1           | The identifier of the extension collection.                                                                                                                                                                                                                   |
 | `extendedBy.type` | string                    | 1           | The type of the extension collection. It _MUST_ be `ExtensionCollection`.                                                                                                                                                                                     |
-| `conformsTo`      | array                     | 0 or 1      | The URIs of the capabilities the API implements for this collection. See [Capability discovery](#capability-discovery).                                                                                                                                       |
+| `conformsTo`      | array                     | 0 or 1      | The URIs of the capabilities the API implements for this collection. The field _MUST_ be omitted if the collection supports no capabilities. See [Capability discovery](#capability-discovery).                                                               |
 
 Note: the response body carries no `partOf` field - the root collection is not a part of another collection.
 
@@ -207,7 +203,7 @@ An example of the response body of the API:
 }
 ```
 
-The response indicates that the API has three collections that are a part of the root collection.
+The response indicates that the API has three collections that are a part of the root collection. The root collection groups collections, not entities, so it supports no capabilities and omits `conformsTo`.
 
 A collection can hold further collections. Example response for the 'Persons' collection:
 
@@ -237,11 +233,11 @@ A collection can hold further collections. Example response for the 'Persons' co
 }
 ```
 
-The response indicates that the 'Persons' collection groups two collections: one for 'Painters' and one for 'Writers'.
+The response indicates that the 'Persons' collection groups two collections: one for 'Painters' and one for 'Writers'. Like the root collection, it groups collections rather than entities, so it supports no capabilities and omits `conformsTo`.
 
 ## Endpoint: Retrieve a collection
 
-The endpoint retrieves a collection. The API _MAY_ implement this endpoint, for the collections it chooses to expose.
+The endpoint retrieves a curated collection. The API _MAY_ implement this endpoint, for the collections it chooses to expose.
 
 ### HTTP request
 
@@ -294,7 +290,7 @@ The response body _MUST_ contain at least the following fields:
 | `extendedBy.id`   | string                    | 1           | The identifier of the extension collection.                                                                                                                                                                                                                   |
 | `extendedBy.type` | string                    | 1           | The type of the extension collection. It _MUST_ be `ExtensionCollection`.                                                                                                                                                                                     |
 | `extendedBy.name` | string                    | 1           | The name of the extension collection.                                                                                                                                                                                                                         |
-| `conformsTo`      | array                     | 0 or 1      | The URIs of the capabilities the API implements for this collection. See [Capability discovery](#capability-discovery).                                                                                                                                       |
+| `conformsTo`      | array                     | 0 or 1      | The URIs of the capabilities the API implements for this collection. The field _MUST_ be omitted if the collection supports no capabilities. See [Capability discovery](#capability-discovery).                                                               |
 
 ### Example
 
@@ -360,7 +356,7 @@ Another collection has the same structure. Which capabilities a collection has i
 
 ## Endpoint: Retrieve a page in a collection
 
-The endpoint retrieves a page in a collection. The API _MUST_ implement this endpoint for every collection it divides into [pages](#endpoint-retrieve-a-page-in-a-collection).
+The endpoint retrieves a page in a curated collection. The API _MUST_ implement this endpoint for every collection it divides into [pages](#endpoint-retrieve-a-page-in-a-collection).
 
 ### HTTP request
 

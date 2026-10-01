@@ -246,7 +246,7 @@ The response body _MUST_ contain at least the following fields:
 | `partOf.type`         | string              | 1           | The type of the extension collection. It _MUST_ be `ExtensionCollection`.                                              |
 | `partOf.name`         | string              | 1           | The name of the extension collection.                                                                                  |
 
-The API may expose additional fields about a suggested entity.
+The API _MAY_ expose additional fields about a suggested entity.
 
 ### Example
 
@@ -350,7 +350,7 @@ The response body _MUST_ contain at least the following fields:
 | `partOf.type`         | string                    | 1           | The type of the extension collection. It _MUST_ be `ExtensionCollection`.                                              |
 | `partOf.name`         | string                    | 1           | The name of the extension collection.                                                                                  |
 
-The API may expose additional fields about a suggested entity.
+The API _MAY_ expose additional fields about a suggested entity.
 
 ### Example
 
