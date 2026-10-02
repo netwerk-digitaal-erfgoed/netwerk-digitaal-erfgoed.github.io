@@ -41,7 +41,6 @@ The following class diagram visualizes the data model:
 classDiagram
 
 class Collection["Collection"] {
-  <<abstract>>
   id
   type
   name
@@ -58,7 +57,6 @@ class FacetCollection["Facet Collection"] {
 }
 
 class Page["Page"] {
-  <<abstract>>
   id
   type
   name
@@ -173,21 +171,21 @@ None.
 
 The response body _MUST_ contain at least the following fields:
 
-| Name             | Data type       | Cardinality | Description                                                                                                                                                                                                                                                              |
-| ---------------- | --------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `id`             | string          | 1           | The identifier of the collection.                                                                                                                                                                                                                                        |
-| `type`           | string          | 1           | The type of the collection. It _MUST_ be `Collection` or a specialization.                                                                                                                                                                                               |
-| `name`           | string          | 1           | The name of the collection.                                                                                                                                                                                                                                              |
-| `totalItems`     | number          | 0 or 1      | The total number of facet collections. May be an estimate. Not set if it is too costly to calculate.                                                                                                                                                                     |
-| `items`          | array           | 1           | A list of the facet collections of the curated collection.                                                                                                                                                                                                               |
-| `items[*]`       | FacetCollection | 1           | A facet collection, identified by its `id`, `type` and `name`. Its own fields are not embedded; see the response body of endpoint [Retrieve a facet collection](#endpoint-retrieve-a-facet-collection).                                                                  |
-| `items[*].id`    | string          | 1           | The identifier of the facet collection.                                                                                                                                                                                                                                  |
-| `items[*].type`  | string          | 1           | The type of the facet collection. It _MUST_ be `FacetCollection` or a specialization.                                                                                                                                                                                    |
-| `items[*].name`  | string          | 1           | The name of the facet collection.                                                                                                                                                                                                                                        |
-| `belongsTo`      | Collection      | 1           | The curated collection that this is the list of facet collections for. See [Collection structure](resources.md#collection-structure) for the definition of the field and endpoint [Retrieve a collection](collections.md#endpoint-retrieve-a-collection) for an example. |
-| `belongsTo.id`   | string          | 1           | The identifier of the collection.                                                                                                                                                                                                                                        |
-| `belongsTo.type` | string          | 1           | The type of the collection. It _MUST_ be `Collection` or a specialization.                                                                                                                                                                                               |
-| `belongsTo.name` | string          | 1           | The name of the collection.                                                                                                                                                                                                                                              |
+| Name             | Data type       | Cardinality | Description                                                                                          |
+| ---------------- | --------------- | ----------- | ---------------------------------------------------------------------------------------------------- |
+| `id`             | string          | 1           | The identifier of the collection.                                                                    |
+| `type`           | string          | 1           | The type of the collection. It _MUST_ be `Collection` or a specialization.                           |
+| `name`           | string          | 1           | The name of the collection.                                                                          |
+| `totalItems`     | number          | 0 or 1      | The total number of facet collections. May be an estimate. Not set if it is too costly to calculate. |
+| `items`          | array           | 1           | A list of the facet collections of the curated collection.                                           |
+| `items[*]`       | FacetCollection | 1           | A facet collection.                                                                                  |
+| `items[*].id`    | string          | 1           | The identifier of the facet collection.                                                              |
+| `items[*].type`  | string          | 1           | The type of the facet collection. It _MUST_ be `FacetCollection` or a specialization.                |
+| `items[*].name`  | string          | 1           | The name of the facet collection.                                                                    |
+| `belongsTo`      | Collection      | 1           | The curated collection that this is the list of facet collections for.                               |
+| `belongsTo.id`   | string          | 1           | The identifier of the collection.                                                                    |
+| `belongsTo.type` | string          | 1           | The type of the collection. It _MUST_ be `Collection` or a specialization.                           |
+| `belongsTo.name` | string          | 1           | The name of the collection.                                                                          |
 
 The API _MUST NOT_ divide this collection into pages. The response body therefore does not contain `first` or `last`.
 

@@ -37,7 +37,6 @@ The following class diagram visualizes the data model:
 classDiagram
 
 class Collection["Collection"] {
-  <<abstract>>
   id
   type
   name
@@ -124,21 +123,21 @@ None.
 
 The response body _MUST_ contain at least the following fields:
 
-| Name             | Data type            | Cardinality | Description                                                                                                                                                                                                                                                                   |
-| ---------------- | -------------------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`             | string               | 1           | The identifier of the collection.                                                                                                                                                                                                                                             |
-| `type`           | string               | 1           | The type of the collection. It _MUST_ be `Collection` or a specialization.                                                                                                                                                                                                    |
-| `name`           | string               | 1           | The name of the collection.                                                                                                                                                                                                                                                   |
-| `totalItems`     | number               | 0 or 1      | The total number of suggestion collections. May be an estimate. Not set if it is too costly to calculate.                                                                                                                                                                     |
-| `items`          | array                | 1           | A list of the suggestion collections of the curated collection.                                                                                                                                                                                                               |
-| `items[*]`       | SuggestionCollection | 1           | A suggestion collection.                                                                                                                                                                                                                                                      |
-| `items[*].id`    | string               | 1           | The identifier of the suggestion collection.                                                                                                                                                                                                                                  |
-| `items[*].type`  | string               | 1           | The type of the suggestion collection. It _MUST_ be a specialization of `SuggestionCollection`.                                                                                                                                                                               |
-| `items[*].name`  | string               | 1           | The name of the suggestion collection.                                                                                                                                                                                                                                        |
-| `belongsTo`      | Collection           | 1           | The curated collection that this is the list of suggestion collections for. See [Collection structure](resources.md#collection-structure) for the definition of the field and endpoint [Retrieve a collection](collections.md#endpoint-retrieve-a-collection) for an example. |
-| `belongsTo.id`   | string               | 1           | The identifier of the curated collection.                                                                                                                                                                                                                                     |
-| `belongsTo.type` | string               | 1           | The type of the curated collection. It _MUST_ be `Collection` or a specialization.                                                                                                                                                                                            |
-| `belongsTo.name` | string               | 1           | The name of the curated collection.                                                                                                                                                                                                                                           |
+| Name             | Data type            | Cardinality | Description                                                                                               |
+| ---------------- | -------------------- | ----------- | --------------------------------------------------------------------------------------------------------- |
+| `id`             | string               | 1           | The identifier of the collection.                                                                         |
+| `type`           | string               | 1           | The type of the collection. It _MUST_ be `Collection` or a specialization.                                |
+| `name`           | string               | 1           | The name of the collection.                                                                               |
+| `totalItems`     | number               | 0 or 1      | The total number of suggestion collections. May be an estimate. Not set if it is too costly to calculate. |
+| `items`          | array                | 1           | A list of the suggestion collections of the curated collection.                                           |
+| `items[*]`       | SuggestionCollection | 1           | A suggestion collection.                                                                                  |
+| `items[*].id`    | string               | 1           | The identifier of the suggestion collection.                                                              |
+| `items[*].type`  | string               | 1           | The type of the suggestion collection. It _MUST_ be a specialization of `SuggestionCollection`.           |
+| `items[*].name`  | string               | 1           | The name of the suggestion collection.                                                                    |
+| `belongsTo`      | Collection           | 1           | The curated collection that this is the list of suggestion collections for.                               |
+| `belongsTo.id`   | string               | 1           | The identifier of the curated collection.                                                                 |
+| `belongsTo.type` | string               | 1           | The type of the curated collection. It _MUST_ be `Collection` or a specialization.                        |
+| `belongsTo.name` | string               | 1           | The name of the curated collection.                                                                       |
 
 The API _MUST NOT_ divide this collection into pages. The response body therefore does not contain `first` or `last`.
 
