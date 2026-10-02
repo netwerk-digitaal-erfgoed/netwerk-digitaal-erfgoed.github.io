@@ -1,6 +1,6 @@
 ---
 slug: /data-layer-api/rest/facets
-sidebar_position: 8
+sidebar_position: 7
 ---
 
 # Facets
@@ -9,9 +9,9 @@ sidebar_position: 8
 
 A facet is a collection of categorized values to narrow down search results. For example, the creators of heritage objects can be organized into a 'Creator' facet.
 
-Facets are tied to a particular [curated collection](collections.md): they are returned in response to a search for entities in a specific collection and do not exist on their own.
+Facets are tied to a particular [curated collection](collections.md), ensuring that results remain within the context of that collection.
 
-Facets are an _OPTIONAL_ [extension](extensions.md). A data layer may choose whether or not to implement them. A data layer advertises the facet collections it supports for a curated collection as [items of its extension collection](extensions.md#endpoint-retrieve-the-extension-collection-of-a-curated-collection).
+Facets are optional. A data layer _MAY_ implement them, depending on its requirements. A data layer advertises the facet collections it supports for a curated collection in the [`facets` field of that collection](collections.md#capability-discovery). The field points to the list of facet collections, which a presentation layer retrieves with endpoint [Retrieve the facet collections of a curated collection](#endpoint-retrieve-the-facet-collections-of-a-curated-collection).
 
 :::note
 
@@ -21,15 +21,14 @@ Facets are an _OPTIONAL_ [extension](extensions.md). A data layer may choose whe
 
 ## Data model
 
-| Name                 | Description                                                                                                                                                                                  |
-| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Collection           | An ordered list of resources. The generic type. See [Resources](resources.md).                                                                                                               |
-| Extension Collection | A collection of extensions, adding additional functionality to a curated collection.                                                                                                         |
-| Facet Collection     | An ordered list of facet items. Specialization of `Collection`.                                                                                                                              |
-| Facet Page           | An ordered sublist of facet items within a Facet Collection. Specialization of `Page`.                                                                                                       |
-| Facet Item           | A selectable option within a Facet Collection or Facet Page, pointing to an Entity or a Facet Value.                                                                                         |
-| Facet Value          | A value of a facet item, e.g. the name 'Jan de Vries'. A data layer uses a Facet Value to group several entities that have the same name into one facet item. It has no identity of its own. |
-| Entity               | An identifiable 'thing' relevant to heritage. See [Entities](entities.md).                                                                                                                   |
+| Name             | Description                                                                                                                                                                                  |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Collection       | An ordered list of resources. The generic type. See [Resources](resources.md).                                                                                                               |
+| Facet Collection | An ordered list of facet items. Specialization of Collection.                                                                                                                                |
+| Facet Page       | An ordered sublist of facet items within a Facet Collection. Specialization of Page.                                                                                                         |
+| Facet Item       | A selectable option within a Facet Collection or Facet Page, pointing to an Entity or a Facet Value.                                                                                         |
+| Facet Value      | A value of a facet item, e.g. the name 'Jan de Vries'. A data layer uses a Facet Value to group several entities that have the same name into one facet item. It has no identity of its own. |
+| Entity           | An identifiable 'thing' relevant to heritage. See [Entities](entities.md).                                                                                                                   |
 
 The following class diagram visualizes the data model:
 
@@ -49,7 +48,7 @@ class Collection["Collection"] {
   total items
 }
 
-class ExtensionCollection["Extension Collection"]
+class CuratedCollection["Curated Collection"]
 
 class FacetCollection["Facet Collection"] {
   id
@@ -83,10 +82,13 @@ class Entity {
   name
 }
 
-Collection <|-- ExtensionCollection
+Collection <|-- CuratedCollection
 Collection <|-- FacetCollection
 Page <|-- FacetPage
-ExtensionCollection *-- FacetCollection : items
+CuratedCollection --> Collection : facets
+Collection --> CuratedCollection : belongs to
+Collection *-- FacetCollection : items
+FacetCollection --> Collection : part of
 FacetCollection --> FacetPage : first, last
 FacetCollection *-- FacetItem : items
 FacetPage --> FacetCollection : part of
@@ -143,13 +145,13 @@ A data layer can make this choice for each facet collection separately.
 
 A presentation layer shows the `name` of the value in both cases. It uses the `id` when it needs to point to one specific thing, for example to retrieve more information about it. A `FacetValue` has no `id`, so a presentation layer can only use it as a name. It cannot use it to point to one specific entity.
 
-## Endpoint: Retrieve a facet collection
+## Endpoint: Retrieve the facet collections of a curated collection
 
-The endpoint retrieves a facet collection. The API _MUST_ implement this endpoint if it supports facets.
+The endpoint retrieves all facet collections of a curated collection. The API _MUST_ implement this endpoint if it supports facets.
 
 ### HTTP request
 
-`GET /{version}/collections(/{...collections})/{collection}/{extensions}/{facet}`
+`GET /{version}/collections(/{...collections})/{collection}/facets`
 
 ### Path parameters
 
@@ -158,7 +160,96 @@ The endpoint retrieves a facet collection. The API _MUST_ implement this endpoin
 | `version`        | string    | 1           | The version of the API. Example: `v1`.                                                             |
 | `...collections` | string    | 0 or more   | The path identifier(s) of the collection(s) the curated collection is part of. Example: `persons`. |
 | `collection`     | string    | 1           | The path identifier of the curated collection. Example: `masterpieces`.                            |
-| `extensions`     | string    | 1           | The path identifier of the extension collection. Example: `extensions`.                            |
+
+### Query parameters
+
+None.
+
+### Request body
+
+None.
+
+### Response body
+
+The response body _MUST_ contain at least the following fields:
+
+| Name             | Data type       | Cardinality | Description                                                                                                                                                                                                                                                              |
+| ---------------- | --------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `id`             | string          | 1           | The identifier of the collection.                                                                                                                                                                                                                                        |
+| `type`           | string          | 1           | The type of the collection. It _MUST_ be `Collection` or a specialization.                                                                                                                                                                                               |
+| `name`           | string          | 1           | The name of the collection.                                                                                                                                                                                                                                              |
+| `totalItems`     | number          | 0 or 1      | The total number of facet collections. May be an estimate. Not set if it is too costly to calculate.                                                                                                                                                                     |
+| `items`          | array           | 1           | A list of the facet collections of the curated collection.                                                                                                                                                                                                               |
+| `items[*]`       | FacetCollection | 1           | A facet collection, identified by its `id`, `type` and `name`. Its own fields are not embedded; see the response body of endpoint [Retrieve a facet collection](#endpoint-retrieve-a-facet-collection).                                                                  |
+| `items[*].id`    | string          | 1           | The identifier of the facet collection.                                                                                                                                                                                                                                  |
+| `items[*].type`  | string          | 1           | The type of the facet collection. It _MUST_ be `FacetCollection` or a specialization.                                                                                                                                                                                    |
+| `items[*].name`  | string          | 1           | The name of the facet collection.                                                                                                                                                                                                                                        |
+| `belongsTo`      | Collection      | 1           | The curated collection that this is the list of facet collections for. See [Collection structure](resources.md#collection-structure) for the definition of the field and endpoint [Retrieve a collection](collections.md#endpoint-retrieve-a-collection) for an example. |
+| `belongsTo.id`   | string          | 1           | The identifier of the collection.                                                                                                                                                                                                                                        |
+| `belongsTo.type` | string          | 1           | The type of the collection. It _MUST_ be `Collection` or a specialization.                                                                                                                                                                                               |
+| `belongsTo.name` | string          | 1           | The name of the collection.                                                                                                                                                                                                                                              |
+
+The API _MUST NOT_ divide this collection into pages. The response body therefore does not contain `first` or `last`.
+
+### Example
+
+An example request from a presentation layer:
+
+```http
+GET /v1/collections/objects/facets
+Host: example.org
+```
+
+The request indicates that the API should return all facet collections of a curated collection (`objects`).
+
+An example of the response body of the API:
+
+```json
+{
+  "id": "https://example.org/v1/collections/objects/facets",
+  "type": "Collection",
+  "name": "Facets",
+  "totalItems": 3,
+  "items": [
+    {
+      "id": "https://example.org/v1/collections/objects/facets/creators",
+      "type": "FacetCollection",
+      "name": "Creator"
+    },
+    {
+      "id": "https://example.org/v1/collections/objects/facets/centuries",
+      "type": "FacetCollection",
+      "name": "Made in century"
+    },
+    {
+      "id": "https://example.org/v1/collections/objects/facets/subjects",
+      "type": "FacetCollection",
+      "name": "Subject"
+    }
+  ],
+  "belongsTo": {
+    "id": "https://example.org/v1/collections/objects",
+    "type": "CuratedCollection",
+    "name": "Objects"
+  }
+}
+```
+
+## Endpoint: Retrieve a facet collection
+
+The endpoint retrieves a facet collection. The API _MUST_ implement this endpoint if it supports facets.
+
+### HTTP request
+
+`GET /{version}/collections(/{...collections})/{collection}/facets/{facet}`
+
+### Path parameters
+
+| Name             | Data type | Cardinality | Description                                                                                        |
+| ---------------- | --------- | ----------- | -------------------------------------------------------------------------------------------------- |
+| `version`        | string    | 1           | The version of the API. Example: `v1`.                                                             |
+| `...collections` | string    | 0 or more   | The path identifier(s) of the collection(s) the curated collection is part of. Example: `persons`. |
+| `collection`     | string    | 1           | The path identifier of the curated collection. Example: `masterpieces`.                            |
 | `facet`          | string    | 1           | The path identifier of the facet collection. Example: `creators`, `centuries`.                     |
 
 ### Query parameters
@@ -183,37 +274,37 @@ None.
 
 The response body _MUST_ contain at least the following fields:
 
-| Name                  | Data type           | Cardinality | Description                                                                                                                                                                                                                                     |
-| --------------------- | ------------------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`                  | string              | 1           | The identifier of the collection.                                                                                                                                                                                                               |
-| `type`                | string              | 1           | The type of the collection. It _MUST_ be `FacetCollection` or a specialization.                                                                                                                                                                 |
-| `name`                | string              | 1           | The name of the collection.                                                                                                                                                                                                                     |
-| `totalItems`          | number              | 0 or 1      | The total number of facet items in the collection. May be an estimate. Not set if it is too costly to calculate.                                                                                                                                |
-| `items`               | array               | 0 or 1      | A list of the facet items in the collection. Not set if the collection is divided into [pages](resources.md#page-structure).                                                                                                                    |
-| `items[*]`            | FacetItem           | 1           | A facet item.                                                                                                                                                                                                                                   |
-| `items[*].type`       | string              | 1           | The type of the facet item. It _MUST_ be `FacetItem`.                                                                                                                                                                                           |
-| `items[*].count`      | number              | 1           | The number of occurrences of the value. If the value is a `FacetValue`, the count covers all entities that the data layer grouped into it.                                                                                                      |
-| `items[*].value`      | Entity, FacetValue  | 1           | The value of the facet item: an entity, or a facet value that groups several entities.                                                                                                                                                          |
-| `items[*].value.type` | string              | 1           | The type of the value of the facet item. It _MUST_ be `FacetValue` or a specialization of `Entity`.                                                                                                                                             |
-| `items[*].value.id`   | string              | 0 or 1      | The identifier of the entity. Not set if the `type` is `FacetValue`; a facet value has no identity.                                                                                                                                             |
-| `items[*].value.name` | string              | 1           | The name of the facet value or entity.                                                                                                                                                                                                          |
-| `first`               | FacetPage           | 0 or 1      | The first page in the collection. Not set if the collection is empty or if it is not divided into [pages](resources.md#page-structure).                                                                                                         |
-| `first.id`            | string              | 1           | The identifier of the first page in the collection.                                                                                                                                                                                             |
-| `first.type`          | string              | 1           | The type of the first page in the collection. It _MUST_ be `FacetPage` or a specialization.                                                                                                                                                     |
-| `last`                | FacetPage           | 0 or 1      | The last page in the collection. Not set if the collection is empty, if the collection is not divided into [pages](resources.md#page-structure), or if the last page is unknown (e.g. in case of [cursor pagination](resources.md#pagination)). |
-| `last.id`             | string              | 1           | The identifier of the last page in the collection.                                                                                                                                                                                              |
-| `last.type`           | string              | 1           | The type of the last page in the collection. It _MUST_ be `FacetPage` or a specialization.                                                                                                                                                      |
-| `partOf`              | ExtensionCollection | 1           | The extension collection of which this facet collection is a part.                                                                                                                                                                              |
-| `partOf.id`           | string              | 1           | The identifier of the extension collection.                                                                                                                                                                                                     |
-| `partOf.type`         | string              | 1           | The type of the extension collection. It _MUST_ be `ExtensionCollection`.                                                                                                                                                                       |
-| `partOf.name`         | string              | 1           | The name of the extension collection.                                                                                                                                                                                                           |
+| Name                  | Data type          | Cardinality | Description                                                                                                                                                                                                                                                |
+| --------------------- | ------------------ | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`                  | string             | 1           | The identifier of the collection.                                                                                                                                                                                                                          |
+| `type`                | string             | 1           | The type of the collection. It _MUST_ be `FacetCollection` or a specialization.                                                                                                                                                                            |
+| `name`                | string             | 1           | The name of the collection.                                                                                                                                                                                                                                |
+| `totalItems`          | number             | 0 or 1      | The total number of facet items in the collection. May be an estimate. Not set if it is too costly to calculate.                                                                                                                                           |
+| `items`               | array              | 0 or 1      | A list of the facet items in the collection. Not set if the collection is divided into [pages](resources.md#page-structure).                                                                                                                               |
+| `items[*]`            | FacetItem          | 1           | A facet item.                                                                                                                                                                                                                                              |
+| `items[*].type`       | string             | 1           | The type of the facet item. It _MUST_ be `FacetItem`.                                                                                                                                                                                                      |
+| `items[*].count`      | number             | 1           | The number of occurrences of the value. If the value is a `FacetValue`, the count covers all entities that the data layer grouped into it.                                                                                                                 |
+| `items[*].value`      | Entity, FacetValue | 1           | The value of the facet item: an entity, or a facet value that groups several entities.                                                                                                                                                                     |
+| `items[*].value.type` | string             | 1           | The type of the value of the facet item. It _MUST_ be `FacetValue` or a specialization of `Entity`.                                                                                                                                                        |
+| `items[*].value.id`   | string             | 0 or 1      | The identifier of the entity. Not set if the `type` is `FacetValue`; a facet value has no identity.                                                                                                                                                        |
+| `items[*].value.name` | string             | 1           | The name of the facet value or entity.                                                                                                                                                                                                                     |
+| `first`               | FacetPage          | 0 or 1      | The first page in the collection. Not set if the collection is empty or if it is not divided into [pages](resources.md#page-structure).                                                                                                                    |
+| `first.id`            | string             | 1           | The identifier of the first page in the collection.                                                                                                                                                                                                        |
+| `first.type`          | string             | 1           | The type of the first page in the collection. It _MUST_ be `FacetPage` or a specialization.                                                                                                                                                                |
+| `last`                | FacetPage          | 0 or 1      | The last page in the collection. Not set if the collection is empty, if the collection is not divided into [pages](resources.md#page-structure), or if the last page is unknown (e.g. in case of [cursor pagination](resources.md#pagination)).            |
+| `last.id`             | string             | 1           | The identifier of the last page in the collection.                                                                                                                                                                                                         |
+| `last.type`           | string             | 1           | The type of the last page in the collection. It _MUST_ be `FacetPage` or a specialization.                                                                                                                                                                 |
+| `partOf`              | Collection         | 1           | The collection that lists the facet collections of a curated collection, including this one. See the response body of endpoint [Retrieve the facet collections of a curated collection](#endpoint-retrieve-the-facet-collections-of-a-curated-collection). |
+| `partOf.id`           | string             | 1           | The identifier of the collection.                                                                                                                                                                                                                          |
+| `partOf.type`         | string             | 1           | The type of the collection. It _MUST_ be `Collection` or a specialization.                                                                                                                                                                                 |
+| `partOf.name`         | string             | 1           | The name of the collection.                                                                                                                                                                                                                                |
 
 ### Example
 
 An example request from a presentation layer:
 
 ```http
-GET /v1/collections/objects/extensions/creators
+GET /v1/collections/objects/facets/creators
 Host: example.org
 ```
 
@@ -223,7 +314,7 @@ An example of the response body of the API if the facet collection is not divide
 
 ```json
 {
-  "id": "https://example.org/v1/collections/objects/extensions/creators",
+  "id": "https://example.org/v1/collections/objects/facets/creators",
   "type": "FacetCollection",
   "name": "Creator",
   "totalItems": 3,
@@ -257,9 +348,9 @@ An example of the response body of the API if the facet collection is not divide
     }
   ],
   "partOf": {
-    "id": "https://example.org/v1/collections/objects/extensions",
-    "type": "ExtensionCollection",
-    "name": "Extensions"
+    "id": "https://example.org/v1/collections/objects/facets",
+    "type": "Collection",
+    "name": "Facets"
   }
 }
 ```
@@ -268,7 +359,7 @@ An example of the response body of the API for the request above, if the facet c
 
 ```json
 {
-  "id": "https://example.org/v1/collections/objects/extensions/creators",
+  "id": "https://example.org/v1/collections/objects/facets/creators",
   "type": "FacetCollection",
   "name": "Creator",
   "totalItems": 3,
@@ -299,9 +390,9 @@ An example of the response body of the API for the request above, if the facet c
     }
   ],
   "partOf": {
-    "id": "https://example.org/v1/collections/objects/extensions",
-    "type": "ExtensionCollection",
-    "name": "Extensions"
+    "id": "https://example.org/v1/collections/objects/facets",
+    "type": "Collection",
+    "name": "Facets"
   }
 }
 ```
@@ -310,22 +401,22 @@ An example of the response body of the API for the request above, if the facet c
 
 ```json
 {
-  "id": "https://example.org/v1/collections/objects/extensions/creators",
+  "id": "https://example.org/v1/collections/objects/facets/creators",
   "type": "FacetCollection",
   "name": "Creator",
   "totalItems": 195,
   "first": {
-    "id": "https://example.org/v1/collections/objects/extensions/creators?page=1",
+    "id": "https://example.org/v1/collections/objects/facets/creators?page=1",
     "type": "FacetPage"
   },
   "last": {
-    "id": "https://example.org/v1/collections/objects/extensions/creators?page=20",
+    "id": "https://example.org/v1/collections/objects/facets/creators?page=20",
     "type": "FacetPage"
   },
   "partOf": {
-    "id": "https://example.org/v1/collections/objects/extensions",
-    "type": "ExtensionCollection",
-    "name": "Extensions"
+    "id": "https://example.org/v1/collections/objects/facets",
+    "type": "Collection",
+    "name": "Facets"
   }
 }
 ```
@@ -336,7 +427,7 @@ The endpoint retrieves a page in a facet collection. The API _MUST_ implement th
 
 ### HTTP request
 
-`GET /{version}/collections(/{...collections})/{collection}/{extensions}/{facet}?page={page}`
+`GET /{version}/collections(/{...collections})/{collection}/facets/{facet}?page={page}`
 
 ### Path parameters
 
@@ -345,7 +436,6 @@ The endpoint retrieves a page in a facet collection. The API _MUST_ implement th
 | `version`        | string    | 1           | The version of the API. Example: `v1`.                                                             |
 | `...collections` | string    | 0 or more   | The path identifier(s) of the collection(s) the curated collection is part of. Example: `persons`. |
 | `collection`     | string    | 1           | The path identifier of the curated collection. Example: `masterpieces`.                            |
-| `extensions`     | string    | 1           | The path identifier of the extension collection. Example: `extensions`.                            |
 | `facet`          | string    | 1           | The path identifier of the facet collection. Example: `creators`, `centuries`.                     |
 
 ### Query parameters
@@ -407,7 +497,7 @@ The response body _MUST_ contain at least the following fields:
 An example request from a presentation layer:
 
 ```http
-GET /v1/collections/objects/extensions/creators?page=3
+GET /v1/collections/objects/facets/creators?page=3
 Host: example.org
 ```
 
@@ -417,7 +507,7 @@ An example of the response body of the API:
 
 ```json
 {
-  "id": "https://example.org/v1/collections/objects/extensions/creators?page=3",
+  "id": "https://example.org/v1/collections/objects/facets/creators?page=3",
   "type": "FacetPage",
   "name": "Creator",
   "items": [
@@ -444,24 +534,24 @@ An example of the response body of the API:
     // Other items...
   ],
   "prev": {
-    "id": "https://example.org/v1/collections/objects/extensions/creators?page=2",
+    "id": "https://example.org/v1/collections/objects/facets/creators?page=2",
     "type": "FacetPage"
   },
   "next": {
-    "id": "https://example.org/v1/collections/objects/extensions/creators?page=4",
+    "id": "https://example.org/v1/collections/objects/facets/creators?page=4",
     "type": "FacetPage"
   },
   "partOf": {
-    "id": "https://example.org/v1/collections/objects/extensions/creators",
+    "id": "https://example.org/v1/collections/objects/facets/creators",
     "type": "FacetCollection",
     "name": "Creator",
     "totalItems": 195,
     "first": {
-      "id": "https://example.org/v1/collections/objects/extensions/creators?page=1",
+      "id": "https://example.org/v1/collections/objects/facets/creators?page=1",
       "type": "FacetPage"
     },
     "last": {
-      "id": "https://example.org/v1/collections/objects/extensions/creators?page=20",
+      "id": "https://example.org/v1/collections/objects/facets/creators?page=20",
       "type": "FacetPage"
     }
   }
