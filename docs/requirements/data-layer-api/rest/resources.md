@@ -50,6 +50,7 @@ Resource <|-- Page
 Collection *-- Collection : items
 Collection --> Collection : part of
 Collection --> Collection : belongs to
+Collection --> Collection : suggestions
 Collection --> Page : first, last
 Collection *-- Resource : items
 Page --> Collection : part of
@@ -96,28 +97,33 @@ Note the `additionalTypes` list: every item in this list is also a resource and 
 
 A Collection contains at least the following fields:
 
-| Name             | Data type  | Cardinality | Description                                                                                                                                                                                                                                                    |
-| ---------------- | ---------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`             | string     | 1           | The identifier of the collection.                                                                                                                                                                                                                              |
-| `type`           | string     | 1           | The type of the collection. It _MUST_ be `Collection` or a specialization.                                                                                                                                                                                     |
-| `name`           | string     | 1           | The name of the collection.                                                                                                                                                                                                                                    |
-| `totalItems`     | number     | 0 or 1      | The total number of items in the collection, being its further collections, its resources, or both. This _MAY_ be an estimate, especially in case of a large collection. The field _MAY_ be omitted by the API if the total number is too costly to calculate. |
-| `items`          | array      | 0 or 1      | A list of the items in the collection. Not set if the Collection is divided into [pages](#page-structure).                                                                                                                                                     |
-| `items[*]`       | Resource   | 1           | A [resource](resources.md#resource-structure). A resource can be of [any type](#data-model), including `Collection` or a specialization.                                                                                                                       |
-| `first`          | Page       | 0 or 1      | The first page in the collection. Not set if the collection is empty or if it is not divided into [pages](#page-structure).                                                                                                                                    |
-| `first.id`       | string     | 1           | The identifier of the first page in the collection.                                                                                                                                                                                                            |
-| `first.type`     | string     | 1           | The type of the first page in the collection. It _MUST_ be `Page` or a specialization.                                                                                                                                                                         |
-| `last`           | Page       | 0 or 1      | The last page in the collection. Not set if the collection is empty, if the collection is not divided into [pages](#page-structure), or if the last page is unknown (e.g. in case of [cursor pagination](#pagination)).                                        |
-| `last.id`        | string     | 1           | The identifier of the last page in the collection.                                                                                                                                                                                                             |
-| `last.type`      | string     | 1           | The type of the last page in the collection. It _MUST_ be `Page` or a specialization.                                                                                                                                                                          |
-| `partOf`         | Collection | 0 or 1      | The collection of which this collection is a part. Not set if this collection is the root of a collection tree.                                                                                                                                                |
-| `partOf.id`      | string     | 1           | The identifier of the collection.                                                                                                                                                                                                                              |
-| `partOf.type`    | string     | 1           | The type of the collection. It _MUST_ be `Collection` or a specialization.                                                                                                                                                                                     |
-| `partOf.name`    | string     | 1           | The name of the collection.                                                                                                                                                                                                                                    |
-| `belongsTo`      | Collection | 0 or 1      | The collection that the collections in this collection belong to, such as a list of [facet collections](facets.md) that belongs to a curated collection. Not set if this collection does not group collections of another collection.                          |
-| `belongsTo.id`   | string     | 1           | The identifier of the collection.                                                                                                                                                                                                                              |
-| `belongsTo.type` | string     | 1           | The type of the collection. It _MUST_ be `Collection` or a specialization.                                                                                                                                                                                     |
-| `belongsTo.name` | string     | 1           | The name of the collection.                                                                                                                                                                                                                                    |
+| Name               | Data type  | Cardinality | Description                                                                                                                                                                                                                                                    |
+| ------------------ | ---------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`               | string     | 1           | The identifier of the collection.                                                                                                                                                                                                                              |
+| `type`             | string     | 1           | The type of the collection. It _MUST_ be `Collection` or a specialization.                                                                                                                                                                                     |
+| `name`             | string     | 1           | The name of the collection.                                                                                                                                                                                                                                    |
+| `totalItems`       | number     | 0 or 1      | The total number of items in the collection, being its further collections, its resources, or both. This _MAY_ be an estimate, especially in case of a large collection. The field _MAY_ be omitted by the API if the total number is too costly to calculate. |
+| `items`            | array      | 0 or 1      | A list of the items in the collection. Not set if the Collection is divided into [pages](#page-structure).                                                                                                                                                     |
+| `items[*]`         | Resource   | 1           | A [resource](resources.md#resource-structure). A resource can be of [any type](#data-model), including `Collection` or a specialization.                                                                                                                       |
+| `first`            | Page       | 0 or 1      | The first page in the collection. Not set if the collection is empty or if it is not divided into [pages](#page-structure).                                                                                                                                    |
+| `first.id`         | string     | 1           | The identifier of the first page in the collection.                                                                                                                                                                                                            |
+| `first.type`       | string     | 1           | The type of the first page in the collection. It _MUST_ be `Page` or a specialization.                                                                                                                                                                         |
+| `last`             | Page       | 0 or 1      | The last page in the collection. Not set if the collection is empty, if the collection is not divided into [pages](#page-structure), or if the last page is unknown (e.g. in case of [cursor pagination](#pagination)).                                        |
+| `last.id`          | string     | 1           | The identifier of the last page in the collection.                                                                                                                                                                                                             |
+| `last.type`        | string     | 1           | The type of the last page in the collection. It _MUST_ be `Page` or a specialization.                                                                                                                                                                          |
+| `partOf`           | Collection | 0 or 1      | The collection of which this collection is a part. Not set if this collection is the root of a collection tree.                                                                                                                                                |
+| `partOf.id`        | string     | 1           | The identifier of the collection.                                                                                                                                                                                                                              |
+| `partOf.type`      | string     | 1           | The type of the collection. It _MUST_ be `Collection` or a specialization.                                                                                                                                                                                     |
+| `partOf.name`      | string     | 1           | The name of the collection.                                                                                                                                                                                                                                    |
+| `belongsTo`        | Collection | 0 or 1      | The collection that the collections in this collection belong to, such as a list of [facet collections](facets.md) that belongs to a curated collection. Not set if this collection does not group collections of another collection.                          |
+| `belongsTo.id`     | string     | 1           | The identifier of the collection.                                                                                                                                                                                                                              |
+| `belongsTo.type`   | string     | 1           | The type of the collection. It _MUST_ be `Collection` or a specialization.                                                                                                                                                                                     |
+| `belongsTo.name`   | string     | 1           | The name of the collection.                                                                                                                                                                                                                                    |
+| `suggestions`      | Collection | 0 or 1      | The list of this collection's suggestion collections. Not set if the collection does not offer suggestions, or if the collection is a suggestion collection: a suggestion collection _MUST NOT_ offer suggestions itself. See [Suggestions](suggestions.md).   |
+| `suggestions.id`   | string     | 1           | The identifier of the list.                                                                                                                                                                                                                                    |
+| `suggestions.type` | string     | 1           | The type of the list. It _MUST_ be `Collection` or a specialization.                                                                                                                                                                                           |
+| `suggestions.name` | string     | 1           | The name of the list.                                                                                                                                                                                                                                          |
+| `capabilities`     | array      | 0 or 1      | The URIs of the capabilities the API implements for this collection. The field _MUST_ be omitted if the collection supports no capabilities. See [Capability discovery](#capability-discovery).                                                                |
 
 ### The collection tree
 
@@ -125,9 +131,13 @@ Collections form a tree: the `items` of a collection can contain further collect
 
 Every collection tree has one root: the collection that has no `partOf`. Every other collection in that tree _MUST_ have a `partOf` - this makes the tree connected and every collection in it reachable from its root. A collection _MUST NOT_ be part of itself, directly or indirectly: the tree _MUST_ be acyclic, so that a presentation layer can traverse it without looping.
 
-A data layer _MAY_ offer more than one collection tree. The [facet collections](facets.md#endpoint-retrieve-the-facet-collections-of-a-curated-collection) of a curated collection, for example, form a tree of their own. Their root is not part of the collection tree of the curated collection, so it has no `partOf`; it uses `belongsTo` instead.
+A data layer _MAY_ offer more than one collection tree. The [facet collections](facets.md#endpoint-retrieve-the-facet-collections-of-a-curated-collection) and [suggestion collections](suggestions.md#endpoint-retrieve-the-suggestion-collections-of-a-collection) of a collection, for example, form trees of their own. Their root is not part of the collection tree of that collection, so it has no `partOf`; it uses `belongsTo` instead.
 
 A presentation layer walks a tree from its root. It requests the root, and for every item in a collection it recurses if the item's `type` is `Collection` or a specialization of it, and renders the item as a resource otherwise. It does not need to know in advance whether a collection holds further collections or resources, or whether the collections it encounters are divided into pages. Every collection, including one that groups other collections, can be divided into pages, so a tree with many branches can be traversed a page at a time.
+
+### Collection paths
+
+This specification does not prescribe a path for each type of collection: a data layer exposes a collection at a path of its own choosing. The endpoints for the parts of a collection, such as its [facet collections](facets.md) or its [suggestion collections](suggestions.md), hang off the path of the collection they belong to.
 
 ### Example
 
@@ -177,6 +187,24 @@ Example of the response body when the collection is divided into pages:
 ```
 
 The response indicates that this collection consists of 195 items, accessible via the `first` page.
+
+## Capability discovery
+
+Collections may have different _capabilities_: functionalities that they support. Every collection advertises its own capabilities. This allows presentation layers to discover the functionalities and adapt their user interfaces to it.
+
+This specification defines the following capabilities:
+
+| Capability URI                                | Description                                                                          |
+| --------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `https://specs.nde.nl/rest/v1/keyword-search` | The collection supports keyword search.                                              |
+| `https://specs.nde.nl/rest/v1/filtering`      | The collection supports filtering.                                                   |
+| `https://specs.nde.nl/rest/v1/facets`         | The collection supports [facets](facets.md).                                         |
+| `https://specs.nde.nl/rest/v1/suggestions`    | The collection supports [suggestions](suggestions.md).                               |
+| `https://specs.nde.nl/rest/v1/highlighting`   | The collection supports text highlighting in string fields matching a keyword query. |
+
+Capabilities are a property of a single collection. A presentation layer _MUST NOT_ infer the capabilities of a collection from the capabilities of its ancestors in the collection tree.
+
+The `capabilities` field tell a presentation layer that a collection supports a functionality. They do not tell it where to find that functionality: the collection itself says where to find it. The `facets` property of a curated collection points to its list of facet collections; see [Facets](facets.md). The `suggestions` property of a collection points to its list of suggestion collections; see [Suggestions](suggestions.md).
 
 ## Page structure
 

@@ -11,11 +11,15 @@ A facet is a collection of categorized values to narrow down search results. For
 
 Facets are tied to a particular [curated collection](collections.md), ensuring that results remain within the context of that collection.
 
-Facets are optional. A data layer _MAY_ implement them, depending on its requirements. A data layer advertises the facet collections it supports for a curated collection in the [`facets` field of that collection](collections.md#capability-discovery). The field points to the list of facet collections, which a presentation layer retrieves with endpoint [Retrieve the facet collections of a curated collection](#endpoint-retrieve-the-facet-collections-of-a-curated-collection).
+Facets are optional. A data layer _MAY_ implement them, depending on its requirements. A data layer advertises the facet collections it supports for a curated collection in the [`facets` field of that collection](resources.md#capability-discovery). The field points to the list of facet collections, which a presentation layer retrieves with endpoint [Retrieve the facet collections of a curated collection](#endpoint-retrieve-the-facet-collections-of-a-curated-collection).
+
+A facet collection _MAY_ itself [offer suggestions](suggestions.md) for its facet items, so that a user can find a facet value by typing. It does so by including the `suggestions` field in its response body, pointing to the list of its suggestion collections. A presentation layer retrieves that list with endpoint [Retrieve the suggestion collections of a collection](suggestions.md#endpoint-retrieve-the-suggestion-collections-of-a-collection).
+
+A suggested value in the context of a facet collection is a `FacetValue` or an `Entity`: the same values a facet item can point to. Suggestions are not the same as the facet items that endpoint [Retrieve a facet collection](#endpoint-retrieve-a-facet-collection) returns for a `q`. A data layer ranks suggestions for autocompletion, and may offer names that its facet items do not contain.
 
 :::note
 
-**To do**: clarify the facet functionality: presentation layers not only want to retrieve the facets, they also want to be able to search and browse facets.
+**To do**: clarify the facet functionality: presentation layers not only want to retrieve the facets, they also want to be able to browse and filter facets.
 
 :::
 
@@ -296,6 +300,10 @@ The response body _MUST_ contain at least the following fields:
 | `partOf.id`           | string             | 1           | The identifier of the collection.                                                                                                                                                                                                                          |
 | `partOf.type`         | string             | 1           | The type of the collection. It _MUST_ be `Collection` or a specialization.                                                                                                                                                                                 |
 | `partOf.name`         | string             | 1           | The name of the collection.                                                                                                                                                                                                                                |
+| `suggestions`         | Collection         | 0 or 1      | The list of this facet collection's suggestion collections. The field _MUST_ be omitted if the facet collection does not offer suggestions. See [Suggestions](suggestions.md).                                                                             |
+| `suggestions.id`      | string             | 1           | The identifier of the list.                                                                                                                                                                                                                                |
+| `suggestions.type`    | string             | 1           | The type of the list. It _MUST_ be `Collection` or a specialization.                                                                                                                                                                                       |
+| `suggestions.name`    | string             | 1           | The name of the list.                                                                                                                                                                                                                                      |
 
 ### Example
 
@@ -349,6 +357,11 @@ An example of the response body of the API if the facet collection is not divide
     "id": "https://example.org/v1/collections/objects/facets",
     "type": "Collection",
     "name": "Facets"
+  },
+  "suggestions": {
+    "id": "https://example.org/v1/collections/objects/facets/creators/suggestions",
+    "type": "Collection",
+    "name": "Suggestions"
   }
 }
 ```
