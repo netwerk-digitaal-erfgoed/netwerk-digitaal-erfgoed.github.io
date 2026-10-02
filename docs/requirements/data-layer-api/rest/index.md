@@ -20,23 +20,15 @@ The specification follows these considerations:
 3. **Build on existing standards**. The specification is inspired by existing data models and API specifications in the digital heritage ecosystem, like [Activity Streams](https://www.w3.org/TR/activitystreams-core/), [IIIF APIs](https://iiif.io/api/), and [Linked Art Search API](https://linked.art/api/1.0/search/).
 4. **Support the goal of the NDE**. The specification makes specific choices to support the goal of the NDE: making digital heritage more accessible to end users. To reach this goal, the specification is tailored to facilitate the use of heritage information in presentation layers.
 
-## Capability discovery and compliance levels
+## Discovery
 
 :::note
 
 **To do**:
 
-- Explain that the API specification uses capability discovery patterns; it makes API implementations dynamic and self-documenting. This is essential for a generic, extensible specification that can be used by all sorts of data layers.
+- Explain that the API specification uses discovery patterns; it makes API implementations dynamic and self-documenting. This is essential for a generic, extensible specification that can be used by all sorts of data layers.
 - Specify the root endpoint of the API, e.g. `/v1`. This endpoint allows presentation layers to discover the entry points and capabilities of the API (e.g. `/v1/entities`, `/v1/collections`).
 - Specify how a data layer can extend the capabilities of its API using the patterns in the specification, e.g. with custom functionality or resources. Add examples.
-
-:::note
-
-**To do**: explain the compliance levels that make clear to presentation layers to what extend a data layer follows these API specifications. For example, per IIIF:
-
-- Level 0: the API implements the **minimum set** of parameters and features;
-- Level 1: the API implements the **recommended set** of parameters and features;
-- Level 2: the API implements the **full set** of parameters and features.
 
 :::
 

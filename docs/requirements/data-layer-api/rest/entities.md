@@ -82,7 +82,7 @@ The following table provides examples of common entity types:
 **To do**:
 
 - Describe the recommended data models (e.g. for a heritage object, a person, a place) using e.g. Schema.org concepts;
-- Explain data modeling requirements, e.g. each entity must refer to the data provider's publication system from which it came, and must have a license;
+- Explain data modeling requirements, e.g. each entity must refer to the data provider's publication system from which it came (e.g. `isBasedOn`), and must have a license (e.g. `license`);
 
 :::
 
