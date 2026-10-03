@@ -11,7 +11,7 @@ A suggestion is a value displayed as a user types, such as a keyword, a name, or
 
 Suggestions are tied to a particular collection - the context collection - ensuring that results remain within the context of that collection. A data layer _MAY_ offer suggestions for any collection, except for a suggestion collection itself.
 
-Suggestions are optional. A data layer _MAY_ implement them, depending on its requirements. A data layer advertises the suggestion collections it supports for a collection in the generic [`suggestions` field](resources.md#collection-structure) of that collection. The field points to the list of suggestion collections, which a presentation layer retrieves with endpoint [Retrieve the suggestion collections of a collection](#endpoint-retrieve-the-suggestion-collections-of-a-collection).
+Suggestions are optional. A data layer _MAY_ implement them, depending on its requirements. A data layer advertises the suggestion collections it supports for a collection in the generic [`suggestions` field](resources.md#collection) of that collection. The field points to the list of suggestion collections, which a presentation layer retrieves with endpoint [Retrieve the suggestion collections of a collection](#endpoint-retrieve-the-suggestion-collections-of-a-collection).
 
 ## Data model
 
@@ -109,9 +109,9 @@ The endpoint retrieves all suggestion collections of a collection. The API _MUST
 
 ### Path parameters
 
-| Name             | Data type | Cardinality | Description                                                                                                        |
-| ---------------- | --------- | ----------- | ------------------------------------------------------------------------------------------------------------------ |
-| `version`        | string    | 1           | The version of the API. Example: `v1`.                                                                             |
+| Name            | Data type | Cardinality | Description                                                                                                                                                                              |
+| --------------- | --------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `version`       | string    | 1           | The version of the API. Example: `v1`.                                                                                                                                                   |
 | `...collection` | string    | 1 or more   | The path identifier(s) of the context collection, including the collections it is part of or that it contains. Example: `collections/objects`, or `collections/objects/facets/creators`. |
 
 ### Query parameters
@@ -126,21 +126,22 @@ None.
 
 The response body _MUST_ contain at least the following fields:
 
-| Name             | Data type            | Cardinality | Description                                                                                               |
-| ---------------- | -------------------- | ----------- | --------------------------------------------------------------------------------------------------------- |
-| `id`             | string               | 1           | The identifier of the collection.                                                                         |
-| `type`           | string               | 1           | The type of the collection. It _MUST_ be `Collection` or a specialization.                                |
-| `name`           | string               | 1           | The name of the collection.                                                                               |
-| `totalItems`     | number               | 0 or 1      | The total number of suggestion collections. May be an estimate. Not set if it is too costly to calculate. |
-| `items`          | array                | 1           | A list of the suggestion collections of the context collection.                                           |
-| `items[*]`       | SuggestionCollection | 1           | A suggestion collection.                                                                                  |
-| `items[*].id`    | string               | 1           | The identifier of the suggestion collection.                                                              |
-| `items[*].type`  | string               | 1           | The type of the suggestion collection. It _MUST_ be a specialization of `SuggestionCollection`.           |
-| `items[*].name`  | string               | 1           | The name of the suggestion collection.                                                                    |
-| `belongsTo`      | Collection           | 1           | The context collection that this is the list of suggestion collections for.                               |
-| `belongsTo.id`   | string               | 1           | The identifier of the context collection.                                                                 |
-| `belongsTo.type` | string               | 1           | The type of the context collection. It _MUST_ be `Collection` or a specialization.                        |
-| `belongsTo.name` | string               | 1           | The name of the context collection.                                                                       |
+| Name                  | Data type            | Cardinality | Description                                                                                                                                                                      |
+| --------------------- | -------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`                  | string               | 1           | The identifier of the collection.                                                                                                                                                |
+| `type`                | string               | 1           | The type of the collection. It _MUST_ be `Collection` or a specialization.                                                                                                       |
+| `name`                | string               | 1           | The name of the collection.                                                                                                                                                      |
+| `totalItems`          | number               | 0 or 1      | The exact total number of suggestion collections. Not set if the exact total is too costly to calculate. Mutually exclusive with `estimatedTotalItems`.                          |
+| `estimatedTotalItems` | number               | 0 or 1      | An estimate of the total number of suggestion collections. It can be higher or lower than the real total. Not set if there is no estimate. Mutually exclusive with `totalItems`. |
+| `items`               | array                | 1           | A list of the suggestion collections of the context collection.                                                                                                                  |
+| `items[*]`            | SuggestionCollection | 1           | A suggestion collection.                                                                                                                                                         |
+| `items[*].id`         | string               | 1           | The identifier of the suggestion collection.                                                                                                                                     |
+| `items[*].type`       | string               | 1           | The type of the suggestion collection. It _MUST_ be a specialization of `SuggestionCollection`.                                                                                  |
+| `items[*].name`       | string               | 1           | The name of the suggestion collection.                                                                                                                                           |
+| `belongsTo`           | Collection           | 1           | The context collection that this is the list of suggestion collections for.                                                                                                      |
+| `belongsTo.id`        | string               | 1           | The identifier of the context collection.                                                                                                                                        |
+| `belongsTo.type`      | string               | 1           | The type of the context collection. It _MUST_ be `Collection` or a specialization.                                                                                               |
+| `belongsTo.name`      | string               | 1           | The name of the context collection.                                                                                                                                              |
 
 The API _MUST NOT_ divide this collection into pages. The response body therefore does not contain `first` or `last`.
 
@@ -198,11 +199,11 @@ The endpoint retrieves a list of values without identity matching a query: keywo
 
 ### Path parameters
 
-| Name             | Data type | Cardinality | Description                                                                                                        |
-| ---------------- | --------- | ----------- | ------------------------------------------------------------------------------------------------------------------ |
-| `version`        | string    | 1           | The version of the API. Example: `v1`.                                                                             |
+| Name            | Data type | Cardinality | Description                                                                                                                                                                              |
+| --------------- | --------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `version`       | string    | 1           | The version of the API. Example: `v1`.                                                                                                                                                   |
 | `...collection` | string    | 1 or more   | The path identifier(s) of the context collection, including the collections it is part of or that it contains. Example: `collections/objects`, or `collections/objects/facets/creators`. |
-| `suggestion`     | string    | 1           | The path identifier of the value suggestion collection. Example: `values`.                                         |
+| `suggestion`    | string    | 1           | The path identifier of the value suggestion collection. Example: `values`.                                                                                                               |
 
 ### Query parameters
 
@@ -225,7 +226,7 @@ The response body _MUST_ contain at least the following fields:
 | `id`                  | string                   | 1           | The identifier of the collection.                                                                                                                                                                                                                 |
 | `type`                | string                   | 1           | The type of the collection. It _MUST_ be `ValueSuggestionCollection`.                                                                                                                                                                             |
 | `name`                | string                   | 1           | The name of the collection.                                                                                                                                                                                                                       |
-| `totalItems`          | number                   | 1           | The total number of suggestion items in the collection.                                                                                                                                                                                           |
+| `totalItems`          | number                   | 1           | The exact total number of suggestion items in the collection.                                                                                                                                                                                     |
 | `items`               | array                    | 1           | A list of suggestion items. Empty if no suggestions matched the query.                                                                                                                                                                            |
 | `items[*]`            | SuggestionItem           | 1           | A suggestion item.                                                                                                                                                                                                                                |
 | `items[*].type`       | string                   | 1           | The type of the suggestion item. It _MUST_ be `SuggestionItem`.                                                                                                                                                                                   |
@@ -237,6 +238,9 @@ The response body _MUST_ contain at least the following fields:
 | `partOf.id`           | string                   | 1           | The identifier of the collection.                                                                                                                                                                                                                 |
 | `partOf.type`         | string                   | 1           | The type of the collection. It _MUST_ be `Collection` or a specialization.                                                                                                                                                                        |
 | `partOf.name`         | string                   | 1           | The name of the collection.                                                                                                                                                                                                                       |
+| `capabilities`        | array                    | 0 or 1      | The URIs of the capabilities the API implements for this collection. The field _MUST_ be omitted if the collection supports no capabilities. See [Capability discovery](resources.md#capability-discovery).                                       |
+
+The API _MUST NOT_ divide this collection into pages. The response body therefore does not contain `first` or `last`.
 
 ### Example
 
@@ -293,11 +297,11 @@ The endpoint retrieves a list of entities matching a query. An entity in the lis
 
 ### Path parameters
 
-| Name             | Data type | Cardinality | Description                                                                                                        |
-| ---------------- | --------- | ----------- | ------------------------------------------------------------------------------------------------------------------ |
-| `version`        | string    | 1           | The version of the API. Example: `v1`.                                                                             |
+| Name            | Data type | Cardinality | Description                                                                                                                                                                              |
+| --------------- | --------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `version`       | string    | 1           | The version of the API. Example: `v1`.                                                                                                                                                   |
 | `...collection` | string    | 1 or more   | The path identifier(s) of the context collection, including the collections it is part of or that it contains. Example: `collections/objects`, or `collections/objects/facets/creators`. |
-| `suggestion`     | string    | 1           | The path identifier of the entity suggestion collection. Example: `entities`.                                      |
+| `suggestion`    | string    | 1           | The path identifier of the entity suggestion collection. Example: `entities`.                                                                                                            |
 
 ### Query parameters
 
@@ -320,7 +324,7 @@ The response body _MUST_ contain at least the following fields:
 | `id`                  | string         | 1           | The identifier of the collection.                                                                                                                                                                                                                 |
 | `type`                | string         | 1           | The type of the collection. It _MUST_ be `EntitySuggestionCollection`.                                                                                                                                                                            |
 | `name`                | string         | 1           | The name of the collection.                                                                                                                                                                                                                       |
-| `totalItems`          | number         | 1           | The total number of suggestion items in the collection.                                                                                                                                                                                           |
+| `totalItems`          | number         | 1           | The exact total number of suggestion items in the collection.                                                                                                                                                                                     |
 | `items`               | array          | 1           | A list of suggestions items. Empty if no suggestions matched the query.                                                                                                                                                                           |
 | `items[*]`            | SuggestionItem | 1           | A suggestion item.                                                                                                                                                                                                                                |
 | `items[*].type`       | string         | 1           | The type of the suggestion item. It _MUST_ be `SuggestionItem`.                                                                                                                                                                                   |
@@ -333,6 +337,9 @@ The response body _MUST_ contain at least the following fields:
 | `partOf.id`           | string         | 1           | The identifier of the collection.                                                                                                                                                                                                                 |
 | `partOf.type`         | string         | 1           | The type of the collection. It _MUST_ be `Collection` or a specialization.                                                                                                                                                                        |
 | `partOf.name`         | string         | 1           | The name of the collection.                                                                                                                                                                                                                       |
+| `capabilities`        | array          | 0 or 1      | The URIs of the capabilities the API implements for this collection. The field _MUST_ be omitted if the collection supports no capabilities. See [Capability discovery](resources.md#capability-discovery).                                       |
+
+The API _MUST NOT_ divide this collection into pages. The response body therefore does not contain `first` or `last`.
 
 The API _MAY_ expose additional fields about a suggested entity.
 
@@ -395,11 +402,11 @@ The endpoint retrieves a list of both values (keywords or facet values) and enti
 
 ### Path parameters
 
-| Name             | Data type | Cardinality | Description                                                                                                        |
-| ---------------- | --------- | ----------- | ------------------------------------------------------------------------------------------------------------------ |
-| `version`        | string    | 1           | The version of the API. Example: `v1`.                                                                             |
+| Name            | Data type | Cardinality | Description                                                                                                                                                                              |
+| --------------- | --------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `version`       | string    | 1           | The version of the API. Example: `v1`.                                                                                                                                                   |
 | `...collection` | string    | 1 or more   | The path identifier(s) of the context collection, including the collections it is part of or that it contains. Example: `collections/objects`, or `collections/objects/facets/creators`. |
-| `suggestion`     | string    | 1           | The path identifier of the value and entity suggestion collection. Example: `combinations`.                        |
+| `suggestion`    | string    | 1           | The path identifier of the value and entity suggestion collection. Example: `combinations`.                                                                                              |
 
 ### Query parameters
 
@@ -422,7 +429,7 @@ The response body _MUST_ contain at least the following fields:
 | `id`                  | string                           | 1           | The identifier of the collection.                                                                                                                                                                                                                 |
 | `type`                | string                           | 1           | The type of the collection. It _MUST_ be `CombinedSuggestionCollection`.                                                                                                                                                                          |
 | `name`                | string                           | 1           | The name of the collection.                                                                                                                                                                                                                       |
-| `totalItems`          | number                           | 1           | The total number of suggestion items in the collection.                                                                                                                                                                                           |
+| `totalItems`          | number                           | 1           | The exact total number of suggestion items in the collection.                                                                                                                                                                                     |
 | `items`               | array                            | 1           | A list of suggestions items. Empty if no suggestions matched the query.                                                                                                                                                                           |
 | `items[*]`            | SuggestionItem                   | 1           | A suggestion item.                                                                                                                                                                                                                                |
 | `items[*].type`       | string                           | 1           | The type of the suggestion item. It _MUST_ be `SuggestionItem`.                                                                                                                                                                                   |
@@ -435,6 +442,9 @@ The response body _MUST_ contain at least the following fields:
 | `partOf.id`           | string                           | 1           | The identifier of the collection.                                                                                                                                                                                                                 |
 | `partOf.type`         | string                           | 1           | The type of the collection. It _MUST_ be `Collection` or a specialization.                                                                                                                                                                        |
 | `partOf.name`         | string                           | 1           | The name of the collection.                                                                                                                                                                                                                       |
+| `capabilities`        | array                            | 0 or 1      | The URIs of the capabilities the API implements for this collection. The field _MUST_ be omitted if the collection supports no capabilities. See [Capability discovery](resources.md#capability-discovery).                                       |
+
+The API _MUST NOT_ divide this collection into pages. The response body therefore does not contain `first` or `last`.
 
 The API _MAY_ expose additional fields about a suggested entity.
 
