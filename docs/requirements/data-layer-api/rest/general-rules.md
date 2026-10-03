@@ -279,7 +279,7 @@ Access-Control-Allow-Origin: *
 When an error occurs, the API _MUST_ handle errors as follows:
 
 1. The API _MUST_ return an appropriate HTTP status code, such as `404` or `500`.
-1. The API _MUST_ return error information according to [Problem Details for HTTP APIs](https://www.rfc-editor.org/info/rfc9457/). The error information _MUST_ contain at least the following fields:
+1. The API _MUST_ return error information according to [Problem Details for HTTP APIs](https://www.rfc-editor.org/info/rfc9457/). The error information _MUST_ contain at least the following properties:
 
 | Name     | Data type | Cardinality | Description                                                                                                                                       |
 | -------- | --------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -289,7 +289,7 @@ When an error occurs, the API _MUST_ handle errors as follows:
 
 :::note
 
-**To be discussed**: add support for the [type field](https://www.rfc-editor.org/info/rfc9457/#name-type), for machine-readable processing?
+**To be discussed**: add support for the [type property](https://www.rfc-editor.org/info/rfc9457/#name-type), for machine-readable processing?
 
 :::
 

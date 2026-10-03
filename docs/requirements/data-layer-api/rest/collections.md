@@ -99,7 +99,7 @@ Options could be [Feed Item Query Language](https://datatracker.ietf.org/doc/htm
 
 :::note
 
-**To do**: think of a way to express the ID of a `facet` in the query string. A facet ID like `creators` is a shorthand for its full URI but currently does not have a designated field in a [facet collection](facets.md#endpoint-retrieve-a-facet-collection). Full URIs - such as `https://example.org/v1/collections/masterpieces/facets/creators` - are rather verbose.
+**To do**: think of a way to express the ID of a `facet` in the query string. A facet ID like `creators` is a shorthand for its full URI but currently does not have a designated property in a [facet collection](facets.md#endpoint-retrieve-a-facet-collection). Full URIs - such as `https://example.org/v1/collections/masterpieces/facets/creators` - are rather verbose.
 
 :::
 
@@ -129,7 +129,7 @@ None.
 
 ### Response body
 
-The response body _MUST_ contain at least the following fields:
+The response body _MUST_ contain at least the following properties:
 
 | Name                  | Data type                 | Cardinality | Description                                                                                                                                                                                                                                                                              |
 | --------------------- | ------------------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -146,17 +146,17 @@ The response body _MUST_ contain at least the following fields:
 | `last`                | Page                      | 0 or 1      | The last page in the collection. Not set if the collection is empty, if the collection is not divided into [pages](#endpoint-retrieve-a-page-in-a-collection), or if the last page is unknown (e.g. in case of [cursor navigation](resources.md#page-navigation-and-cursor-navigation)). |
 | `last.id`             | string                    | 1           | The identifier of the last page in the collection.                                                                                                                                                                                                                                       |
 | `last.type`           | string                    | 1           | The type of the last page in the collection. It _MUST_ be `Page` or a specialization.                                                                                                                                                                                                    |
-| `capabilities`        | array                     | 0 or 1      | The URIs of the capabilities the API implements for this collection. The field _MUST_ be omitted if the collection supports no capabilities. See [Capability discovery](resources.md#capability-discovery).                                                                              |
-| `facets`              | Collection                | 0 or 1      | The list of this collection's facet collections. The field _MUST_ be omitted if the collection has no facet collections. See [Facets](facets.md).                                                                                                                                        |
+| `capabilities`        | array                     | 0 or 1      | The URIs of the capabilities the API implements for this collection. _MUST_ be omitted if the collection supports no capabilities. See [Capability discovery](resources.md#capability-discovery).                                                                                        |
+| `facets`              | Collection                | 0 or 1      | The list of this collection's facet collections. _MUST_ be omitted if the collection has no facet collections. See [Facets](facets.md).                                                                                                                                                  |
 | `facets.id`           | string                    | 1           | The identifier of the list.                                                                                                                                                                                                                                                              |
 | `facets.type`         | string                    | 1           | The type of the list. It _MUST_ be `Collection` or a specialization.                                                                                                                                                                                                                     |
 | `facets.name`         | string                    | 1           | The name of the list.                                                                                                                                                                                                                                                                    |
-| `suggestions`         | Collection                | 0 or 1      | The list of this collection's suggestion collections. The field _MUST_ be omitted if the collection has no suggestion collections. See [Suggestions](suggestions.md).                                                                                                                    |
+| `suggestions`         | Collection                | 0 or 1      | The list of this collection's suggestion collections. _MUST_ be omitted if the collection has no suggestion collections. See [Suggestions](suggestions.md).                                                                                                                              |
 | `suggestions.id`      | string                    | 1           | The identifier of the list.                                                                                                                                                                                                                                                              |
 | `suggestions.type`    | string                    | 1           | The type of the list. It _MUST_ be `Collection` or a specialization.                                                                                                                                                                                                                     |
 | `suggestions.name`    | string                    | 1           | The name of the list.                                                                                                                                                                                                                                                                    |
 
-Note: the response body carries no `partOf` field - the root collection is not a part of another collection.
+Note: the response body carries no `partOf` property - the root collection is not a part of another collection.
 
 ### Example
 
@@ -188,7 +188,7 @@ An example of the response body of the API:
 }
 ```
 
-The response indicates that the API has three collections that are a part of the root collection. The root collection groups collections, not entities - it supports no capabilities and omits the `capabilities` field.
+The response indicates that the API has three collections that are a part of the root collection. The root collection groups collections, not entities - it supports no capabilities and omits the `capabilities` property.
 
 A collection can hold further collections. Example response for the 'Persons' collection:
 
@@ -218,7 +218,7 @@ A collection can hold further collections. Example response for the 'Persons' co
 }
 ```
 
-The response indicates that the 'Persons' collection groups two collections: one for 'Painters' and one for 'Writers'. The collection itself is a part of a parent collection, 'Collections'. The collection groups collections rather than entities - it supports no capabilities and omits the `capabilities` field.
+The response indicates that the 'Persons' collection groups two collections: one for 'Painters' and one for 'Writers'. The collection itself is a part of a parent collection, 'Collections'. The collection groups collections rather than entities - it supports no capabilities and omits the `capabilities` property.
 
 ## Endpoint: Retrieve a collection
 
@@ -251,7 +251,7 @@ None.
 
 ### Response body
 
-The response body _MUST_ contain at least the following fields:
+The response body _MUST_ contain at least the following properties:
 
 | Name                  | Data type                 | Cardinality | Description                                                                                                                                                                                                                                                                              |
 | --------------------- | ------------------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -272,12 +272,12 @@ The response body _MUST_ contain at least the following fields:
 | `partOf.id`           | string                    | 1           | The identifier of the collection.                                                                                                                                                                                                                                                        |
 | `partOf.type`         | string                    | 1           | The type of the collection. It _MUST_ be `CuratedCollection` or a specialization.                                                                                                                                                                                                        |
 | `partOf.name`         | string                    | 1           | The name of the collection.                                                                                                                                                                                                                                                              |
-| `capabilities`        | array                     | 0 or 1      | The URIs of the capabilities the API implements for this collection. The field _MUST_ be omitted if the collection supports no capabilities. See [Capability discovery](resources.md#capability-discovery).                                                                              |
-| `facets`              | Collection                | 0 or 1      | The list of this collection's facet collections. The field _MUST_ be omitted if the collection has no facet collections. See [Facets](facets.md).                                                                                                                                        |
+| `capabilities`        | array                     | 0 or 1      | The URIs of the capabilities the API implements for this collection. _MUST_ be omitted if the collection supports no capabilities. See [Capability discovery](resources.md#capability-discovery).                                                                                        |
+| `facets`              | Collection                | 0 or 1      | The list of this collection's facet collections. _MUST_ be omitted if the collection has no facet collections. See [Facets](facets.md).                                                                                                                                                  |
 | `facets.id`           | string                    | 1           | The identifier of the list.                                                                                                                                                                                                                                                              |
 | `facets.type`         | string                    | 1           | The type of the list. It _MUST_ be `Collection` or a specialization.                                                                                                                                                                                                                     |
 | `facets.name`         | string                    | 1           | The name of the list.                                                                                                                                                                                                                                                                    |
-| `suggestions`         | Collection                | 0 or 1      | The list of this collection's suggestion collections. The field _MUST_ be omitted if the collection has no suggestion collections. See [Suggestions](suggestions.md).                                                                                                                    |
+| `suggestions`         | Collection                | 0 or 1      | The list of this collection's suggestion collections. _MUST_ be omitted if the collection has no suggestion collections. See [Suggestions](suggestions.md).                                                                                                                              |
 | `suggestions.id`      | string                    | 1           | The identifier of the list.                                                                                                                                                                                                                                                              |
 | `suggestions.type`    | string                    | 1           | The type of the list. It _MUST_ be `Collection` or a specialization.                                                                                                                                                                                                                     |
 | `suggestions.name`    | string                    | 1           | The name of the list.                                                                                                                                                                                                                                                                    |
@@ -387,7 +387,7 @@ None.
 
 ### Response body
 
-The response body _MUST_ contain at least the following fields:
+The response body _MUST_ contain at least the following properties:
 
 | Name                         | Data type                  | Cardinality | Description                                                                                                                                                                                                                                                                                                                                                                                      |
 | ---------------------------- | -------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -395,8 +395,8 @@ The response body _MUST_ contain at least the following fields:
 | `type`                       | string                     | 1           | The type of the page. It _MUST_ be `Page` or a specialization.                                                                                                                                                                                                                                                                                                                                   |
 | `name`                       | string                     | 1           | The name of the page.                                                                                                                                                                                                                                                                                                                                                                            |
 | `items`                      | array                      | 1           | A list of the items in the collection that fall on this page.                                                                                                                                                                                                                                                                                                                                    |
-| `items[*]`                   | CuratedCollection, Entity  | 1           | A `CuratedCollection` or a specialization, or a specialization of `Entity`. If an `Entity`: all fields _MUST_ be embedded - see the response body of endpoint [Retrieve an entity](entities.md#endpoint-retrieve-an-entity).                                                                                                                                                                     |
-| `facets`                     | array                      | 0 or 1      | The facet results requested via the `facet` query parameters. The field _MUST_ be omitted if no facets were requested. See [Facets on a page](#facets-on-a-page).                                                                                                                                                                                                                                |
+| `items[*]`                   | CuratedCollection, Entity  | 1           | A `CuratedCollection` or a specialization, or a specialization of `Entity`. If an `Entity`: all properties _MUST_ be embedded - see the response body of endpoint [Retrieve an entity](entities.md#endpoint-retrieve-an-entity).                                                                                                                                                                 |
+| `facets`                     | array                      | 0 or 1      | The facet results requested via the `facet` query parameters. _MUST_ be omitted if no facets were requested. See [Facets on a page](#facets-on-a-page).                                                                                                                                                                                                                                          |
 | `facets[*]`                  | FacetCollection, FacetPage | 1           | The result of one requested facet. It is a `FacetPage` if the facet collection is divided into [pages](resources.md#page), and a `FacetCollection` if it is not. The result is the response body of endpoint [Retrieve a facet collection](facets.md#endpoint-retrieve-a-facet-collection) or [Retrieve a page in a facet collection](facets.md#endpoint-retrieve-a-page-in-a-facet-collection). |
 | `prev`                       | Page                       | 0 or 1      | The previous page in the collection. Not set if there is no previous page.                                                                                                                                                                                                                                                                                                                       |
 | `prev.id`                    | string                     | 1           | The identifier of the previous page in the collection.                                                                                                                                                                                                                                                                                                                                           |
@@ -431,13 +431,13 @@ An example of the response body:
       "id": "https://example.org/v1/entities/1234",
       "type": "HeritageObject",
       "name": "The Night Watch"
-      // Other fields...
+      // Other properties...
     },
     {
       "id": "https://example.org/v1/entities/5678",
       "type": "HeritageObject",
       "name": "Ford V8 Cabriolet"
-      // Other fields...
+      // Other properties...
     }
     // Other items...
   ],
@@ -468,11 +468,11 @@ An example of the response body:
 
 ### Facets on a page
 
-A page can carry the results of the facets that the presentation layer requested in a dedicated `facets` field.
+A page can carry the results of the facets that the presentation layer requested in a dedicated `facets` property.
 
-An entry in the `facets` field mirrors the facet collection it belongs to. If that facet collection is divided into pages, the entry is a `FacetPage`. If it is not, the entry is the `FacetCollection` itself, which lists its facet items inline. A presentation layer therefore has to accept both shapes. It distinguishes them by the `type` of the entry, as set out in the response body above.
+An entry in the `facets` property mirrors the facet collection it belongs to. If that facet collection is divided into pages, the entry is a `FacetPage`. If it is not, the entry is the `FacetCollection` itself, which lists its facet items inline. A presentation layer therefore has to accept both shapes. It distinguishes them by the `type` of the entry, as set out in the response body above.
 
-Both shapes are allowed in one `facets` field. A data layer is easier to use, however, when all of its facet collections have the same shape. A data layer _SHOULD_ therefore either divide all of its facet collections into pages, or divide none of them. Then every entry in `facets` has the same type, and a presentation layer can read all of them in one way.
+Both shapes are allowed in one `facets` property. A data layer is easier to use, however, when all of its facet collections have the same shape. A data layer _SHOULD_ therefore either divide all of its facet collections into pages, or divide none of them. Then every entry in `facets` has the same type, and a presentation layer can read all of them in one way.
 
 The results in `facets` belong to the whole collection, not to one page. They depend on the query in the request, such as `q` and `filter`, and not on `page`. Every page of the same collection for the same query therefore carries the same facet results; only the `items` change when a presentation layer moves to the next page. A presentation layer can request the facets on the first page and reuse the results on the following pages.
 
@@ -610,7 +610,7 @@ An example of a response body in which the presentation layer requested two face
 
 #### Facets that are divided into pages
 
-An example of a response body in which the presentation layer requested two facets collections that are divided into pages. Both entries in `facets` are a `FacetPage`. A presentation layer reads every entry in the same way, and follows the `next` field of an entry to see more values of that facet.
+An example of a response body in which the presentation layer requested two facets collections that are divided into pages. Both entries in `facets` are a `FacetPage`. A presentation layer reads every entry in the same way, and follows the `next` property of an entry to see more values of that facet.
 
 An entry is the complete response body of a `FacetPage`, the same body that the endpoint [Retrieve a page in a facet collection](facets.md#endpoint-retrieve-a-page-in-a-facet-collection) returns, including `prev` and `next`. The entries below have no `prev`, because they are the first page of their facet collection. Their `partOf` carries `totalItems`, `first` and `last`, so a presentation layer that wants a different page of that facet follows one of those, or calls the endpoint. It does not page backwards from the entry itself.
 
