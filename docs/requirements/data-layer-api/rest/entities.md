@@ -15,7 +15,7 @@ Entities can be grouped into [curated collections](collections.md). For example:
 
 ## Data model
 
-An entity is a specialization of a [Resource](resources.md#resource-structure): it has an `id`, a `type` and a `name`. An entity is abstract: there is no entity whose type is `Entity`. Every entity has one of the concrete types that a data layer defines, published as part of its [type vocabulary](types.md).
+An entity is a specialization of a [Resource](resources.md#resource): it has an `id`, a `type` and a `name`. An entity is abstract: there is no entity whose type is `Entity`. Every entity has one of the concrete types that a data layer defines, published as part of its [type vocabulary](types.md).
 
 The following class diagram visualizes how entity types relate to a Resource and to each other. It shows two examples of the concrete types a data layer can define, 'Heritage object' and 'Person':
 
