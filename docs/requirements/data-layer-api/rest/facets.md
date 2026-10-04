@@ -13,7 +13,7 @@ In this specification, the word _facet_ always means a **facet collection**: the
 
 Search engines use other words for the same things. Elasticsearch calls a facet an _aggregation_ and its options _buckets_. Solr calls a facet a _facet field_.
 
-A presentation layer can browse the facet items in a facet collection, filter them, and ask for suggestions for them. What makes a facet special is what its items hold: each item points to a value a user can use to narrow a search.
+A presentation layer can browse the facet items in a facet collection, filter them, and ask for suggestions for them - just like any other collection. What makes a facet collection special is what its items hold: each item points to a value a user can use to narrow a search.
 
 Facets are tied to a particular [curated collection](collections.md). This keeps the results within that collection.
 
