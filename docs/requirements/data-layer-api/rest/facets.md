@@ -7,19 +7,17 @@ sidebar_position: 7
 
 ## Introduction
 
-A facet is a collection of categorized values to narrow down search results. For example, the creators of heritage objects can be organized into a 'Creator' facet.
+A facet is a collection of values that a user can pick to narrow down a search. For example, a 'Creator' facet holds the creators of heritage objects.
 
-Facets are tied to a particular [curated collection](collections.md), ensuring that results remain within the context of that collection.
+In this specification, the word _facet_ always means a **facet collection**: the full list of values for one way of narrowing a search. The 'Creator' facet is the list of all creators, not one creator. A facet is a collection of **facet items**; one **facet item** is one option in that list, such as 'Jan de Vries'; and the thing a facet item points to is a **facet value**. The [`facets` property](resources.md#capability-discovery) of a curated collection is a collection of facet collections.
 
-Facets are optional. A data layer _MAY_ implement them, depending on its requirements. A data layer advertises the facet collections it supports for a curated collection in the [`facets` property of that collection](resources.md#capability-discovery). The property points to the list of facet collections, which a presentation layer retrieves with endpoint [Retrieve the facet collections of a curated collection](#endpoint-retrieve-the-facet-collections-of-a-curated-collection).
+Search engines use other words for the same things. Elasticsearch calls a facet an _aggregation_ and its options _buckets_. Solr calls a facet a _facet field_.
 
-A facet collection _MAY_ itself [offer suggestions](suggestions.md) for its facet items, so that a user can find a facet value by typing. It does so by including the `suggestions` property in its response body, pointing to the list of its suggestion collections. A presentation layer retrieves that list with endpoint [Retrieve the suggestion collections of a collection](suggestions.md#endpoint-retrieve-the-suggestion-collections-of-a-collection). A suggested value in the context of a facet collection is a `FacetValue` or an `Entity`: the same values a facet item can point to.
+A presentation layer can browse the facet items in a facet collection, filter them, and ask for suggestions for them. What makes a facet special is what its items hold: each item points to a value a user can use to narrow a search.
 
-:::note
+Facets are tied to a particular [curated collection](collections.md). This keeps the results within that collection.
 
-**To do**: clarify the facet functionality: presentation layers not only want to retrieve the facets, they also want to be able to browse and filter facets.
-
-:::
+Facets are optional. A data layer _MAY_ implement them, depending on its requirements. The facet collections a data layer supports are listed in the [`facets` property of the curated collection](resources.md#capability-discovery). The property points to the list of facet collections, which a presentation layer retrieves with the endpoint [Retrieve the facet collections of a curated collection](#endpoint-retrieve-the-facet-collections-of-a-curated-collection).
 
 ## Data model
 
