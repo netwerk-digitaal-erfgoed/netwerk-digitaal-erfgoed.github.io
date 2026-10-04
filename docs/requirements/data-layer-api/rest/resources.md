@@ -46,7 +46,7 @@ Resource <|-- Collection
 Resource <|-- Page
 
 Collection *-- Collection : items
-Collection --> Collection : part of, belongs to, suggestions
+Collection --> Collection : part of, belongs to, facets, suggestions
 Collection --> Page : first, last
 Collection *-- Resource : items
 Page --> Collection : part of
@@ -129,6 +129,10 @@ A Collection contains at least the following properties:
 | `belongsTo.id`        | string     | 1           | The identifier of the collection.                                                                                                                                                                                                                                  |
 | `belongsTo.type`      | string     | 1           | The type of the collection. It _MUST_ be `Collection` or a specialization.                                                                                                                                                                                         |
 | `belongsTo.name`      | string     | 1           | The name of the collection.                                                                                                                                                                                                                                        |
+| `facets`              | Collection | 0 or 1      | The collection of this collection's facet collections. Not set if the collection does not offer facets, or if the collection is a facet collection: a facet collection _MUST NOT_ offer facets itself. See [Facets](facets.md)                                     |
+| `facets.id`           | string     | 1           | The identifier of the collection.                                                                                                                                                                                                                                  |
+| `facets.type`         | string     | 1           | The type of the collection. It _MUST_ be `Collection` or a specialization.                                                                                                                                                                                         |
+| `facets.name`         | string     | 1           | The name of the collection.                                                                                                                                                                                                                                        |
 | `suggestions`         | Collection | 0 or 1      | The collection of this collection's suggestion collections. Not set if the collection does not offer suggestions, or if the collection is a suggestion collection: a suggestion collection _MUST NOT_ offer suggestions itself. See [Suggestions](suggestions.md). |
 | `suggestions.id`      | string     | 1           | The identifier of the collection.                                                                                                                                                                                                                                  |
 | `suggestions.type`    | string     | 1           | The type of the collection. It _MUST_ be `Collection` or a specialization.                                                                                                                                                                                         |
@@ -141,7 +145,7 @@ Collections form a tree: the `items` of a collection can contain further collect
 
 Every collection tree has one root: the collection that has no `partOf`. Every other collection in that tree _MUST_ have a `partOf`. This makes the tree connected and every collection in it reachable from its root. A collection _MUST NOT_ be part of itself, directly or indirectly: the tree _MUST_ be acyclic, so that a presentation layer can traverse it without looping.
 
-A data layer _MAY_ offer more than one collection tree. The [facet collections](facets.md#endpoint-retrieve-the-facet-collections-of-a-curated-collection) and [suggestion collections](suggestions.md#endpoint-retrieve-the-suggestion-collections-of-a-collection) of a collection, for example, form trees of their own. Their root is not part of the collection tree of that collection - it has no `partOf` and uses `belongsTo` instead.
+A data layer _MAY_ offer more than one collection tree. The [facet collections](facets.md#endpoint-retrieve-the-facet-collections-of-a-collection) and [suggestion collections](suggestions.md#endpoint-retrieve-the-suggestion-collections-of-a-collection) of a collection, for example, form trees of their own. Their root is not part of the collection tree of that collection - it has no `partOf` and uses `belongsTo` instead.
 
 A presentation layer walks a tree from its root. It requests the root, and for every item in a collection it recurses if the item's `type` is `Collection` or a specialization of it, and renders the item as a resource otherwise. It does not need to know in advance whether a collection holds further collections or resources, or whether the collections it encounters are divided into pages. Every collection, including one that groups other collections, can be divided into pages, so a tree with many branches can be traversed a page at a time.
 
@@ -219,7 +223,7 @@ Capabilities are a property of a single collection. A presentation layer _MUST N
 
 The `capabilities` property tells a presentation layer that a collection supports something. It does not tell it how to use it: the endpoints and query parameters of the collection do that.
 
-Two capabilities come with a property that points to a collection. The `facets` property of a curated collection points to its list of facet collections; see [Facets](facets.md). The `suggestions` property of a collection points to its list of suggestion collections; see [Suggestions](suggestions.md). The other capabilities have no such property. A presentation layer finds them in this specification: `q` for a keyword search, `filter` for filtering, and `page` for a page.
+Two capabilities come with a property that point to a collection. The `facets` property of a collection points to its list of facet collections; see [Facets](facets.md). The `suggestions` property of a collection points to its list of suggestion collections; see [Suggestions](suggestions.md). The other capabilities have no such property. A presentation layer finds them in this specification: `q` for a keyword search, `filter` for filtering, and `page` for a page.
 
 ## Page
 
@@ -315,7 +319,7 @@ Both are allowed. A data layer _MAY_ use page navigation, _MAY_ use cursor navig
 
 A data layer _MUST_ make its pagination strategy explicit. A collection that is divided into pages _MUST_ advertise exactly one of `https://specs.nde.nl/rest/v1/page-pagination` and `https://specs.nde.nl/rest/v1/cursor-pagination` in its [`capabilities`](#capability-discovery) property, and _MUST NOT_ advertise both. A collection that is not divided into pages _MUST NOT_ advertise either of them. There is no default: a presentation layer _MUST NOT_ assume a pagination strategy for a collection that advertises neither.
 
-Counting all items of a collection costs time. Page navigation usually needs that number to know which page comes last, and cursor navigation usually does not. A data layer that uses page navigation _MAY_ return an exact `totalItems`, and a data layer that uses cursor navigation _MAY_ return an `estimatedTotalItems`. This is not a rule: a data layer _MAY_ return either property with either strategy.
+Counting all items of a collection costs time. Page navigation usually needs that number to know which page comes last, and cursor navigation usually does not. A data layer that uses page navigation _MAY_ return an exact `totalItems`, and a data layer that uses cursor navigation _MAY_ return an `estimatedTotalItems`. A data layer _MAY_ return either property with either strategy.
 
 When it uses page navigation, a data layer _MUST_ number the first page `1`, not `0`.
 

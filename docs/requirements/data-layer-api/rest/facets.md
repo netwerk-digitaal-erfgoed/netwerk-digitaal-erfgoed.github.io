@@ -9,15 +9,15 @@ sidebar_position: 7
 
 A facet is a collection of values that a user can pick to narrow down a search. For example, a 'Creator' facet holds the creators of heritage objects.
 
-In this specification, the word _facet_ always means a **facet collection**: the full list of values for one way of narrowing a search. The 'Creator' facet is the list of all creators, not one creator. A facet is a collection of **facet items**; one **facet item** is one option in that list, such as 'Jan de Vries'; and the thing a facet item points to is a **facet value**. The [`facets` property](resources.md#capability-discovery) of a curated collection is a collection of facet collections.
+In this specification, the word _facet_ always means a **facet collection**: the full list of values for one way of narrowing a search. The 'Creator' facet is the list of all creators, not one creator. A facet is a collection of **facet items**; one **facet item** is one option in that list, such as 'Jan de Vries', and the thing a facet item points to is a **facet value**.
 
 Search engines use other words for the same things. Elasticsearch calls a facet an _aggregation_ and its options _buckets_. Solr calls a facet a _facet field_.
 
 A presentation layer can browse the facet items in a facet collection, filter them, and ask for suggestions for them - just like any other collection. What makes a facet collection special is what its items hold: each item points to a value a user can use to narrow a search.
 
-Facets are tied to a particular [curated collection](collections.md). This keeps the results within that collection.
+Facets are tied to a particular collection - the context collection - ensuring that results remain within the context of that collection. A data layer _MAY_ offer facets for any collection, except for a facet collection itself.
 
-Facets are optional. A data layer _MAY_ implement them, depending on its requirements. The facet collections a data layer supports are listed in the [`facets` property of the curated collection](resources.md#capability-discovery). The property points to the list of facet collections, which a presentation layer retrieves with the endpoint [Retrieve the facet collections of a curated collection](#endpoint-retrieve-the-facet-collections-of-a-curated-collection).
+Facets are optional. A data layer _MAY_ implement them, depending on its requirements. A data layer advertises the facet collections it supports for a collection in the generic [`facets` property](resources.md#collection) of that collection. The property points to the list of facet collections, which a presentation layer retrieves with the endpoint [Retrieve the facet collections of a collection](#endpoint-retrieve-the-facet-collections-of-a-collection).
 
 ## Data model
 
@@ -49,8 +49,6 @@ class Collection["Collection"] {
   name
   total items
 }
-
-class CuratedCollection["Curated Collection"]
 
 class FacetCollection["Facet Collection"] {
   id
@@ -94,17 +92,12 @@ class Entity {
   name
 }
 
-class SuggestionCollection["Suggestion Collection"]
-
-Collection <|-- CuratedCollection
 Collection <|-- FacetCollection
-Collection <|-- SuggestionCollection
 FacetValue <|-- FacetRangeValue
 FacetRangeValue <|-- FacetDateRangeValue
 FacetRangeValue <|-- FacetNumberRangeValue
 Page <|-- FacetPage
-CuratedCollection --> Collection : facets
-Collection --> CuratedCollection : belongs to
+Collection --> Collection : belongs to, facets, suggestions
 Collection *-- FacetCollection : items
 FacetCollection --> Collection : part of
 FacetCollection --> FacetPage : first, last
@@ -114,8 +107,6 @@ FacetPage --> FacetPage : previous, next
 FacetPage *-- FacetItem : items
 FacetItem "1" *-- "0..1" FacetValue : value
 FacetItem "1" *-- "0..1" Entity  : value
-Collection --> Collection : suggestions
-SuggestionCollection --> Collection : part of
 ```
 
 ## Facet collections
@@ -175,21 +166,20 @@ A facet collection _MUST NOT_ mix range values of different types, for example `
 
 The `name` is the label of the value. The API may use any text in it, such as '1900–1950', 'between 1900 and 1950', or '1900 to 1950'. A presentation layer _MUST NOT_ read the bounds out of the `name` - it must use the `min` and `max` properties. A presentation layer can use the bounds to place every facet value on a scale. It can draw a histogram, with one bar per value from its lower bound to its upper bound. It can draw a timeline, with one band per value that shows how long the range lasts.
 
-## Endpoint: Retrieve the facet collections of a curated collection
+## Endpoint: Retrieve the facet collections of a collection
 
-The endpoint retrieves all facet collections of a curated collection. The API _MUST_ implement this endpoint if it supports facets.
+The endpoint retrieves all facet collections of a collection. The API _MUST_ implement this endpoint if it supports facets.
 
 ### HTTP request
 
-`GET /{version}/collections(/{...collections})/{collection}/facets`
+`GET /{version}/{...collection}/facets`
 
 ### Path parameters
 
-| Name             | Data type | Cardinality | Description                                                                                        |
-| ---------------- | --------- | ----------- | -------------------------------------------------------------------------------------------------- |
-| `version`        | string    | 1           | The version of the API. Example: `v1`.                                                             |
-| `...collections` | string    | 0 or more   | The path identifier(s) of the collection(s) the curated collection is part of. Example: `persons`. |
-| `collection`     | string    | 1           | The path identifier of the curated collection. Example: `masterpieces`.                            |
+| Name            | Data type | Cardinality | Description                                                                                                                                                                              |
+| --------------- | --------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `version`       | string    | 1           | The version of the API. Example: `v1`.                                                                                                                                                   |
+| `...collection` | string    | 1 or more   | The path identifier(s) of the context collection, including the collections it is part of or that it contains. Example: `collections/objects`, or `collections/objects/facets/creators`. |
 
 ### Query parameters
 
@@ -210,12 +200,12 @@ The response body _MUST_ contain at least the following properties:
 | `name`                | string          | 1           | The name of the collection.                                                                                                                                                 |
 | `totalItems`          | number          | 0 or 1      | The exact total number of facet collections. Not set if the exact total is too costly to calculate. Mutually exclusive with `estimatedTotalItems`.                          |
 | `estimatedTotalItems` | number          | 0 or 1      | An estimate of the total number of facet collections. It can be higher or lower than the real total. Not set if there is no estimate. Mutually exclusive with `totalItems`. |
-| `items`               | array           | 1           | A list of the facet collections of the curated collection.                                                                                                                  |
+| `items`               | array           | 1           | A list of the facet collections of the context collection.                                                                                                                  |
 | `items[*]`            | FacetCollection | 1           | A facet collection.                                                                                                                                                         |
 | `items[*].id`         | string          | 1           | The identifier of the facet collection.                                                                                                                                     |
 | `items[*].type`       | string          | 1           | The type of the facet collection. It _MUST_ be `FacetCollection` or a specialization.                                                                                       |
 | `items[*].name`       | string          | 1           | The name of the facet collection.                                                                                                                                           |
-| `belongsTo`           | Collection      | 1           | The curated collection that this is the list of facet collections for.                                                                                                      |
+| `belongsTo`           | Collection      | 1           | The context collection that this is the list of facet collections for.                                                                                                      |
 | `belongsTo.id`        | string          | 1           | The identifier of the collection.                                                                                                                                           |
 | `belongsTo.type`      | string          | 1           | The type of the collection. It _MUST_ be `Collection` or a specialization.                                                                                                  |
 | `belongsTo.name`      | string          | 1           | The name of the collection.                                                                                                                                                 |
@@ -272,16 +262,15 @@ The endpoint retrieves a facet collection. The API _MUST_ implement this endpoin
 
 ### HTTP request
 
-`GET /{version}/collections(/{...collections})/{collection}/facets/{facet}`
+`GET /{version}/{...collection}/facets/{facet}`
 
 ### Path parameters
 
-| Name             | Data type | Cardinality | Description                                                                                        |
-| ---------------- | --------- | ----------- | -------------------------------------------------------------------------------------------------- |
-| `version`        | string    | 1           | The version of the API. Example: `v1`.                                                             |
-| `...collections` | string    | 0 or more   | The path identifier(s) of the collection(s) the curated collection is part of. Example: `persons`. |
-| `collection`     | string    | 1           | The path identifier of the curated collection. Example: `masterpieces`.                            |
-| `facet`          | string    | 1           | The path identifier of the facet collection. Example: `creators`, `centuries`.                     |
+| Name            | Data type | Cardinality | Description                                                                                                                                                                              |
+| --------------- | --------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `version`       | string    | 1           | The version of the API. Example: `v1`.                                                                                                                                                   |
+| `...collection` | string    | 1 or more   | The path identifier(s) of the context collection, including the collections it is part of or that it contains. Example: `collections/objects`, or `collections/objects/facets/creators`. |
+| `facet`         | string    | 1           | The path identifier of the facet collection. Example: `creators`, `centuries`.                                                                                                           |
 
 ### Query parameters
 
@@ -293,7 +282,7 @@ The endpoint retrieves a facet collection. The API _MUST_ implement this endpoin
 
 :::note
 
-**To do**: add the query parameters representing the "search context" from the curated collection (`q` and `filter` from endpoint [Retrieve a page in a collection](collections.md#endpoint-retrieve-a-page-in-a-collection)).
+**To do**: add the query parameters representing the "search context" from the context collection (`q` and `filter` from endpoint [Retrieve a page in a collection](collections.md#endpoint-retrieve-a-page-in-a-collection)).
 
 :::
 
@@ -328,7 +317,7 @@ The response body _MUST_ contain at least the following properties:
 | `last`                | FacetPage          | 0 or 1      | The last page in the collection. Not set if the collection is empty, if the collection is not divided into [pages](resources.md#page), or if the last page is unknown (e.g. in case of [cursor navigation](resources.md#page-navigation-and-cursor-navigation)). |
 | `last.id`             | string             | 1           | The identifier of the last page in the collection.                                                                                                                                                                                                               |
 | `last.type`           | string             | 1           | The type of the last page in the collection. It _MUST_ be `FacetPage` or a specialization.                                                                                                                                                                       |
-| `partOf`              | Collection         | 1           | The collection that lists the facet collections of a curated collection, including this one. See the response body of endpoint [Retrieve the facet collections of a curated collection](#endpoint-retrieve-the-facet-collections-of-a-curated-collection).       |
+| `partOf`              | Collection         | 1           | The collection that lists the facet collections of the context collection, including this one. See the response body of endpoint [Retrieve the facet collections of a collection](#endpoint-retrieve-the-facet-collections-of-a-collection).                     |
 | `partOf.id`           | string             | 1           | The identifier of the collection.                                                                                                                                                                                                                                |
 | `partOf.type`         | string             | 1           | The type of the collection. It _MUST_ be `Collection` or a specialization.                                                                                                                                                                                       |
 | `partOf.name`         | string             | 1           | The name of the collection.                                                                                                                                                                                                                                      |
@@ -447,11 +436,6 @@ An example of the response body of the API if the facet collection is not divide
     "id": "https://example.org/v1/collections/objects/facets",
     "type": "Collection",
     "name": "Facets"
-  },
-  "suggestions": {
-    "id": "https://example.org/v1/collections/objects/facets/creators/suggestions",
-    "type": "Collection",
-    "name": "Suggestions"
   }
 }
 ```
@@ -529,16 +513,15 @@ The endpoint retrieves a page in a facet collection. The API _MUST_ implement th
 
 ### HTTP request
 
-`GET /{version}/collections(/{...collections})/{collection}/facets/{facet}?page={page}`
+`GET /{version}/{...collection}/facets/{facet}?page={page}`
 
 ### Path parameters
 
-| Name             | Data type | Cardinality | Description                                                                                        |
-| ---------------- | --------- | ----------- | -------------------------------------------------------------------------------------------------- |
-| `version`        | string    | 1           | The version of the API. Example: `v1`.                                                             |
-| `...collections` | string    | 0 or more   | The path identifier(s) of the collection(s) the curated collection is part of. Example: `persons`. |
-| `collection`     | string    | 1           | The path identifier of the curated collection. Example: `masterpieces`.                            |
-| `facet`          | string    | 1           | The path identifier of the facet collection. Example: `creators`, `centuries`.                     |
+| Name            | Data type | Cardinality | Description                                                                                                                                                                              |
+| --------------- | --------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `version`       | string    | 1           | The version of the API. Example: `v1`.                                                                                                                                                   |
+| `...collection` | string    | 1 or more   | The path identifier(s) of the context collection, including the collections it is part of or that it contains. Example: `collections/objects`, or `collections/objects/facets/creators`. |
+| `facet`         | string    | 1           | The path identifier of the facet collection. Example: `creators`, `centuries`.                                                                                                           |
 
 ### Query parameters
 
@@ -551,7 +534,7 @@ The endpoint retrieves a page in a facet collection. The API _MUST_ implement th
 
 :::note
 
-**To do**: add the query parameters representing the "search context" from the curated collection (`q` and `filter` from endpoint [Retrieve a page in a collection](collections.md#endpoint-retrieve-a-page-in-a-collection)).
+**To do**: add the query parameters representing the "search context" from the context collection (`q` and `filter` from endpoint [Retrieve a page in a collection](collections.md#endpoint-retrieve-a-page-in-a-collection)).
 
 :::
 

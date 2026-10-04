@@ -11,6 +11,8 @@ This specification defines how data layers and presentation layers exchange info
 
 The specification is generic: it defines general rules, data models and endpoints without assuming a specific implementation. Data layer developers can implement relevant portions of the specification and publish their own API specifications accordingly.
 
+The specification standardizes the most common interactions between a data layer and a presentation layer. This means a presentation layer can be built once and reused with any data layer that follows these rules.
+
 ## Design considerations
 
 The specification follows these considerations:
