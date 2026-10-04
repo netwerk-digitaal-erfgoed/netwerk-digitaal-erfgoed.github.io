@@ -11,7 +11,7 @@ A suggestion is a value displayed as a user types, such as a keyword, a name, or
 
 Suggestions are tied to a particular collection - the context collection - ensuring that results remain within the context of that collection. A data layer _MAY_ offer suggestions for any collection, except for a suggestion collection itself.
 
-Suggestions are optional. A data layer _MAY_ implement them, depending on its requirements. A data layer advertises the suggestion collections it supports for a collection in the generic [`suggestions` field](resources.md#collection) of that collection. The field points to the list of suggestion collections, which a presentation layer retrieves with endpoint [Retrieve the suggestion collections of a collection](#endpoint-retrieve-the-suggestion-collections-of-a-collection).
+Suggestions are optional. A data layer _MAY_ implement them, depending on its requirements. A data layer advertises the suggestion collections it supports for a collection in the generic [`suggestions` property](resources.md#collection) of that collection. The property points to the list of suggestion collections, which a presentation layer retrieves with endpoint [Retrieve the suggestion collections of a collection](#endpoint-retrieve-the-suggestion-collections-of-a-collection).
 
 ## Data model
 
@@ -124,7 +124,7 @@ None.
 
 ### Response body
 
-The response body _MUST_ contain at least the following fields:
+The response body _MUST_ contain at least the following properties:
 
 | Name                  | Data type            | Cardinality | Description                                                                                                                                                                      |
 | --------------------- | -------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -219,7 +219,7 @@ None.
 
 ### Response body
 
-The response body _MUST_ contain at least the following fields:
+The response body _MUST_ contain at least the following properties:
 
 | Name                  | Data type                | Cardinality | Description                                                                                                                                                                                                                                       |
 | --------------------- | ------------------------ | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -238,7 +238,6 @@ The response body _MUST_ contain at least the following fields:
 | `partOf.id`           | string                   | 1           | The identifier of the collection.                                                                                                                                                                                                                 |
 | `partOf.type`         | string                   | 1           | The type of the collection. It _MUST_ be `Collection` or a specialization.                                                                                                                                                                        |
 | `partOf.name`         | string                   | 1           | The name of the collection.                                                                                                                                                                                                                       |
-| `capabilities`        | array                    | 0 or 1      | The URIs of the capabilities the API implements for this collection. The field _MUST_ be omitted if the collection supports no capabilities. See [Capability discovery](resources.md#capability-discovery).                                       |
 
 The API _MUST NOT_ divide this collection into pages. The response body therefore does not contain `first` or `last`.
 
@@ -317,7 +316,7 @@ None.
 
 ### Response body
 
-The response body _MUST_ contain at least the following fields:
+The response body _MUST_ contain at least the following properties:
 
 | Name                  | Data type      | Cardinality | Description                                                                                                                                                                                                                                       |
 | --------------------- | -------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -337,11 +336,10 @@ The response body _MUST_ contain at least the following fields:
 | `partOf.id`           | string         | 1           | The identifier of the collection.                                                                                                                                                                                                                 |
 | `partOf.type`         | string         | 1           | The type of the collection. It _MUST_ be `Collection` or a specialization.                                                                                                                                                                        |
 | `partOf.name`         | string         | 1           | The name of the collection.                                                                                                                                                                                                                       |
-| `capabilities`        | array          | 0 or 1      | The URIs of the capabilities the API implements for this collection. The field _MUST_ be omitted if the collection supports no capabilities. See [Capability discovery](resources.md#capability-discovery).                                       |
 
 The API _MUST NOT_ divide this collection into pages. The response body therefore does not contain `first` or `last`.
 
-The API _MAY_ expose additional fields about a suggested entity.
+The API _MAY_ expose additional properties about a suggested entity.
 
 ### Example
 
@@ -370,7 +368,7 @@ An example of the response body of the API:
         "id": "https://example.org/v1/entities/1234",
         "type": "HeritageObject",
         "name": "A Watermill"
-        // Optionally: other fields
+        // Optionally: other properties
       }
     },
     {
@@ -380,7 +378,7 @@ An example of the response body of the API:
         "id": "https://example.org/v1/entities/5678",
         "type": "HeritageObject",
         "name": "Windmill at Wijk bij Duurstede"
-        // Optionally: other fields
+        // Optionally: other properties
       }
     }
   ],
@@ -422,7 +420,7 @@ None.
 
 ### Response body
 
-The response body _MUST_ contain at least the following fields:
+The response body _MUST_ contain at least the following properties:
 
 | Name                  | Data type                        | Cardinality | Description                                                                                                                                                                                                                                       |
 | --------------------- | -------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -442,11 +440,10 @@ The response body _MUST_ contain at least the following fields:
 | `partOf.id`           | string                           | 1           | The identifier of the collection.                                                                                                                                                                                                                 |
 | `partOf.type`         | string                           | 1           | The type of the collection. It _MUST_ be `Collection` or a specialization.                                                                                                                                                                        |
 | `partOf.name`         | string                           | 1           | The name of the collection.                                                                                                                                                                                                                       |
-| `capabilities`        | array                            | 0 or 1      | The URIs of the capabilities the API implements for this collection. The field _MUST_ be omitted if the collection supports no capabilities. See [Capability discovery](resources.md#capability-discovery).                                       |
 
 The API _MUST NOT_ divide this collection into pages. The response body therefore does not contain `first` or `last`.
 
-The API _MAY_ expose additional fields about a suggested entity.
+The API _MAY_ expose additional properties about a suggested entity.
 
 ### Example
 
@@ -483,7 +480,7 @@ An example of the response body of the API:
         "id": "https://example.org/v1/entities/1234",
         "type": "HeritageObject",
         "name": "A Watermill"
-        // Optionally: other fields
+        // Optionally: other properties
       }
     }
   ],

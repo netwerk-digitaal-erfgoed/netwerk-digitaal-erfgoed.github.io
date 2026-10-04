@@ -111,7 +111,7 @@ None.
 
 ### Response body
 
-The response body _MUST_ contain at least the fields underneath. Additional fields depend on the data model of the entity, defined by the API.
+The response body _MUST_ contain at least the properties underneath. Additional properties depend on the data model of the entity, defined by the API.
 
 | Name   | Data type | Cardinality | Description                   |
 | ------ | --------- | ----------- | ----------------------------- |
@@ -160,7 +160,7 @@ The response body depends on the data model of the entity. An example:
       "name": "Amsterdam"
     }
   ]
-  // Other fields...
+  // Other properties...
 }
 ```
 
@@ -168,6 +168,6 @@ The response indicates that this entity is a `HeritageObject` and has name 'The 
 
 :::note
 
-**To be discussed**: an entity response does not expose the collections the entity is a member of. A presentation layer can therefore not offer a 'more like this' or 'more from this collection' functionality. Consider adding an optional field to the entity structure listing the [curated collections](collections.md) the entity is a part of?
+**To be discussed**: an entity response does not expose the collections the entity is a member of. A presentation layer can therefore not offer a 'more like this' or 'more from this collection' functionality. Consider adding an optional property to the entity structure listing the [curated collections](collections.md) the entity is a part of?
 
 :::
