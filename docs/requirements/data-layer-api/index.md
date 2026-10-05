@@ -31,7 +31,7 @@ This document defines API specifications for the exchange of heritage informatio
 
 ## Version
 
-The document describes **version 0.0.2** of the API specifications.
+The document describes **version 0.0.3** of the API specifications.
 
 This is the **initial development** version, version zero. Breaking changes are introduced within the same major version, following [semantic versioning for version zero](https://semver.org/#spec-item-4).
 
@@ -49,4 +49,4 @@ This document is intended for:
 
 ## Conformance
 
-The keywords _MAY_, _MUST_, _MUST NOT_, _OPTIONAL_, _SHOULD_, and _SHOULD NOT_ are to be interpreted as described in [RFC 2119](https://www.ietf.org/rfc/rfc2119.txt), when, and only when, they appear in all capitals, as shown here.
+The keywords _MAY_, _MUST_, _MUST NOT_, _OPTIONAL_, _RECOMMENDED_, _SHOULD_, and _SHOULD NOT_ are to be interpreted as described in [RFC 2119](https://www.ietf.org/rfc/rfc2119.txt), when, and only when, they appear in all capitals, as shown here.

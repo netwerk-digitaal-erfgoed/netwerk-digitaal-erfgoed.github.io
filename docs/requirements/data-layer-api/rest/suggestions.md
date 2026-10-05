@@ -9,23 +9,21 @@ sidebar_position: 8
 
 A suggestion is a value displayed as a user types, such as a keyword, a name, or a facet value. For example: if a user types 'rem', suggestions might be 'Rembrandt' or 'Rem Koolhaas'. Suggestions help users save time. A user can select one of the suggested values and find resources matching the suggestion. This functionality is also known as autocompletion or typeahead.
 
-Suggestions are tied to a particular collection - the context collection - ensuring that results remain within the context of that collection. A data layer _MAY_ offer suggestions for any collection, except for a suggestion collection itself.
+Suggestions are tied to a particular collection — the context collection — ensuring that results remain within the context of that collection. A data layer _MAY_ offer suggestions for any collection, except for a suggestion collection itself.
 
 Suggestions are optional. A data layer _MAY_ implement them, depending on its requirements. A data layer advertises the suggestion collections it supports for a collection in the generic [`suggestions` property](resources.md#collection) of that collection. The property points to the list of suggestion collections, which a presentation layer retrieves with endpoint [Retrieve the suggestion collections of a collection](#endpoint-retrieve-the-suggestion-collections-of-a-collection).
 
 ## Data model
 
-| Name                           | Description                                                                                                                                                        |
-| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Collection                     | An ordered list of resources. The generic type. See [Resources](resources.md).                                                                                     |
-| Suggestion Collection          | An ordered list of suggestion items. This is an abstract type: a suggestion collection is always of one of the concrete types below. Specialization of Collection. |
-| Value Suggestion Collection    | An ordered list of value suggestions: values without identity, such as keywords or facet values. Specialization of Suggestion Collection.                          |
-| Entity Suggestion Collection   | An ordered list of entities. Specialization of Suggestion Collection.                                                                                              |
-| Combined Suggestion Collection | An ordered list of value suggestions and entities. Specialization of Suggestion Collection.                                                                        |
-| Suggestion Item                | A selectable option within a Suggestion Collection, pointing to a value within the context collection.                                                             |
-| Keyword Value                  | A keyword matching a suggestion query, e.g. 'windmill'. The keyword can be used as input to search for resources and find all that match it.                       |
-| Facet Value                    | A value of a facet item, e.g. the name 'Jan de Vries'. See [Facets](facets.md).                                                                                    |
-| Entity                         | An identifiable 'thing' relevant to heritage, matching a suggestion query, e.g. a heritage object named 'A Watermill'. See [Entities](entities.md).                |
+| Name                  | Description                                                                                                                                                     |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Collection            | An ordered list of resources. The generic type. See [Resources](resources.md).                                                                                  |
+| Suggestion Collection | An ordered list of suggestion items. Every item points to a resource of one of the types listed in the collection's `valueTypes`. Specialization of Collection. |
+| Suggestion Item       | A selectable option within a Suggestion Collection, pointing to a resource within the context collection.                                                       |
+| Resource              | A 'thing' of a certain type. Every value of a suggestion item is a resource. See [Resources](resources.md).                                                     |
+| Keyword Value         | A keyword matching a suggestion query, e.g. 'windmill'. The keyword can be used as input to search for resources and find all that match it.                    |
+| Facet Value           | A value of a facet item, matching a suggestion query, e.g. the name 'Jan de Vries'. See [Facets](facets.md).                                                    |
+| Entity                | An identifiable 'thing' relevant to heritage, matching a suggestion query, e.g. a heritage object named 'A Watermill'. See [Entities](entities.md).             |
 
 The following class diagram visualizes the data model:
 
@@ -37,24 +35,29 @@ The following class diagram visualizes the data model:
 ---
 classDiagram
 
+class Resource["Resource"] {
+  <<abstract>>
+  id
+  type
+  name
+}
+
 class Collection["Collection"] {
   id
   type
   name
   total items
+  total estimated items
 }
 
 class SuggestionCollection["Suggestion Collection"] {
-  <<abstract>>
   id
   type
   name
   total items
+  total estimated items
+  value types
 }
-
-class ValueSuggestionCollection["Value Suggestion Collection"]
-class EntitySuggestionCollection["Entity Suggestion Collection"]
-class CombinedSuggestionCollection["Combined Suggestion Collection"]
 
 class SuggestionItem["Suggestion Item"] {
   type
@@ -79,18 +82,28 @@ class Entity {
 }
 
 Collection <|-- SuggestionCollection
+Resource <|-- KeywordValue
+Resource <|-- FacetValue
+Resource <|-- Entity
 Collection --> Collection : suggestions
 Collection --> Collection : belongs to
 Collection *-- SuggestionCollection : items
 SuggestionCollection --> Collection : part of
-SuggestionCollection <|-- ValueSuggestionCollection
-SuggestionCollection <|-- EntitySuggestionCollection
-SuggestionCollection <|-- CombinedSuggestionCollection
 SuggestionCollection *-- SuggestionItem : items
-SuggestionItem "1" *-- "0..1" KeywordValue : value
-SuggestionItem "1" *-- "0..1" FacetValue : value
-SuggestionItem "1" *-- "0..1" Entity  : value
+SuggestionItem --> Resource : value
 ```
+
+## Suggestion collections
+
+A data layer _MAY_ offer several suggestion collections for a collection, each with its own purpose. Every suggestion collection lists its resource types in `valueTypes`, so a presentation layer knows what it can expect before a user types anything. An entry in `valueTypes` may be an abstract type: `Entity` covers every entity type, such as `HeritageObject` and `Person`.
+
+A data layer decides which suggestion collections it supports. For example, a data layer could offer the suggestion collections underneath for a [curated collection](collections.md) of heritage objects:
+
+1. **Keywords**. The `value` of a suggestion item is a keyword that matches the query, such as 'windmill'. A presentation layer uses the keyword as input to search, to find the objects that match it. The `valueTypes` are `["KeywordValue"]`.
+1. **Entities**. The `value` of a suggestion item is an entity that matches the query, such as a heritage object named 'A Watermill'. A presentation layer can take the user straight to a suggested entity, by [retrieving it](entities.md#endpoint-retrieve-an-entity). The `valueTypes` are `["Entity"]`.
+1. **Combinations of keywords and entities**. The `value` of a suggestion item is a keyword or an entity. A presentation layer shows both to a user. The `valueTypes` are `["KeywordValue", "Entity"]`.
+
+A data layer _MAY_ offer a single suggestion collection instead of all three. It _MAY_ also offer others, such as a collection of facet values in the context of a facet collection.
 
 ## Search strategies
 
@@ -126,22 +139,24 @@ None.
 
 The response body _MUST_ contain at least the following properties:
 
-| Name                  | Data type            | Cardinality | Description                                                                                                                                                                      |
-| --------------------- | -------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`                  | string               | 1           | The identifier of the collection.                                                                                                                                                |
-| `type`                | string               | 1           | The type of the collection. It _MUST_ be `Collection` or a specialization.                                                                                                       |
-| `name`                | string               | 1           | The name of the collection.                                                                                                                                                      |
-| `totalItems`          | number               | 0 or 1      | The exact total number of suggestion collections. Not set if the exact total is too costly to calculate. Mutually exclusive with `estimatedTotalItems`.                          |
-| `estimatedTotalItems` | number               | 0 or 1      | An estimate of the total number of suggestion collections. It can be higher or lower than the real total. Not set if there is no estimate. Mutually exclusive with `totalItems`. |
-| `items`               | array                | 1           | A list of the suggestion collections of the context collection.                                                                                                                  |
-| `items[*]`            | SuggestionCollection | 1           | A suggestion collection.                                                                                                                                                         |
-| `items[*].id`         | string               | 1           | The identifier of the suggestion collection.                                                                                                                                     |
-| `items[*].type`       | string               | 1           | The type of the suggestion collection. It _MUST_ be a specialization of `SuggestionCollection`.                                                                                  |
-| `items[*].name`       | string               | 1           | The name of the suggestion collection.                                                                                                                                           |
-| `belongsTo`           | Collection           | 1           | The context collection that this is the list of suggestion collections for.                                                                                                      |
-| `belongsTo.id`        | string               | 1           | The identifier of the context collection.                                                                                                                                        |
-| `belongsTo.type`      | string               | 1           | The type of the context collection. It _MUST_ be `Collection` or a specialization.                                                                                               |
-| `belongsTo.name`      | string               | 1           | The name of the context collection.                                                                                                                                              |
+| Name                     | Data type            | Cardinality | Description                                                                                                                                                                      |
+| ------------------------ | -------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`                     | string               | 1           | The identifier of the collection.                                                                                                                                                |
+| `type`                   | string               | 1           | The type of the collection. It _MUST_ be `Collection` or a specialization.                                                                                                       |
+| `name`                   | string               | 1           | The name of the collection.                                                                                                                                                      |
+| `totalItems`             | number               | 0 or 1      | The exact total number of suggestion collections. Not set if the exact total is too costly to calculate. Mutually exclusive with `estimatedTotalItems`.                          |
+| `estimatedTotalItems`    | number               | 0 or 1      | An estimate of the total number of suggestion collections. It can be higher or lower than the real total. Not set if there is no estimate. Mutually exclusive with `totalItems`. |
+| `items`                  | array                | 1           | A list of the suggestion collections of the context collection.                                                                                                                  |
+| `items[*]`               | SuggestionCollection | 1           | A suggestion collection.                                                                                                                                                         |
+| `items[*].id`            | string               | 1           | The identifier of the suggestion collection.                                                                                                                                     |
+| `items[*].type`          | string               | 1           | The type of the suggestion collection. It _MUST_ be `SuggestionCollection` or a specialization.                                                                                  |
+| `items[*].name`          | string               | 1           | The name of the suggestion collection.                                                                                                                                           |
+| `items[*].valueTypes`    | array                | 1           | The resource types that the `value` of a suggestion item in the suggestion collection points to.                                                                                 |
+| `items[*].valueTypes[*]` | string               | 1           | A type of resource, such as `KeywordValue` or `HeritageObject`. The type also covers the specializations of that type, e.g. `Entity` covers `HeritageObject` and `Person`.       |
+| `belongsTo`              | Collection           | 1           | The context collection that this is the list of suggestion collections for.                                                                                                      |
+| `belongsTo.id`           | string               | 1           | The identifier of the context collection.                                                                                                                                        |
+| `belongsTo.type`         | string               | 1           | The type of the context collection. It _MUST_ be `Collection` or a specialization.                                                                                               |
+| `belongsTo.name`         | string               | 1           | The name of the context collection.                                                                                                                                              |
 
 The API _MUST NOT_ divide this collection into pages. The response body therefore does not contain `first` or `last`.
 
@@ -166,19 +181,22 @@ An example of the response body of the API:
   "totalItems": 3,
   "items": [
     {
-      "id": "https://example.org/v1/collections/objects/suggestions/values",
-      "type": "ValueSuggestionCollection",
-      "name": "Value suggestions"
+      "id": "https://example.org/v1/collections/objects/suggestions/keywords",
+      "type": "SuggestionCollection",
+      "name": "Keyword suggestions",
+      "valueTypes": ["KeywordValue"]
     },
     {
       "id": "https://example.org/v1/collections/objects/suggestions/entities",
-      "type": "EntitySuggestionCollection",
-      "name": "Entity suggestions"
+      "type": "SuggestionCollection",
+      "name": "Entity suggestions",
+      "valueTypes": ["Entity"]
     },
     {
       "id": "https://example.org/v1/collections/objects/suggestions/combinations",
-      "type": "CombinedSuggestionCollection",
-      "name": "Value and entity suggestions"
+      "type": "SuggestionCollection",
+      "name": "Keyword and entity suggestions",
+      "valueTypes": ["KeywordValue", "Entity"]
     }
   ],
   "belongsTo": {
@@ -189,9 +207,11 @@ An example of the response body of the API:
 }
 ```
 
-## Endpoint: Suggest values
+The response indicates that the API supports three suggestion collections for a curated collection (`objects`). A presentation layer can choose any, depending on its requirements.
 
-The endpoint retrieves a list of values without identity matching a query: keywords in the context of a curated collection, facet values in the context of a facet collection. A presentation layer can use a suggested keyword as input to search for resources and find all resources that match the keyword. The endpoint is _OPTIONAL_: it _MAY_ be implemented by the API.
+## Endpoint: Retrieve a suggestion collection
+
+The endpoint retrieves the suggestion items of a suggestion collection that match a query. The `value` of a suggestion item is a resource, such as a keyword, a facet value, or an entity. A presentation layer can use a suggested resource as input to search and find the resources that match it. The API _MUST_ implement this endpoint if it supports suggestions.
 
 ### HTTP request
 
@@ -203,7 +223,7 @@ The endpoint retrieves a list of values without identity matching a query: keywo
 | --------------- | --------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `version`       | string    | 1           | The version of the API. Example: `v1`.                                                                                                                                                   |
 | `...collection` | string    | 1 or more   | The path identifier(s) of the context collection, including the collections it is part of or that it contains. Example: `collections/objects`, or `collections/objects/facets/creators`. |
-| `suggestion`    | string    | 1           | The path identifier of the value suggestion collection. Example: `values`.                                                                                                               |
+| `suggestion`    | string    | 1           | The path identifier of the suggestion collection. Example: `keywords`.                                                                                                                   |
 
 ### Query parameters
 
@@ -211,7 +231,7 @@ The endpoint retrieves a list of values without identity matching a query: keywo
 | --------- | --------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `q`       | string    | 1           | A query for filtering the suggestion items. Minimum length: defined by the API (e.g. 3 characters). Maximum length: defined by the API (e.g. 25 characters). The API defines how the query is matched, e.g. by using prefix or infix search. |
 | `size`    | number    | 0 or 1      | The maximum number of suggestion items to retrieve. Minimum: 1. Default: 10. Maximum: defined by the API (e.g. 25).                                                                                                                          |
-| `orderBy` | string    | 0 or 1      | The sorting order of the suggestion items. It _MUST_ be one of `relevance`, `value`. Default: `relevance:desc` (most relevant suggestion first). The API defines which value is used to sort by `value` (e.g. the `name` of a value).        |
+| `orderBy` | string    | 0 or 1      | The sorting order of the suggestion items. It _MUST_ be one of `relevance`, `value`. Default: `relevance:desc` (most relevant suggestion first). The API defines which property of the value it sorts by, such as the `name`.                |
 
 ### Request body
 
@@ -221,44 +241,50 @@ None.
 
 The response body _MUST_ contain at least the following properties:
 
-| Name                  | Data type                | Cardinality | Description                                                                                                                                                                                                                                       |
-| --------------------- | ------------------------ | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`                  | string                   | 1           | The identifier of the collection.                                                                                                                                                                                                                 |
-| `type`                | string                   | 1           | The type of the collection. It _MUST_ be `ValueSuggestionCollection`.                                                                                                                                                                             |
-| `name`                | string                   | 1           | The name of the collection.                                                                                                                                                                                                                       |
-| `totalItems`          | number                   | 1           | The exact total number of suggestion items in the collection.                                                                                                                                                                                     |
-| `items`               | array                    | 1           | A list of suggestion items. Empty if no suggestions matched the query.                                                                                                                                                                            |
-| `items[*]`            | SuggestionItem           | 1           | A suggestion item.                                                                                                                                                                                                                                |
-| `items[*].type`       | string                   | 1           | The type of the suggestion item. It _MUST_ be `SuggestionItem`.                                                                                                                                                                                   |
-| `items[*].relevance`  | number                   | 1           | The relevance of the suggestion to the query. It _MUST_ be a whole number between 0 (not relevant) and 100 (relevant).                                                                                                                            |
-| `items[*].value`      | KeywordValue, FacetValue | 1           | The suggested value: a keyword or a facet value.                                                                                                                                                                                                  |
-| `items[*].value.type` | string                   | 1           | The type of the value. It _MUST_ be `KeywordValue` or `FacetValue`.                                                                                                                                                                               |
-| `items[*].value.name` | string                   | 1           | The name of the value.                                                                                                                                                                                                                            |
-| `partOf`              | Collection               | 1           | The collection that lists the suggestion collections of a collection, including this one. See the response body of endpoint [Retrieve the suggestion collections of a collection](#endpoint-retrieve-the-suggestion-collections-of-a-collection). |
-| `partOf.id`           | string                   | 1           | The identifier of the collection.                                                                                                                                                                                                                 |
-| `partOf.type`         | string                   | 1           | The type of the collection. It _MUST_ be `Collection` or a specialization.                                                                                                                                                                        |
-| `partOf.name`         | string                   | 1           | The name of the collection.                                                                                                                                                                                                                       |
+| Name                  | Data type      | Cardinality | Description                                                                                                                                                                                                                                       |
+| --------------------- | -------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`                  | string         | 1           | The identifier of the collection.                                                                                                                                                                                                                 |
+| `type`                | string         | 1           | The type of the collection. It _MUST_ be `SuggestionCollection` or a specialization.                                                                                                                                                              |
+| `name`                | string         | 1           | The name of the collection.                                                                                                                                                                                                                       |
+| `valueTypes`          | array          | 1           | A list of resource types that the `value` of a suggestion item in the collection points to.                                                                                                                                                       |
+| `valueTypes[*]`       | string         | 1           | A type of resource, such as `KeywordValue` or `HeritageObject`. The type also covers the specializations of that type, e.g. `Entity` covers `HeritageObject` and `Person` .                                                                       |
+| `totalItems`          | number         | 1           | The exact total number of suggestion items in the collection.                                                                                                                                                                                     |
+| `items`               | array          | 1           | A list of suggestion items. Empty if no suggestions matched the query.                                                                                                                                                                            |
+| `items[*]`            | SuggestionItem | 1           | A suggestion item.                                                                                                                                                                                                                                |
+| `items[*].type`       | string         | 1           | The type of the suggestion item. It _MUST_ be `SuggestionItem`.                                                                                                                                                                                   |
+| `items[*].relevance`  | number         | 1           | The relevance of the suggestion to the query. It _MUST_ be a whole number between 0 (not relevant) and 100 (relevant).                                                                                                                            |
+| `items[*].value`      | Resource       | 1           | The resource that the suggestion points to, such as a keyword, a facet value, or an entity.                                                                                                                                                       |
+| `items[*].value.id`   | string         | 0 or 1      | The identifier of the value. Not set if the value has no identity, such as a `KeywordValue` or `FacetValue`.                                                                                                                                      |
+| `items[*].value.type` | string         | 1           | The type of the value. It _MUST_ be one of the `valueTypes` of the collection.                                                                                                                                                                    |
+| `items[*].value.name` | string         | 1           | The name of the value.                                                                                                                                                                                                                            |
+| `partOf`              | Collection     | 1           | The collection that lists the suggestion collections of a collection, including this one. See the response body of endpoint [Retrieve the suggestion collections of a collection](#endpoint-retrieve-the-suggestion-collections-of-a-collection). |
+| `partOf.id`           | string         | 1           | The identifier of the collection.                                                                                                                                                                                                                 |
+| `partOf.type`         | string         | 1           | The type of the collection. It _MUST_ be `Collection` or a specialization.                                                                                                                                                                        |
+| `partOf.name`         | string         | 1           | The name of the collection.                                                                                                                                                                                                                       |
 
 The API _MUST NOT_ divide this collection into pages. The response body therefore does not contain `first` or `last`.
+
+The API _MAY_ expose additional properties about a suggested value.
 
 ### Example
 
 An example request from a presentation layer:
 
 ```http
-GET /v1/collections/objects/suggestions/values?q=mil
+GET /v1/collections/objects/suggestions/combinations?q=mil
 Host: example.org
 ```
 
-The request indicates that the API should return value suggestions from a curated collection (`objects`) matching a specific query (`mil`).
+The request indicates that the API should return the suggestion items of a suggestion collection (`combinations`) of a curated collection (`objects`) matching a specific query (`mil`).
 
 An example of the response body of the API:
 
 ```json
 {
-  "id": "https://example.org/v1/collections/objects/suggestions/values?q=mil",
-  "type": "ValueSuggestionCollection",
-  "name": "Value suggestions",
+  "id": "https://example.org/v1/collections/objects/suggestions/combinations?q=mil",
+  "type": "SuggestionCollection",
+  "name": "Keyword and entity suggestions",
+  "valueTypes": ["KeywordValue", "Entity"],
   "totalItems": 2,
   "items": [
     {
@@ -273,213 +299,9 @@ An example of the response body of the API:
       "type": "SuggestionItem",
       "relevance": 92,
       "value": {
-        "type": "KeywordValue",
-        "name": "windmill"
-      }
-    }
-  ],
-  "partOf": {
-    "id": "https://example.org/v1/collections/objects/suggestions",
-    "type": "Collection",
-    "name": "Suggestions"
-  }
-}
-```
-
-## Endpoint: Suggest entities
-
-The endpoint retrieves a list of entities matching a query. An entity in the list can then be [directly retrieved](entities.md#endpoint-retrieve-an-entity). The endpoint is _OPTIONAL_: it _MAY_ be implemented by the API.
-
-### HTTP request
-
-`GET /{version}/{...collection}/suggestions/{suggestion}`
-
-### Path parameters
-
-| Name            | Data type | Cardinality | Description                                                                                                                                                                              |
-| --------------- | --------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `version`       | string    | 1           | The version of the API. Example: `v1`.                                                                                                                                                   |
-| `...collection` | string    | 1 or more   | The path identifier(s) of the context collection, including the collections it is part of or that it contains. Example: `collections/objects`, or `collections/objects/facets/creators`. |
-| `suggestion`    | string    | 1           | The path identifier of the entity suggestion collection. Example: `entities`.                                                                                                            |
-
-### Query parameters
-
-| Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                  |
-| --------- | --------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `q`       | string    | 1           | A query for filtering the suggestion items. Minimum length: defined by the API (e.g. 3 characters). Maximum length: defined by the API (e.g. 25 characters). The API defines how the query is matched, e.g. by using prefix or infix search. |
-| `size`    | number    | 0 or 1      | The maximum number of suggestion items to retrieve. Minimum: 1. Default: 10. Maximum: defined by the API (e.g. 25).                                                                                                                          |
-| `orderBy` | string    | 0 or 1      | The sorting order of the suggestion items. One of `relevance`, `value`. Default: `relevance:desc` (most relevant suggestion first). The API defines which value is used to sort by `value` (e.g. the `name` of an entity).                   |
-
-### Request body
-
-None.
-
-### Response body
-
-The response body _MUST_ contain at least the following properties:
-
-| Name                  | Data type      | Cardinality | Description                                                                                                                                                                                                                                       |
-| --------------------- | -------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`                  | string         | 1           | The identifier of the collection.                                                                                                                                                                                                                 |
-| `type`                | string         | 1           | The type of the collection. It _MUST_ be `EntitySuggestionCollection`.                                                                                                                                                                            |
-| `name`                | string         | 1           | The name of the collection.                                                                                                                                                                                                                       |
-| `totalItems`          | number         | 1           | The exact total number of suggestion items in the collection.                                                                                                                                                                                     |
-| `items`               | array          | 1           | A list of suggestions items. Empty if no suggestions matched the query.                                                                                                                                                                           |
-| `items[*]`            | SuggestionItem | 1           | A suggestion item.                                                                                                                                                                                                                                |
-| `items[*].type`       | string         | 1           | The type of the suggestion item. It _MUST_ be `SuggestionItem`.                                                                                                                                                                                   |
-| `items[*].relevance`  | number         | 1           | The relevance of the suggestion to the query. It _MUST_ be a whole number between 0 (not relevant) and 100 (relevant).                                                                                                                            |
-| `items[*].value`      | Entity         | 1           | The suggested entity.                                                                                                                                                                                                                             |
-| `items[*].value.id`   | string         | 1           | The identifier of the entity.                                                                                                                                                                                                                     |
-| `items[*].value.type` | string         | 1           | The [type](entities.md#entity-types) of the entity.                                                                                                                                                                                               |
-| `items[*].value.name` | string         | 1           | The name of the entity.                                                                                                                                                                                                                           |
-| `partOf`              | Collection     | 1           | The collection that lists the suggestion collections of a collection, including this one. See the response body of endpoint [Retrieve the suggestion collections of a collection](#endpoint-retrieve-the-suggestion-collections-of-a-collection). |
-| `partOf.id`           | string         | 1           | The identifier of the collection.                                                                                                                                                                                                                 |
-| `partOf.type`         | string         | 1           | The type of the collection. It _MUST_ be `Collection` or a specialization.                                                                                                                                                                        |
-| `partOf.name`         | string         | 1           | The name of the collection.                                                                                                                                                                                                                       |
-
-The API _MUST NOT_ divide this collection into pages. The response body therefore does not contain `first` or `last`.
-
-The API _MAY_ expose additional properties about a suggested entity.
-
-### Example
-
-An example request from a presentation layer:
-
-```http
-GET /v1/collections/objects/suggestions/entities?q=mil
-Host: example.org
-```
-
-The request indicates that the API should return entity suggestions from a curated collection (`objects`) matching a specific query (`mil`).
-
-An example of the response body of the API:
-
-```json
-{
-  "id": "https://example.org/v1/collections/objects/suggestions/entities?q=mil",
-  "type": "EntitySuggestionCollection",
-  "name": "Entity suggestions",
-  "totalItems": 2,
-  "items": [
-    {
-      "type": "SuggestionItem",
-      "relevance": 98,
-      "value": {
-        "id": "https://example.org/v1/entities/1234",
-        "type": "HeritageObject",
-        "name": "A Watermill"
-        // Optionally: other properties
-      }
-    },
-    {
-      "type": "SuggestionItem",
-      "relevance": 92,
-      "value": {
         "id": "https://example.org/v1/entities/5678",
         "type": "HeritageObject",
         "name": "Windmill at Wijk bij Duurstede"
-        // Optionally: other properties
-      }
-    }
-  ],
-  "partOf": {
-    "id": "https://example.org/v1/collections/objects/suggestions",
-    "type": "Collection",
-    "name": "Suggestions"
-  }
-}
-```
-
-## Endpoint: Suggest values and entities, combined
-
-The endpoint retrieves a list of both values (keywords or facet values) and entities matching a query. The API determines the distribution between values and entities returned (e.g. proportional or based on relevance). The endpoint is _OPTIONAL_: it _MAY_ be implemented by the API.
-
-### HTTP request
-
-`GET /{version}/{...collection}/suggestions/{suggestion}`
-
-### Path parameters
-
-| Name            | Data type | Cardinality | Description                                                                                                                                                                              |
-| --------------- | --------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `version`       | string    | 1           | The version of the API. Example: `v1`.                                                                                                                                                   |
-| `...collection` | string    | 1 or more   | The path identifier(s) of the context collection, including the collections it is part of or that it contains. Example: `collections/objects`, or `collections/objects/facets/creators`. |
-| `suggestion`    | string    | 1           | The path identifier of the value and entity suggestion collection. Example: `combinations`.                                                                                              |
-
-### Query parameters
-
-| Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                         |
-| --------- | --------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `q`       | string    | 1           | A query for filtering the suggestion items. Minimum length: defined by the API (e.g. 3 characters). Maximum length: defined by the API (e.g. 25 characters). The API defines how the query is matched, e.g. by using prefix or infix search.        |
-| `size`    | number    | 0 or 1      | The maximum number of suggestion items to retrieve. Default: 10. Maximum: 25.                                                                                                                                                                       |
-| `orderBy` | string    | 0 or 1      | The sorting order of the suggestion items. One of `relevance`, `value`. Default: `relevance:desc` (most relevant suggestion first). The API defines which value is used to sort by `value` (e.g. the `name` of a value or the `name` of an entity). |
-
-### Request body
-
-None.
-
-### Response body
-
-The response body _MUST_ contain at least the following properties:
-
-| Name                  | Data type                        | Cardinality | Description                                                                                                                                                                                                                                       |
-| --------------------- | -------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`                  | string                           | 1           | The identifier of the collection.                                                                                                                                                                                                                 |
-| `type`                | string                           | 1           | The type of the collection. It _MUST_ be `CombinedSuggestionCollection`.                                                                                                                                                                          |
-| `name`                | string                           | 1           | The name of the collection.                                                                                                                                                                                                                       |
-| `totalItems`          | number                           | 1           | The exact total number of suggestion items in the collection.                                                                                                                                                                                     |
-| `items`               | array                            | 1           | A list of suggestions items. Empty if no suggestions matched the query.                                                                                                                                                                           |
-| `items[*]`            | SuggestionItem                   | 1           | A suggestion item.                                                                                                                                                                                                                                |
-| `items[*].type`       | string                           | 1           | The type of the suggestion item. It _MUST_ be `SuggestionItem`.                                                                                                                                                                                   |
-| `items[*].relevance`  | number                           | 1           | The relevance of the suggestion to the query. It _MUST_ be a whole number between 0 (not relevant) and 100 (relevant).                                                                                                                            |
-| `items[*].value`      | Entity, KeywordValue, FacetValue | 1           | The value of the suggestion item: an entity, a keyword, or a facet value.                                                                                                                                                                         |
-| `items[*].value.id`   | string                           | 0 or 1      | The identifier of the entity. Not set if the `type` is `KeywordValue` or `FacetValue`; a value without identity has no `id`.                                                                                                                      |
-| `items[*].value.type` | string                           | 1           | The type of the value of the suggestion item. It _MUST_ be `KeywordValue`, `FacetValue`, or a specialization of `Entity`.                                                                                                                         |
-| `items[*].value.name` | string                           | 1           | The name of the value or entity.                                                                                                                                                                                                                  |
-| `partOf`              | Collection                       | 1           | The collection that lists the suggestion collections of a collection, including this one. See the response body of endpoint [Retrieve the suggestion collections of a collection](#endpoint-retrieve-the-suggestion-collections-of-a-collection). |
-| `partOf.id`           | string                           | 1           | The identifier of the collection.                                                                                                                                                                                                                 |
-| `partOf.type`         | string                           | 1           | The type of the collection. It _MUST_ be `Collection` or a specialization.                                                                                                                                                                        |
-| `partOf.name`         | string                           | 1           | The name of the collection.                                                                                                                                                                                                                       |
-
-The API _MUST NOT_ divide this collection into pages. The response body therefore does not contain `first` or `last`.
-
-The API _MAY_ expose additional properties about a suggested entity.
-
-### Example
-
-An example request from a presentation layer:
-
-```http
-GET /v1/collections/objects/suggestions/combinations?q=mil
-Host: example.org
-```
-
-The request indicates that the API should return value and entity suggestions from a curated collection (`objects`) matching a specific query (`mil`).
-
-An example of the response body of the API:
-
-```json
-{
-  "id": "https://example.org/v1/collections/objects/suggestions/combinations?q=mil",
-  "type": "CombinedSuggestionCollection",
-  "name": "Value and entity suggestions",
-  "totalItems": 2,
-  "items": [
-    {
-      "type": "SuggestionItem",
-      "relevance": 98,
-      "value": {
-        "type": "KeywordValue",
-        "name": "windmill"
-      }
-    },
-    {
-      "type": "SuggestionItem",
-      "relevance": 95,
-      "value": {
-        "id": "https://example.org/v1/entities/1234",
-        "type": "HeritageObject",
-        "name": "A Watermill"
         // Optionally: other properties
       }
     }

@@ -37,6 +37,7 @@ class Collection["Collection"] {
   type
   name
   total items
+  total estimated items
 }
 
 class CuratedCollection["Curated Collection"]
@@ -55,7 +56,7 @@ CuratedCollection *-- CuratedCollection : items
 CuratedCollection --> CuratedCollection : part of
 CuratedCollection --> Page : first, last
 CuratedCollection *-- Entity : items
-CuratedCollection --> Collection : facets
+CuratedCollection --> Collection : facets, suggestions
 Page --> CuratedCollection : part of
 Page --> Page : previous, next
 Page *-- CuratedCollection : items
@@ -99,7 +100,7 @@ Options could be [Feed Item Query Language](https://datatracker.ietf.org/doc/htm
 
 :::note
 
-**To do**: think of a way to express the ID of a `facet` in the query string. A facet ID like `creators` is a shorthand for its full URI but currently does not have a designated property in a [facet collection](facets.md#endpoint-retrieve-a-facet-collection). Full URIs - such as `https://example.org/v1/collections/masterpieces/facets/creators` - are rather verbose.
+**To do**: think of a way to express the ID of a `facet` in the query string. A facet ID like `creators` is a shorthand for its full URI but currently does not have a designated property in a [facet collection](facets.md#endpoint-retrieve-a-facet-collection). Full URIs — such as `https://example.org/v1/collections/masterpieces/facets/creators` — are rather verbose.
 
 :::
 
@@ -156,7 +157,7 @@ The response body _MUST_ contain at least the following properties:
 | `suggestions.type`    | string                    | 1           | The type of the list. It _MUST_ be `Collection` or a specialization.                                                                                                                                                                                                                     |
 | `suggestions.name`    | string                    | 1           | The name of the list.                                                                                                                                                                                                                                                                    |
 
-Note: the response body carries no `partOf` property - the root collection is not a part of another collection.
+Note: the response body carries no `partOf` property — the root collection is not a part of another collection.
 
 ### Example
 
@@ -188,7 +189,7 @@ An example of the response body of the API:
 }
 ```
 
-The response indicates that the API has three collections that are a part of the root collection. The root collection groups collections, not entities - it supports no capabilities and omits the `capabilities` property.
+The response indicates that the API has three collections that are a part of the root collection. The root collection groups collections, not entities — it supports no capabilities and omits the `capabilities` property.
 
 A collection can hold further collections. Example response for the 'Persons' collection:
 
@@ -218,7 +219,7 @@ A collection can hold further collections. Example response for the 'Persons' co
 }
 ```
 
-The response indicates that the 'Persons' collection groups two collections: one for 'Painters' and one for 'Writers'. The collection itself is a part of a parent collection, 'Collections'. The collection groups collections rather than entities - it supports no capabilities and omits the `capabilities` property.
+The response indicates that the 'Persons' collection groups two collections: one for 'Painters' and one for 'Writers'. The collection itself is a part of a parent collection, 'Collections'. The collection groups collections rather than entities — it supports no capabilities and omits the `capabilities` property.
 
 ## Endpoint: Retrieve a collection
 
@@ -395,7 +396,7 @@ The response body _MUST_ contain at least the following properties:
 | `type`                       | string                     | 1           | The type of the page. It _MUST_ be `Page` or a specialization.                                                                                                                                                                                                                                                                                                                                   |
 | `name`                       | string                     | 1           | The name of the page.                                                                                                                                                                                                                                                                                                                                                                            |
 | `items`                      | array                      | 1           | A list of the items in the collection that fall on this page.                                                                                                                                                                                                                                                                                                                                    |
-| `items[*]`                   | CuratedCollection, Entity  | 1           | A `CuratedCollection` or a specialization, or a specialization of `Entity`. If an `Entity`: all properties _MUST_ be embedded - see the response body of endpoint [Retrieve an entity](entities.md#endpoint-retrieve-an-entity).                                                                                                                                                                 |
+| `items[*]`                   | CuratedCollection, Entity  | 1           | A `CuratedCollection` or a specialization, or a specialization of `Entity`. If an `Entity`: all properties _MUST_ be embedded — see the response body of endpoint [Retrieve an entity](entities.md#endpoint-retrieve-an-entity).                                                                                                                                                                 |
 | `facets`                     | array                      | 0 or 1      | The facet results requested via the `facet` query parameters. _MUST_ be omitted if no facets were requested. See [Facets on a page](#facets-on-a-page).                                                                                                                                                                                                                                          |
 | `facets[*]`                  | FacetCollection, FacetPage | 1           | The result of one requested facet. It is a `FacetPage` if the facet collection is divided into [pages](resources.md#page), and a `FacetCollection` if it is not. The result is the response body of endpoint [Retrieve a facet collection](facets.md#endpoint-retrieve-a-facet-collection) or [Retrieve a page in a facet collection](facets.md#endpoint-retrieve-a-page-in-a-facet-collection). |
 | `prev`                       | Page                       | 0 or 1      | The previous page in the collection. Not set if there is no previous page.                                                                                                                                                                                                                                                                                                                       |

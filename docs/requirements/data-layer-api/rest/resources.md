@@ -15,7 +15,7 @@ This specification defines the following resource types:
 
 | Name       | Description                                                                                                                                                                                                                                                                   |
 | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Resource   | A 'thing' of a certain type. All other resource types extend from it. A Resource is abstract: there is no resource whose type is `Resource` - it needs a concrete type. This specification defines a number of concrete types. The API may additionally define its own types. |
+| Resource   | A 'thing' of a certain type. All other resource types extend from it. A Resource is abstract: there is no resource whose type is `Resource` — it needs a concrete type. This specification defines a number of concrete types. The API may additionally define its own types. |
 | Collection | An ordered list of resources. A Collection may contain further collections, and may consist of pages, containing sublists of the resources in the collection.                                                                                                                 |
 | Page       | An ordered sublist of resources within a Collection.                                                                                                                                                                                                                          |
 
@@ -38,6 +38,7 @@ class Resource {
 
 class Collection {
   total items
+  total estimated items
 }
 
 class Page
@@ -58,11 +59,13 @@ Page *-- Resource : items
 
 A Resource, regardless of type, contains at least the following properties:
 
-| Name   | Data type | Cardinality | Description                                                                                                                                                                                                                                                     |
-| ------ | --------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`   | string    | 0 or 1      | The identifier of the resource, if known. It _MUST_ be a dereferenceable [HTTP URI](https://httpwg.org/specs/rfc9110.html#uri.schemes). Optional for volatile, non-persistent resources, such as [Keyword Values](suggestions.md) or [Facet Values](facets.md). |
-| `type` | string    | 1           | The type of the resource. This specification defines a number of [types](#data-model). The API may additionally define its own types.                                                                                                                           |
-| `name` | string    | 0 or 1      | The name of the resource, if known and relevant to the resource.                                                                                                                                                                                                |
+| Name   | Data type | Cardinality | Description                                                                                                                                                                                                                                           |
+| ------ | --------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `type` | string    | 1           | The type of the resource. This specification defines a number of [types](#data-model). The API may additionally define its own types.                                                                                                                 |
+| `id`   | string    | 0 or 1      | The identifier of the resource. It _MUST_ be a dereferenceable [HTTP URI](https://httpwg.org/specs/rfc9110.html#uri.schemes). Optional for volatile, non-persistent resources, such as [Keyword Values](suggestions.md) or [Facet Values](facets.md). |
+| `name` | string    | 0 or 1      | The name of the resource, if known.                                                                                                                                                                                                                   |
+
+The data layer API _MUST_ include `type` in the response body of every resource it returns, and `id` and `name` when they are known. The combination of these three properties allow a presentation layer to easily identify a resource.
 
 ### Resource identification with URIs
 
@@ -72,14 +75,14 @@ A Resource, regardless of type, contains at least the following properties:
 
 - See the general requirements of the REST API Design Rules, e.g. plural names (`/entities`, not `/entity`), lower case names (`/entities`, not `/Entities`), dashes (`/heritage-objects`, not `/heritageObjects`), slashes to denote hierarchy (`/collections/persons`, not `/collections-persons`);
 - Use camel case in query parameters (`?filterBy=dateCreated`, not `?filter-by=date-created`);
-- Individual resources must have deterministic IDs if they come from publication systems of data providers;
-- URIs must still be treated as if they were opaque strings ("the URI patterns are to facilitate developers understanding the API, not to facilitate software to interact with it").
+- Individual resources must have deterministic IDs if they come from publication systems of data providers. This ensures that a resource always has the same ID, no matter how many times a data layer retrieves it again from the publication system. A data layer can use a hash (give an example);
+- URIs must still be treated as if they were opaque strings (per Linked Art: "the URI patterns are to facilitate developers understanding the API, not to facilitate software to interact with it").
 
 :::
 
 ### Example
 
-Example of the response body:
+Example of the response body of the API:
 
 ```json
 {
@@ -129,7 +132,7 @@ A Collection contains at least the following properties:
 | `belongsTo.id`        | string     | 1           | The identifier of the collection.                                                                                                                                                                                                                                  |
 | `belongsTo.type`      | string     | 1           | The type of the collection. It _MUST_ be `Collection` or a specialization.                                                                                                                                                                                         |
 | `belongsTo.name`      | string     | 1           | The name of the collection.                                                                                                                                                                                                                                        |
-| `facets`              | Collection | 0 or 1      | The collection of this collection's facet collections. Not set if the collection does not offer facets, or if the collection is a facet collection: a facet collection _MUST NOT_ offer facets itself. See [Facets](facets.md)                                     |
+| `facets`              | Collection | 0 or 1      | The collection of this collection's facet collections. Not set if the collection does not offer facets, or if the collection is a facet collection: a facet collection _MUST NOT_ offer facets itself. See [Facets](facets.md).                                    |
 | `facets.id`           | string     | 1           | The identifier of the collection.                                                                                                                                                                                                                                  |
 | `facets.type`         | string     | 1           | The type of the collection. It _MUST_ be `Collection` or a specialization.                                                                                                                                                                                         |
 | `facets.name`         | string     | 1           | The name of the collection.                                                                                                                                                                                                                                        |
@@ -145,7 +148,7 @@ Collections form a tree: the `items` of a collection can contain further collect
 
 Every collection tree has one root: the collection that has no `partOf`. Every other collection in that tree _MUST_ have a `partOf`. This makes the tree connected and every collection in it reachable from its root. A collection _MUST NOT_ be part of itself, directly or indirectly: the tree _MUST_ be acyclic, so that a presentation layer can traverse it without looping.
 
-A data layer _MAY_ offer more than one collection tree. The [facet collections](facets.md#endpoint-retrieve-the-facet-collections-of-a-collection) and [suggestion collections](suggestions.md#endpoint-retrieve-the-suggestion-collections-of-a-collection) of a collection, for example, form trees of their own. Their root is not part of the collection tree of that collection - it has no `partOf` and uses `belongsTo` instead.
+A data layer _MAY_ offer more than one collection tree. The [facet collections](facets.md#endpoint-retrieve-the-facet-collections-of-a-collection) and [suggestion collections](suggestions.md#endpoint-retrieve-the-suggestion-collections-of-a-collection) of a collection, for example, form trees of their own. Their root is not part of the collection tree of that collection — it has no `partOf` and uses `belongsTo` instead.
 
 A presentation layer walks a tree from its root. It requests the root, and for every item in a collection it recurses if the item's `type` is `Collection` or a specialization of it, and renders the item as a resource otherwise. It does not need to know in advance whether a collection holds further collections or resources, or whether the collections it encounters are divided into pages. Every collection, including one that groups other collections, can be divided into pages, so a tree with many branches can be traversed a page at a time.
 
@@ -155,7 +158,7 @@ This specification does not prescribe a path for each type of collection: a data
 
 ### Example
 
-Example of the response body of the root collection:
+Example of the response body of the API's root collection:
 
 ```json
 {
@@ -178,7 +181,7 @@ Example of the response body of the root collection:
 }
 ```
 
-The response indicates that the root groups two further collections.
+The response indicates that the root groups two further collections, 'Heritage objects' and 'Persons'.
 
 Example of the response body when the collection is divided into pages:
 
@@ -315,7 +318,7 @@ A presentation layer asks for a page with the `page` query parameter. The value 
 - **Page navigation**: the value is a number that says which page the presentation layer wants, such as `?page=3`.
 - **Cursor navigation**: the value is a token that the API has given itself, such as `?page=eyJpZCI6MTIzfQ`. The token points to a place in the collection.
 
-Both are allowed. A data layer _MAY_ use page navigation, _MAY_ use cursor navigation, and _MAY_ use both across its collections. A data layer _SHOULD_ use the same strategy for all of its collections, so that a presentation layer can handle every collection in one way. A data layer _SHOULD NOT_ use page navigation for one collection and cursor navigation for another.
+Both are allowed. A data layer _MAY_ use page navigation, _MAY_ use cursor navigation, and _MAY_ use both across its collections. For predictable navigation, it is _RECOMMENDED_ that a data layer uses the same strategy for all of its collections, so that a presentation layer can handle every collection in one way.
 
 A data layer _MUST_ make its pagination strategy explicit. A collection that is divided into pages _MUST_ advertise exactly one of `https://specs.nde.nl/rest/v1/page-pagination` and `https://specs.nde.nl/rest/v1/cursor-pagination` in its [`capabilities`](#capability-discovery) property, and _MUST NOT_ advertise both. A collection that is not divided into pages _MUST NOT_ advertise either of them. There is no default: a presentation layer _MUST NOT_ assume a pagination strategy for a collection that advertises neither.
 
