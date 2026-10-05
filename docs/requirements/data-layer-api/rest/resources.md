@@ -154,7 +154,24 @@ A presentation layer walks a tree from its root. It requests the root, and for e
 
 ### Collection paths
 
-This specification does not prescribe a path for each type of collection: a data layer exposes a collection at a path of its own choosing. The endpoints for the parts of a collection, such as its [facet collections](facets.md) or its [suggestion collections](suggestions.md), hang off the path of the collection they belong to.
+Every collection has a path: the URI a presentation layer uses to request it.
+
+This specification defines the path of some collections itself:
+
+| Path                                                     | Collection                                  |
+| -------------------------------------------------------- | ------------------------------------------- |
+| `/{version}/collections`                                 | The root of the curated collection tree.    |
+| `/{version}/collections(/{...collections})/{collection}` | A curated collection.                       |
+| `/{version}/{...collections}/facets`                     | The facet collections of a collection.      |
+| `/{version}/{...collections}/facets/{facet}`             | One facet collection.                       |
+| `/{version}/{...collections}/suggestions`                | The suggestion collections of a collection. |
+| `/{version}/{...collections}/suggestions/{suggestion}`   | One suggestion collection.                  |
+
+The words `collections`, `facets` and `suggestions` are reserved: a path identifier _MUST NOT_ be one of them. A path like `/{version}/collections/facets/facets` would otherwise match two of the paths above at once: a curated collection 'facets' inside a curated collection 'facets', and the facet collections of a curated collection 'facets'. Neither the data layer nor a presentation layer can then say which one a URI means.
+
+A presentation layer does not have to build these paths. It finds the facet collections and the suggestion collections of a collection in the `facets` and `suggestions` properties, which hold the full URI of each list. The fixed paths tell a data layer where to put those lists, and give a presentation layer a URI it can link to.
+
+The path identifiers themselves are a choice of the data layer: it names each of its collections, facet collections and suggestion collections itself. See [Resource identification with URIs](#resource-identification-with-uris). A data layer _MAY_ expose the same collection at more than one path.
 
 ### Example
 
@@ -212,21 +229,73 @@ A collection can do more than return a list of items. It can support a keyword s
 
 This specification defines the following capabilities:
 
-| Capability URI                                   | Description                                                                                   |
-| ------------------------------------------------ | --------------------------------------------------------------------------------------------- |
-| `https://specs.nde.nl/rest/v1/keyword-search`    | The collection supports keyword search.                                                       |
-| `https://specs.nde.nl/rest/v1/filtering`         | The collection supports filtering.                                                            |
-| `https://specs.nde.nl/rest/v1/facets`            | The collection supports [facets](facets.md).                                                  |
-| `https://specs.nde.nl/rest/v1/suggestions`       | The collection supports [suggestions](suggestions.md).                                        |
-| `https://specs.nde.nl/rest/v1/highlighting`      | The collection supports text highlighting in string properties matching a keyword query.      |
-| `https://specs.nde.nl/rest/v1/page-pagination`   | The collection supports pagination by [page numbers](#page-navigation-and-cursor-navigation). |
-| `https://specs.nde.nl/rest/v1/cursor-pagination` | The collection supports pagination by [a cursor](#page-navigation-and-cursor-navigation).     |
+| Capability URI                                    | Description                                                                                   |
+| ------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `https://specs.nde.nl/rest/v1/keyword-search`     | The collection supports keyword search.                                                       |
+| `https://specs.nde.nl/rest/v1/keyword-filter`     | The collection supports keyword filters.                                                      |
+| `https://specs.nde.nl/rest/v1/date-filter`        | The collection supports date filters.                                                         |
+| `https://specs.nde.nl/rest/v1/numeric-filter`     | The collection supports numeric filters.                                                      |
+| `https://specs.nde.nl/rest/v1/geolocation-filter` | The collection supports geolocation filters.                                                  |
+| `https://specs.nde.nl/rest/v1/facet-filter`       | The collection supports filters on its facets.                                                |
+| `https://specs.nde.nl/rest/v1/facets`             | The collection supports [facets](facets.md).                                                  |
+| `https://specs.nde.nl/rest/v1/suggestions`        | The collection supports [suggestions](suggestions.md).                                        |
+| `https://specs.nde.nl/rest/v1/highlighting`       | The collection supports text highlighting in string properties matching a keyword query.      |
+| `https://specs.nde.nl/rest/v1/page-pagination`    | The collection supports pagination by [page numbers](#page-navigation-and-cursor-navigation). |
+| `https://specs.nde.nl/rest/v1/cursor-pagination`  | The collection supports pagination by [a cursor](#page-navigation-and-cursor-navigation).     |
 
 Capabilities are a property of a single collection. A presentation layer _MUST NOT_ infer the capabilities of a collection from the capabilities of its ancestors in the collection tree.
 
 The `capabilities` property tells a presentation layer that a collection supports something. It does not tell it how to use it: the endpoints and query parameters of the collection do that.
 
-Two capabilities come with a property that point to a collection. The `facets` property of a collection points to its list of facet collections; see [Facets](facets.md). The `suggestions` property of a collection points to its list of suggestion collections; see [Suggestions](suggestions.md). The other capabilities have no such property. A presentation layer finds them in this specification: `q` for a keyword search, `filter` for filtering, and `page` for a page.
+Two capabilities come with a property that point to a collection. The `facets` property of a collection points to its list of facet collections; see [Facets](facets.md). The `suggestions` property of a collection points to its list of suggestion collections; see [Suggestions](suggestions.md). The other capabilities have no such property. A presentation layer finds them in this specification: `q` for a keyword search, `filter` for a filter of any type, and `page` for a page.
+
+### Filters
+
+A presentation layer can narrow down the items of a collection with filters, using the `filter` query parameter. A data layer _MAY_ offer filters for any collection. Which filters a collection supports is a choice of the data layer.
+
+The filters a collection supports depend on the resources it holds. A [curated collection](collections.md) of entities with geographical data may support a geolocation filter. A [facet collection](facets.md) does not, because its items are facet items rather than entities with a location.
+
+This specification describes the following filter types:
+
+1. **Keyword filter**: filtering on text, with wildcards and phrases (e.g. `Rem`, `Rem*`, `'Rembrandt van Rijn'`).
+1. **Date filter**: filtering by comparing dates (e.g. 'Date of creation is between 1900 and 1950').
+1. **Numeric filter**: filtering by comparing numbers (e.g. 'Number of pages is at least 300').
+1. **Geolocation filter**: filtering on coordinates and a radius (e.g. 'Location of creation is within 25 km of a geopoint').
+1. **Facet filter**: filtering by the values of one of the collection's facets (e.g. 'Creator is "Rembrandt" or "Vincent van Gogh" and Type is "Painting"').
+
+The list is not fixed. A data layer may add filter types of its own for specific use cases. It advertises every filter type it supports for a collection as a capability; see [Capability discovery](#capability-discovery).
+
+A presentation layer _MUST_ only send filters that the collection supports. If it sends another filter, the API _MUST_ respond with a `400` status code. Ignoring an unsupported filter would silently give the presentation layer more items than it asked for.
+
+:::note
+
+**To be discussed**: is there a standard or common notation to express filter and facet parameters via a query string?
+
+Options could be [Feed Item Query Language](https://datatracker.ietf.org/doc/html/draft-nottingham-atompub-fiql-00) (FIQL), [RSQL](https://github.com/jirutka/rsql-parser) or [OData](https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part1-protocol.html#_Toc31358947). These can be heavy-weight, though, or be unable to express all parameters (e.g. facets that should be retrieved). Alternatively, use a custom notation using a convention, e.g. the [LHS bracket syntax](https://docs.strapi.io/cms/api/rest/filters), that can be mapped to JSON for processing by the API? For example:
+
+1. Filter by range: date of creation is between 1900 and 1950
+
+`GET /v1/collections/masterpieces?page=1&filter[dateCreated][gte]=1900&filter[dateCreated][lte]=1950`
+
+2. Filter by geolocation: location of creation is within 25 km of geopoint 52.0752021, 5.1135515
+
+`GET /v1/collections/masterpieces?page=1&filter[locationCreated][lat]=52.0752021&filter[locationCreated][distance][lon]=5.1135515&filter[locationCreated][distance][radius]=25km`
+
+3. Filter by facet: creator ID is 'https://example.org/v1/entities/7890' or 'https://example.org/v1/entities/9012'
+
+`GET /v1/collections/masterpieces?page=1&filter[creators][in]=https://example.org/v1/entities/7890&filter[creators][in]=https://example.org/v1/entities/9012`
+
+4. Instruct the API to return a maximum of 5 facet values of facet 'Creator', and that these values must be ordered by count and then by name
+
+`GET /v1/collections/masterpieces?page=1&facet[creators][orderBy][count]=desc&facet[creators][orderBy][name]=asc&facet[creators][size]=5`
+
+:::
+
+:::note
+
+**To do**: think of a way to express the ID of a `facet` in the query string. A facet ID like `creators` is a shorthand for its full URI but currently does not have a designated property in a [facet collection](facets.md#endpoint-retrieve-a-facet-collection). Full URIs — such as `https://example.org/v1/collections/masterpieces/facets/creators` — are rather verbose.
+
+:::
 
 ## Page
 

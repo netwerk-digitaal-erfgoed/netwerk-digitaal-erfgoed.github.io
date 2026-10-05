@@ -85,6 +85,7 @@ Collection <|-- SuggestionCollection
 Resource <|-- KeywordValue
 Resource <|-- FacetValue
 Resource <|-- Entity
+Resource <|-- Collection
 Collection --> Collection : suggestions
 Collection --> Collection : belongs to
 Collection *-- SuggestionCollection : items
@@ -95,15 +96,15 @@ SuggestionItem --> Resource : value
 
 ## Suggestion collections
 
-A data layer _MAY_ offer several suggestion collections for a collection, each with its own purpose. Every suggestion collection lists its resource types in `valueTypes`, so a presentation layer knows what it can expect before a user types anything. An entry in `valueTypes` may be an abstract type: `Entity` covers every entity type, such as `HeritageObject` and `Person`.
+A data layer _MAY_ offer several suggestion collections for a collection, each with its own purpose. Every suggestion collection lists its resource types in `valueTypes`, so a presentation layer knows what it can expect before a user types anything. An type in `valueTypes` may be abstract — for example, `Entity` covers every entity type, such as `HeritageObject` and `Person`.
 
-A data layer decides which suggestion collections it supports. For example, a data layer could offer the suggestion collections underneath for a [curated collection](collections.md) of heritage objects:
+A data layer decides which suggestion collections it supports. A data layer could offer the suggestion collections underneath for a [curated collection](collections.md) of heritage objects:
 
 1. **Keywords**. The `value` of a suggestion item is a keyword that matches the query, such as 'windmill'. A presentation layer uses the keyword as input to search, to find the objects that match it. The `valueTypes` are `["KeywordValue"]`.
 1. **Entities**. The `value` of a suggestion item is an entity that matches the query, such as a heritage object named 'A Watermill'. A presentation layer can take the user straight to a suggested entity, by [retrieving it](entities.md#endpoint-retrieve-an-entity). The `valueTypes` are `["Entity"]`.
 1. **Combinations of keywords and entities**. The `value` of a suggestion item is a keyword or an entity. A presentation layer shows both to a user. The `valueTypes` are `["KeywordValue", "Entity"]`.
 
-A data layer _MAY_ offer a single suggestion collection instead of all three. It _MAY_ also offer others, such as a collection of facet values in the context of a facet collection.
+A data layer may offer a single suggestion collection instead of all three. It may also offer others, such as a collection of [facet values](facets.md) in the context of a facet collection.
 
 ## Search strategies
 
@@ -118,14 +119,14 @@ The endpoint retrieves all suggestion collections of a collection. The API _MUST
 
 ### HTTP request
 
-`GET /{version}/{...collection}/suggestions`
+`GET /{version}/{...collections}/suggestions`
 
 ### Path parameters
 
-| Name            | Data type | Cardinality | Description                                                                                                                                                                              |
-| --------------- | --------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `version`       | string    | 1           | The version of the API. Example: `v1`.                                                                                                                                                   |
-| `...collection` | string    | 1 or more   | The path identifier(s) of the context collection, including the collections it is part of or that it contains. Example: `collections/objects`, or `collections/objects/facets/creators`. |
+| Name             | Data type | Cardinality | Description                                                                                                                                    |
+| ---------------- | --------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `version`        | string    | 1           | The version of the API. Example: `v1`.                                                                                                         |
+| `...collections` | string    | 1 or more   | The path identifier(s) of the context collection, including the collections it is part of or that it contains. Example: `collections/objects`. |
 
 ### Query parameters
 
@@ -215,15 +216,15 @@ The endpoint retrieves the suggestion items of a suggestion collection that matc
 
 ### HTTP request
 
-`GET /{version}/{...collection}/suggestions/{suggestion}`
+`GET /{version}/{...collections}/suggestions/{suggestion}`
 
 ### Path parameters
 
-| Name            | Data type | Cardinality | Description                                                                                                                                                                              |
-| --------------- | --------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `version`       | string    | 1           | The version of the API. Example: `v1`.                                                                                                                                                   |
-| `...collection` | string    | 1 or more   | The path identifier(s) of the context collection, including the collections it is part of or that it contains. Example: `collections/objects`, or `collections/objects/facets/creators`. |
-| `suggestion`    | string    | 1           | The path identifier of the suggestion collection. Example: `keywords`.                                                                                                                   |
+| Name             | Data type | Cardinality | Description                                                                                                                                    |
+| ---------------- | --------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `version`        | string    | 1           | The version of the API. Example: `v1`.                                                                                                         |
+| `...collections` | string    | 1 or more   | The path identifier(s) of the context collection, including the collections it is part of or that it contains. Example: `collections/objects`. |
+| `suggestion`     | string    | 1           | The path identifier of the suggestion collection. Example: `keywords`.                                                                         |
 
 ### Query parameters
 
@@ -232,6 +233,7 @@ The endpoint retrieves the suggestion items of a suggestion collection that matc
 | `q`       | string    | 1           | A query for filtering the suggestion items. Minimum length: defined by the API (e.g. 3 characters). Maximum length: defined by the API (e.g. 25 characters). The API defines how the query is matched, e.g. by using prefix or infix search. |
 | `size`    | number    | 0 or 1      | The maximum number of suggestion items to retrieve. Minimum: 1. Default: 10. Maximum: defined by the API (e.g. 25).                                                                                                                          |
 | `orderBy` | string    | 0 or 1      | The sorting order of the suggestion items. It _MUST_ be one of `relevance`, `value`. Default: `relevance:desc` (most relevant suggestion first). The API defines which property of the value it sorts by, such as the `name`.                |
+| `filter`  | string    | 0 or more   | The rules for filtering the suggestion items. See [Filters](resources.md#filters).                                                                                                                                                           |
 
 ### Request body
 

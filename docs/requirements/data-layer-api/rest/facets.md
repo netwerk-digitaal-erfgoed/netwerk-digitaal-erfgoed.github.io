@@ -28,7 +28,7 @@ Facets are optional. A data layer _MAY_ implement them, depending on its require
 | Facet Page               | An ordered sublist of facet items within a Facet Collection. Specialization of Page.                                                                                                                                                                                                                          |
 | Facet Item               | A selectable option within a Facet Collection or Facet Page, pointing to a resource.                                                                                                                                                                                                                          |
 | Resource                 | A 'thing' of a certain type. Every value of a facet item is a resource. See [Resources](resources.md).                                                                                                                                                                                                        |
-| Facet Value              | A value of a facet item, e.g. a value with the name 'Jan de Vries'. A data layer uses a Facet Value to group several resources that have the same name into one facet item. It has no identity of its own.                                                                                                     |
+| Facet Value              | A value of a facet item, e.g. a value with the name 'Jan de Vries'. A data layer uses a Facet Value to group several resources that have the same name into one facet item. It has no identity of its own.                                                                                                    |
 | Facet Range Value        | A value of a facet item that covers a range, such as the years 1900 to 1950 or an age from 30 to 40. It has a `name`, a lower bound `min` and an upper bound `max`. It has no form of its own: a range value is either a Facet Date Range Value or a Facet Number Range Value. Specialization of Facet Value. |
 | Facet Date Range Value   | A range of dates, such as the years 1900 to 1950. Its `min` and `max` are dates in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601). Specialization of Facet Range Value.                                                                                                                                   |
 | Facet Number Range Value | A range of numbers, such as an age from 30 to 40. Its `min` and `max` are numbers. Specialization of Facet Range Value.                                                                                                                                                                                       |
@@ -186,14 +186,14 @@ The endpoint retrieves all facet collections of a collection. The API _MUST_ imp
 
 ### HTTP request
 
-`GET /{version}/{...collection}/facets`
+`GET /{version}/{...collections}/facets`
 
 ### Path parameters
 
-| Name            | Data type | Cardinality | Description                                                                                                                                                                              |
-| --------------- | --------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `version`       | string    | 1           | The version of the API. Example: `v1`.                                                                                                                                                   |
-| `...collection` | string    | 1 or more   | The path identifier(s) of the context collection, including the collections it is part of or that it contains. Example: `collections/objects`, or `collections/objects/facets/creators`. |
+| Name             | Data type | Cardinality | Description                                                                                                                                    |
+| ---------------- | --------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `version`        | string    | 1           | The version of the API. Example: `v1`.                                                                                                         |
+| `...collections` | string    | 1 or more   | The path identifier(s) of the context collection, including the collections it is part of or that it contains. Example: `collections/objects`. |
 
 ### Query parameters
 
@@ -281,15 +281,15 @@ The endpoint retrieves a facet collection. The API _MUST_ implement this endpoin
 
 ### HTTP request
 
-`GET /{version}/{...collection}/facets/{facet}`
+`GET /{version}/{...collections}/facets/{facet}`
 
 ### Path parameters
 
-| Name            | Data type | Cardinality | Description                                                                                                                                                                              |
-| --------------- | --------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `version`       | string    | 1           | The version of the API. Example: `v1`.                                                                                                                                                   |
-| `...collection` | string    | 1 or more   | The path identifier(s) of the context collection, including the collections it is part of or that it contains. Example: `collections/objects`, or `collections/objects/facets/creators`. |
-| `facet`         | string    | 1           | The path identifier of the facet collection. Example: `creators`, `centuries`.                                                                                                           |
+| Name             | Data type | Cardinality | Description                                                                                                                                    |
+| ---------------- | --------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `version`        | string    | 1           | The version of the API. Example: `v1`.                                                                                                         |
+| `...collections` | string    | 1 or more   | The path identifier(s) of the context collection, including the collections it is part of or that it contains. Example: `collections/objects`. |
+| `facet`          | string    | 1           | The path identifier of the facet collection. Example: `creators`, `centuries`.                                                                 |
 
 ### Query parameters
 
@@ -298,10 +298,11 @@ The endpoint retrieves a facet collection. The API _MUST_ implement this endpoin
 | `q`       | string    | 0 or 1      | A keyword query for filtering the facet items. Minimum length: defined by the API (e.g. 3 characters). Maximum length: defined by the API (e.g. 25 characters).                                                                            |
 | `size`    | number    | 0 or 1      | The maximum number of facet items to retrieve. Minimum: 1. Default: 10. Maximum: defined by the API (e.g. 100).                                                                                                                            |
 | `orderBy` | string    | 0 or 1      | The sorting order of the facet items. One of `count`, `value`. Default: `count:desc` (most frequent item first). The API defines which property of the value it sorts by (e.g. the `name`). For a range value, the API sorts by its `min`. |
+| `filter`  | string    | 0 or more   | The rules for filtering the facet items. See [Filters](resources.md#filters).                                                                                                                                                              |
 
 :::note
 
-**To do**: add the query parameters representing the "search context" from the context collection (`q` and `filter` from endpoint [Retrieve a page in a collection](collections.md#endpoint-retrieve-a-page-in-a-collection)).
+**To do**: add the query parameters that carry the "search context" of the context collection, so that the facet items reflect the same search as the page in that collection (`q` and `filter` of endpoint [Retrieve a page in a collection](collections.md#endpoint-retrieve-a-page-in-a-collection)).
 
 :::
 
@@ -323,9 +324,9 @@ The response body _MUST_ contain at least the following properties:
 | `items`               | array      | 0 or 1      | A list of the facet items in the collection. Not set if the collection is divided into [pages](resources.md#page).                                                                                                                                               |
 | `items[*]`            | FacetItem  | 1           | A facet item.                                                                                                                                                                                                                                                    |
 | `items[*].type`       | string     | 1           | The type of the facet item. It _MUST_ be `FacetItem`.                                                                                                                                                                                                            |
-| `items[*].count`      | number     | 1           | The number of occurrences of the value. If the value is a `FacetValue`, the count covers all resources that the data layer grouped into it.                |
-| `items[*].value`      | Resource   | 1           | The value of the facet item: an entity, a collection, or a facet value that groups several resources.                                                                                                                                                             |
-| `items[*].value.type` | string     | 1           | The type of the value of the facet item. It _MUST_ be `Resource` or a specialization. See [Facet items](#facet-items).                                                                                                |
+| `items[*].count`      | number     | 1           | The number of occurrences of the value. If the value is a `FacetValue`, the count covers all resources that the data layer grouped into it.                                                                                                                      |
+| `items[*].value`      | Resource   | 1           | The value of the facet item: an entity, a collection, or a facet value that groups several resources.                                                                                                                                                            |
+| `items[*].value.type` | string     | 1           | The type of the value of the facet item. It _MUST_ be `Resource` or a specialization. See [Facet items](#facet-items).                                                                                                                                           |
 | `items[*].value.id`   | string     | 0 or 1      | The identifier of the value. Not set if the value is a `FacetValue`; a facet value has no identity.                                                                                                                                                              |
 | `items[*].value.name` | string     | 1           | The name of the value.                                                                                                                                                                                                                                           |
 | `items[*].value.min`  | string     | 0 or 1      | The lower bound of the range. Not set if the range has no lower bound, such as in a facet value 'before 1500'.                                                                                                                                                   |
@@ -579,15 +580,15 @@ The endpoint retrieves a page in a facet collection. The API _MUST_ implement th
 
 ### HTTP request
 
-`GET /{version}/{...collection}/facets/{facet}?page={page}`
+`GET /{version}/{...collections}/facets/{facet}?page={page}`
 
 ### Path parameters
 
-| Name            | Data type | Cardinality | Description                                                                                                                                                                              |
-| --------------- | --------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `version`       | string    | 1           | The version of the API. Example: `v1`.                                                                                                                                                   |
-| `...collection` | string    | 1 or more   | The path identifier(s) of the context collection, including the collections it is part of or that it contains. Example: `collections/objects`, or `collections/objects/facets/creators`. |
-| `facet`         | string    | 1           | The path identifier of the facet collection. Example: `creators`, `centuries`.                                                                                                           |
+| Name             | Data type | Cardinality | Description                                                                                                                                    |
+| ---------------- | --------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `version`        | string    | 1           | The version of the API. Example: `v1`.                                                                                                         |
+| `...collections` | string    | 1 or more   | The path identifier(s) of the context collection, including the collections it is part of or that it contains. Example: `collections/objects`. |
+| `facet`          | string    | 1           | The path identifier of the facet collection. Example: `creators`, `centuries`.                                                                 |
 
 ### Query parameters
 
@@ -597,10 +598,11 @@ The endpoint retrieves a page in a facet collection. The API _MUST_ implement th
 | `q`       | string    | 0 or 1      | A keyword query for filtering the facet items. Minimum length: defined by the API (e.g. 3 characters). Maximum length: defined by the API (e.g. 25 characters).                                                                            |
 | `size`    | number    | 0 or 1      | The maximum number of facet items to retrieve. Minimum: 1. Default: 10. Maximum: defined by the API (e.g. 100).                                                                                                                            |
 | `orderBy` | string    | 0 or 1      | The sorting order of the facet items. One of `count`, `value`. Default: `count:desc` (most frequent item first). The API defines which property of the value it sorts by (e.g. the `name`). For a range value, the API sorts by its `min`. |
+| `filter`  | string    | 0 or more   | The rules for filtering the facet items. See [Filters](resources.md#filters).                                                                                                                                                              |
 
 :::note
 
-**To do**: add the query parameters representing the "search context" from the context collection (`q` and `filter` from endpoint [Retrieve a page in a collection](collections.md#endpoint-retrieve-a-page-in-a-collection)).
+**To do**: add the query parameters that carry the "search context" of the context collection, so that the facet items reflect the same search as the page in that collection (`q` and `filter` of endpoint [Retrieve a page in a collection](collections.md#endpoint-retrieve-a-page-in-a-collection)).
 
 :::
 
@@ -612,39 +614,39 @@ None.
 
 The response body _MUST_ contain at least the following properties:
 
-| Name                         | Data type       | Cardinality | Description                                                                                                                                                                                                                                       |
-| ---------------------------- | --------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`                         | string          | 1           | The identifier of the current page.                                                                                                                                                                                                               |
-| `type`                       | string          | 1           | The type of the page. It _MUST_ be `FacetPage` or a specialization.                                                                                                                                                                               |
-| `name`                       | string          | 1           | The name of the page.                                                                                                                                                                                                                             |
-| `items`                      | array           | 1           | A list of facet items.                                                                                                                                                                                                                            |
-| `items[*]`                   | FacetItem       | 1           | A facet item.                                                                                                                                                                                                                                     |
-| `items[*].type`              | string          | 1           | The type of the facet item. It _MUST_ be `FacetItem`.                                                                                                                                                                                             |
-| `items[*].count`             | number          | 1           | The number of occurrences of the value. If the value is a `FacetValue`, the count covers all resources that the data layer grouped into it. |
-| `items[*].value`             | Resource        | 1           | The value of the facet item: an entity, a collection, or a facet value that groups several resources.                                                                                                                                              |
-| `items[*].value.type`        | string          | 1           | The type of the value of the facet item. It _MUST_ be `Resource` or a specialization. See [Facet items](#facet-items).                                                                                 |
-| `items[*].value.id`          | string          | 0 or 1      | The identifier of the value. Not set if the value is a `FacetValue`; a facet value has no identity.                                                                                                                                               |
-| `items[*].value.name`        | string          | 1           | The name of the value.                                                                                                                                                                                                                            |
-| `items[*].value.min`         | string          | 0 or 1      | The lower bound of the range. Not set if the range has no lower bound, such as in a facet value 'before 1500'.                                                                                                                                    |
-| `items[*].value.max`         | string          | 0 or 1      | The upper bound of the range. Not set if the range has no upper bound, such as in a facet value 'after 1900'.                                                                                                                                     |
-| `prev`                       | FacetPage       | 0 or 1      | The previous page in the collection. Not set if there is no previous page.                                                                                                                                                                        |
-| `prev.id`                    | string          | 1           | The identifier of the previous page in the collection.                                                                                                                                                                                            |
-| `prev.type`                  | string          | 1           | The type of the previous page in the collection. It _MUST_ be `FacetPage` or a specialization.                                                                                                                                                    |
-| `next`                       | FacetPage       | 0 or 1      | The next page in the collection. Not set if there is no next page.                                                                                                                                                                                |
-| `next.id`                    | string          | 1           | The identifier of the next page in the collection.                                                                                                                                                                                                |
-| `next.type`                  | string          | 1           | The type of the next page in the collection. It _MUST_ be `FacetPage` or a specialization.                                                                                                                                                        |
-| `partOf`                     | FacetCollection | 1           | The collection to which the items contained by the page belong. See the response body of endpoint [Retrieve a facet collection](#endpoint-retrieve-a-facet-collection).                                                                           |
-| `partOf.id`                  | string          | 1           | The identifier of the facet collection.                                                                                                                                                                                                           |
-| `partOf.type`                | string          | 1           | The type of the facet collection. It _MUST_ be `FacetCollection` or a specialization.                                                                                                                                                             |
-| `partOf.name`                | string          | 1           | The name of the facet collection.                                                                                                                                                                                                                 |
-| `partOf.totalItems`          | number          | 0 or 1      | The exact total number of items in the facet collection. Not set if the exact total is too costly to calculate. Mutually exclusive with `partOf.estimatedTotalItems`.                                                                             |
-| `partOf.estimatedTotalItems` | number          | 0 or 1      | An estimate of the total number of items in the facet collection. It can be higher or lower than the real total. Not set if there is no estimate. Mutually exclusive with `partOf.totalItems`.                                                    |
-| `partOf.first`               | FacetPage       | 1           | The first page in the collection.                                                                                                                                                                                                                 |
-| `partOf.first.id`            | string          | 1           | The identifier of the first page in the collection.                                                                                                                                                                                               |
-| `partOf.first.type`          | string          | 1           | The type of the first page in the collection. It _MUST_ be `FacetPage` or a specialization.                                                                                                                                                       |
-| `partOf.last`                | FacetPage       | 0 or 1      | The last page in the collection. Not set if the last page is unknown (e.g. in case of [cursor navigation](resources.md#page-navigation-and-cursor-navigation)).                                                                                   |
-| `partOf.last.id`             | string          | 1           | The identifier of the last page in the collection.                                                                                                                                                                                                |
-| `partOf.last.type`           | string          | 1           | The type of the last page in the collection. It _MUST_ be `FacetPage` or a specialization.                                                                                                                                                        |
+| Name                         | Data type       | Cardinality | Description                                                                                                                                                                                    |
+| ---------------------------- | --------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`                         | string          | 1           | The identifier of the current page.                                                                                                                                                            |
+| `type`                       | string          | 1           | The type of the page. It _MUST_ be `FacetPage` or a specialization.                                                                                                                            |
+| `name`                       | string          | 1           | The name of the page.                                                                                                                                                                          |
+| `items`                      | array           | 1           | A list of facet items.                                                                                                                                                                         |
+| `items[*]`                   | FacetItem       | 1           | A facet item.                                                                                                                                                                                  |
+| `items[*].type`              | string          | 1           | The type of the facet item. It _MUST_ be `FacetItem`.                                                                                                                                          |
+| `items[*].count`             | number          | 1           | The number of occurrences of the value. If the value is a `FacetValue`, the count covers all resources that the data layer grouped into it.                                                    |
+| `items[*].value`             | Resource        | 1           | The value of the facet item: an entity, a collection, or a facet value that groups several resources.                                                                                          |
+| `items[*].value.type`        | string          | 1           | The type of the value of the facet item. It _MUST_ be `Resource` or a specialization. See [Facet items](#facet-items).                                                                         |
+| `items[*].value.id`          | string          | 0 or 1      | The identifier of the value. Not set if the value is a `FacetValue`; a facet value has no identity.                                                                                            |
+| `items[*].value.name`        | string          | 1           | The name of the value.                                                                                                                                                                         |
+| `items[*].value.min`         | string          | 0 or 1      | The lower bound of the range. Not set if the range has no lower bound, such as in a facet value 'before 1500'.                                                                                 |
+| `items[*].value.max`         | string          | 0 or 1      | The upper bound of the range. Not set if the range has no upper bound, such as in a facet value 'after 1900'.                                                                                  |
+| `prev`                       | FacetPage       | 0 or 1      | The previous page in the collection. Not set if there is no previous page.                                                                                                                     |
+| `prev.id`                    | string          | 1           | The identifier of the previous page in the collection.                                                                                                                                         |
+| `prev.type`                  | string          | 1           | The type of the previous page in the collection. It _MUST_ be `FacetPage` or a specialization.                                                                                                 |
+| `next`                       | FacetPage       | 0 or 1      | The next page in the collection. Not set if there is no next page.                                                                                                                             |
+| `next.id`                    | string          | 1           | The identifier of the next page in the collection.                                                                                                                                             |
+| `next.type`                  | string          | 1           | The type of the next page in the collection. It _MUST_ be `FacetPage` or a specialization.                                                                                                     |
+| `partOf`                     | FacetCollection | 1           | The collection to which the items contained by the page belong. See the response body of endpoint [Retrieve a facet collection](#endpoint-retrieve-a-facet-collection).                        |
+| `partOf.id`                  | string          | 1           | The identifier of the facet collection.                                                                                                                                                        |
+| `partOf.type`                | string          | 1           | The type of the facet collection. It _MUST_ be `FacetCollection` or a specialization.                                                                                                          |
+| `partOf.name`                | string          | 1           | The name of the facet collection.                                                                                                                                                              |
+| `partOf.totalItems`          | number          | 0 or 1      | The exact total number of items in the facet collection. Not set if the exact total is too costly to calculate. Mutually exclusive with `partOf.estimatedTotalItems`.                          |
+| `partOf.estimatedTotalItems` | number          | 0 or 1      | An estimate of the total number of items in the facet collection. It can be higher or lower than the real total. Not set if there is no estimate. Mutually exclusive with `partOf.totalItems`. |
+| `partOf.first`               | FacetPage       | 1           | The first page in the collection.                                                                                                                                                              |
+| `partOf.first.id`            | string          | 1           | The identifier of the first page in the collection.                                                                                                                                            |
+| `partOf.first.type`          | string          | 1           | The type of the first page in the collection. It _MUST_ be `FacetPage` or a specialization.                                                                                                    |
+| `partOf.last`                | FacetPage       | 0 or 1      | The last page in the collection. Not set if the last page is unknown (e.g. in case of [cursor navigation](resources.md#page-navigation-and-cursor-navigation)).                                |
+| `partOf.last.id`             | string          | 1           | The identifier of the last page in the collection.                                                                                                                                             |
+| `partOf.last.type`           | string          | 1           | The type of the last page in the collection. It _MUST_ be `FacetPage` or a specialization.                                                                                                     |
 
 ### Example
 

@@ -63,47 +63,6 @@ Page *-- CuratedCollection : items
 Page *-- Entity : items
 ```
 
-## Filters
-
-Entities in a collection can be filtered to narrow down results. Supported filter types are:
-
-1. **Keyword filter**: filtering based on text matching (e.g. `Rem`, `Rem*`, `'Rembrandt van Rijn'`).
-1. **Date or numeric filter**: filtering by comparing date or numeric values (e.g. 'Date of creation is between 1900 and 1950').
-1. **Geolocation filter**: filtering based on coordinates and radius (e.g. 'Location of creation is within 25 km of a geopoint').
-1. **Facet filter**: filtering by specific attributes or categories (e.g. 'Creator is "Rembrandt" or "Vincent van Gogh" and Type is "Painting"').
-
-Filter types are not specific to any collection: a data layer may support them for some of its collections and not for others, or for none. The data layer decides which filters it supports for which collection. The data layer can also add its own, custom filters, for specific use cases.
-
-:::note
-
-**To be discussed**: is there a standard or common notation to express filter and facet parameters via a query string?
-
-Options could be [Feed Item Query Language](https://datatracker.ietf.org/doc/html/draft-nottingham-atompub-fiql-00) (FIQL), [RSQL](https://github.com/jirutka/rsql-parser) or [OData](https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part1-protocol.html#_Toc31358947). These can be heavy-weight, though, or be unable to express all parameters (e.g. facets that should be retrieved). Alternatively, use a custom notation using a convention, e.g. the [LHS bracket syntax](https://docs.strapi.io/cms/api/rest/filters), that can be mapped to JSON for processing by the API? For example:
-
-1. Filter by range: date of creation is between 1900 and 1950
-
-`GET /v1/collections/masterpieces?page=1&filter[dateCreated][gte]=1900&filter[dateCreated][lte]=1950`
-
-2. Filter by geolocation: location of creation is within 25 km of geopoint 52.0752021, 5.1135515
-
-`GET /v1/collections/masterpieces?page=1&filter[locationCreated][lat]=52.0752021&filter[locationCreated][distance][lon]=5.1135515&filter[locationCreated][distance][radius]=25km`
-
-3. Filter by facet: creator ID is 'https://example.org/v1/entities/7890' or 'https://example.org/v1/entities/9012'
-
-`GET /v1/collections/masterpieces?page=1&filter[creators][in]=https://example.org/v1/entities/7890&filter[creators][in]=https://example.org/v1/entities/9012`
-
-4. Instruct the API to return a maximum of 5 facet values of facet 'Creator', and that these values must be ordered by count and then by name
-
-`GET /v1/collections/masterpieces?page=1&facet[creators][orderBy][count]=desc&facet[creators][orderBy][name]=asc&facet[creators][size]=5`
-
-:::
-
-:::note
-
-**To do**: think of a way to express the ID of a `facet` in the query string. A facet ID like `creators` is a shorthand for its full URI but currently does not have a designated property in a [facet collection](facets.md#endpoint-retrieve-a-facet-collection). Full URIs — such as `https://example.org/v1/collections/masterpieces/facets/creators` — are rather verbose.
-
-:::
-
 ## Endpoint: Retrieve the root collection
 
 The endpoint retrieves the root collection: the curated collection that is not a part of another collection. Its items are curated collections, entities, or a mixture of both. The API _MUST_ implement this endpoint, even if the root collection is the only collection it offers: a data layer that does not nest its collections offers its entities as the items of the root collection.
@@ -239,12 +198,12 @@ The endpoint retrieves a curated collection. The API _MAY_ implement this endpoi
 
 ### Query parameters
 
-| Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                                          |
-| --------- | --------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `q`       | string    | 0 or 1      | A keyword query for filtering the entities. Minimum length: defined by the API (e.g. 1 character). Maximum length: defined by the API (e.g. 100 characters).                                                                                                         |
-| `size`    | number    | 0 or 1      | The maximum number of entities to retrieve. Minimum: 1. Default: 10. Maximum: defined by the API (e.g. 100).                                                                                                                                                         |
-| `orderBy` | string    | 0 or 1      | The sorting order of the entities. One of `relevance`, `value`. Default: `relevance:desc` (most relevant entity first) if `q` is set; otherwise the order defined by the API. The API defines which value is used to sort by `value` (e.g. the `name` of an entity). |
-| `filter`  | string    | 0 or more   | The rules for filtering the entities. See [Filters](#filters).                                                                                                                                                                                                       |
+| Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                                     |
+| --------- | --------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `q`       | string    | 0 or 1      | A keyword query for filtering the items. Minimum length: defined by the API (e.g. 1 character). Maximum length: defined by the API (e.g. 100 characters).                                                                                                       |
+| `size`    | number    | 0 or 1      | The maximum number of items to retrieve. Minimum: 1. Default: 10. Maximum: defined by the API (e.g. 100).                                                                                                                                                       |
+| `orderBy` | string    | 0 or 1      | The sorting order of the items. One of `relevance`, `value`. Default: `relevance:desc` (most relevant entity first) if `q` is set; otherwise the order defined by the API. The API defines which property it sorts by `value` on (e.g. the `name` of the item). |
+| `filter`  | string    | 0 or more   | The rules for filtering the items. See [Filters](resources.md#filters).                                                                                                                                                                                         |
 
 ### Request body
 
@@ -373,14 +332,14 @@ The endpoint retrieves a page in a curated collection. The API _MUST_ implement 
 
 ### Query parameters
 
-| Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                                          |
-| --------- | --------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `page`    | string    | 1           | The identifier of the page: a page number or cursor, depending on the [pagination strategy](resources.md#page-navigation-and-cursor-navigation) of the API.                                                                                                          |
-| `q`       | string    | 0 or 1      | A keyword query for filtering the entities. Minimum length: defined by the API (e.g. 1 character). Maximum length: defined by the API (e.g. 100 characters).                                                                                                         |
-| `size`    | number    | 0 or 1      | The maximum number of entities to retrieve. Minimum: 1. Default: 10. Maximum: defined by the API (e.g. 100).                                                                                                                                                         |
-| `orderBy` | string    | 0 or 1      | The sorting order of the entities. One of `relevance`, `value`. Default: `relevance:desc` (most relevant entity first) if `q` is set; otherwise the order defined by the API. The API defines which value is used to sort by `value` (e.g. the `name` of an entity). |
-| `filter`  | string    | 0 or more   | The rules for filtering the entities. See [Filters](#filters).                                                                                                                                                                                                       |
-| `facet`   | string    | 0 or more   | The facets that must be retrieved. _MUST_ be ignored by the API if it does not support facets. See [facets](facets.md).                                                                                                                                              |
+| Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                                     |
+| --------- | --------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `page`    | string    | 1           | The identifier of the page: a page number or cursor, depending on the [pagination strategy](resources.md#page-navigation-and-cursor-navigation) of the API.                                                                                                     |
+| `q`       | string    | 0 or 1      | A keyword query for filtering the items. Minimum length: defined by the API (e.g. 1 character). Maximum length: defined by the API (e.g. 100 characters).                                                                                                       |
+| `size`    | number    | 0 or 1      | The maximum number of items to retrieve. Minimum: 1. Default: 10. Maximum: defined by the API (e.g. 100).                                                                                                                                                       |
+| `orderBy` | string    | 0 or 1      | The sorting order of the items. One of `relevance`, `value`. Default: `relevance:desc` (most relevant entity first) if `q` is set; otherwise the order defined by the API. The API defines which property it sorts by `value` on (e.g. the `name` of the item). |
+| `filter`  | string    | 0 or more   | The rules for filtering the items. See [Filters](resources.md#filters).                                                                                                                                                                                         |
+| `facet`   | string    | 0 or more   | The facets that must be retrieved. _MUST_ be ignored by the API if it does not support facets. See [facets](facets.md).                                                                                                                                         |
 
 ### Request body
 
