@@ -15,9 +15,9 @@ The data model of an individual type is specified with the resources it belongs 
 
 A data layer defines the types it uses, so that every type in a response is a type that the data layer knows. Those types form its **type vocabulary**.
 
-A data layer _MUST_ publish its type vocabulary. The vocabulary is a set of data models - a change to it is a change to the API.
+A data layer _MUST_ publish its type vocabulary. The vocabulary is a set of data models — a change to it is a change to the API.
 
-The vocabulary is administrative information. It tells a developer of a presentation layer what a resource looks like and what the API guarantees about it. The form in which a data layer publishes its vocabulary is to be specified - see the note below.
+The vocabulary is administrative information. It tells a developer of a presentation layer what a resource looks like and what the API guarantees about it. The form in which a data layer publishes its vocabulary is to be specified — see the note below.
 
 :::note
 

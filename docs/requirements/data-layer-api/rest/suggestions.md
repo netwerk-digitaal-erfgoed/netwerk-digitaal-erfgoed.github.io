@@ -9,7 +9,7 @@ sidebar_position: 8
 
 A suggestion is a value displayed as a user types, such as a keyword, a name, or a facet value. For example: if a user types 'rem', suggestions might be 'Rembrandt' or 'Rem Koolhaas'. Suggestions help users save time. A user can select one of the suggested values and find resources matching the suggestion. This functionality is also known as autocompletion or typeahead.
 
-Suggestions are tied to a particular collection - the context collection - ensuring that results remain within the context of that collection. A data layer _MAY_ offer suggestions for any collection, except for a suggestion collection itself.
+Suggestions are tied to a particular collection — the context collection — ensuring that results remain within the context of that collection. A data layer _MAY_ offer suggestions for any collection, except for a suggestion collection itself.
 
 Suggestions are optional. A data layer _MAY_ implement them, depending on its requirements. A data layer advertises the suggestion collections it supports for a collection in the generic [`suggestions` property](resources.md#collection) of that collection. The property points to the list of suggestion collections, which a presentation layer retrieves with endpoint [Retrieve the suggestion collections of a collection](#endpoint-retrieve-the-suggestion-collections-of-a-collection).
 
@@ -42,6 +42,7 @@ class Collection["Collection"] {
   type
   name
   total items
+  total estimated items
 }
 
 class SuggestionCollection["Suggestion Collection"] {
@@ -50,6 +51,7 @@ class SuggestionCollection["Suggestion Collection"] {
   type
   name
   total items
+  total estimated items
 }
 
 class ValueSuggestionCollection["Value Suggestion Collection"]

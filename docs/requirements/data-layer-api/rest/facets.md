@@ -13,9 +13,9 @@ In this specification, the word _facet_ always means a **facet collection**: the
 
 Search engines use other words for the same things. Elasticsearch calls a facet an _aggregation_ and its options _buckets_. Solr calls a facet a _facet field_.
 
-A presentation layer can browse the facet items in a facet collection, filter them, and ask for suggestions for them - just like any other collection. What makes a facet collection special is what its items hold: each item points to a value a user can use to narrow a search.
+A presentation layer can browse the facet items in a facet collection, filter them, and ask for suggestions for them — just like any other collection. What makes a facet collection special is what its items hold: each item points to a value a user can use to narrow a search.
 
-Facets are tied to a particular collection - the context collection - ensuring that results remain within the context of that collection. A data layer _MAY_ offer facets for any collection, except for a facet collection itself.
+Facets are tied to a particular collection — the context collection — ensuring that results remain within the context of that collection. A data layer _MAY_ offer facets for any collection, except for a facet collection itself.
 
 Facets are optional. A data layer _MAY_ implement them, depending on its requirements. A data layer advertises the facet collections it supports for a collection in the generic [`facets` property](resources.md#collection) of that collection. The property points to the list of facet collections, which a presentation layer retrieves with the endpoint [Retrieve the facet collections of a collection](#endpoint-retrieve-the-facet-collections-of-a-collection).
 
@@ -48,6 +48,7 @@ class Collection["Collection"] {
   type
   name
   total items
+  total estimated items
 }
 
 class FacetCollection["Facet Collection"] {
@@ -55,6 +56,7 @@ class FacetCollection["Facet Collection"] {
   type
   name
   total items
+  total estimated items
 }
 
 class Page["Page"] {
@@ -164,7 +166,7 @@ A range value _MUST_ include its lower bound, but not its upper bound. For examp
 
 A facet collection _MUST NOT_ mix range values of different types, for example `FacetDateRangeValue`s together with `FacetNumberRangeValue`s. This makes sure a presentation layer can display the range values correctly. A facet collection _MAY_ return its range values in any order. If the client does not ask for a particular order, the API _SHOULD_ return them from the lowest to the highest, so that a presentation layer can place them in the right order, for example on the axis of a histogram.
 
-The `name` is the label of the value. The API may use any text in it, such as '1900–1950', 'between 1900 and 1950', or '1900 to 1950'. A presentation layer _MUST NOT_ read the bounds out of the `name` - it must use the `min` and `max` properties. A presentation layer can use the bounds to place every facet value on a scale. It can draw a histogram, with one bar per value from its lower bound to its upper bound. It can draw a timeline, with one band per value that shows how long the range lasts.
+The `name` is the label of the value. The API may use any text in it, such as '1900–1950', 'between 1900 and 1950', or '1900 to 1950'. A presentation layer _MUST NOT_ read the bounds out of the `name` — it must use the `min` and `max` properties. A presentation layer can use the bounds to place every facet value on a scale. It can draw a histogram, with one bar per value from its lower bound to its upper bound. It can draw a timeline, with one band per value that shows how long the range lasts.
 
 ## Endpoint: Retrieve the facet collections of a collection
 
