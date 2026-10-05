@@ -56,7 +56,7 @@ CuratedCollection *-- CuratedCollection : items
 CuratedCollection --> CuratedCollection : part of
 CuratedCollection --> Page : first, last
 CuratedCollection *-- Entity : items
-CuratedCollection --> Collection : facets
+CuratedCollection --> Collection : facets, suggestions
 Page --> CuratedCollection : part of
 Page --> Page : previous, next
 Page *-- CuratedCollection : items

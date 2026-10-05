@@ -59,13 +59,12 @@ class FacetCollection["Facet Collection"] {
   total estimated items
 }
 
-class Page["Page"] {
+class FacetPage["Facet Page"] {
   id
   type
   name
 }
 
-class FacetPage["Facet Page"]
 class FacetItem["Facet Item"] {
   type
   count
@@ -98,7 +97,6 @@ Collection <|-- FacetCollection
 FacetValue <|-- FacetRangeValue
 FacetRangeValue <|-- FacetDateRangeValue
 FacetRangeValue <|-- FacetNumberRangeValue
-Page <|-- FacetPage
 Collection --> Collection : belongs to, facets, suggestions
 Collection *-- FacetCollection : items
 FacetCollection --> Collection : part of
