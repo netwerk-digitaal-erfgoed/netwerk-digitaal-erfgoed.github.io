@@ -7,9 +7,9 @@ sidebar_position: 6
 
 ## Introduction
 
-A curated collection is a grouping of [entities](entities.md). It is the main way for a presentation layer to browse and filter the entities of a data layer. A data layer can include any entity of any type in a curated collection, and can create any number of curated collections, nested in any way, depending on the requirements of presentation layers.
+A curated collection is a grouping of [entities](entities.md). It is the main way for a presentation layer to browse and filter the entities of a data layer. A data layer can include any entity of any type in a curated collection, and can create any number of curated collections, nested in any way, depending on the requirements of presentation layers. An entity can be a part of any number of collections, and of no collection at all. A collection is a selection, not a type.
 
-For example: a data layer may have a collection for all entities of type 'Heritage object'. The data layer may also have a 'Masterpieces' collection with its finest art-related entities. The data layer may also have a 'Great for kids' collection with entities that are interesting for children. The data layer decides how the entities are selected and put into a collection: entities may be hand-picked, derived by a query, or assembled by aggregating other collections.
+For example: a data layer may have a collection for all entities of type 'Heritage object'. The data layer may also have a 'Masterpieces' collection with its finest art-related entities, and a 'Paintings from the 17th century' collection; 'The Night Watch' can be a part of both. The data layer may also have a 'Great for kids' collection with entities that are interesting for children. The data layer decides how the entities are selected and put into a collection: entities may be hand-picked, derived by a query, or assembled by aggregating other collections.
 
 A data layer may add extra functionality to a curated collection. For example: users of a presentation layer may want to find entities in the 'Masterpieces' collection using faceted search or users may want to get suggestions to find entities in the 'Great for kids' collection using autocompletion. This specification defines two optional functionalities: [facets](facets.md) and [suggestions](suggestions.md).
 

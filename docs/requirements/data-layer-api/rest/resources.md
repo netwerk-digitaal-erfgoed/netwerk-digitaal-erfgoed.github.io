@@ -11,13 +11,13 @@ The API of a data layer is centered around resources. A resource represents a 't
 
 ## Data model
 
-This specification defines the following resource types:
+This specification defines resource types on several pages. This page describes the generic types from which all other resource types extend:
 
-| Name       | Description                                                                                                                                                                                                                                                                          |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Resource   | A 'thing' of a certain type. All other resource types extend from it. A Resource is abstract: there is no resource whose type is `Resource` — it needs a concrete type. This specification defines a number of concrete types. The data layer may additionally define its own types. |
-| Collection | An ordered list of resources. A Collection may contain further collections, and may consist of pages, containing sublists of the resources in the collection.                                                                                                                        |
-| Page       | An ordered sublist of resources within a Collection.                                                                                                                                                                                                                                 |
+| Name       | Description                                                                                                                                                                                                                                                                                                                                           |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Resource   | A 'thing' of a certain type. All other resource types extend from it. It is the umbrella term for everything the data layer publishes. A Resource is abstract: there is no resource whose type is `Resource` — it needs a concrete type. This specification defines a number of concrete types. The data layer may additionally define its own types. |
+| Collection | An ordered list of resources. A Collection may contain further collections, and may consist of pages, containing sublists of the resources in the collection.                                                                                                                                                                                         |
+| Page       | An ordered sublist of resources within a Collection.                                                                                                                                                                                                                                                                                                  |
 
 The following class diagram visualises the relationships between the resource types:
 
@@ -54,6 +54,8 @@ Page --> Collection : part of
 Page --> Page : previous, next
 Page *-- Resource : items
 ```
+
+The [Collections](collections.md), [Entities](entities.md), [Facets](facets.md) and [Suggestions](suggestions.md) pages define the resource types that specialise them.
 
 ## Resource
 

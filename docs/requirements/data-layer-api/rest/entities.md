@@ -9,9 +9,9 @@ sidebar_position: 5
 
 An entity is an identifiable 'thing' relevant to heritage. For example: 'The Night Watch' (a painting), 'Rembrandt' (a person), 'Amsterdam' (a place) and 'Brabantine Gothic' (a concept) are all entities.
 
-An entity has a URI of its own, independent of the collections it is a part of. The identifier of an entity is unique across all entity types and does not contain the type of the entity.
+Entities are what every data layer is about. They are the heritage information that a data layer exposes through its API. Presentation layers present this information to their users, and it is what those users care about. Everything else the data layer publishes — collections, facet values, keyword values — serves the entities: it organises, groups or finds them.
 
-Entities can be grouped into [curated collections](collections.md). For example: all persons can be a part of the 'persons' collection, while 'The Night Watch' can be a part of the 'Masterpieces' collection and of the 'Paintings from the 17th century' collection. An entity can be a part of any number of collections, and of no collection at all. It is up to the data layer to decide how it groups its entities: a collection is a selection, not a type.
+An entity has a URI of its own, independent of the collections it is a part of. The identifier of an entity is unique across all entity types and does not contain the type of the entity.
 
 ## Data model
 
