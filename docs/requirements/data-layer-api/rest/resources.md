@@ -11,15 +11,15 @@ The API of a data layer is centered around resources. A resource represents a 't
 
 ## Data model
 
-This specification defines the following resource types:
+This specification defines resource types on several pages. This page describes the generic types from which all other resource types extend:
 
-| Name       | Description                                                                                                                                                                                                                                                                   |
-| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Resource   | A 'thing' of a certain type. All other resource types extend from it. A Resource is abstract: there is no resource whose type is `Resource` — it needs a concrete type. This specification defines a number of concrete types. The API may additionally define its own types. |
-| Collection | An ordered list of resources. A Collection may contain further collections, and may consist of pages, containing sublists of the resources in the collection.                                                                                                                 |
-| Page       | An ordered sublist of resources within a Collection.                                                                                                                                                                                                                          |
+| Name       | Description                                                                                                                                                                                                                                                                                                                                           |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Resource   | A 'thing' of a certain type. All other resource types extend from it. It is the umbrella term for everything the data layer publishes. A Resource is abstract: there is no resource whose type is `Resource` — it needs a concrete type. This specification defines a number of concrete types. The data layer may additionally define its own types. |
+| Collection | An ordered list of resources. A Collection may contain further collections, and may consist of pages, containing sublists of the resources in the collection.                                                                                                                                                                                         |
+| Page       | An ordered sublist of resources within a Collection.                                                                                                                                                                                                                                                                                                  |
 
-The following class diagram visualizes the relationships between the resource types:
+The following class diagram visualises the relationships between the resource types:
 
 ```mermaid
 ---
@@ -55,23 +55,25 @@ Page --> Page : previous, next
 Page *-- Resource : items
 ```
 
+The [Collections](collections.md), [Entities](entities.md), [Facets](facets.md) and [Suggestions](suggestions.md) pages define the resource types that specialise them.
+
 ## Resource
 
 A Resource, regardless of type, contains at least the following properties:
 
 | Name   | Data type | Cardinality | Description                                                                                                                                                                                                                                           |
 | ------ | --------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `type` | string    | 1           | The type of the resource. This specification defines a number of [types](#data-model). The API may additionally define its own types.                                                                                                                 |
+| `type` | string    | 1           | The type of the resource. This specification defines a number of [types](#data-model). The data layer may additionally define its own types.                                                                                                          |
 | `id`   | string    | 0 or 1      | The identifier of the resource. It _MUST_ be a dereferenceable [HTTP URI](https://httpwg.org/specs/rfc9110.html#uri.schemes). Optional for volatile, non-persistent resources, such as [Keyword Values](suggestions.md) or [Facet Values](facets.md). |
 | `name` | string    | 0 or 1      | The name of the resource, if known.                                                                                                                                                                                                                   |
 
-The data layer API _MUST_ include `type` in the response body of every resource it returns, and `id` and `name` when they are known. The combination of these three properties allow a presentation layer to easily identify a resource.
+The data layer _MUST_ include `type` in the response body of every resource it returns, and `id` and `name` when they are known. The combination of these three properties allow a presentation layer to easily identify a resource.
 
 ### Resource identification with URIs
 
-:::note
+:::note To do:
 
-**To do**: explain how resources must be identified with URIs:
+Explain how resources must be identified with URIs:
 
 - See the general requirements of the REST API Design Rules, e.g. plural names (`/entities`, not `/entity`), lower case names (`/entities`, not `/Entities`), dashes (`/heritage-objects`, not `/heritageObjects`), slashes to denote hierarchy (`/collections/persons`, not `/collections-persons`);
 - Use camel case in query parameters (`?filterBy=dateCreated`, not `?filter-by=date-created`);
@@ -82,7 +84,7 @@ The data layer API _MUST_ include `type` in the response body of every resource 
 
 ### Example
 
-Example of the response body of the API:
+Example of the response body of the data layer:
 
 ```json
 {
@@ -112,35 +114,35 @@ A Collection contains at least the following properties:
 | Name                  | Data type  | Cardinality | Description                                                                                                                                                                                                                                                        |
 | --------------------- | ---------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `id`                  | string     | 1           | The identifier of the collection.                                                                                                                                                                                                                                  |
-| `type`                | string     | 1           | The type of the collection. It _MUST_ be `Collection` or a specialization.                                                                                                                                                                                         |
+| `type`                | string     | 1           | The type of the collection. It _MUST_ be `Collection` or a specialisation.                                                                                                                                                                                         |
 | `name`                | string     | 1           | The name of the collection.                                                                                                                                                                                                                                        |
-| `totalItems`          | number     | 0 or 1      | The exact total number of items in the collection, being its further collections, its resources, or both. The property _MAY_ be omitted by the API if the exact total is too costly to calculate. Mutually exclusive with `estimatedTotalItems`.                   |
-| `estimatedTotalItems` | number     | 0 or 1      | An estimate of the total number of items in the collection. It can be higher or lower than the real total. The property _MAY_ be omitted by the API if it has no estimate. Mutually exclusive with `totalItems`.                                                   |
+| `totalItems`          | number     | 0 or 1      | The exact total number of items in the collection, being its further collections, its resources, or both. The property _MAY_ be omitted by the data layer if the exact total is too costly to calculate. Mutually exclusive with `estimatedTotalItems`.            |
+| `estimatedTotalItems` | number     | 0 or 1      | An estimate of the total number of items in the collection. It can be higher or lower than the real total. The property _MAY_ be omitted by the data layer if it has no estimate. Mutually exclusive with `totalItems`.                                            |
 | `items`               | array      | 0 or 1      | A list of the items in the collection. Not set if the Collection is divided into [pages](#page).                                                                                                                                                                   |
-| `items[*]`            | Resource   | 1           | A [resource](resources.md#resource). A resource can be of [any type](#data-model), including `Collection` or a specialization.                                                                                                                                     |
+| `items[*]`            | Resource   | 1           | A [resource](resources.md#resource). A resource can be of [any type](#data-model), including `Collection` or a specialisation.                                                                                                                                     |
 | `first`               | Page       | 0 or 1      | The first page in the collection. Not set if the collection is empty or if it is not divided into [pages](#page).                                                                                                                                                  |
 | `first.id`            | string     | 1           | The identifier of the first page in the collection.                                                                                                                                                                                                                |
-| `first.type`          | string     | 1           | The type of the first page in the collection. It _MUST_ be `Page` or a specialization.                                                                                                                                                                             |
+| `first.type`          | string     | 1           | The type of the first page in the collection. It _MUST_ be `Page` or a specialisation.                                                                                                                                                                             |
 | `last`                | Page       | 0 or 1      | The last page in the collection. Not set if the collection is empty, if the collection is not divided into [pages](#page), or if the last page is unknown (e.g. in case of [cursor navigation](#page-navigation-and-cursor-navigation)).                           |
 | `last.id`             | string     | 1           | The identifier of the last page in the collection.                                                                                                                                                                                                                 |
-| `last.type`           | string     | 1           | The type of the last page in the collection. It _MUST_ be `Page` or a specialization.                                                                                                                                                                              |
+| `last.type`           | string     | 1           | The type of the last page in the collection. It _MUST_ be `Page` or a specialisation.                                                                                                                                                                              |
 | `partOf`              | Collection | 0 or 1      | The collection of which this collection is a part. Not set if this collection is the root of a collection tree.                                                                                                                                                    |
 | `partOf.id`           | string     | 1           | The identifier of the collection.                                                                                                                                                                                                                                  |
-| `partOf.type`         | string     | 1           | The type of the collection. It _MUST_ be `Collection` or a specialization.                                                                                                                                                                                         |
+| `partOf.type`         | string     | 1           | The type of the collection. It _MUST_ be `Collection` or a specialisation.                                                                                                                                                                                         |
 | `partOf.name`         | string     | 1           | The name of the collection.                                                                                                                                                                                                                                        |
 | `belongsTo`           | Collection | 0 or 1      | The collection that the collections in this collection belong to, such as a list of [facet collections](facets.md) that belongs to a curated collection. Not set if this collection does not group collections of another collection.                              |
 | `belongsTo.id`        | string     | 1           | The identifier of the collection.                                                                                                                                                                                                                                  |
-| `belongsTo.type`      | string     | 1           | The type of the collection. It _MUST_ be `Collection` or a specialization.                                                                                                                                                                                         |
+| `belongsTo.type`      | string     | 1           | The type of the collection. It _MUST_ be `Collection` or a specialisation.                                                                                                                                                                                         |
 | `belongsTo.name`      | string     | 1           | The name of the collection.                                                                                                                                                                                                                                        |
 | `facets`              | Collection | 0 or 1      | The collection of this collection's facet collections. Not set if the collection does not offer facets, or if the collection is a facet collection: a facet collection _MUST NOT_ offer facets itself. See [Facets](facets.md).                                    |
 | `facets.id`           | string     | 1           | The identifier of the collection.                                                                                                                                                                                                                                  |
-| `facets.type`         | string     | 1           | The type of the collection. It _MUST_ be `Collection` or a specialization.                                                                                                                                                                                         |
+| `facets.type`         | string     | 1           | The type of the collection. It _MUST_ be `Collection` or a specialisation.                                                                                                                                                                                         |
 | `facets.name`         | string     | 1           | The name of the collection.                                                                                                                                                                                                                                        |
 | `suggestions`         | Collection | 0 or 1      | The collection of this collection's suggestion collections. Not set if the collection does not offer suggestions, or if the collection is a suggestion collection: a suggestion collection _MUST NOT_ offer suggestions itself. See [Suggestions](suggestions.md). |
 | `suggestions.id`      | string     | 1           | The identifier of the collection.                                                                                                                                                                                                                                  |
-| `suggestions.type`    | string     | 1           | The type of the collection. It _MUST_ be `Collection` or a specialization.                                                                                                                                                                                         |
+| `suggestions.type`    | string     | 1           | The type of the collection. It _MUST_ be `Collection` or a specialisation.                                                                                                                                                                                         |
 | `suggestions.name`    | string     | 1           | The name of the collection.                                                                                                                                                                                                                                        |
-| `capabilities`        | array      | 0 or 1      | The URIs of the capabilities the API implements for this collection. _MUST_ be omitted if the collection supports no capabilities. See [Capability discovery](#capability-discovery).                                                                              |
+| `capabilities`        | array      | 0 or 1      | The URIs of the capabilities the data layer implements for this collection. _MUST_ be omitted if the collection supports no capabilities. See [Capability discovery](#capability-discovery).                                                                       |
 
 ### The collection tree
 
@@ -150,15 +152,32 @@ Every collection tree has one root: the collection that has no `partOf`. Every o
 
 A data layer _MAY_ offer more than one collection tree. The [facet collections](facets.md#endpoint-retrieve-the-facet-collections-of-a-collection) and [suggestion collections](suggestions.md#endpoint-retrieve-the-suggestion-collections-of-a-collection) of a collection, for example, form trees of their own. Their root is not part of the collection tree of that collection — it has no `partOf` and uses `belongsTo` instead.
 
-A presentation layer walks a tree from its root. It requests the root, and for every item in a collection it recurses if the item's `type` is `Collection` or a specialization of it, and renders the item as a resource otherwise. It does not need to know in advance whether a collection holds further collections or resources, or whether the collections it encounters are divided into pages. Every collection, including one that groups other collections, can be divided into pages, so a tree with many branches can be traversed a page at a time.
+A presentation layer walks a tree from its root. It requests the root, and for every item in a collection it recurses if the item's `type` is `Collection` or a specialisation of it, and renders the item as a resource otherwise. It does not need to know in advance whether a collection holds further collections or resources, or whether the collections it encounters are divided into pages. Every collection, including one that groups other collections, can be divided into pages, so a tree with many branches can be traversed a page at a time.
 
 ### Collection paths
 
-This specification does not prescribe a path for each type of collection: a data layer exposes a collection at a path of its own choosing. The endpoints for the parts of a collection, such as its [facet collections](facets.md) or its [suggestion collections](suggestions.md), hang off the path of the collection they belong to.
+Every collection has a path: the URI a presentation layer uses to request it.
+
+This specification defines the path of some collections itself:
+
+| Path                                                     | Collection                                  |
+| -------------------------------------------------------- | ------------------------------------------- |
+| `/{version}/collections`                                 | The root of the curated collection tree.    |
+| `/{version}/collections(/{...collections})/{collection}` | A curated collection.                       |
+| `/{version}/{...collections}/facets`                     | The facet collections of a collection.      |
+| `/{version}/{...collections}/facets/{facet}`             | One facet collection.                       |
+| `/{version}/{...collections}/suggestions`                | The suggestion collections of a collection. |
+| `/{version}/{...collections}/suggestions/{suggestion}`   | One suggestion collection.                  |
+
+The words `collections`, `facets` and `suggestions` are reserved: a path identifier _MUST NOT_ be one of them. A path like `/{version}/collections/facets/facets` would otherwise match two of the paths above at once: a curated collection 'facets' inside a curated collection 'facets', and the facet collections of a curated collection 'facets'. Neither the data layer nor a presentation layer can then say which one a URI means.
+
+A presentation layer does not have to build these paths. It finds the facet collections and the suggestion collections of a collection in the `facets` and `suggestions` properties, which hold the full URI of each list. The fixed paths tell a data layer where to put those lists, and give a presentation layer a URI it can link to.
+
+The path identifiers themselves are a choice of the data layer: it names each of its collections, facet collections and suggestion collections itself. See [Resource identification with URIs](#resource-identification-with-uris). A data layer _MAY_ expose the same collection at more than one path.
 
 ### Example
 
-Example of the response body of the API's root collection:
+Example of the response body of the data layer's root collection:
 
 ```json
 {
@@ -212,57 +231,109 @@ A collection can do more than return a list of items. It can support a keyword s
 
 This specification defines the following capabilities:
 
-| Capability URI                                   | Description                                                                                   |
-| ------------------------------------------------ | --------------------------------------------------------------------------------------------- |
-| `https://specs.nde.nl/rest/v1/keyword-search`    | The collection supports keyword search.                                                       |
-| `https://specs.nde.nl/rest/v1/filtering`         | The collection supports filtering.                                                            |
-| `https://specs.nde.nl/rest/v1/facets`            | The collection supports [facets](facets.md).                                                  |
-| `https://specs.nde.nl/rest/v1/suggestions`       | The collection supports [suggestions](suggestions.md).                                        |
-| `https://specs.nde.nl/rest/v1/highlighting`      | The collection supports text highlighting in string properties matching a keyword query.      |
-| `https://specs.nde.nl/rest/v1/page-pagination`   | The collection supports pagination by [page numbers](#page-navigation-and-cursor-navigation). |
-| `https://specs.nde.nl/rest/v1/cursor-pagination` | The collection supports pagination by [a cursor](#page-navigation-and-cursor-navigation).     |
+| Capability URI                                    | Description                                                                                   |
+| ------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `https://specs.nde.nl/rest/v1/keyword-search`     | The collection supports keyword search.                                                       |
+| `https://specs.nde.nl/rest/v1/keyword-filter`     | The collection supports keyword filters.                                                      |
+| `https://specs.nde.nl/rest/v1/date-filter`        | The collection supports date filters.                                                         |
+| `https://specs.nde.nl/rest/v1/numeric-filter`     | The collection supports numeric filters.                                                      |
+| `https://specs.nde.nl/rest/v1/geolocation-filter` | The collection supports geolocation filters.                                                  |
+| `https://specs.nde.nl/rest/v1/facet-filter`       | The collection supports filters on its facets.                                                |
+| `https://specs.nde.nl/rest/v1/facets`             | The collection supports [facets](facets.md).                                                  |
+| `https://specs.nde.nl/rest/v1/suggestions`        | The collection supports [suggestions](suggestions.md).                                        |
+| `https://specs.nde.nl/rest/v1/highlighting`       | The collection supports text highlighting in string properties matching a keyword query.      |
+| `https://specs.nde.nl/rest/v1/page-pagination`    | The collection supports pagination by [page numbers](#page-navigation-and-cursor-navigation). |
+| `https://specs.nde.nl/rest/v1/cursor-pagination`  | The collection supports pagination by [a cursor](#page-navigation-and-cursor-navigation).     |
 
 Capabilities are a property of a single collection. A presentation layer _MUST NOT_ infer the capabilities of a collection from the capabilities of its ancestors in the collection tree.
 
 The `capabilities` property tells a presentation layer that a collection supports something. It does not tell it how to use it: the endpoints and query parameters of the collection do that.
 
-Two capabilities come with a property that point to a collection. The `facets` property of a collection points to its list of facet collections; see [Facets](facets.md). The `suggestions` property of a collection points to its list of suggestion collections; see [Suggestions](suggestions.md). The other capabilities have no such property. A presentation layer finds them in this specification: `q` for a keyword search, `filter` for filtering, and `page` for a page.
+Two capabilities come with a property that point to a collection. The `facets` property of a collection points to its list of facet collections; see [Facets](facets.md). The `suggestions` property of a collection points to its list of suggestion collections; see [Suggestions](suggestions.md). The other capabilities have no such property. A presentation layer finds them in this specification: `q` for a keyword search, `filter` for a filter of any type, and `page` for a page.
+
+### Filters
+
+A presentation layer can narrow down the items of a collection with filters, using the `filter` query parameter. A data layer _MAY_ offer filters for any collection. Which filters a collection supports is a choice of the data layer.
+
+The filters a collection supports depend on the resources it holds. A [curated collection](collections.md) of entities with geographical data may support a geolocation filter. A [facet collection](facets.md) does not, because its items are facet items rather than entities with a location.
+
+This specification describes the following filter types:
+
+1. **Keyword filter**: filtering on text, with wildcards and phrases (e.g. `Rem`, `Rem*`, `'Rembrandt van Rijn'`).
+1. **Date filter**: filtering by comparing dates (e.g. 'Date of creation is between 1900 and 1950').
+1. **Numeric filter**: filtering by comparing numbers (e.g. 'Number of pages is at least 300').
+1. **Geolocation filter**: filtering on coordinates and a radius (e.g. 'Location of creation is within 25 km of a geopoint').
+1. **Facet filter**: filtering by the values of one of the collection's facets (e.g. 'Creator is "Rembrandt" or "Vincent van Gogh" and Type is "Painting"').
+
+The list is not fixed. A data layer may add filter types of its own for specific use cases. It advertises every filter type it supports for a collection as a capability; see [Capability discovery](#capability-discovery).
+
+A presentation layer _MUST_ only send filters that the collection supports. If it sends another filter, the data layer _MUST_ respond with a `400` status code. Ignoring an unsupported filter would silently give the presentation layer more items than it asked for.
+
+:::note To be discussed:
+
+Is there a standard or common notation to express filter and facet parameters via a query string?
+
+Options could be [Feed Item Query Language](https://datatracker.ietf.org/doc/html/draft-nottingham-atompub-fiql-00) (FIQL), [RSQL](https://github.com/jirutka/rsql-parser) or [OData](https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part1-protocol.html#_Toc31358947). These can be heavy-weight, though, or be unable to express all parameters (e.g. facets that should be retrieved). Alternatively, use a custom notation using a convention, e.g. the [LHS bracket syntax](https://docs.strapi.io/cms/api/rest/filters), that can be mapped to JSON for processing by the data layer? For example:
+
+1. Filter by range: date of creation is between 1900 and 1950
+
+`GET /v1/collections/masterpieces?page=1&filter[dateCreated][gte]=1900&filter[dateCreated][lte]=1950`
+
+2. Filter by geolocation: location of creation is within 25 km of geopoint 52.0752021, 5.1135515
+
+`GET /v1/collections/masterpieces?page=1&filter[locationCreated][lat]=52.0752021&filter[locationCreated][distance][lon]=5.1135515&filter[locationCreated][distance][radius]=25km`
+
+3. Filter by facet: creator ID is 'https://example.org/v1/entities/7890' or 'https://example.org/v1/entities/9012'
+
+`GET /v1/collections/masterpieces?page=1&filter[creators][in]=https://example.org/v1/entities/7890&filter[creators][in]=https://example.org/v1/entities/9012`
+
+4. Instruct the data layer to return a maximum of 5 facet values of facet 'Creator', and that these values must be ordered by count and then by name
+
+`GET /v1/collections/masterpieces?page=1&facet[creators][orderBy][count]=desc&facet[creators][orderBy][name]=asc&facet[creators][size]=5`
+
+:::
+
+:::note To do:
+
+Think of a way to express the ID of a `facet` in the query string. A facet ID like `creators` is a shorthand for its full URI but currently does not have a designated property in a [facet collection](facets.md#endpoint-retrieve-a-facet-collection). Full URIs — such as `https://example.org/v1/collections/masterpieces/facets/creators` — are rather verbose.
+
+:::
 
 ## Page
 
 A Page contains at least the following properties:
 
-| Name                         | Data type  | Cardinality | Description                                                                                                                                                                                                                                             |
-| ---------------------------- | ---------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`                         | string     | 1           | The identifier of the page.                                                                                                                                                                                                                             |
-| `type`                       | string     | 1           | The type of the page. It _MUST_ be `Page` or a specialization.                                                                                                                                                                                          |
-| `name`                       | string     | 1           | The name of the page.                                                                                                                                                                                                                                   |
-| `items`                      | array      | 1           | A list of resources in the page. Empty if there are no resources.                                                                                                                                                                                       |
-| `items[*]`                   | Resource   | 1           | A [resource](resources.md#resource). A resource can be of [any type](#data-model).                                                                                                                                                                      |
-| `prev`                       | Page       | 0 or 1      | The previous page in the collection. Not set if there is no previous page.                                                                                                                                                                              |
-| `prev.id`                    | string     | 1           | The identifier of the previous page in the collection.                                                                                                                                                                                                  |
-| `prev.type`                  | string     | 1           | The type of the previous page in the collection. It _MUST_ be `Page` or a specialization.                                                                                                                                                               |
-| `next`                       | Page       | 0 or 1      | The next page in the collection. Not set if there is no next page.                                                                                                                                                                                      |
-| `next.id`                    | string     | 1           | The identifier of the next page in the collection.                                                                                                                                                                                                      |
-| `next.type`                  | string     | 1           | The type of the next page in the collection. It _MUST_ be `Page` or a specialization.                                                                                                                                                                   |
-| `partOf`                     | Collection | 1           | The collection to which the items contained by the page belong.                                                                                                                                                                                         |
-| `partOf.id`                  | string     | 1           | The identifier of the collection.                                                                                                                                                                                                                       |
-| `partOf.type`                | string     | 1           | The type of the collection. It _MUST_ be `Collection` or a specialization.                                                                                                                                                                              |
-| `partOf.name`                | string     | 1           | The name of the collection.                                                                                                                                                                                                                             |
-| `partOf.totalItems`          | number     | 0 or 1      | The exact total number of items in the collection, being its further collections, its resources, or both. The property _MAY_ be omitted by the API if the exact total is too costly to calculate. Mutually exclusive with `partOf.estimatedTotalItems`. |
-| `partOf.estimatedTotalItems` | number     | 0 or 1      | An estimate of the total number of items in the collection. It can be higher or lower than the real total. The property _MAY_ be omitted by the API if it has no estimate. Mutually exclusive with `partOf.totalItems`.                                 |
-| `partOf.first`               | Page       | 1           | The first page in the collection.                                                                                                                                                                                                                       |
-| `partOf.first.id`            | string     | 1           | The identifier of the first page in the collection.                                                                                                                                                                                                     |
-| `partOf.first.type`          | string     | 1           | The type of the first page in the collection. It _MUST_ be `Page` or a specialization.                                                                                                                                                                  |
-| `partOf.last`                | Page       | 0 or 1      | The last page in the collection. Not set if the last page is unknown (e.g. in case of [cursor navigation](#page-navigation-and-cursor-navigation)).                                                                                                     |
-| `partOf.last.id`             | string     | 1           | The identifier of the last page in the collection.                                                                                                                                                                                                      |
-| `partOf.last.type`           | string     | 1           | The type of the last page in the collection. It _MUST_ be `Page` or a specialization.                                                                                                                                                                   |
+| Name                         | Data type  | Cardinality | Description                                                                                                                                                                                                                                                    |
+| ---------------------------- | ---------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`                         | string     | 1           | The identifier of the page.                                                                                                                                                                                                                                    |
+| `type`                       | string     | 1           | The type of the page. It _MUST_ be `Page` or a specialisation.                                                                                                                                                                                                 |
+| `name`                       | string     | 1           | The name of the page.                                                                                                                                                                                                                                          |
+| `items`                      | array      | 1           | A list of resources in the page. Empty if there are no resources.                                                                                                                                                                                              |
+| `items[*]`                   | Resource   | 1           | A [resource](resources.md#resource). A resource can be of [any type](#data-model).                                                                                                                                                                             |
+| `prev`                       | Page       | 0 or 1      | The previous page in the collection. Not set if there is no previous page.                                                                                                                                                                                     |
+| `prev.id`                    | string     | 1           | The identifier of the previous page in the collection.                                                                                                                                                                                                         |
+| `prev.type`                  | string     | 1           | The type of the previous page in the collection. It _MUST_ be `Page` or a specialisation.                                                                                                                                                                      |
+| `next`                       | Page       | 0 or 1      | The next page in the collection. Not set if there is no next page.                                                                                                                                                                                             |
+| `next.id`                    | string     | 1           | The identifier of the next page in the collection.                                                                                                                                                                                                             |
+| `next.type`                  | string     | 1           | The type of the next page in the collection. It _MUST_ be `Page` or a specialisation.                                                                                                                                                                          |
+| `partOf`                     | Collection | 1           | The collection to which the items contained by the page belong.                                                                                                                                                                                                |
+| `partOf.id`                  | string     | 1           | The identifier of the collection.                                                                                                                                                                                                                              |
+| `partOf.type`                | string     | 1           | The type of the collection. It _MUST_ be `Collection` or a specialisation.                                                                                                                                                                                     |
+| `partOf.name`                | string     | 1           | The name of the collection.                                                                                                                                                                                                                                    |
+| `partOf.totalItems`          | number     | 0 or 1      | The exact total number of items in the collection, being its further collections, its resources, or both. The property _MAY_ be omitted by the data layer if the exact total is too costly to calculate. Mutually exclusive with `partOf.estimatedTotalItems`. |
+| `partOf.estimatedTotalItems` | number     | 0 or 1      | An estimate of the total number of items in the collection. It can be higher or lower than the real total. The property _MAY_ be omitted by the data layer if it has no estimate. Mutually exclusive with `partOf.totalItems`.                                 |
+| `partOf.first`               | Page       | 1           | The first page in the collection.                                                                                                                                                                                                                              |
+| `partOf.first.id`            | string     | 1           | The identifier of the first page in the collection.                                                                                                                                                                                                            |
+| `partOf.first.type`          | string     | 1           | The type of the first page in the collection. It _MUST_ be `Page` or a specialisation.                                                                                                                                                                         |
+| `partOf.last`                | Page       | 0 or 1      | The last page in the collection. Not set if the last page is unknown (e.g. in case of [cursor navigation](#page-navigation-and-cursor-navigation)).                                                                                                            |
+| `partOf.last.id`             | string     | 1           | The identifier of the last page in the collection.                                                                                                                                                                                                             |
+| `partOf.last.type`           | string     | 1           | The type of the last page in the collection. It _MUST_ be `Page` or a specialisation.                                                                                                                                                                          |
 
 ### Pagination
 
 Pagination means splitting the items of a collection into smaller lists. Each smaller list is a Page. A Page is a resource of its own: it has its own identifier, and a presentation layer requests it like any other resource.
 
-A data layer needs pagination when its collections are large. A single collection may contain hundreds of thousands of items. It is impractical to return all of them in one response: the response takes long to build and long to download, and a presentation layer usually shows only a few items at a time. With pagination, the API returns a small number of items per response, and the presentation layer asks for more only when it needs more.
+A data layer needs pagination when its collections are large. A single collection may contain hundreds of thousands of items. It is impractical to return all of them in one response: the response takes long to build and long to download, and a presentation layer usually shows only a few items at a time. With pagination, the data layer returns a small number of items per response, and the presentation layer asks for more only when it needs more.
 
 A data layer _MAY_ divide any collection into pages. It does not have to. A collection _MAY_ return all of its items at once, in its `items` property.
 
@@ -271,7 +342,7 @@ A data layer _MAY_ divide any collection into pages. It does not have to. A coll
 A collection that is divided into pages has two properties that point to its pages:
 
 - `first`: the first page of the collection.
-- `last`: the last page of the collection, if the API knows it.
+- `last`: the last page of the collection, if the data layer knows it.
 
 A page has three properties that point to its place in the collection:
 
@@ -283,7 +354,7 @@ With these properties, a presentation layer walks through a collection. It reque
 
 The `prev` and the `next` of a page _MUST_ be pages of the same collection. They _MUST_ also point back at each other: if the `next` of one page is another page, the `prev` of that other page _MUST_ be the first one. The pages of a collection _MUST_ form one sequence without loops, so that a presentation layer can walk through them without getting stuck. The `first` of a collection _MUST_ be the page that has no `prev`. Its `last`, if it is set, _MUST_ be the page that has no `next`.
 
-The following diagram visualizes the relationships:
+The following diagram visualises the relationships:
 
 ```mermaid
 ---
@@ -316,7 +387,7 @@ Pagination means that a collection is split into pages. Navigation is how a pres
 A presentation layer asks for a page with the `page` query parameter. The value of `page` is either a number or a cursor:
 
 - **Page navigation**: the value is a number that says which page the presentation layer wants, such as `?page=3`.
-- **Cursor navigation**: the value is a token that the API has given itself, such as `?page=eyJpZCI6MTIzfQ`. The token points to a place in the collection.
+- **Cursor navigation**: the value is a token that the data layer has given itself, such as `?page=eyJpZCI6MTIzfQ`. The token points to a place in the collection.
 
 Both are allowed. A data layer _MAY_ use page navigation, _MAY_ use cursor navigation, and _MAY_ use both across its collections. For predictable navigation, it is _RECOMMENDED_ that a data layer uses the same strategy for all of its collections, so that a presentation layer can handle every collection in one way.
 
@@ -326,11 +397,11 @@ Counting all items of a collection costs time. Page navigation usually needs tha
 
 When it uses page navigation, a data layer _MUST_ number the first page `1`, not `0`.
 
-Page navigation is easy to use. A presentation layer can send a user straight to page 7, and the user sees 'page 7 of 20'. The cost is that the API has to count or skip over items, which becomes slow on a large collection. It also becomes less reliable over time: if items are added or removed while a user is browsing, the numbers move, and the user can see an item twice or miss it.
+Page navigation is easy to use. A presentation layer can send a user straight to page 7, and the user sees 'page 7 of 20'. The cost is that the data layer has to count or skip over items, which becomes slow on a large collection. It also becomes less reliable over time: if items are added or removed while a user is browsing, the numbers move, and the user can see an item twice or miss it.
 
-With cursor navigation, the API does not have to count. It remembers where the previous response ended and continues from there. This is fast on a large collection, and it does not shift when items are added or removed. The cost is that a presentation layer cannot jump to an arbitrary page, because it has no number to jump to. For that reason a collection that uses cursor navigation usually has no `last` page: the API does not know which page is last. A data layer that does know _MAY_ set `last`. A presentation layer can then follow `last` and walk back through the collection with `prev`.
+With cursor navigation, the data layer does not have to count. It remembers where the previous response ended and continues from there. This is fast on a large collection, and it does not shift when items are added or removed. The cost is that a presentation layer cannot jump to an arbitrary page, because it has no number to jump to. For that reason a collection that uses cursor navigation usually has no `last` page: the data layer does not know which page is last. A data layer that does know _MAY_ set `last`. A presentation layer can then follow `last` and walk back through the collection with `prev`.
 
-A cursor is a token that only the API understands. A presentation layer _MUST_ pass a cursor back unchanged, and _MUST NOT_ try to read it or build one. A cursor _MUST_ only be used with the collection and the query it came from. A presentation layer _MUST NOT_ reuse a cursor for another collection or another query.
+A cursor is a token that only the data layer understands. A presentation layer _MUST_ pass a cursor back unchanged, and _MUST NOT_ try to read it or build one. A cursor _MUST_ only be used with the collection and the query it came from. A presentation layer _MUST NOT_ reuse a cursor for another collection or another query.
 
 A data layer _MUST_ respond with a `400` status code if `page` has a value of the wrong kind for the strategy that the collection uses: a number where the collection expects a cursor, or a cursor where it expects a number. It _MUST NOT_ treat a `page` value it does not understand as page 1, because a presentation layer would then be shown the wrong page without knowing it.
 
@@ -379,7 +450,7 @@ Example of the response body with page navigation:
 }
 ```
 
-The response indicates that this page contains items (`items`), is related to a previous page (`prev`) and a next page (`next`) and its items are part of a collection (`partOf`). Because the API knows which page is last, `partOf` points to it.
+The response indicates that this page contains items (`items`), is related to a previous page (`prev`) and a next page (`next`) and its items are part of a collection (`partOf`). Because the data layer knows which page is last, `partOf` points to it.
 
 Example of the response body with cursor navigation:
 
@@ -418,4 +489,4 @@ Example of the response body with cursor navigation:
 }
 ```
 
-This response has the same properties as the previous one, with two differences. The page is identified by a cursor instead of a number. The `partOf` property has no `last`, because the API does not know which page is last. A presentation layer can walk through the collection with `next`, but it cannot jump to the end.
+This response has the same properties as the previous one, with two differences. The page is identified by a cursor instead of a number. The `partOf` property has no `last`, because the data layer does not know which page is last. A presentation layer can walk through the collection with `next`, but it cannot jump to the end.

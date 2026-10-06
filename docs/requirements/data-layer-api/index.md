@@ -11,29 +11,13 @@ This document is for illustration and discussion only. It has no official standi
 
 :::
 
-:::note To do:
-
-- Add references to the [gedragsprofielen digitaal erfgoed](https://zenodo.org/records/14938780).
-- Make a clean separation between the specification of the interface and the behaviour of the data layer (what it must or should do).
-- Include a 'Metamodel Informatiemodellering' (MIM), explaining the information model on which the API is grounded.
-
-:::
-
 ## Introduction
 
-This document defines API specifications for the exchange of heritage information between data layers and presentation layers within the [Dutch Digital Heritage Network](https://netwerkdigitaalerfgoed.nl/) (NDE). By standardizing data layer interfaces, we enable presentation layer developers to build generic API clients that are compatible with any data layer, reducing the need for custom integrations.
+This document defines the API specification for the exchange of heritage information between data layers and presentation layers within the [Dutch Digital Heritage Network](https://netwerkdigitaalerfgoed.nl/) (NDE). It standardises the interface a data layer exposes to a presentation layer, by defining the rules, data models and endpoints for the most important interactions between the two.
 
-:::note
+The API specification is divided into two sub specifications: one for [REST](/data-layer-api/rest) and one for [GraphQL](/data-layer-api/graphql). A data layer can choose which sub specification it follows. At this stage the focus is on REST. The GraphQL specification has not been developed yet: its pages are a placeholder for a future version.
 
-**To be discussed**: is the name _API Specifications_ a sound one? It could suggest concrete specifications, whereas they're a bit more abstract. Alternatively, _API Framework_ or _API Interoperability Framework_?
-
-:::
-
-## Version
-
-The document describes **version 0.0.3** of the API specifications.
-
-This is the **initial development** version, version zero. Breaking changes are introduced within the same major version, following [semantic versioning for version zero](https://semver.org/#spec-item-4).
+The specification helps both kinds of developer. Data layer developers can build a data layer API more easily, because they can follow it instead of designing their own. Presentation layer developers can build a presentation layer once and reuse it with any data layer that follows the same specification, reducing the need for custom integrations.
 
 ## Definitions
 
@@ -50,3 +34,12 @@ This document is intended for:
 ## Conformance
 
 The keywords _MAY_, _MUST_, _MUST NOT_, _OPTIONAL_, _RECOMMENDED_, _SHOULD_, and _SHOULD NOT_ are to be interpreted as described in [RFC 2119](https://www.ietf.org/rfc/rfc2119.txt), when, and only when, they appear in all capitals, as shown here.
+
+:::note To do:
+
+- Add references to the [gedragsprofielen digitaal erfgoed](https://zenodo.org/records/14938780).
+- Make a clean separation between the specification of the interface and the behaviour of the data layer (what it must or should do).
+- Include a 'Metamodel Informatiemodellering' (MIM), explaining the information model on which the API is grounded.
+- Describe the integration with the IIIF APIs, for interacting with media objects and their metadata.
+
+:::

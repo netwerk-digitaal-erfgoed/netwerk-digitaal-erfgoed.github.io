@@ -5,9 +5,9 @@ sidebar_position: 2
 
 # GraphQL API
 
-:::note
+:::warning
 
-This is a placeholder.
+This is a placeholder. The specification has not been developed yet.
 
 :::
 

@@ -7,11 +7,13 @@ sidebar_position: 1
 
 ## Introduction
 
-This specification defines how data layers and presentation layers exchange information using REST.
+This specification defines how data layers and presentation layers exchange information using [REST](https://en.wikipedia.org/wiki/REST).
 
-The specification is generic: it defines general rules, data models and endpoints without assuming a specific implementation. Data layer developers can implement relevant portions of the specification and publish their own API specifications accordingly.
+## Version
 
-The specification standardizes the most common interactions between a data layer and a presentation layer. This means a presentation layer can be built once and reused with any data layer that follows these rules.
+The document describes **version 0.0.3** of the specification.
+
+This is the **initial development** version, version zero. Breaking changes are introduced within the same major version, following [semantic versioning for version zero](https://semver.org/#spec-item-4).
 
 ## Design considerations
 
@@ -24,9 +26,7 @@ The specification follows these considerations:
 
 ## Discovery
 
-:::note
-
-**To do**:
+:::note To do:
 
 - Explain that the API specification uses discovery patterns; it makes API implementations dynamic and self-documenting. This is essential for a generic, extensible specification that can be used by all sorts of data layers.
 - Specify the root endpoint of the API, e.g. `/v1`. This endpoint allows presentation layers to discover the entry points and capabilities of the API (e.g. `/v1/entities`, `/v1/collections`).
