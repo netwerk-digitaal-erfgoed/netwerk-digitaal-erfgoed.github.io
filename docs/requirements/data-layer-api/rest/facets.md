@@ -9,7 +9,7 @@ sidebar_position: 7
 
 A facet is a collection of values that a user can pick to narrow down a search. For example, a 'Creator' facet holds the creators of heritage objects, a 'Place of birth' facet holds the birth places of persons.
 
-In this specification, the word _facet_ always means a **facet collection**: a list of categorised values for narrowing a search. The 'Creator' facet is the list of all creators, not one creator. A facet is a collection of **facet items**; one **facet item** is one option in that list, such as 'Jan de Vries', and the thing a facet item points to is its **value**, such as an [entity](entities.md). Search engines use other words for the same things. Elasticsearch calls a facet an _aggregation_ and the facet items _buckets_. Solr calls a facet a _facet field_.
+In this specification, the word _facet_ always means a **facet collection**: a list of categorised values for narrowing a search. The 'Creator' facet is the list of all creators, not one creator. A facet is a collection of **facet items**; one **facet item** is one option in that list, such as 'Jan de Vries', and the thing a facet item points to is its **value**, such as an [entity](entities.md). Search engines use other words for the same things. Elasticsearch calls a facet an _aggregation_ and the facet items _buckets_. Apache Solr calls a facet a _facet field_.
 
 A presentation layer can browse the facet items in a facet collection, filter them, and ask for suggestions for them — just like any other collection. What makes a facet collection special is what its items hold: each item points to a value a user can use to narrow a search.
 
@@ -119,7 +119,7 @@ FacetItem --> Resource : value
 
 ## Facet collections
 
-The data layer determines which facet collections to support. For example, an API that exposes information about...
+The data layer determines which facet collections to support. For example, a data layer that exposes information about...
 
 1. **paintings** defines the facet collection 'Technique', to categorise the techniques used for creating the works of art;
 1. **military personnel** defines the facet collection 'Military rank', to categorise the ranks of the persons;
@@ -172,15 +172,15 @@ A `FacetRangeValue` is a `FacetValue` that covers a range instead of one value. 
 
 The `type` of a value says how to read its bounds. The `min` and `max` of a `FacetDateRangeValue` _MUST_ be dates in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601). For example, '1900', '1900-01' and '1900-01-01' are all dates. The `min` and `max` of a `FacetNumberRangeValue` _MUST_ be numbers.
 
-A range value _MUST_ include its lower bound, but not its upper bound. For example, the value '1900–1909' has a `min` of `1900-01-01` and a `max` of `1910-01-01`: it covers 1 January 1900 up to, but not including, 1 January 1910. A range value _MAY_ have no lower bound or no upper bound: the value 'before 1500' has no upper bound, and the value 'after 1900' has no lower bound. The API _MAY_ leave out values that have no occurrences.
+A range value _MUST_ include its lower bound, but not its upper bound. For example, the value '1900–1909' has a `min` of `1900-01-01` and a `max` of `1910-01-01`: it covers 1 January 1900 up to, but not including, 1 January 1910. A range value _MAY_ have no lower bound or no upper bound: the value 'before 1500' has no upper bound, and the value 'after 1900' has no lower bound. The data layer _MAY_ leave out values that have no occurrences.
 
-A facet collection _MUST NOT_ mix range values of different types, for example `FacetDateRangeValue`s together with `FacetNumberRangeValue`s. This makes sure a presentation layer can display the range values correctly. A facet collection _MAY_ return its range values in any order. If the client does not ask for a particular order, the API _SHOULD_ return them from the lowest to the highest, so that a presentation layer can place them in the right order, for example on the axis of a histogram.
+A facet collection _MUST NOT_ mix range values of different types, for example `FacetDateRangeValue`s together with `FacetNumberRangeValue`s. This makes sure a presentation layer can display the range values correctly. A facet collection _MAY_ return its range values in any order. If the client does not ask for a particular order, the data layer _SHOULD_ return them from the lowest to the highest, so that a presentation layer can place them in the right order, for example on the axis of a histogram.
 
-The `name` is the label of the value. The API may use any text in it, such as '1900–1950', 'between 1900 and 1950', or '1900 to 1950'. A presentation layer _MUST NOT_ read the bounds out of the `name` — it must use the `min` and `max` properties. A presentation layer can use the bounds to place every facet value on a scale. It can draw a histogram, with one bar per value from its lower bound to its upper bound. It can draw a timeline, with one band per value that shows how long the range lasts.
+The `name` is the label of the value. The data layer may use any text in it, such as '1900–1950', 'between 1900 and 1950', or '1900 to 1950'. A presentation layer _MUST NOT_ read the bounds out of the `name` — it must use the `min` and `max` properties. A presentation layer can use the bounds to place every facet value on a scale. It can draw a histogram, with one bar per value from its lower bound to its upper bound. It can draw a timeline, with one band per value that shows how long the range lasts.
 
 ## Endpoint: Retrieve the facet collections of a collection
 
-The endpoint retrieves all facet collections of a collection. The API _MUST_ implement this endpoint if it supports facets.
+The endpoint retrieves all facet collections of a collection. The data layer _MUST_ implement this endpoint if it supports facets.
 
 ### HTTP request
 
@@ -222,7 +222,7 @@ The response body _MUST_ contain at least the following properties:
 | `belongsTo.type`      | string          | 1           | The type of the collection. It _MUST_ be `Collection` or a specialisation.                                                                                                  |
 | `belongsTo.name`      | string          | 1           | The name of the collection.                                                                                                                                                 |
 
-The API _MUST NOT_ divide this collection into pages. The response body therefore does not contain `first` or `last`.
+The data layer _MUST NOT_ divide this collection into pages. The response body therefore does not contain `first` or `last`.
 
 ### Example
 
@@ -233,9 +233,9 @@ GET /v1/collections/objects/facets
 Host: example.org
 ```
 
-The request indicates that the API should return all facet collections of a curated collection (`objects`).
+The request indicates that the data layer should return all facet collections of a curated collection (`objects`).
 
-An example of the response body of the API:
+An example of the response body of the data layer:
 
 ```json
 {
@@ -275,7 +275,7 @@ An example of the response body of the API:
 
 ## Endpoint: Retrieve a facet collection
 
-The endpoint retrieves a facet collection. The API _MUST_ implement this endpoint if it supports facets.
+The endpoint retrieves a facet collection. The data layer _MUST_ implement this endpoint if it supports facets.
 
 ### HTTP request
 
@@ -291,12 +291,12 @@ The endpoint retrieves a facet collection. The API _MUST_ implement this endpoin
 
 ### Query parameters
 
-| Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                |
-| --------- | --------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `q`       | string    | 0 or 1      | A keyword query for filtering the facet items. Minimum length: defined by the API (e.g. 3 characters). Maximum length: defined by the API (e.g. 25 characters).                                                                            |
-| `size`    | number    | 0 or 1      | The maximum number of facet items to retrieve. Minimum: 1. Default: 10. Maximum: defined by the API (e.g. 100).                                                                                                                            |
-| `orderBy` | string    | 0 or 1      | The sorting order of the facet items. One of `count`, `value`. Default: `count:desc` (most frequent item first). The API defines which property of the value it sorts by (e.g. the `name`). For a range value, the API sorts by its `min`. |
-| `filter`  | string    | 0 or more   | The rules for filtering the facet items. See [Filters](resources.md#filters).                                                                                                                                                              |
+| Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                              |
+| --------- | --------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `q`       | string    | 0 or 1      | A keyword query for filtering the facet items. Minimum length: defined by the data layer (e.g. 3 characters). Maximum length: defined by the data layer (e.g. 25 characters).                                                                            |
+| `size`    | number    | 0 or 1      | The maximum number of facet items to retrieve. Minimum: 1. Default: 10. Maximum: defined by the data layer (e.g. 100).                                                                                                                                   |
+| `orderBy` | string    | 0 or 1      | The sorting order of the facet items. One of `count`, `value`. Default: `count:desc` (most frequent item first). The data layer defines which property of the value it sorts by (e.g. the `name`). For a range value, the data layer sorts by its `min`. |
+| `filter`  | string    | 0 or more   | The rules for filtering the facet items. See [Filters](resources.md#filters).                                                                                                                                                                            |
 
 :::note To do:
 
@@ -343,7 +343,7 @@ The response body _MUST_ contain at least the following properties:
 | `suggestions.id`      | string     | 1           | The identifier of the list.                                                                                                                                                                                                                                      |
 | `suggestions.type`    | string     | 1           | The type of the list. It _MUST_ be `Collection` or a specialisation.                                                                                                                                                                                             |
 | `suggestions.name`    | string     | 1           | The name of the list.                                                                                                                                                                                                                                            |
-| `capabilities`        | array      | 0 or 1      | The URIs of the capabilities the API implements for this collection. _MUST_ be omitted if the collection supports no capabilities. See [Capability discovery](resources.md#capability-discovery).                                                                |
+| `capabilities`        | array      | 0 or 1      | The URIs of the capabilities the data layer implements for this collection. _MUST_ be omitted if the collection supports no capabilities. See [Capability discovery](resources.md#capability-discovery).                                                         |
 
 ### Example
 
@@ -354,9 +354,9 @@ GET /v1/collections/objects/facets/centuries
 Host: example.org
 ```
 
-The request indicates that the API should return a facet collection (`centuries`) of a curated collection (`objects`).
+The request indicates that the data layer should return a facet collection (`centuries`) of a curated collection (`objects`).
 
-An example of the response body of the API if the facet collection lists date ranges as its `items`:
+An example of the response body of the data layer if the facet collection lists date ranges as its `items`:
 
 ```json
 {
@@ -411,9 +411,9 @@ GET /v1/collections/objects/facets/creators
 Host: example.org
 ```
 
-The request indicates that the API should return a facet collection (`creators`) of a curated collection (`objects`).
+The request indicates that the data layer should return a facet collection (`creators`) of a curated collection (`objects`).
 
-An example of the response body of the API if the facet collection is not divided into pages and lists entities as its `items`:
+An example of the response body of the data layer if the facet collection is not divided into pages and lists entities as its `items`:
 
 ```json
 {
@@ -458,7 +458,7 @@ An example of the response body of the API if the facet collection is not divide
 }
 ```
 
-An example of the response body of the API for the request above, if the facet collection lists `FacetValue`s as its `items`:
+An example of the response body of the data layer for the request above, if the facet collection lists `FacetValue`s as its `items`:
 
 ```json
 {
@@ -507,9 +507,9 @@ GET /v1/collections/objects/facets/collections
 Host: example.org
 ```
 
-The request indicates that the API should return a facet collection (`collections`) of a curated collection (`objects`).
+The request indicates that the data layer should return a facet collection (`collections`) of a curated collection (`objects`).
 
-An example of the response body of the API if the facet collection lists collections as its `items`:
+An example of the response body of the data layer if the facet collection lists collections as its `items`:
 
 ```json
 {
@@ -547,7 +547,7 @@ An example of the response body of the API if the facet collection lists collect
 
 The response indicates that a user can narrow the search down to the resources in one of the collections.
 
-An example of the response body of the API for the request above, if the facet collection is divided into pages:
+An example of the response body of the data layer for the request above, if the facet collection is divided into pages:
 
 ```json
 {
@@ -574,7 +574,7 @@ An example of the response body of the API for the request above, if the facet c
 
 ## Endpoint: Retrieve a page in a facet collection
 
-The endpoint retrieves a page in a facet collection. The API _MUST_ implement this endpoint for every facet collection it divides into [pages](resources.md#page).
+The endpoint retrieves a page in a facet collection. The data layer _MUST_ implement this endpoint for every facet collection it divides into [pages](resources.md#page).
 
 ### HTTP request
 
@@ -590,13 +590,13 @@ The endpoint retrieves a page in a facet collection. The API _MUST_ implement th
 
 ### Query parameters
 
-| Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                |
-| --------- | --------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `page`    | string    | 1           | The identifier of the page: a page number or cursor, depending on the [pagination strategy](resources.md#page-navigation-and-cursor-navigation) of the API.                                                                                |
-| `q`       | string    | 0 or 1      | A keyword query for filtering the facet items. Minimum length: defined by the API (e.g. 3 characters). Maximum length: defined by the API (e.g. 25 characters).                                                                            |
-| `size`    | number    | 0 or 1      | The maximum number of facet items to retrieve. Minimum: 1. Default: 10. Maximum: defined by the API (e.g. 100).                                                                                                                            |
-| `orderBy` | string    | 0 or 1      | The sorting order of the facet items. One of `count`, `value`. Default: `count:desc` (most frequent item first). The API defines which property of the value it sorts by (e.g. the `name`). For a range value, the API sorts by its `min`. |
-| `filter`  | string    | 0 or more   | The rules for filtering the facet items. See [Filters](resources.md#filters).                                                                                                                                                              |
+| Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                              |
+| --------- | --------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `page`    | string    | 1           | The identifier of the page: a page number or cursor, depending on the [pagination strategy](resources.md#page-navigation-and-cursor-navigation) of the data layer.                                                                                       |
+| `q`       | string    | 0 or 1      | A keyword query for filtering the facet items. Minimum length: defined by the data layer (e.g. 3 characters). Maximum length: defined by the data layer (e.g. 25 characters).                                                                            |
+| `size`    | number    | 0 or 1      | The maximum number of facet items to retrieve. Minimum: 1. Default: 10. Maximum: defined by the data layer (e.g. 100).                                                                                                                                   |
+| `orderBy` | string    | 0 or 1      | The sorting order of the facet items. One of `count`, `value`. Default: `count:desc` (most frequent item first). The data layer defines which property of the value it sorts by (e.g. the `name`). For a range value, the data layer sorts by its `min`. |
+| `filter`  | string    | 0 or more   | The rules for filtering the facet items. See [Filters](resources.md#filters).                                                                                                                                                                            |
 
 :::note To do:
 
@@ -655,9 +655,9 @@ GET /v1/collections/objects/facets/creators?page=3
 Host: example.org
 ```
 
-The request indicates that the API should return page 3 in a facet collection (`creators`) of a curated collection (`objects`).
+The request indicates that the data layer should return page 3 in a facet collection (`creators`) of a curated collection (`objects`).
 
-An example of the response body of the API:
+An example of the response body of the data layer:
 
 ```json
 {

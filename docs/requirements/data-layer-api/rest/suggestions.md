@@ -115,7 +115,7 @@ Suggestions can be found by using different search strategies. The data layer de
 
 ## Endpoint: Retrieve the suggestion collections of a collection
 
-The endpoint retrieves all suggestion collections of a collection. The API _MUST_ implement this endpoint if it supports suggestions.
+The endpoint retrieves all suggestion collections of a collection. The data layer _MUST_ implement this endpoint if it supports suggestions.
 
 ### HTTP request
 
@@ -159,7 +159,7 @@ The response body _MUST_ contain at least the following properties:
 | `belongsTo.type`         | string               | 1           | The type of the context collection. It _MUST_ be `Collection` or a specialisation.                                                                                               |
 | `belongsTo.name`         | string               | 1           | The name of the context collection.                                                                                                                                              |
 
-The API _MUST NOT_ divide this collection into pages. The response body therefore does not contain `first` or `last`.
+The data layer _MUST NOT_ divide this collection into pages. The response body therefore does not contain `first` or `last`.
 
 ### Example
 
@@ -170,9 +170,9 @@ GET /v1/collections/objects/suggestions
 Host: example.org
 ```
 
-The request indicates that the API should return all suggestion collections of a curated collection (`objects`).
+The request indicates that the data layer should return all suggestion collections of a curated collection (`objects`).
 
-An example of the response body of the API:
+An example of the response body of the data layer:
 
 ```json
 {
@@ -208,11 +208,11 @@ An example of the response body of the API:
 }
 ```
 
-The response indicates that the API supports three suggestion collections for a curated collection (`objects`). A presentation layer can choose any, depending on its requirements.
+The response indicates that the data layer supports three suggestion collections for a curated collection (`objects`). A presentation layer can choose any, depending on its requirements.
 
 ## Endpoint: Retrieve a suggestion collection
 
-The endpoint retrieves the suggestion items of a suggestion collection that match a query. The `value` of a suggestion item is a resource, such as a keyword, a facet value, or an entity. A presentation layer can use a suggested resource as input to search and find the resources that match it. The API _MUST_ implement this endpoint if it supports suggestions.
+The endpoint retrieves the suggestion items of a suggestion collection that match a query. The `value` of a suggestion item is a resource, such as a keyword, a facet value, or an entity. A presentation layer can use a suggested resource as input to search and find the resources that match it. The data layer _MUST_ implement this endpoint if it supports suggestions.
 
 ### HTTP request
 
@@ -228,12 +228,12 @@ The endpoint retrieves the suggestion items of a suggestion collection that matc
 
 ### Query parameters
 
-| Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                  |
-| --------- | --------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `q`       | string    | 1           | A query for filtering the suggestion items. Minimum length: defined by the API (e.g. 3 characters). Maximum length: defined by the API (e.g. 25 characters). The API defines how the query is matched, e.g. by using prefix or infix search. |
-| `size`    | number    | 0 or 1      | The maximum number of suggestion items to retrieve. Minimum: 1. Default: 10. Maximum: defined by the API (e.g. 25).                                                                                                                          |
-| `orderBy` | string    | 0 or 1      | The sorting order of the suggestion items. It _MUST_ be one of `relevance`, `value`. Default: `relevance:desc` (most relevant suggestion first). The API defines which property of the value it sorts by, such as the `name`.                |
-| `filter`  | string    | 0 or more   | The rules for filtering the suggestion items. See [Filters](resources.md#filters).                                                                                                                                                           |
+| Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                                       |
+| --------- | --------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `q`       | string    | 1           | A query for filtering the suggestion items. Minimum length: defined by the data layer (e.g. 3 characters). Maximum length: defined by the data layer (e.g. 25 characters). The data layer defines how the query is matched, e.g. by using prefix or infix search. |
+| `size`    | number    | 0 or 1      | The maximum number of suggestion items to retrieve. Minimum: 1. Default: 10. Maximum: defined by the data layer (e.g. 25).                                                                                                                                        |
+| `orderBy` | string    | 0 or 1      | The sorting order of the suggestion items. It _MUST_ be one of `relevance`, `value`. Default: `relevance:desc` (most relevant suggestion first). The data layer defines which property of the value it sorts by, such as the `name`.                              |
+| `filter`  | string    | 0 or more   | The rules for filtering the suggestion items. See [Filters](resources.md#filters).                                                                                                                                                                                |
 
 ### Request body
 
@@ -264,9 +264,9 @@ The response body _MUST_ contain at least the following properties:
 | `partOf.type`         | string         | 1           | The type of the collection. It _MUST_ be `Collection` or a specialisation.                                                                                                                                                                        |
 | `partOf.name`         | string         | 1           | The name of the collection.                                                                                                                                                                                                                       |
 
-The API _MUST NOT_ divide this collection into pages. The response body therefore does not contain `first` or `last`.
+The data layer _MUST NOT_ divide this collection into pages. The response body therefore does not contain `first` or `last`.
 
-The API _MAY_ expose additional properties about a suggested value.
+The data layer _MAY_ expose additional properties about a suggested value.
 
 ### Example
 
@@ -277,9 +277,9 @@ GET /v1/collections/objects/suggestions/combinations?q=mil
 Host: example.org
 ```
 
-The request indicates that the API should return the suggestion items of a suggestion collection (`combinations`) of a curated collection (`objects`) matching a specific query (`mil`).
+The request indicates that the data layer should return the suggestion items of a suggestion collection (`combinations`) of a curated collection (`objects`) matching a specific query (`mil`).
 
-An example of the response body of the API:
+An example of the response body of the data layer:
 
 ```json
 {

@@ -54,7 +54,7 @@ Entity <|-- Person : type
 
 An entity can be of any type. A data layer decides which types are relevant to its API and the presentation layers it serves.
 
-For example, an API that exposes information about...
+For example, a data layer that exposes information about...
 
 1. **all sorts of heritage objects** where the exact type does not matter, defines the generic entity type 'Heritage object';
 1. **books** and **cars** defines the specific entity types 'Book' and 'Car';
@@ -94,7 +94,7 @@ Explain data modelling requirements, e.g.
 
 ## Endpoint: Retrieve an entity
 
-The endpoint retrieves an entity. The API _MUST_ implement this endpoint if it publishes at least one entity.
+The endpoint retrieves an entity. The data layer _MUST_ implement this endpoint if it publishes at least one entity.
 
 ### HTTP request
 
@@ -117,7 +117,7 @@ None.
 
 ### Response body
 
-The response body _MUST_ contain at least the properties underneath. Additional properties depend on the data model of the entity, defined by the API.
+The response body _MUST_ contain at least the properties underneath. Additional properties depend on the data model of the entity, defined by the data layer.
 
 | Name   | Data type | Cardinality | Description                   |
 | ------ | --------- | ----------- | ----------------------------- |
@@ -134,7 +134,7 @@ GET /v1/entities/1234
 Host: example.org
 ```
 
-The request indicates that the API should return the entity with ID `1234`.
+The request indicates that the data layer should return the entity with ID `1234`.
 
 The response body depends on the data model of the entity. An example:
 

@@ -65,7 +65,7 @@ Page *-- Entity : items
 
 ## Endpoint: Retrieve the root collection
 
-The endpoint retrieves the root collection: the curated collection that is not a part of another collection. Its items are curated collections, entities, or a mixture of both. The API _MUST_ implement this endpoint, even if the root collection is the only collection it offers: a data layer that does not nest its collections offers its entities as the items of the root collection.
+The endpoint retrieves the root collection: the curated collection that is not a part of another collection. Its items are curated collections, entities, or a mixture of both. The data layer _MUST_ implement this endpoint, even if the root collection is the only collection it offers: a data layer that does not nest its collections offers its entities as the items of the root collection.
 
 The root collection is the entry point into the API: it allows a presentation layer to identify the collections and entities the data layer offers, and their endpoint URIs. A data layer exposes its root at URI `/{version}/collections`, so that a presentation layer can assume where the tree begins. It's up to the data layer to define what the tree holds and how the collections are nested.
 
@@ -106,7 +106,7 @@ The response body _MUST_ contain at least the following properties:
 | `last`                | Page                      | 0 or 1      | The last page in the collection. Not set if the collection is empty, if the collection is not divided into [pages](#endpoint-retrieve-a-page-in-a-collection), or if the last page is unknown (e.g. in case of [cursor navigation](resources.md#page-navigation-and-cursor-navigation)). |
 | `last.id`             | string                    | 1           | The identifier of the last page in the collection.                                                                                                                                                                                                                                       |
 | `last.type`           | string                    | 1           | The type of the last page in the collection. It _MUST_ be `Page` or a specialisation.                                                                                                                                                                                                    |
-| `capabilities`        | array                     | 0 or 1      | The URIs of the capabilities the API implements for this collection. _MUST_ be omitted if the collection supports no capabilities. See [Capability discovery](resources.md#capability-discovery).                                                                                        |
+| `capabilities`        | array                     | 0 or 1      | The URIs of the capabilities the data layer implements for this collection. _MUST_ be omitted if the collection supports no capabilities. See [Capability discovery](resources.md#capability-discovery).                                                                                 |
 | `facets`              | Collection                | 0 or 1      | The list of this collection's facet collections. _MUST_ be omitted if the collection has no facet collections. See [Facets](facets.md).                                                                                                                                                  |
 | `facets.id`           | string                    | 1           | The identifier of the list.                                                                                                                                                                                                                                                              |
 | `facets.type`         | string                    | 1           | The type of the list. It _MUST_ be `Collection` or a specialisation.                                                                                                                                                                                                                     |
@@ -120,7 +120,7 @@ Note: the response body carries no `partOf` property — the root collection is 
 
 ### Example
 
-An example of the response body of the API:
+An example of the response body of the data layer:
 
 ```json
 {
@@ -148,7 +148,7 @@ An example of the response body of the API:
 }
 ```
 
-The response indicates that the API has three collections that are a part of the root collection. The root collection groups collections, not entities — it supports no capabilities and omits the `capabilities` property.
+The response indicates that the data layer has three collections that are a part of the root collection. The root collection groups collections, not entities — it supports no capabilities and omits the `capabilities` property.
 
 A collection can hold further collections. Example response for the 'Persons' collection:
 
@@ -182,7 +182,7 @@ The response indicates that the 'Persons' collection groups two collections: one
 
 ## Endpoint: Retrieve a collection
 
-The endpoint retrieves a curated collection. The API _MAY_ implement this endpoint, for the collections it chooses to expose.
+The endpoint retrieves a curated collection. The data layer _MAY_ implement this endpoint, for the collections it chooses to expose.
 
 ### HTTP request
 
@@ -198,12 +198,12 @@ The endpoint retrieves a curated collection. The API _MAY_ implement this endpoi
 
 ### Query parameters
 
-| Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                                     |
-| --------- | --------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `q`       | string    | 0 or 1      | A keyword query for filtering the items. Minimum length: defined by the API (e.g. 1 character). Maximum length: defined by the API (e.g. 100 characters).                                                                                                       |
-| `size`    | number    | 0 or 1      | The maximum number of items to retrieve. Minimum: 1. Default: 10. Maximum: defined by the API (e.g. 100).                                                                                                                                                       |
-| `orderBy` | string    | 0 or 1      | The sorting order of the items. One of `relevance`, `value`. Default: `relevance:desc` (most relevant entity first) if `q` is set; otherwise the order defined by the API. The API defines which property it sorts by `value` on (e.g. the `name` of the item). |
-| `filter`  | string    | 0 or more   | The rules for filtering the items. See [Filters](resources.md#filters).                                                                                                                                                                                         |
+| Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                                                   |
+| --------- | --------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `q`       | string    | 0 or 1      | A keyword query for filtering the items. Minimum length: defined by the data layer (e.g. 1 character). Maximum length: defined by the data layer (e.g. 100 characters).                                                                                                       |
+| `size`    | number    | 0 or 1      | The maximum number of items to retrieve. Minimum: 1. Default: 10. Maximum: defined by the data layer (e.g. 100).                                                                                                                                                              |
+| `orderBy` | string    | 0 or 1      | The sorting order of the items. One of `relevance`, `value`. Default: `relevance:desc` (most relevant entity first) if `q` is set; otherwise the order defined by the data layer. The data layer defines which property it sorts by `value` on (e.g. the `name` of the item). |
+| `filter`  | string    | 0 or more   | The rules for filtering the items. See [Filters](resources.md#filters).                                                                                                                                                                                                       |
 
 ### Request body
 
@@ -232,7 +232,7 @@ The response body _MUST_ contain at least the following properties:
 | `partOf.id`           | string                    | 1           | The identifier of the collection.                                                                                                                                                                                                                                                        |
 | `partOf.type`         | string                    | 1           | The type of the collection. It _MUST_ be `CuratedCollection` or a specialisation.                                                                                                                                                                                                        |
 | `partOf.name`         | string                    | 1           | The name of the collection.                                                                                                                                                                                                                                                              |
-| `capabilities`        | array                     | 0 or 1      | The URIs of the capabilities the API implements for this collection. _MUST_ be omitted if the collection supports no capabilities. See [Capability discovery](resources.md#capability-discovery).                                                                                        |
+| `capabilities`        | array                     | 0 or 1      | The URIs of the capabilities the data layer implements for this collection. _MUST_ be omitted if the collection supports no capabilities. See [Capability discovery](resources.md#capability-discovery).                                                                                 |
 | `facets`              | Collection                | 0 or 1      | The list of this collection's facet collections. _MUST_ be omitted if the collection has no facet collections. See [Facets](facets.md).                                                                                                                                                  |
 | `facets.id`           | string                    | 1           | The identifier of the list.                                                                                                                                                                                                                                                              |
 | `facets.type`         | string                    | 1           | The type of the list. It _MUST_ be `Collection` or a specialisation.                                                                                                                                                                                                                     |
@@ -316,7 +316,7 @@ Another collection has the same structure. Which capabilities a collection has i
 
 ## Endpoint: Retrieve a page in a collection
 
-The endpoint retrieves a page in a curated collection. The API _MUST_ implement this endpoint for every collection it divides into [pages](#endpoint-retrieve-a-page-in-a-collection).
+The endpoint retrieves a page in a curated collection. The data layer _MUST_ implement this endpoint for every collection it divides into [pages](#endpoint-retrieve-a-page-in-a-collection).
 
 ### HTTP request
 
@@ -332,14 +332,14 @@ The endpoint retrieves a page in a curated collection. The API _MUST_ implement 
 
 ### Query parameters
 
-| Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                                     |
-| --------- | --------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `page`    | string    | 1           | The identifier of the page: a page number or cursor, depending on the [pagination strategy](resources.md#page-navigation-and-cursor-navigation) of the API.                                                                                                     |
-| `q`       | string    | 0 or 1      | A keyword query for filtering the items. Minimum length: defined by the API (e.g. 1 character). Maximum length: defined by the API (e.g. 100 characters).                                                                                                       |
-| `size`    | number    | 0 or 1      | The maximum number of items to retrieve. Minimum: 1. Default: 10. Maximum: defined by the API (e.g. 100).                                                                                                                                                       |
-| `orderBy` | string    | 0 or 1      | The sorting order of the items. One of `relevance`, `value`. Default: `relevance:desc` (most relevant entity first) if `q` is set; otherwise the order defined by the API. The API defines which property it sorts by `value` on (e.g. the `name` of the item). |
-| `filter`  | string    | 0 or more   | The rules for filtering the items. See [Filters](resources.md#filters).                                                                                                                                                                                         |
-| `facet`   | string    | 0 or more   | The facets that must be retrieved. _MUST_ be ignored by the API if it does not support facets. See [facets](facets.md).                                                                                                                                         |
+| Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                                                   |
+| --------- | --------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `page`    | string    | 1           | The identifier of the page: a page number or cursor, depending on the [pagination strategy](resources.md#page-navigation-and-cursor-navigation) of the data layer.                                                                                                            |
+| `q`       | string    | 0 or 1      | A keyword query for filtering the items. Minimum length: defined by the data layer (e.g. 1 character). Maximum length: defined by the data layer (e.g. 100 characters).                                                                                                       |
+| `size`    | number    | 0 or 1      | The maximum number of items to retrieve. Minimum: 1. Default: 10. Maximum: defined by the data layer (e.g. 100).                                                                                                                                                              |
+| `orderBy` | string    | 0 or 1      | The sorting order of the items. One of `relevance`, `value`. Default: `relevance:desc` (most relevant entity first) if `q` is set; otherwise the order defined by the data layer. The data layer defines which property it sorts by `value` on (e.g. the `name` of the item). |
+| `filter`  | string    | 0 or more   | The rules for filtering the items. See [Filters](resources.md#filters).                                                                                                                                                                                                       |
+| `facet`   | string    | 0 or more   | The facets that must be retrieved. _MUST_ be ignored by the data layer if it does not support facets. See [facets](facets.md).                                                                                                                                                |
 
 ### Request body
 
