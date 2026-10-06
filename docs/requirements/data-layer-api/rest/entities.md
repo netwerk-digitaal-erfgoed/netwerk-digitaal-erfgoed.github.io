@@ -77,12 +77,18 @@ The following table provides examples of common entity types:
 
 ### Recommended data models for entity types
 
-:::note
+:::note To do:
 
-**To do**:
+Describe the recommended data models (e.g. for a heritage object, a person, a place) using e.g. Schema.org concepts.
 
-- Describe the recommended data models (e.g. for a heritage object, a person, a place) using e.g. Schema.org concepts;
-- Explain data modeling requirements, e.g. each entity must refer to the data provider's publication system from which it came (e.g. `isBasedOn`), and must have a license (e.g. `license`);
+:::
+
+:::note To do:
+
+Explain data modeling requirements, e.g.
+
+- Each entity must refer to the data provider's publication system from which it came (e.g. `isBasedOn`), and must have a license (e.g. `license`);
+- An entity should expose the [collections](collections.md) the entity is a member of. A presentation layer can then offer a 'more like this' or 'more from this collection' functionality.
 
 :::
 
@@ -165,9 +171,3 @@ The response body depends on the data model of the entity. An example:
 ```
 
 The response indicates that this entity is a `HeritageObject` and has name 'The Night Watch'. It is linked to other entities of types `Concept`, `Person` and `Place`.
-
-:::note
-
-**To be discussed**: an entity response does not expose the collections the entity is a member of. A presentation layer can therefore not offer a 'more like this' or 'more from this collection' functionality. Consider adding an optional property to the entity structure listing the [curated collections](collections.md) the entity is a part of?
-
-:::

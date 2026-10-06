@@ -74,9 +74,9 @@ The API _MUST_ use media types to enable open and extensible content negotiation
 1. The API _MUST_ send the `Vary: Accept` header to indicate to a presentation layer that it supports content negotiation for media types. This tells a presentation layer that changing the value of the `Accept` header in a request will yield a different representation of a resource.
 1. The API _MUST_ send its responses as JSON; it is easy to parse and supported natively in most programming languages.
 
-:::note
+:::note To do:
 
-**To do**: make JSON-LD the default, not JSON.
+Make JSON-LD the default, not JSON.
 
 :::
 
@@ -287,9 +287,9 @@ When an error occurs, the API _MUST_ handle errors as follows:
 | `title`  | string    | 1           | A short, human-readable summary of the problem type. For example: `Resource not found` for every resource that could not be retrieved by the API. |
 | `detail` | string    | 1           | A human-readable explanation specific to this occurrence of the problem.                                                                          |
 
-:::note
+:::note To be discussed:
 
-**To be discussed**: add support for the [type property](https://www.rfc-editor.org/info/rfc9457/#name-type), for machine-readable processing?
+Add support for the [type property](https://www.rfc-editor.org/info/rfc9457/#name-type), for machine-readable processing?
 
 :::
 
@@ -323,9 +323,9 @@ The API _SHOULD_ be open to any presentation layer without technical constraints
 
 Access should only be restricted to designated presentation layers under specific circumstances, such as legal requirements. This specification does not dictate which technical constraints a data layer should implement; that decision rests with the data layer based on its specific needs.
 
-:::note
+:::note To do:
 
-**To do**: rephrase or remove this section — it's not yet clear what the requirements are.
+Rephrase or remove this section — it's not yet clear what the requirements are.
 
 :::
 

@@ -69,9 +69,9 @@ The data layer API _MUST_ include `type` in the response body of every resource 
 
 ### Resource identification with URIs
 
-:::note
+:::note To do:
 
-**To do**: explain how resources must be identified with URIs:
+Explain how resources must be identified with URIs:
 
 - See the general requirements of the REST API Design Rules, e.g. plural names (`/entities`, not `/entity`), lower case names (`/entities`, not `/Entities`), dashes (`/heritage-objects`, not `/heritageObjects`), slashes to denote hierarchy (`/collections/persons`, not `/collections-persons`);
 - Use camel case in query parameters (`?filterBy=dateCreated`, not `?filter-by=date-created`);
@@ -267,9 +267,9 @@ The list is not fixed. A data layer may add filter types of its own for specific
 
 A presentation layer _MUST_ only send filters that the collection supports. If it sends another filter, the API _MUST_ respond with a `400` status code. Ignoring an unsupported filter would silently give the presentation layer more items than it asked for.
 
-:::note
+:::note To be discussed:
 
-**To be discussed**: is there a standard or common notation to express filter and facet parameters via a query string?
+Is there a standard or common notation to express filter and facet parameters via a query string?
 
 Options could be [Feed Item Query Language](https://datatracker.ietf.org/doc/html/draft-nottingham-atompub-fiql-00) (FIQL), [RSQL](https://github.com/jirutka/rsql-parser) or [OData](https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part1-protocol.html#_Toc31358947). These can be heavy-weight, though, or be unable to express all parameters (e.g. facets that should be retrieved). Alternatively, use a custom notation using a convention, e.g. the [LHS bracket syntax](https://docs.strapi.io/cms/api/rest/filters), that can be mapped to JSON for processing by the API? For example:
 
@@ -291,9 +291,9 @@ Options could be [Feed Item Query Language](https://datatracker.ietf.org/doc/htm
 
 :::
 
-:::note
+:::note To do:
 
-**To do**: think of a way to express the ID of a `facet` in the query string. A facet ID like `creators` is a shorthand for its full URI but currently does not have a designated property in a [facet collection](facets.md#endpoint-retrieve-a-facet-collection). Full URIs — such as `https://example.org/v1/collections/masterpieces/facets/creators` — are rather verbose.
+Think of a way to express the ID of a `facet` in the query string. A facet ID like `creators` is a shorthand for its full URI but currently does not have a designated property in a [facet collection](facets.md#endpoint-retrieve-a-facet-collection). Full URIs — such as `https://example.org/v1/collections/masterpieces/facets/creators` — are rather verbose.
 
 :::
 
