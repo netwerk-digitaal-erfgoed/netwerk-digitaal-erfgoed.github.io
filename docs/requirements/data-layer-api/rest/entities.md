@@ -15,9 +15,9 @@ Entities can be grouped into [curated collections](collections.md). For example:
 
 ## Data model
 
-An entity is a specialization of a [Resource](resources.md#resource): it has an `id`, a `type` and a `name`. An entity is abstract: there is no entity whose type is `Entity`. Every entity has one of the concrete types that a data layer defines, published as part of its [type vocabulary](types.md).
+An entity is a specialisation of a [Resource](resources.md#resource): it has an `id`, a `type` and a `name`. An entity is abstract: there is no entity whose type is `Entity`. Every entity has one of the concrete types that a data layer defines, published as part of its [type vocabulary](types.md).
 
-The following class diagram visualizes how entity types relate to a Resource and to each other. It shows two examples of the concrete types a data layer can define, 'Heritage object' and 'Person':
+The following class diagram visualises how entity types relate to a Resource and to each other. It shows two examples of the concrete types a data layer can define, 'Heritage object' and 'Person':
 
 ```mermaid
 ---
@@ -67,7 +67,7 @@ The following table provides examples of common entity types:
 | ---------------- | -------------------------------------------------------------------------- |
 | Heritage object  | A valued object, e.g. a building, painting, book or document.              |
 | Person           | A human being.                                                             |
-| Organization     | An organized group of people.                                              |
+| Organisation     | An organised group of people.                                              |
 | Place            | A spatial extent on the Earth's surface.                                   |
 | Concept          | A unit of thought.                                                         |
 | Event            | A thing that happened at a certain time and location.                      |
@@ -85,9 +85,9 @@ Describe the recommended data models (e.g. for a heritage object, a person, a pl
 
 :::note To do:
 
-Explain data modeling requirements, e.g.
+Explain data modelling requirements, e.g.
 
-- Each entity must refer to the data provider's publication system from which it came (e.g. `isBasedOn`), and must have a license (e.g. `license`);
+- Each entity must refer to the data provider's publication system from which it came (e.g. `isBasedOn`), and must have a licence (e.g. `license`);
 - An entity should expose the [collections](collections.md) the entity is a member of. A presentation layer can then offer a 'more like this' or 'more from this collection' functionality.
 
 :::

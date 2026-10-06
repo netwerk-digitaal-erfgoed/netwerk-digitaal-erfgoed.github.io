@@ -90,7 +90,7 @@ Host: example.org
 Accept: application/json
 ```
 
-This tells the API that the presentation layer prefers the response to be serialized as JSON.
+This tells the API that the presentation layer prefers the response to be serialised as JSON.
 
 An example of the response headers of the API:
 
@@ -100,7 +100,7 @@ Content-Type: application/json
 Vary: Accept
 ```
 
-The response indicates that the body is serialized as JSON and that a new request to the same resource with a different `Accept` header value will result in a different representation of the resource.
+The response indicates that the body is serialised as JSON and that a new request to the same resource with a different `Accept` header value will result in a different representation of the resource.
 
 ## Languages
 
@@ -331,7 +331,7 @@ Rephrase or remove this section — it's not yet clear what the requirements are
 
 ## Client identification
 
-The data layer should be able to monitor the usage of its API and advise presentation layers in optimizing their implementations. The data layer should therefore be able to identify individual presentation layers.
+The data layer should be able to monitor the usage of its API and advise presentation layers in optimising their implementations. The data layer should therefore be able to identify individual presentation layers.
 
 1. A presentation layer _SHOULD_ send the `User-Agent` header in its requests. The header value _SHOULD_ consist of the name of the system of the presentation layer, the version of its system and the URL of the owner of the presentation layer. The value _SHOULD_ look like this: `system/version (url)`, e.g. `MyApp/1.7.6 (https://mymuseum.nl)`. See the [HTTP semantics](https://www.rfc-editor.org/info/rfc9110/#field.user-agent) for more information.
 1. The API _MAY_ respond with a `400 Bad Request` status code if the `User-Agent` header in the request is missing or invalid.
