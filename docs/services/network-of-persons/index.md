@@ -47,7 +47,6 @@ query {
           prefLabel
           altLabel
           hiddenLabel
-          scopeNote
           person {
             birthDate
             deathDate
@@ -73,6 +72,8 @@ https://personennetwerk.netwerkdigitaalerfgoed.nl/reconcile/https://data.niod.nl
 
 - Search matches whole words: ‘Zwanenv’ finds nothing. To search by prefix, set `queryMode` to `RAW` and end the word
   with `*`.
+- Punctuation in the search words finds nothing: search for ‘Zwanenveld Dirk’, not ‘Zwanenveld, Dirk’.
+- There is no scope note. To tell namesakes apart, read the birth and death dates and places in the `person` field.
 - Given and family names are empty, because the dataset gives each person one undivided name.
 - A birth or death place can appear twice: once by name and once as a URI from the WO2 Thesaurus. The dataset does not
   say which name belongs to which URI.
