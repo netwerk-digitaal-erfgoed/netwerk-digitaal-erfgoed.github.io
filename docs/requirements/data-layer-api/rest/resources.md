@@ -77,7 +77,6 @@ Explain how resources must be identified with URIs:
 
 - See the general requirements of the REST API Design Rules, e.g. plural names (`/entities`, not `/entity`), lower case names (`/entities`, not `/Entities`), dashes (`/heritage-objects`, not `/heritageObjects`), slashes to denote hierarchy (`/collections/persons`, not `/collections-persons`);
 - Use camel case in query parameters (`?filterBy=dateCreated`, not `?filter-by=date-created`);
-- Individual resources must have deterministic IDs if they come from publication systems of data providers. This ensures that a resource always has the same ID, no matter how many times a data layer retrieves it again from the publication system. A data layer can use a hash (give an example);
 - URIs must still be treated as if they were opaque strings (per Linked Art: "the URI patterns are to facilitate developers understanding the API, not to facilitate software to interact with it").
 
 :::

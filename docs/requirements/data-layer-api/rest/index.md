@@ -11,9 +11,9 @@ This specification defines how data layers and presentation layers exchange info
 
 ## Version
 
-The document describes **version 0.0.3** of the specification.
+This is **version 0.0.3** of the specification.
 
-This is the **initial development** version, version zero. Breaking changes are introduced within the same major version, following [semantic versioning for version zero](https://semver.org/#spec-item-4).
+It is the **initial development** version, version zero. Breaking changes are introduced within the same major version, following [semantic versioning for version zero](https://semver.org/#spec-item-4).
 
 ## Design considerations
 

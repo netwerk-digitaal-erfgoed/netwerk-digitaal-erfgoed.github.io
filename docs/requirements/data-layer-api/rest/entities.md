@@ -9,7 +9,7 @@ sidebar_position: 5
 
 An entity is an identifiable 'thing' relevant to heritage. For example: 'The Night Watch' (a painting), 'Rembrandt' (a person), 'Amsterdam' (a place) and 'Brabantine Gothic' (a concept) are all entities.
 
-Entities are what every data layer is about. They are the heritage information that a data layer exposes through its API. Presentation layers present this information to their users, and it is what those users care about. Everything else the data layer publishes — collections, facet values, keyword values — serves the entities: it organises, groups or finds them.
+Entities are what every data layer is about. They are the heritage information that a data layer exposes through its API. Presentation layers present this information to their users. Everything else the data layer publishes — collections, facet values, keyword values — serves the entities: it organises, groups or finds them.
 
 An entity has a URI of its own, independent of the collections it is a part of. The identifier of an entity is unique across all entity types and does not contain the type of the entity.
 
@@ -75,7 +75,7 @@ The following table provides examples of common entity types:
 | Dataset          | A collection of data, e.g. data about heritage objects.                    |
 | Digital object   | A digital representation of an entity, e.g. an image of a heritage object. |
 
-### Recommended data models for entity types
+### Recommended data models
 
 :::note To do:
 
@@ -87,10 +87,21 @@ Describe the recommended data models (e.g. for a heritage object, a person, a pl
 
 Explain data modelling requirements, e.g.
 
-- Each entity must refer to the data provider's publication system from which it came (e.g. `isBasedOn`), and must have a licence (e.g. `license`);
+- Each entity must refer to the data provider's publication system from which it came (e.g. `isBasedOn`), must have a licence (e.g. `license`) and must have an ID that a presentation layer can use, e.g. for bookmarking (e.g. `identifier`);
 - An entity should expose the [collections](collections.md) the entity is a member of. A presentation layer can then offer a 'more like this' or 'more from this collection' functionality.
 
 :::
+
+## Identification of entities from data providers
+
+Most entities in a data layer come from data providers. Each such entity has an identifier, chosen by the data provider that published it. For example, the Rijksmuseum gave 'The Night Watch' the identifier `https://id.rijksmuseum.nl/200107928`.
+
+A data layer _MUST_ give every entity it takes in its own identifier. The identifier _MUST_ start with the data layer's URI prefix, `/{version}/entities/`. The identifier _MUST_ be deterministic: taking the same entity in again must always produce the same identifier, even when the source data has changed. This keeps the identifier valid over time. Presentation layers can rely on it where it must stay stable — for example, in the web address of a detail page, or when a user bookmarks, saves or favourites an entity. A presentation layer may even show the identifier to its users, so it is not only a code for use between applications.
+
+A data layer _MUST_ decide how it turns a source identifier into its own. It _MAY_ use either of the two options below. In both, the data layer _MUST_ build its identifier from the source identifier, which is already unique and stable:
+
+- **Use the source identifier as-is.** For example, the identifier of 'The Night Watch' becomes `https://example.org/v1/entities/https%3A%2F%2Fid.rijksmuseum.nl%2F200107928` — the source identifier, encoded so it fits in a URL.
+- **Turn the source identifier into a code by hashing it**, for example with [BLAKE3](<https://en.wikipedia.org/wiki/BLAKE_(hash_function)>) or [SHA256](https://en.wikipedia.org/wiki/SHA-2). For example, the identifier of 'The Night Watch' becomes `https://example.org/v1/entities/874f078c5723abf6f0d86dffbbb827b6c82cd0a26ee6c7657519cbab830cef4d`.
 
 ## Endpoint: Retrieve an entity
 
@@ -171,3 +182,9 @@ The response body depends on the data model of the entity. An example:
 ```
 
 The response indicates that this entity is a `HeritageObject` and has name 'The Night Watch'. It is linked to other entities of types `Concept`, `Person` and `Place`.
+
+:::note
+
+This specification does not define an endpoint that retrieves a list of all entities. A presentation layer finds the entities of a data layer through [collections](collections.md): a data layer groups its entities into curated collections, and a presentation layer browses a collection or filters its items to find the entities it needs.
+
+:::
