@@ -26,7 +26,7 @@ The specification follows these considerations:
 
 ## Discovery
 
-:::note To do:
+:::note To do
 
 - Explain that the API specification uses discovery patterns; it makes API implementations dynamic and self-documenting. This is essential for a generic, extensible specification that can be used by all sorts of data layers.
 - Specify the root endpoint of the API, e.g. `/v1`. This endpoint allows presentation layers to discover the entry points and capabilities of the API (e.g. `/v1/entities`, `/v1/collections`).

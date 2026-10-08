@@ -35,7 +35,7 @@ This document is intended for:
 
 The keywords _MAY_, _MUST_, _MUST NOT_, _OPTIONAL_, _RECOMMENDED_, _SHOULD_, and _SHOULD NOT_ are to be interpreted as described in [RFC 2119](https://www.ietf.org/rfc/rfc2119.txt), when, and only when, they appear in all capitals, as shown here.
 
-:::note To do:
+:::note To do
 
 - Add references to the [gedragsprofielen digitaal erfgoed](https://zenodo.org/records/14938780).
 - Make a clean separation between the specification of the interface and the behaviour of the data layer (what it must or should do).

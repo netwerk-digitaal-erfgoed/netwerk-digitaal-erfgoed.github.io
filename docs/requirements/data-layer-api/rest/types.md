@@ -19,7 +19,7 @@ A data layer _MUST_ publish its type vocabulary. The vocabulary is a set of data
 
 The vocabulary is administrative information. It tells a developer of a presentation layer what a resource looks like and what the API guarantees about it. The form in which a data layer publishes its vocabulary is to be specified — see the note below.
 
-:::note To do:
+:::note To do
 
 This page is a placeholder for the rules that the other pages now assume but do not define. In addition to the [type vocabulary](#type-vocabulary) above, it has to specify:
 
@@ -29,7 +29,7 @@ This page is a placeholder for the rules that the other pages now assume but do 
 
 :::
 
-:::note To be discussed:
+:::note To be discussed
 
 Generalise this page so that it's not just about types but about data models in general?
 

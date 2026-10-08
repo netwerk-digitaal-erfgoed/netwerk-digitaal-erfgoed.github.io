@@ -71,7 +71,7 @@ The data layer _MUST_ include `type` in the response body of every resource it r
 
 ### Resource identification with URIs
 
-:::note To do:
+:::note To do
 
 Explain how resources must be identified with URIs:
 
@@ -269,7 +269,7 @@ The list is not fixed. A data layer may add filter types of its own for specific
 
 A presentation layer _MUST_ only send filters that the collection supports. If it sends another filter, the data layer _MUST_ respond with a `400` status code. Ignoring an unsupported filter would silently give the presentation layer more items than it asked for.
 
-:::note To be discussed:
+:::note To be discussed
 
 Is there a standard or common notation to express filter and facet parameters via a query string?
 
@@ -293,7 +293,7 @@ Options could be [Feed Item Query Language](https://datatracker.ietf.org/doc/htm
 
 :::
 
-:::note To do:
+:::note To do
 
 Think of a way to express the ID of a `facet` in the query string. A facet ID like `creators` is a shorthand for its full URI but currently does not have a designated property in a [facet collection](facets.md#endpoint-retrieve-a-facet-collection). Full URIs — such as `https://example.org/v1/collections/masterpieces/facets/creators` — are rather verbose.
 

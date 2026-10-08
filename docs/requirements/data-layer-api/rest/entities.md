@@ -11,7 +11,7 @@ An entity is an identifiable 'thing' relevant to heritage. For example: 'The Nig
 
 Entities are what every data layer is about. They are the heritage information that a data layer exposes through its API. Presentation layers present this information to their users. Everything else the data layer publishes — collections, facet values, keyword values — serves the entities: it organises, groups or finds them.
 
-An entity has a URI of its own, independent of the collections it is a part of. The identifier of an entity is unique across all entity types and does not contain the type of the entity.
+Most entities in a data layer come from data providers. A data layer can also create entities itself.
 
 ## Data model
 
@@ -77,13 +77,13 @@ The following table provides examples of common entity types:
 
 ### Recommended data models
 
-:::note To do:
+:::note To do
 
 Describe the recommended data models (e.g. for a heritage object, a person, a place) using e.g. Schema.org concepts.
 
 :::
 
-:::note To do:
+:::note To do
 
 Explain data modelling requirements, e.g.
 
@@ -98,25 +98,25 @@ Every entity has a URI. A presentation layer uses that URI to retrieve the entit
 
 The URI of an entity always has the form `/{version}/entities/{id}`:
 
-- `entities` is fixed. Every entity URI contains it.
 - `{version}` is the version of the API of the data layer.
+- `entities` is fixed. Every entity URI contains it.
 - `{id}` is the path identifier, and it is variable. The data layer determines it.
 
-Two different things are both called `id`. In a response body, the `id` of an entity is its full URI, for example `https://example.org/v1/entities/1234`. In the URI form `/{version}/entities/{id}`, the `{id}` is the path identifier: the part after `/entities/`, for example `1234`. The requirements and examples in this section are about the path identifier.
+Two different things are both called `id`. The `id` of an entity is nearly always its full URI, for example `https://example.org/v1/entities/1234`: the API uses this URI in response bodies and in other payloads wherever it refers to the entity. In the URI form `/{version}/entities/{id}`, the `{id}` is the path identifier: the part after `/entities/`, for example `1234`. The requirements and examples in this section are about the path identifier.
 
 The data layer _MUST_ determine the `{id}` in line with the following requirements:
 
-- If the entity comes from a data provider — and most entities do — the `{id}` _MUST_ be traceable to the source identifier: the identifier that the data provider assigned to the entity.
-- The `{id}` _MUST_ be deterministic: when the data layer processes the data of that data provider again, it must yield the same `{id}`. Otherwise a presentation layer cannot use the URI — for example, in the web address of a detail page, or when a user bookmarks, saves or favourites an entity.
-- The `{id}` _MUST_ not change when the version of the API changes: `/v1/entities/{id}` may become `/v2/entities/{id}`, but the `{id}` stays the same.
+1. The `{id}` _MUST_ be unique: two different entities never have the same `{id}`.
+1. The `{id}` _MUST_ be deterministic: when the data layer processes the data of a data provider again, it must yield the same `{id}`. The entity may have changed properties in between, but its source identifier — the identifier that the data provider assigned to it — stays the same: that is how the data layer recognises the entity as the same one. The `{id}` _MUST_ therefore be traceable to that source identifier. Otherwise a presentation layer cannot use the URI — for example, in the web address of a detail page, or when a user bookmarks, saves or favourites an entity.
+1. The `{id}` _MUST_ not change when the version of the API changes: `/v1/entities/{id}` may become `/v2/entities/{id}`, but the `{id}` stays the same.
 
 These requirements do not promise that an `{id}` stays the same forever. A data layer cannot guarantee that: it depends on the data provider, and the source identifier may itself change.
 
 The data layer _MAY_ choose any approach that satisfies the requirements of this section. The following approaches are examples of what an `{id}` may look like:
 
-- **The `{id}` _is_ the source identifier.** For example, the source identifier of 'The Night Watch', as assigned by the Rijksmuseum, is `https://id.rijksmuseum.nl/200107928`. The URI of the entity is `https://example.org/v1/entities/https%3A%2F%2Fid.rijksmuseum.nl%2F200107928` (encoded so that it fits in a URI).
+- **The `{id}` _is_ the source identifier.** For example, the source identifier of 'The Night Watch' is `https://id.rijksmuseum.nl/200107928`. The URI of the entity is `https://example.org/v1/entities/https%3A%2F%2Fid.rijksmuseum.nl%2F200107928` (encoded so that it fits in a URI).
 - **The `{id}` is a hash of the source identifier**. For example, the hash of the source identifier of 'The Night Watch' is `874f078c5723abf6f0d86dffbbb827b6c82cd0a26ee6c7657519cbab830cef4d` (created with the [BLAKE3](<https://en.wikipedia.org/wiki/BLAKE_(hash_function)>) hashing algorithm). The URI of the entity is `https://example.org/v1/entities/874f078c5723abf6f0d86dffbbb827b6c82cd0a26ee6c7657519cbab830cef4d`.
-- **The `{id}` is an identifier generated by the data layer, traceable to the source identifier.** For example, `{id}` is a number (`1234`) or a Nano ID (`d8fe02e4`), assigned the first time the data layer takes the entity in and reused afterwards. The URI of the entity is `https://example.org/v1/entities/1234`.
+- **The `{id}` is an identifier generated by the data layer, traceable to the source identifier.** For example, `{id}` is a number (`1234`) or a Nano ID (`d8fe02e4`), assigned the first time the data layer processes the entity and reused afterwards. The URI of the entity is `https://example.org/v1/entities/1234`.
 
 ## Endpoint: Retrieve an entity
 
