@@ -11,8 +11,6 @@ An entity is an identifiable 'thing' relevant to heritage. For example: 'The Nig
 
 Entities are what every data layer is about. They are the heritage information that a data layer exposes through its API. Presentation layers present this information to their users. Everything else the data layer publishes — collections, facet values, keyword values — serves the entities: it organises, groups or finds them.
 
-Most entities in a data layer come from data providers. A data layer can also create entities itself.
-
 ## Data model
 
 An entity is a specialisation of a [Resource](resources.md#resource): it has an `id`, a `type` and a `name`. An entity is abstract: there is no entity whose type is `Entity`. Every entity has one of the concrete types that a data layer defines, published as part of its [type vocabulary](types.md).
