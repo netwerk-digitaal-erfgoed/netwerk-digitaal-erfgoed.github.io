@@ -11,9 +11,9 @@ This specification defines how data layers and presentation layers exchange info
 
 ## Version
 
-The document describes **version 0.0.3** of the specification.
+This is **version 0.0.3** of the specification.
 
-This is the **initial development** version, version zero. Breaking changes are introduced within the same major version, following [semantic versioning for version zero](https://semver.org/#spec-item-4).
+It is the **initial development** version, version zero. Breaking changes are introduced within the same major version, following [semantic versioning for version zero](https://semver.org/#spec-item-4).
 
 ## Design considerations
 
@@ -26,7 +26,7 @@ The specification follows these considerations:
 
 ## Discovery
 
-:::note To do:
+:::note To do
 
 - Explain that the API specification uses discovery patterns; it makes API implementations dynamic and self-documenting. This is essential for a generic, extensible specification that can be used by all sorts of data layers.
 - Specify the root endpoint of the API, e.g. `/v1`. This endpoint allows presentation layers to discover the entry points and capabilities of the API (e.g. `/v1/entities`, `/v1/collections`).

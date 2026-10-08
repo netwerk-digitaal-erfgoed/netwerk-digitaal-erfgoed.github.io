@@ -13,11 +13,11 @@ The API of a data layer is centered around resources. A resource represents a 't
 
 This specification defines resource types on several pages. This page describes the generic types from which all other resource types extend:
 
-| Name       | Description                                                                                                                                                                                                                                                                                                                                           |
-| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Resource   | A 'thing' of a certain type. All other resource types extend from it. It is the umbrella term for everything the data layer publishes. A Resource is abstract: there is no resource whose type is `Resource` — it needs a concrete type. This specification defines a number of concrete types. The data layer may additionally define its own types. |
-| Collection | An ordered list of resources. A Collection may contain further collections, and may consist of pages, containing sublists of the resources in the collection.                                                                                                                                                                                         |
-| Page       | An ordered sublist of resources within a Collection.                                                                                                                                                                                                                                                                                                  |
+| Name       | Description                                                                                                                                                                                                                                                                                                                                                                                                  |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Resource   | A 'thing' of a certain type. All other resource types extend from it. It is the umbrella term for everything the data layer publishes and a presentation layer can interact with. A Resource is abstract: there is no resource whose type is `Resource` — it needs a concrete type. This specification defines a number of concrete types. The data layer may additionally [define its own types](types.md). |
+| Collection | An ordered list of resources. A Collection may contain further collections, and may consist of pages, containing sublists of the resources in the collection.                                                                                                                                                                                                                                                |
+| Page       | An ordered sublist of resources within a Collection.                                                                                                                                                                                                                                                                                                                                                         |
 
 The following class diagram visualises the relationships between the resource types:
 
@@ -63,21 +63,21 @@ A Resource, regardless of type, contains at least the following properties:
 
 | Name   | Data type | Cardinality | Description                                                                                                                                                                                                                                           |
 | ------ | --------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `type` | string    | 1           | The type of the resource. This specification defines a number of [types](#data-model). The data layer may additionally define its own types.                                                                                                          |
+| `type` | string    | 1           | The type of the resource. This specification defines a number of types. The data layer may additionally define its own types.                                                                                                                         |
 | `id`   | string    | 0 or 1      | The identifier of the resource. It _MUST_ be a dereferenceable [HTTP URI](https://httpwg.org/specs/rfc9110.html#uri.schemes). Optional for volatile, non-persistent resources, such as [Keyword Values](suggestions.md) or [Facet Values](facets.md). |
 | `name` | string    | 0 or 1      | The name of the resource, if known.                                                                                                                                                                                                                   |
 
-The data layer _MUST_ include `type` in the response body of every resource it returns, and `id` and `name` when they are known. The combination of these three properties allow a presentation layer to easily identify a resource.
+The data layer _MUST_ include `type` in the response body of every resource it returns, and `id` and `name` when they are known. The combination of these three properties allow a presentation layer to identify a resource.
 
 ### Resource identification with URIs
 
-:::note To do:
+:::note To do
 
 Explain how resources must be identified with URIs:
 
 - See the general requirements of the REST API Design Rules, e.g. plural names (`/entities`, not `/entity`), lower case names (`/entities`, not `/Entities`), dashes (`/heritage-objects`, not `/heritageObjects`), slashes to denote hierarchy (`/collections/persons`, not `/collections-persons`);
 - Use camel case in query parameters (`?filterBy=dateCreated`, not `?filter-by=date-created`);
-- Individual resources must have deterministic IDs if they come from publication systems of data providers. This ensures that a resource always has the same ID, no matter how many times a data layer retrieves it again from the publication system. A data layer can use a hash (give an example);
+- Identifiers in URIs must be stable. Also see [entities.md](entities.md#assigning-identifiers-to-entities);
 - URIs must still be treated as if they were opaque strings (per Linked Art: "the URI patterns are to facilitate developers understanding the API, not to facilitate software to interact with it").
 
 :::
@@ -269,7 +269,7 @@ The list is not fixed. A data layer may add filter types of its own for specific
 
 A presentation layer _MUST_ only send filters that the collection supports. If it sends another filter, the data layer _MUST_ respond with a `400` status code. Ignoring an unsupported filter would silently give the presentation layer more items than it asked for.
 
-:::note To be discussed:
+:::note To be discussed
 
 Is there a standard or common notation to express filter and facet parameters via a query string?
 
@@ -293,7 +293,7 @@ Options could be [Feed Item Query Language](https://datatracker.ietf.org/doc/htm
 
 :::
 
-:::note To do:
+:::note To do
 
 Think of a way to express the ID of a `facet` in the query string. A facet ID like `creators` is a shorthand for its full URI but currently does not have a designated property in a [facet collection](facets.md#endpoint-retrieve-a-facet-collection). Full URIs — such as `https://example.org/v1/collections/masterpieces/facets/creators` — are rather verbose.
 

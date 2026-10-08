@@ -298,7 +298,7 @@ The endpoint retrieves a facet collection. The data layer _MUST_ implement this 
 | `orderBy` | string    | 0 or 1      | The sorting order of the facet items. One of `count`, `value`. Default: `count:desc` (most frequent item first). The data layer defines which property of the value it sorts by (e.g. the `name`). For a range value, the data layer sorts by its `min`. |
 | `filter`  | string    | 0 or more   | The rules for filtering the facet items. See [Filters](resources.md#filters).                                                                                                                                                                            |
 
-:::note To do:
+:::note To do
 
 Add the query parameters that carry the "search context" of the context collection, so that the facet items reflect the same search as the page in that collection (`q` and `filter` of endpoint [Retrieve a page in a collection](collections.md#endpoint-retrieve-a-page-in-a-collection)).
 
@@ -598,7 +598,7 @@ The endpoint retrieves a page in a facet collection. The data layer _MUST_ imple
 | `orderBy` | string    | 0 or 1      | The sorting order of the facet items. One of `count`, `value`. Default: `count:desc` (most frequent item first). The data layer defines which property of the value it sorts by (e.g. the `name`). For a range value, the data layer sorts by its `min`. |
 | `filter`  | string    | 0 or more   | The rules for filtering the facet items. See [Filters](resources.md#filters).                                                                                                                                                                            |
 
-:::note To do:
+:::note To do
 
 Add the query parameters that carry the "search context" of the context collection, so that the facet items reflect the same search as the page in that collection (`q` and `filter` of endpoint [Retrieve a page in a collection](collections.md#endpoint-retrieve-a-page-in-a-collection)).
 
