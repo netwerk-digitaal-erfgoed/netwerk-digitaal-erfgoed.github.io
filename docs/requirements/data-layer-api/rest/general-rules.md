@@ -66,31 +66,55 @@ The following table lists common status codes:
 
 ## Media types
 
-The data layer _MUST_ use media types to enable open and extensible content negotiation.
+The data layer _MUST_ use media types to enable open and extensible content negotiation. The rules of this section apply to every response of a data layer, whatever the media type of its content, such as JSON data, binary files or a CSV for download.
 
-1. A presentation layer _MAY_ send the `Accept` header in its request. Its value _MUST_ conform to the [HTTP semantics](https://www.rfc-editor.org/info/rfc9110/#section-12.5.1). For example, the value may contain a specific media type (e.g. `application/json`), a media type range (e.g. `application/json, application/problem+json`) or any media type (`*/*`).
-1. If a presentation layer sends the `Accept` header with a media type the data layer does not support, the data layer _MUST_ respond with a `415 Unsupported Media Type` status code.
+1. A presentation layer _MAY_ send the `Accept` header in its request. Its value _MUST_ conform to the [HTTP semantics](https://www.rfc-editor.org/info/rfc9110/#section-12.5.1). For example, the value may contain a specific media type (e.g. `application/json`), a list of media types (e.g. `application/json, application/problem+json`) or any media type (`*/*`).
+1. If a presentation layer sends the `Accept` header with a media type the data layer does not support, the data layer _MUST_ respond with a `406 Not Acceptable` status code.
+1. If a presentation layer does not send the `Accept` header, the data layer _MUST_ send the content in its default media type.
 1. The data layer _MUST_ send the media type of its response in the `Content-Type` header. Its value _MUST_ conform to the [HTTP semantics](https://www.rfc-editor.org/info/rfc9110/#section-8.3).
 1. The data layer _MUST_ send the `Vary: Accept` header to indicate to a presentation layer that it supports content negotiation for media types. This tells a presentation layer that changing the value of the `Accept` header in a request will yield a different representation of a resource.
-1. The data layer _MUST_ send its responses as JSON; it is easy to parse and supported natively in most programming languages.
 
-:::note To do
+## JSON-LD
 
-Make JSON-LD the default, not JSON.
+The API uses JSON by default: JSON is easy to parse and is supported natively in most programming languages. The data layer serialises this JSON as [JSON-LD 1.1](https://www.w3.org/TR/json-ld11/), a format for Linked Data. JSON-LD is the default media type of the API. Because JSON-LD is JSON, a presentation layer that only knows JSON can parse a JSON-LD response like any other JSON document.
 
-:::
+1. The data layer _MUST_ support `application/ld+json` and `application/json` in the `Accept` header: a presentation layer _MAY_ request either.
+1. If a presentation layer does not send the `Accept` header, or sends a media range that accepts `application/ld+json` (such as `*/*` or `application/*`), the data layer _MUST_ serve JSON-LD.
+1. The data layer _MUST_ send `Content-Type: application/ld+json` when it serves JSON-LD, and `Content-Type: application/json` when the presentation layer requests `application/json` only.
+
+The data layer _MUST_ keep JSON-LD out of the way of presentation layers that do not need it. The response body is the same in all cases: it is JSON, and it includes the JSON-LD context in its `@context` property. A presentation layer that requests `application/json` receives that body labelled `application/json`; it treats the response as plain JSON.
+
+The data layer _MUST_ publish a JSON-LD context document that maps the [terms](https://www.w3.org/TR/json-ld11/#terms) it uses to URIs. Every response body _MUST_ include that context in its `@context` property as a reference to the document.
 
 ### Example
 
-An example request from a presentation layer:
+An example request from a JSON-LD-aware presentation layer:
+
+```http
+GET /v1/entities/1234
+Host: example.org
+Accept: application/ld+json
+```
+
+This tells the data layer that the presentation layer prefers the response to be serialised as JSON-LD.
+
+An example of the response headers of the data layer:
+
+```http
+HTTP/2 200 OK
+Content-Type: application/ld+json
+Vary: Accept
+```
+
+The response indicates that the body is serialised as JSON-LD.
+
+An example request from a conventional presentation layer that only knows JSON:
 
 ```http
 GET /v1/entities/1234
 Host: example.org
 Accept: application/json
 ```
-
-This tells the data layer that the presentation layer prefers the response to be serialised as JSON.
 
 An example of the response headers of the data layer:
 
@@ -100,7 +124,7 @@ Content-Type: application/json
 Vary: Accept
 ```
 
-The response indicates that the body is serialised as JSON and that a new request to the same resource with a different `Accept` header value will result in a different representation of the resource.
+Both responses carry the same body, including the `@context` property. The conventional presentation layer treats the body as plain JSON and ignores the `@context` it does not need.
 
 ## Languages
 
@@ -164,7 +188,6 @@ An example of the response headers of the data layer:
 
 ```http
 HTTP/2 200 OK
-Content-Type: application/json
 Content-Encoding: br
 Vary: Accept-Encoding
 ```

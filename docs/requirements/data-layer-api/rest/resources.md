@@ -88,6 +88,7 @@ Example of the response body of the data layer:
 
 ```json
 {
+  "@context": "https://example.org/v1/context.json",
   "id": "https://example.org/v1/entities/1234",
   "type": "HeritageObject",
   "name": "The Night Watch",
@@ -181,6 +182,7 @@ Example of the response body of the data layer's root collection:
 
 ```json
 {
+  "@context": "https://example.org/v1/context.json",
   "id": "https://example.org/v1/collections",
   "type": "Collection",
   "name": "Collections",
@@ -206,6 +208,7 @@ Example of the response body when the collection is divided into pages:
 
 ```json
 {
+  "@context": "https://example.org/v1/context.json",
   "id": "https://example.org/v1/collections/objects",
   "type": "Collection",
   "name": "Heritage objects",
@@ -413,6 +416,7 @@ Example of the response body with page navigation:
 
 ```json
 {
+  "@context": "https://example.org/v1/context.json",
   "id": "https://example.org/v1/collections/objects?page=3",
   "type": "Page",
   "name": "Heritage objects: page 3",
@@ -456,6 +460,7 @@ Example of the response body with cursor navigation:
 
 ```json
 {
+  "@context": "https://example.org/v1/context.json",
   "id": "https://example.org/v1/collections/objects?page=eyJpZCI6MTIzfQ",
   "type": "Page",
   "name": "Heritage objects",

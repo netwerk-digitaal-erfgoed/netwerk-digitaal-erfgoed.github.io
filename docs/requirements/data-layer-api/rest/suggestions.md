@@ -142,6 +142,7 @@ The response body _MUST_ contain at least the following properties:
 
 | Name                     | Data type            | Cardinality | Description                                                                                                                                                                      |
 | ------------------------ | -------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@context`               | string               | 1           | The URI of the JSON-LD context that maps the terms in the response to URIs.                                                                                                      |
 | `id`                     | string               | 1           | The identifier of the collection.                                                                                                                                                |
 | `type`                   | string               | 1           | The type of the collection. It _MUST_ be `Collection` or a specialisation.                                                                                                       |
 | `name`                   | string               | 1           | The name of the collection.                                                                                                                                                      |
@@ -176,6 +177,7 @@ An example of the response body of the data layer:
 
 ```json
 {
+  "@context": "https://example.org/v1/context.json",
   "id": "https://example.org/v1/collections/objects/suggestions",
   "type": "Collection",
   "name": "Suggestions",
@@ -245,6 +247,7 @@ The response body _MUST_ contain at least the following properties:
 
 | Name                  | Data type      | Cardinality | Description                                                                                                                                                                                                                                       |
 | --------------------- | -------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@context`            | string         | 1           | The URI of the JSON-LD context that maps the terms in the response to URIs.                                                                                                                                                                       |
 | `id`                  | string         | 1           | The identifier of the collection.                                                                                                                                                                                                                 |
 | `type`                | string         | 1           | The type of the collection. It _MUST_ be `SuggestionCollection` or a specialisation.                                                                                                                                                              |
 | `name`                | string         | 1           | The name of the collection.                                                                                                                                                                                                                       |
@@ -283,6 +286,7 @@ An example of the response body of the data layer:
 
 ```json
 {
+  "@context": "https://example.org/v1/context.json",
   "id": "https://example.org/v1/collections/objects/suggestions/combinations?q=mil",
   "type": "SuggestionCollection",
   "name": "Keyword and entity suggestions",

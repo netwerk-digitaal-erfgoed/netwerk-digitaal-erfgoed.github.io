@@ -207,6 +207,7 @@ The response body _MUST_ contain at least the following properties:
 
 | Name                  | Data type       | Cardinality | Description                                                                                                                                                                 |
 | --------------------- | --------------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@context`            | string          | 1           | The URI of the JSON-LD context that maps the terms in the response to URIs.                                                                                                 |
 | `id`                  | string          | 1           | The identifier of the collection.                                                                                                                                           |
 | `type`                | string          | 1           | The type of the collection. It _MUST_ be `Collection` or a specialisation.                                                                                                  |
 | `name`                | string          | 1           | The name of the collection.                                                                                                                                                 |
@@ -239,6 +240,7 @@ An example of the response body of the data layer:
 
 ```json
 {
+  "@context": "https://example.org/v1/context.json",
   "id": "https://example.org/v1/collections/objects/facets",
   "type": "Collection",
   "name": "Facets",
@@ -314,6 +316,7 @@ The response body _MUST_ contain at least the following properties:
 
 | Name                  | Data type  | Cardinality | Description                                                                                                                                                                                                                                                      |
 | --------------------- | ---------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@context`            | string     | 1           | The URI of the JSON-LD context that maps the terms in the response to URIs.                                                                                                                                                                                      |
 | `id`                  | string     | 1           | The identifier of the collection.                                                                                                                                                                                                                                |
 | `type`                | string     | 1           | The type of the collection. It _MUST_ be `FacetCollection` or a specialisation.                                                                                                                                                                                  |
 | `name`                | string     | 1           | The name of the collection.                                                                                                                                                                                                                                      |
@@ -360,6 +363,7 @@ An example of the response body of the data layer if the facet collection lists 
 
 ```json
 {
+  "@context": "https://example.org/v1/context.json",
   "id": "https://example.org/v1/collections/objects/facets/centuries",
   "type": "FacetCollection",
   "name": "Made in century",
@@ -417,6 +421,7 @@ An example of the response body of the data layer if the facet collection is not
 
 ```json
 {
+  "@context": "https://example.org/v1/context.json",
   "id": "https://example.org/v1/collections/objects/facets/creators",
   "type": "FacetCollection",
   "name": "Creator",
@@ -462,6 +467,7 @@ An example of the response body of the data layer for the request above, if the 
 
 ```json
 {
+  "@context": "https://example.org/v1/context.json",
   "id": "https://example.org/v1/collections/objects/facets/creators",
   "type": "FacetCollection",
   "name": "Creator",
@@ -513,6 +519,7 @@ An example of the response body of the data layer if the facet collection lists 
 
 ```json
 {
+  "@context": "https://example.org/v1/context.json",
   "id": "https://example.org/v1/collections/objects/facets/collections",
   "type": "FacetCollection",
   "name": "Part of collection",
@@ -551,6 +558,7 @@ An example of the response body of the data layer for the request above, if the 
 
 ```json
 {
+  "@context": "https://example.org/v1/context.json",
   "id": "https://example.org/v1/collections/objects/facets/creators",
   "type": "FacetCollection",
   "name": "Creator",
@@ -614,6 +622,7 @@ The response body _MUST_ contain at least the following properties:
 
 | Name                         | Data type       | Cardinality | Description                                                                                                                                                                                    |
 | ---------------------------- | --------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@context`                   | string          | 1           | The URI of the JSON-LD context that maps the terms in the response to URIs.                                                                                                                    |
 | `id`                         | string          | 1           | The identifier of the current page.                                                                                                                                                            |
 | `type`                       | string          | 1           | The type of the page. It _MUST_ be `FacetPage` or a specialisation.                                                                                                                            |
 | `name`                       | string          | 1           | The name of the page.                                                                                                                                                                          |
@@ -661,6 +670,7 @@ An example of the response body of the data layer:
 
 ```json
 {
+  "@context": "https://example.org/v1/context.json",
   "id": "https://example.org/v1/collections/objects/facets/creators?page=3",
   "type": "FacetPage",
   "name": "Creator",
