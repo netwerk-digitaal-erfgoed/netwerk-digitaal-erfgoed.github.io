@@ -143,11 +143,12 @@ None.
 
 The response body _MUST_ contain at least the properties underneath. Additional properties depend on the data model of the entity, defined by the data layer.
 
-| Name   | Data type | Cardinality | Description                   |
-| ------ | --------- | ----------- | ----------------------------- |
-| `id`   | string    | 1           | The identifier of the entity. |
-| `type` | string    | 1           | The type of the entity.       |
-| `name` | string    | 1           | The name of the entity.       |
+| Name       | Data type | Cardinality | Description                                                                 |
+| ---------- | --------- | ----------- | --------------------------------------------------------------------------- |
+| `@context` | string    | 1           | The URI of the JSON-LD context that maps the terms in the response to URIs. |
+| `id`       | string    | 1           | The identifier of the entity.                                               |
+| `type`     | string    | 1           | The type of the entity.                                                     |
+| `name`     | string    | 1           | The name of the entity.                                                     |
 
 ### Example
 
@@ -164,6 +165,7 @@ The response body depends on the data model of the entity. An example:
 
 ```json
 {
+  "@context": "https://example.org/v1/context.json",
   "id": "https://example.org/v1/entities/1234",
   "type": "HeritageObject",
   "name": "The Night Watch",

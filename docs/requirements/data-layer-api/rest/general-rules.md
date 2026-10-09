@@ -84,7 +84,7 @@ The API uses JSON by default: JSON is easy to parse and is supported natively in
 
 The data layer _MUST_ keep JSON-LD out of the way of presentation layers that do not need it. The response body is the same in all cases: it is JSON, and it includes the JSON-LD context in its `@context` property. A presentation layer that requests `application/json` receives that body labelled `application/json`; it treats the response as plain JSON.
 
-The data layer _MUST_ publish a JSON-LD context document that maps the [terms](https://www.w3.org/TR/json-ld11/#terms) it uses to URIs. Every response body _MUST_ include that context in its `@context` property, either inline or as a reference to the document.
+The data layer _MUST_ publish a JSON-LD context document that maps the [terms](https://www.w3.org/TR/json-ld11/#terms) it uses to URIs. Every response body _MUST_ include that context in its `@context` property as a reference to the document.
 
 ### Example
 

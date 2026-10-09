@@ -93,6 +93,7 @@ The response body _MUST_ contain at least the following properties:
 
 | Name                  | Data type                 | Cardinality | Description                                                                                                                                                                                                                                                                              |
 | --------------------- | ------------------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@context`            | string                    | 1           | The URI of the JSON-LD context that maps the terms in the response to URIs.                                                                                                                                                                                                              |
 | `id`                  | string                    | 1           | The identifier of the collection.                                                                                                                                                                                                                                                        |
 | `type`                | string                    | 1           | The type of the collection. It _MUST_ be `CuratedCollection` or a specialisation.                                                                                                                                                                                                        |
 | `name`                | string                    | 1           | The name of the collection.                                                                                                                                                                                                                                                              |
@@ -124,6 +125,7 @@ An example of the response body of the data layer:
 
 ```json
 {
+  "@context": "https://example.org/v1/context.json",
   "id": "https://example.org/v1/collections",
   "type": "CuratedCollection",
   "name": "Collections",
@@ -154,6 +156,7 @@ A collection can hold further collections. Example response for the 'Persons' co
 
 ```json
 {
+  "@context": "https://example.org/v1/context.json",
   "id": "https://example.org/v1/collections/persons",
   "type": "CuratedCollection",
   "name": "Persons",
@@ -215,6 +218,7 @@ The response body _MUST_ contain at least the following properties:
 
 | Name                  | Data type                 | Cardinality | Description                                                                                                                                                                                                                                                                              |
 | --------------------- | ------------------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@context`            | string                    | 1           | The URI of the JSON-LD context that maps the terms in the response to URIs.                                                                                                                                                                                                              |
 | `id`                  | string                    | 1           | The identifier of the collection.                                                                                                                                                                                                                                                        |
 | `type`                | string                    | 1           | The type of the collection. It _MUST_ be `CuratedCollection` or a specialisation.                                                                                                                                                                                                        |
 | `name`                | string                    | 1           | The name of the collection.                                                                                                                                                                                                                                                              |
@@ -248,6 +252,7 @@ An example of the response body of a collection:
 
 ```json
 {
+  "@context": "https://example.org/v1/context.json",
   "id": "https://example.org/v1/collections/objects",
   "type": "CuratedCollection",
   "name": "Heritage objects",
@@ -278,6 +283,7 @@ Another collection has the same structure. Which capabilities a collection has i
 
 ```json
 {
+  "@context": "https://example.org/v1/context.json",
   "id": "https://example.org/v1/collections/masterpieces",
   "type": "CuratedCollection",
   "name": "Masterpieces",
@@ -351,6 +357,7 @@ The response body _MUST_ contain at least the following properties:
 
 | Name                         | Data type                  | Cardinality | Description                                                                                                                                                                                                                                                                                                                                                                                      |
 | ---------------------------- | -------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `@context`                   | string                     | 1           | The URI of the JSON-LD context that maps the terms in the response to URIs.                                                                                                                                                                                                                                                                                                                      |
 | `id`                         | string                     | 1           | The identifier of the current page.                                                                                                                                                                                                                                                                                                                                                              |
 | `type`                       | string                     | 1           | The type of the page. It _MUST_ be `Page` or a specialisation.                                                                                                                                                                                                                                                                                                                                   |
 | `name`                       | string                     | 1           | The name of the page.                                                                                                                                                                                                                                                                                                                                                                            |
@@ -383,6 +390,7 @@ An example of the response body:
 
 ```json
 {
+  "@context": "https://example.org/v1/context.json",
   "id": "https://example.org/v1/collections/masterpieces?page=3",
   "type": "Page",
   "name": "Masterpieces: page 3",
@@ -446,6 +454,7 @@ An example of a response body in which the presentation layer requested two face
 
 ```json
 {
+  "@context": "https://example.org/v1/context.json",
   "id": "https://example.org/v1/collections/masterpieces?page=3",
   "type": "Page",
   "name": "Masterpieces: page 3",
@@ -576,6 +585,7 @@ An entry is the complete response body of a `FacetPage`, the same body that the 
 
 ```json
 {
+  "@context": "https://example.org/v1/context.json",
   "id": "https://example.org/v1/collections/objects?page=2",
   "type": "Page",
   "name": "Objects: page 2",
