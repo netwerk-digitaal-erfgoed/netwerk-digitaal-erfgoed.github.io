@@ -84,7 +84,8 @@ The objects of `dcat:distribution` dataset properties have type `dcat:Distributi
 
 | DCAT term             | Data type / notes                                                                                                                                                | Cardinality |
 | --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| [`dcat:accessURL`](https://docs.geostandaarden.nl/dcat/dcat-ap-nl30/#distribution-access-url) | IRI<br />**v2.0**: HTTPS IRI | 1..1 |
+| [`dcat:accessURL`](https://docs.geostandaarden.nl/dcat/dcat-ap-nl30/#distribution-access-url) | IRI<br />**v2.0**: HTTPS IRI. A description may give only `dcat:downloadURL`; the register then stores that URL as the access URL as well. | 1..1 |
+| [`dcat:downloadURL`](https://docs.geostandaarden.nl/dcat/dcat-ap-nl30/#distribution-download-url) | IRI. Set for download distributions; omitted for APIs. | 0..1 |
 | [`dcat:mediaType`](https://docs.geostandaarden.nl/dcat/dcat-ap-nl30/#distribution-media-type) | [IANA media type](https://www.iana.org/assignments/media-types/) IRI. Required for download distributions; APIs use `dct:conformsTo` instead. Any compression suffix is split off into `dcat:compressFormat`. | 0..n<br />**v2.0**: 0..1 |
 | [`dcat:compressFormat`](https://docs.geostandaarden.nl/dcat/dcat-ap-nl30/#distribution-compression-format) | [IANA media type](https://www.iana.org/assignments/media-types/) IRI; added when e.g. `+gzip` is stripped from `dcat:mediaType` | 0..1 |
 | [`dct:conformsTo`](https://docs.geostandaarden.nl/dcat/dcat-ap-nl30/#distribution-linked-schemas) | Protocol IRI (e.g. `<https://www.w3.org/TR/sparql11-protocol/>` for SPARQL endpoints) | 0..1 |
