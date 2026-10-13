@@ -26,7 +26,7 @@ This page is a placeholder for the rules that the other pages now assume but do 
 - what a type is, and how it differs from the identity of a resource (the identity of a resource is not defined by its type);
 - the rules for a data layer that **specialises** a type of this specification, such as `Collection`;
 - the rules for a data layer that **introduces** a type of its own, such as `HeritageObject`.
-- the use of the JSON-LD context document and the API endpoint required for fetching it (e.g. `https://example.org/v1/context.json`)
+- the use of the JSON-LD context document and the API endpoint required for fetching it (e.g. `https://example.org/v1/context.json`). Should there be a default context document for data layers that do not use their own types (e.g. `https://specs.nde.nl/v1/context.json`)?
 
 :::
 

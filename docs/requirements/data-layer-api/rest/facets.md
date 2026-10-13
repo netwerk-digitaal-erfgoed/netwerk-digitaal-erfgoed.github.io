@@ -438,20 +438,20 @@ An example of the response body of the data layer if the facet collection is not
     },
     {
       "type": "FacetItem",
-      "count": 8,
+      "count": 10,
       "value": {
         "id": "https://example.org/v1/entities/5678",
         "type": "Person",
-        "name": "Hans de Haan"
+        "name": "Arno Haag"
       }
     },
     {
       "type": "FacetItem",
-      "count": 2,
+      "count": 8,
       "value": {
-        "id": "https://example.org/v1/entities/3458",
+        "id": "https://example.org/v1/entities/9012",
         "type": "Person",
-        "name": "John Jansen"
+        "name": "Hans de Haan"
       }
     }
   ],
@@ -471,11 +471,11 @@ An example of the response body of the data layer for the request above, if the 
   "id": "https://example.org/v1/collections/objects/facets/creators",
   "type": "FacetCollection",
   "name": "Creator",
-  "totalItems": 3,
+  "totalItems": 2,
   "items": [
     {
       "type": "FacetItem",
-      "count": 57,
+      "count": 22,
       "value": {
         "type": "FacetValue",
         "name": "Arno Haag"
@@ -483,18 +483,10 @@ An example of the response body of the data layer for the request above, if the 
     },
     {
       "type": "FacetItem",
-      "count": 38,
+      "count": 8,
       "value": {
         "type": "FacetValue",
         "name": "Hans de Haan"
-      }
-    },
-    {
-      "type": "FacetItem",
-      "count": 23,
-      "value": {
-        "type": "FacetValue",
-        "name": "John Jansen"
       }
     }
   ],
@@ -689,7 +681,7 @@ An example of the response body of the data layer:
       "type": "FacetItem",
       "count": 8,
       "value": {
-        "id": "https://example.org/v1/entities/5678",
+        "id": "https://example.org/v1/entities/9012",
         "type": "Person",
         "name": "Hans de Haan"
         // Optionally: other properties...

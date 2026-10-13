@@ -76,15 +76,11 @@ The data layer _MUST_ use media types to enable open and extensible content nego
 
 ## JSON-LD
 
-The API uses JSON by default: JSON is easy to parse and is supported natively in most programming languages. The data layer serialises this JSON as [JSON-LD 1.1](https://www.w3.org/TR/json-ld11/), a format for Linked Data. JSON-LD is the default media type of the API. Because JSON-LD is JSON, a presentation layer that only knows JSON can parse a JSON-LD response like any other JSON document.
+The API uses JSON by default: JSON is easy to parse and is supported natively in most programming languages. The data layer serialises this JSON as [JSON-LD 1.1](https://www.w3.org/TR/json-ld11/), a format for linked data. JSON-LD is the default media type of the API. Because JSON-LD is JSON, a presentation layer that only knows JSON can parse a JSON-LD response like any other JSON document.
 
 1. The data layer _MUST_ support `application/ld+json` and `application/json` in the `Accept` header: a presentation layer _MAY_ request either.
 1. If a presentation layer does not send the `Accept` header, or sends a media range that accepts `application/ld+json` (such as `*/*` or `application/*`), the data layer _MUST_ serve JSON-LD.
 1. The data layer _MUST_ send `Content-Type: application/ld+json` when it serves JSON-LD, and `Content-Type: application/json` when the presentation layer requests `application/json` only.
-
-The data layer _MUST_ keep JSON-LD out of the way of presentation layers that do not need it. The response body is the same in all cases: it is JSON, and it includes the JSON-LD context in its `@context` property. A presentation layer that requests `application/json` receives that body labelled `application/json`; it treats the response as plain JSON.
-
-The data layer _MUST_ publish a JSON-LD context document that maps the [terms](https://www.w3.org/TR/json-ld11/#terms) it uses to URIs. Every response body _MUST_ include that context in its `@context` property as a reference to the document.
 
 ### Example
 
@@ -124,7 +120,7 @@ Content-Type: application/json
 Vary: Accept
 ```
 
-Both responses carry the same body, including the `@context` property. The conventional presentation layer treats the body as plain JSON and ignores the `@context` it does not need.
+Both responses carry the same body. A JSON-LD-aware presentation layer interprets the body as linked data. A conventional presentation layer treats the body as plain JSON.
 
 ## Languages
 
@@ -165,7 +161,7 @@ Character encoding defines how characters are converted into bytes by the data l
 
 ## Compression
 
-Compression reduces the size of a response body as it is transmitted to a presentation layer, improving performance and reducing bandwidth use. The data layer _SHOULD_ support compression. This section lists the primary requirements — see the [HTTP Semantics](https://www.rfc-editor.org/info/rfc9110/#section-8.4.1) for more information.
+Compression reduces the size of a response body as it is transmitted to a presentation layer, improving performance and reducing bandwidth use. The data layer _SHOULD_ support compression. This section lists the main requirements — see the [HTTP Semantics](https://www.rfc-editor.org/info/rfc9110/#section-8.4.1) for more information.
 
 1. A presentation layer _MAY_ send the `Accept-Encoding` header in its request to indicate which compression schemes it supports, such as `gzip`, `br`, `deflate` or `zstd`. Its value _MUST_ conform to the [HTTP semantics](https://www.rfc-editor.org/info/rfc9110/#field.accept-encoding).
 1. If a presentation layer sends the `Accept-Encoding` header, the data layer _MAY_ compress the response body using one of the schemes the presentation layer supports. The data layer _MUST_ then send the `Content-Encoding` header to indicate which scheme it used; its value _MUST_ conform to the [HTTP semantics](https://www.rfc-editor.org/info/rfc9110/#field.content-encoding).
@@ -196,7 +192,7 @@ The `Content-Encoding: br` header indicates that the body is compressed with Bro
 
 ## Caching
 
-Caching is a mechanism where presentation layers store responses from the data layer to reuse them for subsequent requests. The data layer _SHOULD_ support caching via HTTP headers; it enhances performance by reducing server load and latency. This section lists the primary requirements — see [HTTP Caching](https://www.rfc-editor.org/info/rfc9111) for more information.
+Caching is a mechanism where presentation layers store responses from the data layer to reuse them for subsequent requests. The data layer _SHOULD_ support caching via HTTP headers; it enhances performance by reducing server load and latency. This section lists the main requirements — see [HTTP Caching](https://www.rfc-editor.org/info/rfc9111) for more information.
 
 1. The data layer _SHOULD_ send the `Cache-Control` header, to make clear to a presentation layer whether information can be cached and, if so, for how long (e.g. 1 hour, 1 day or 1 week). Its value _MUST_ conform to the [HTTP Caching standard](https://www.rfc-editor.org/info/rfc9111/#section-5.2).
 1. The data layer _SHOULD_ send the `ETag` header with a unique fingerprint of a resource. When the resource changes, the data layer _MUST_ change its fingerprint.
@@ -220,7 +216,7 @@ The response indicates that this resource can be cached for 1 hour (`max-age=360
 
 ## Rate limiting
 
-Rate limiting is a traffic control mechanism that caps the number of requests a presentation layer can make to the data layer within a specific time window. It protects the data layer's infrastructure from overload and abuse. This section lists the primary requirements — see [Retry-After](https://www.rfc-editor.org/info/rfc9110/#name-retry-after) and [RateLimit header fields for HTTP](https://datatracker.ietf.org/doc/html/draft-ietf-httpapi-ratelimit-headers) for more information.
+Rate limiting is a traffic control mechanism that caps the number of requests a presentation layer can make to the data layer within a specific time window. It protects the data layer's infrastructure from overload and abuse. This section lists the main requirements — see [Retry-After](https://www.rfc-editor.org/info/rfc9110/#name-retry-after) and [RateLimit header fields for HTTP](https://datatracker.ietf.org/doc/html/draft-ietf-httpapi-ratelimit-headers) for more information.
 
 1. The data layer _SHOULD_ support rate limiting. It chooses a policy that best fits its situation. For example, the data layer may choose a rate limiting algorithm such as Token Bucket, Fixed Window Counter or Sliding Window. The data layer may also choose a method for identifying presentation layers, for example based on IP address or the `User-Agent` header.
 1. The data layer _SHOULD_ send the `RateLimit-Policy` and `RateLimit` headers to communicate its rate limiting policy and the current limits for a particular presentation layer.
@@ -250,7 +246,7 @@ The response indicates that a presentation layer has made too many requests and 
 
 ## Cross-Origin Resource Sharing (CORS)
 
-Cross-Origin Resource Sharing (CORS) is a mechanism that allows browser-based presentation layers to interact with the data layer. The data layer _MUST_ support CORS by following the relevant requirements of the [CORS specification](https://fetch.spec.whatwg.org/#http-cors-protocol). This section lists the primary requirements.
+Cross-Origin Resource Sharing (CORS) is a mechanism that allows browser-based presentation layers to interact with the data layer. The data layer _MUST_ support CORS by following the relevant requirements of the [CORS specification](https://fetch.spec.whatwg.org/#http-cors-protocol). This section lists the main requirements.
 
 1. A browser-based presentation layer _MUST_ send the `Origin` header to indicate the origin (scheme, hostname, and optionally port) that caused the request to the data layer.
 1. The data layer _MUST_ send the `Access-Control-Allow-Origin` header. The value _SHOULD_ be `*` to allow access to the data layer from any origin. If the data layer [restricts access](#open-access), a specific origin _MUST_ be provided instead of `*`, and the `Access-Control-Allow-Credentials: true` header _MUST_ be send.
