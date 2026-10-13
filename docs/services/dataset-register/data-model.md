@@ -190,6 +190,8 @@ reflects the latest validation. The [`nde:warningCount`](#schemaentrypoint) on t
 denormalised count of the `sh:Warning`-severity results in this report, kept on the registration so
 applications can filter on it without reading the report.
 
+The graph is removed when the registration is [deleted](api.md).
+
 ## Distribution health
 
 For every distribution URL referenced by a registered dataset, the crawler periodically issues a probe (an HTTP `HEAD`/`GET` or a SPARQL `ASK`, depending on the distribution type) and records the outcome in a dedicated named graph:
