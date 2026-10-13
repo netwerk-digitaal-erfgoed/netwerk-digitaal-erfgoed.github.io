@@ -69,19 +69,6 @@ A Resource, regardless of type, contains at least the following properties:
 
 The data layer _MUST_ include `type` in the response body of every resource it returns, and `id` and `name` when they are known. The combination of these three properties allow a presentation layer to identify a resource.
 
-### Resource identification with URIs
-
-:::note To do
-
-Explain how resources must be identified with URIs:
-
-- See the general requirements of the REST API Design Rules, e.g. plural names (`/entities`, not `/entity`), lower case names (`/entities`, not `/Entities`), dashes (`/heritage-objects`, not `/heritageObjects`), slashes to denote hierarchy (`/collections/persons`, not `/collections-persons`);
-- Use camel case in query parameters (`?filterBy=dateCreated`, not `?filter-by=date-created`);
-- Identifiers in URIs must be stable. Also see [entities.md](entities.md#assigning-identifiers-to-entities);
-- URIs must still be treated as if they were opaque strings (per Linked Art: "the URI patterns are to facilitate developers understanding the API, not to facilitate software to interact with it").
-
-:::
-
 ### Example
 
 Example of the response body of the data layer:
@@ -174,7 +161,7 @@ The words `collections`, `facets` and `suggestions` are reserved: a path identif
 
 A presentation layer does not have to build these paths. It finds the facet collections and the suggestion collections of a collection in the `facets` and `suggestions` properties, which hold the full URI of each list. The fixed paths tell a data layer where to put those lists, and give a presentation layer a URI it can link to.
 
-The path identifiers themselves are a choice of the data layer: it names each of its collections, facet collections and suggestion collections itself. See [Resource identification with URIs](#resource-identification-with-uris). A data layer _MAY_ expose the same collection at more than one path.
+The path identifiers themselves are a choice of the data layer: it names each of its collections, facet collections and suggestion collections itself. See [resource identifiers](#resource-identifiers). A data layer _MAY_ expose the same collection at more than one path.
 
 ### Example
 
@@ -495,3 +482,15 @@ Example of the response body with cursor navigation:
 ```
 
 This response has the same properties as the previous one, with two differences. The page is identified by a cursor instead of a number. The `partOf` property has no `last`, because the data layer does not know which page is last. A presentation layer can walk through the collection with `next`, but it cannot jump to the end.
+
+## Resource identifiers
+
+A resource is identified by a URI. The requirements below apply to those URIs. They follow the [REST API Design Rules](https://logius-standaarden.github.io/API-Design-Rules/#resources), which are the source and give the wider context.
+
+1. A resource _MUST_ be named with a noun, not a verb: a resource is a thing, not an action. For example: `https://example.org/v1/collections/works-of-art`, not `https://example.org/v1/collections/search-works-of-art`.
+1. A collection resource _MUST_ be named with a plural noun. For example: `https://example.org/v1/collections/works-of-art`, not `https://example.org/v1/collections/work-of-art`.
+1. A URI _MUST NOT_ end with a trailing slash. For example: `https://example.org/v1/collections/works-of-art`, not `https://example.org/v1/collections/works-of-art/`.
+1. A path segment _MUST_ contain only lowercase letters, digits and hyphens. For example: `https://example.org/v1/collections/works-of-art`, not `https://example.org/v1/collections/Works-of-Art` or `https://example.org/v1/collections/works_of_art`.
+1. A query key _MUST_ use camel case. For example: `https://example.org/v1/collections/works-of-art?orderBy=dateCreated`, not `https://example.org/v1/collections/works-of-art?order-by=date-created`.
+
+Regardless of these requirements, a URI _MUST_ still be treated as an opaque string by a presentation layer. A presentation layer _MUST NOT_ rely on the pattern of a URI. The patterns help developers understand the API, not software to interact with it.
