@@ -1490,7 +1490,7 @@ Possible extra rowspan handling
 </style>
   <meta content="Bikeshed version ea4009a02, updated Thu Sep 17 15:24:44 2026 -0700" name="generator">
   <link href="https://docs.nde.nl/requirements-datasets/" rel="canonical">
-  <meta content="aa3efdd8ec2b556ec8c9baa0d1a2952e31d11957" name="revision">
+  <meta content="b43b50ae6b644384231df51aeab4b0b2c4d886dd" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>
 td, th {
@@ -2362,9 +2362,10 @@ By following these requirements, publishers enable users to find and use their d
       <li>
        <a href="#creator-publisher-information"><span class="secno">4.3</span> <span class="content">Creator/publisher information</span></a>
        <ol class="toc">
-        <li><a href="#isil"><span class="secno">4.3.1</span> <span class="content">ISIL identifier</span></a>
-        <li><a href="#contact"><span class="secno">4.3.2</span> <span class="content">Contact information</span></a>
-        <li><a href="#dataset-publisher"><span class="secno">4.3.3</span> <span class="content">Dataset publisher</span></a>
+        <li><a href="#organization-iri"><span class="secno">4.3.1</span> <span class="content">Organization IRI</span></a>
+        <li><a href="#isil"><span class="secno">4.3.2</span> <span class="content">ISIL identifier</span></a>
+        <li><a href="#contact"><span class="secno">4.3.3</span> <span class="content">Contact information</span></a>
+        <li><a href="#dataset-publisher"><span class="secno">4.3.4</span> <span class="content">Dataset publisher</span></a>
        </ol>
       <li>
        <a href="#dataset-distributions"><span class="secno">4.4</span> <span class="content">Distributions</span></a>
@@ -2711,8 +2712,8 @@ RDF formats include <a data-link-type="biblio" href="#biblio-json-ld" title="JSO
    </blockquote>
    <p>Both the Schema.org and DCAT vocabularies <em>MAY</em> be used;
 Schema.org is <a href="#examples">recommended</a>.</p>
-   <div class="example" id="example-fe028400">
-    <a class="self-link" href="#example-fe028400"></a>
+   <div class="example" id="example-97362c07">
+    <a class="self-link" href="#example-97362c07"></a>
     <a href="https://developers.google.com/search/docs/guides/intro-structured-data#structured-data">Google recommends</a>
     including the JSON-LD directly in the HTML source of web pages.
 
@@ -2725,7 +2726,7 @@ Schema.org is <a href="#examples">recommended</a>.</p>
       <c- p>{</c->
         <c- u>"@context"</c-><c- o>:</c-> <c- u>"https://schema.org/"</c-><c- p>,</c->
         <c- u>"@type"</c-><c- o>:</c-> <c- u>"Organization"</c-><c- p>,</c->
-        <c- u>"@id"</c-><c- o>:</c-> <c- u>"https://www.kb.nl"</c-><c- p>,</c->
+        <c- u>"@id"</c-><c- o>:</c-> <c- u>"http://www.wikidata.org/entity/Q1526131"</c-><c- p>,</c->
         <c- u>"name"</c-><c- o>:</c-> <c- p>{</c->
           <c- u>"@value"</c-><c- o>:</c-> <c- u>"Koninklijke Bibliotheek"</c-><c- p>,</c->
           <c- u>"@language"</c-><c- o>:</c-> <c- u>"nl"</c->
@@ -2912,15 +2913,15 @@ Providing information about the person/organization behind the dataset answers u
 At the least, the organization’s name and HTTP IRI must be provided.
 The organization’s name <em>SHOULD</em> be a language-tagged string.</p>
    </blockquote>
-   <div class="example" id="example-fa1cad2d">
-    <a class="self-link" href="#example-fa1cad2d"></a>
+   <div class="example" id="example-e40573c3">
+    <a class="self-link" href="#example-e40573c3"></a>
     An organization description:
 
     
 <pre class="highlight"><c- p>{</c->
   <c- nd>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org/"</c-><c- p>,</c->
   <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Organization"</c-><c- p>,</c->
-  <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://www.kb.nl"</c-><c- p>,</c->
+  <c- nd>"@id"</c-><c- p>:</c-> <c- u>"http://www.wikidata.org/entity/Q1526131"</c-><c- p>,</c->
   <c- f>"name"</c-><c- p>:</c-> <c- p>{</c->
     <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Koninklijke Bibliotheek"</c-><c- p>,</c->
     <c- nd>"@language"</c-><c- p>:</c-> <c- u>"nl"</c->
@@ -2949,38 +2950,67 @@ The organization’s name <em>SHOULD</em> be a language-tagged string.</p>
 <c- p>}</c->
 </pre>
    </div>
-   <h4 class="heading settled" data-level="4.3.1" id="isil"><span class="secno">4.3.1. </span><span class="content">ISIL identifier</span><a class="self-link" href="#isil"></a></h4>
+   <h4 class="heading settled" data-level="4.3.1" id="organization-iri"><span class="secno">4.3.1. </span><span class="content">Organization IRI</span><a class="self-link" href="#organization-iri"></a></h4>
+   <p><a data-link-type="dfn" href="#consumer" id="ref-for-consumer⑥">Consumers</a> use the organization’s IRI to tell which datasets come from the same organization.
+That only works if a publisher uses one IRI for itself across all its dataset descriptions, and if no two organizations share an IRI.
+A URL of a collection website, a software supplier’s server or a web page about the organization may resolve,
+but it identifies that website, server or page, not the organization.</p>
+   <blockquote>
+    <p>Therefore, the organization’s HTTP IRI <em>MUST</em> identify the organization itself.
+Publishers <em>SHOULD</em> use the same IRI in all their dataset descriptions, keep it stable over time, and make sure it resolves.</p>
+   </blockquote>
+   <p>Publishers <em>SHOULD</em> use one of:</p>
+   <ul>
+    <li data-md>
+     <p>a persistent HTTP URI, such as an <a href="https://arks.org">ARK</a> or a Wikidata entity IRI (<code>http://www.wikidata.org/entity/Q1526131</code>);</p>
+    <li data-md>
+     <p>an IRI that the organization mints on a domain it controls, such as <code>https://www.example.org/id/organization</code>;</p>
+    <li data-md>
+     <p>the organization’s homepage (<code>https://www.example.org</code>). This is acceptable, but a homepage identifies the website as much as the organization, so prefer one of the above.</p>
+   </ul>
+   <p>The organization’s IRI <em>MUST NOT</em> be:</p>
+   <ul>
+    <li data-md>
+     <p>an address of the collection software or its supplier, such as a hosting server (<code>https://museum.hosting.supplier.example/</code>) or the supplier’s homepage;</p>
+    <li data-md>
+     <p>a Wikidata web page (<code>https://www.wikidata.org/wiki/Q1526131</code>) instead of the Wikidata entity IRI;</p>
+    <li data-md>
+     <p>a URL that identifies one collection website of the organization.</p>
+   </ul>
+   <p>The validator warns about known software supplier addresses and Wikidata web pages.
+Publishers <em>MAY</em> link to other identifiers of the organization, such as its Wikidata entity, with <code>sameAs</code>.</p>
+   <h4 class="heading settled" data-level="4.3.2" id="isil"><span class="secno">4.3.2. </span><span class="content">ISIL identifier</span><a class="self-link" href="#isil"></a></h4>
    <blockquote>
     <p>Publishers <em>SHOULD</em> include the organization’s <a href="https://www.nationaalarchief.nl/archiveren/kennisbank/isil-codes">ISIL code</a>.</p>
    </blockquote>
-   <div class="example" id="example-be063b35">
-    <a class="self-link" href="#example-be063b35"></a>
+   <div class="example" id="example-e10070f2">
+    <a class="self-link" href="#example-e10070f2"></a>
     An organization with an ISIL code:
 
     
 <pre class="highlight"><c- p>{</c->
   <c- nd>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org/"</c-><c- p>,</c->
   <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Organization"</c-><c- p>,</c->
-  <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://www.kb.nl"</c-><c- p>,</c->
+  <c- nd>"@id"</c-><c- p>:</c-> <c- u>"http://www.wikidata.org/entity/Q1526131"</c-><c- p>,</c->
   <c- f>"identifier"</c-><c- p>:</c-> <c- u>"NL-HaKB"</c->
 <c- p>}</c->
 </pre>
    </div>
-   <h4 class="heading settled" data-level="4.3.2" id="contact"><span class="secno">4.3.2. </span><span class="content">Contact information</span><a class="self-link" href="#contact"></a></h4>
-   <p>Publishers <em>SHOULD</em> include contact information so <a data-link-type="dfn" href="#consumer" id="ref-for-consumer⑥">consumers</a> can reach them with questions or feedback.
+   <h4 class="heading settled" data-level="4.3.3" id="contact"><span class="secno">4.3.3. </span><span class="content">Contact information</span><a class="self-link" href="#contact"></a></h4>
+   <p>Publishers <em>SHOULD</em> include contact information so <a data-link-type="dfn" href="#consumer" id="ref-for-consumer⑦">consumers</a> can reach them with questions or feedback.
 If contact information is provided, it <em>MUST</em> include a name and e-mail address.
 The e-mail address <em>SHOULD</em> be an organizational or departmental address rather than a personal one for GDPR compliance.</p>
-   <div class="example" id="example-2fe1b55b">
-    <a class="self-link" href="#example-2fe1b55b"></a>
+   <div class="example" id="example-06ee0b62">
+    <a class="self-link" href="#example-06ee0b62"></a>
     A publisher with contact information.
 
     
-<pre class="highlight line-numbered"><span class="line-no" data-line="1"></span><span class="line"><c- p>{</c-></span><span class="line-no" data-line="2"></span><span class="line">  <c- nd>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org/"</c-><c- p>,</c-></span><span class="line-no" data-line="3"></span><span class="line">  <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Dataset"</c-><c- p>,</c-></span><span class="line-no" data-line="4"></span><span class="line">  <c- f>"publisher"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="5"></span><span class="line">    <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Organization"</c-><c- p>,</c-></span><span class="line-no" data-line="6"></span><span class="line">    <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://www.kb.nl"</c-><c- p>,</c-></span><span class="line-no" data-line="7"></span><span class="line">    <c- f>"name"</c-><c- p>:</c-> <c- u>"Koninklijke Bibliotheek"</c-><c- p>,</c-></span><span class="line-no" data-line="8"></span><span class="line">    <c- f>"alternateName"</c-><c- p>:</c-> <c- u>"KB"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="9"></span><span class="highlight-line line">    <c- f>"contactPoint"</c-><c- p>:</c-> <c- p>{</c-></span><span class="highlight-line line-no" data-line="10"></span><span class="highlight-line line">      <c- nd>"@type"</c-><c- p>:</c-> <c- u>"ContactPoint"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="11"></span><span class="highlight-line line">      <c- f>"name"</c-><c- p>:</c-> <c- p>{</c-></span><span class="highlight-line line-no" data-line="12"></span><span class="highlight-line line">        <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Datasets Department"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="13"></span><span class="highlight-line line">        <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c-></span><span class="highlight-line line-no" data-line="14"></span><span class="highlight-line line">      <c- p>},</c-></span><span class="highlight-line line-no" data-line="15"></span><span class="highlight-line line">      <c- f>"email"</c-><c- p>:</c-> <c- u>"datasets@kb.nl"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="16"></span><span class="highlight-line line">      <c- f>"telephone"</c-><c- p>:</c-> <c- u>"+31 6 12345678"</c-></span><span class="highlight-line line-no" data-line="17"></span><span class="highlight-line line">    <c- p>}</c-></span><span class="line-no" data-line="18"></span><span class="line">  <c- p>}</c-></span><span class="line-no" data-line="19"></span><span class="line"><c- p>}</c-></span></pre>
+<pre class="highlight line-numbered"><span class="line-no" data-line="1"></span><span class="line"><c- p>{</c-></span><span class="line-no" data-line="2"></span><span class="line">  <c- nd>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org/"</c-><c- p>,</c-></span><span class="line-no" data-line="3"></span><span class="line">  <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Dataset"</c-><c- p>,</c-></span><span class="line-no" data-line="4"></span><span class="line">  <c- f>"publisher"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="5"></span><span class="line">    <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Organization"</c-><c- p>,</c-></span><span class="line-no" data-line="6"></span><span class="line">    <c- nd>"@id"</c-><c- p>:</c-> <c- u>"http://www.wikidata.org/entity/Q1526131"</c-><c- p>,</c-></span><span class="line-no" data-line="7"></span><span class="line">    <c- f>"name"</c-><c- p>:</c-> <c- u>"Koninklijke Bibliotheek"</c-><c- p>,</c-></span><span class="line-no" data-line="8"></span><span class="line">    <c- f>"alternateName"</c-><c- p>:</c-> <c- u>"KB"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="9"></span><span class="highlight-line line">    <c- f>"contactPoint"</c-><c- p>:</c-> <c- p>{</c-></span><span class="highlight-line line-no" data-line="10"></span><span class="highlight-line line">      <c- nd>"@type"</c-><c- p>:</c-> <c- u>"ContactPoint"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="11"></span><span class="highlight-line line">      <c- f>"name"</c-><c- p>:</c-> <c- p>{</c-></span><span class="highlight-line line-no" data-line="12"></span><span class="highlight-line line">        <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Datasets Department"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="13"></span><span class="highlight-line line">        <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c-></span><span class="highlight-line line-no" data-line="14"></span><span class="highlight-line line">      <c- p>},</c-></span><span class="highlight-line line-no" data-line="15"></span><span class="highlight-line line">      <c- f>"email"</c-><c- p>:</c-> <c- u>"datasets@kb.nl"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="16"></span><span class="highlight-line line">      <c- f>"telephone"</c-><c- p>:</c-> <c- u>"+31 6 12345678"</c-></span><span class="highlight-line line-no" data-line="17"></span><span class="highlight-line line">    <c- p>}</c-></span><span class="line-no" data-line="18"></span><span class="line">  <c- p>}</c-></span><span class="line-no" data-line="19"></span><span class="line"><c- p>}</c-></span></pre>
    </div>
-   <h4 class="heading settled" data-level="4.3.3" id="dataset-publisher"><span class="secno">4.3.3. </span><span class="content">Dataset publisher</span><a class="self-link" href="#dataset-publisher"></a></h4>
+   <h4 class="heading settled" data-level="4.3.4" id="dataset-publisher"><span class="secno">4.3.4. </span><span class="content">Dataset publisher</span><a class="self-link" href="#dataset-publisher"></a></h4>
    <p>The person/organization data is then included as the dataset’s publisher:</p>
-   <div class="example" id="example-01d6427e">
-    <a class="self-link" href="#example-01d6427e"></a>
+   <div class="example" id="example-ccc4a34d">
+    <a class="self-link" href="#example-ccc4a34d"></a>
     A dataset with an organization as publisher.
 
     
@@ -2989,7 +3019,7 @@ The e-mail address <em>SHOULD</em> be an organizational or departmental address 
   <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Dataset"</c-><c- p>,</c->
   <c- f>"publisher"</c-><c- p>:</c-> <c- p>{</c->
     <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Organization"</c-><c- p>,</c->
-    <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://www.kb.nl"</c-><c- p>,</c->
+    <c- nd>"@id"</c-><c- p>:</c-> <c- u>"http://www.wikidata.org/entity/Q1526131"</c-><c- p>,</c->
     <c- f>"identifier"</c-><c- p>:</c-> <c- f>"NL-HaKB"</c->
     <c- f>"name"</c-><c- p>:</c-> <c- p>{</c->
         <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Koninklijke Bibliotheek"</c-><c- p>,</c->
@@ -3032,7 +3062,7 @@ The e-mail address <em>SHOULD</em> be an organizational or departmental address 
 </pre>
    </div>
    <h3 class="heading settled" data-level="4.4" id="dataset-distributions"><span class="secno">4.4. </span><span class="content">Distributions</span><a class="self-link" href="#dataset-distributions"></a></h3>
-   <p><a data-link-type="dfn" href="#consumer" id="ref-for-consumer⑦">Consumers</a> that are interested in a dataset should be able to access the data in it.
+   <p><a data-link-type="dfn" href="#consumer" id="ref-for-consumer⑧">Consumers</a> that are interested in a dataset should be able to access the data in it.
 <a data-link-type="dfn" href="#distribution" id="ref-for-distribution②">Distributions</a> tell consumers where and how they can get the data.</p>
    <blockquote>
     <p>Therefore, publishers <em>SHOULD</em> add at least one distribution.
@@ -3097,7 +3127,7 @@ add it on the distribution with <code>schema:documentation</code>.</p>
 </div>
    <h4 class="heading settled" data-level="4.4.1" id="distribution-date"><span class="secno">4.4.1. </span><span class="content">Creation and modification dates</span><a class="self-link" href="#distribution-date"></a></h4>
    <p>Publishers <em>SHOULD</em> make known when the <a data-link-type="dfn" href="#distribution" id="ref-for-distribution③">distribution</a> was originally created and when it was last updated,
-so <a data-link-type="dfn" href="#consumer" id="ref-for-consumer⑧">consumers</a> can efficiently stay up-to-date with the latest changes.
+so <a data-link-type="dfn" href="#consumer" id="ref-for-consumer⑨">consumers</a> can efficiently stay up-to-date with the latest changes.
 Please note that this is different from the <a href="#dataset-date">dataset description’s dates</a>.
 Datetimes (<code>2019-08-15T08:05:00Z</code>) are preferred because they offer greater precision,
 but simple dates (<code>2019-04-14</code>) are also allowed.</p>
@@ -3214,13 +3244,13 @@ The Dataset Register uses this IRI to identify the distribution as an API.</p>
    </div>
    <p>See also <a href="https://w3c.github.io/dwbp/usecasesv1.html#R-APIDocumented">Data on the Web Best Practices Use Cases &amp; Requirements § R-APIDocumented</a>.</p>
    <h3 class="heading settled" data-level="4.5" id="data-catalog-info"><span class="secno">4.5. </span><span class="content">Data catalog</span><a class="self-link" href="#data-catalog-info"></a></h3>
-   <p>A <a data-link-type="dfn" href="#data-catalog" id="ref-for-data-catalog">data catalog</a> provides <a data-link-type="dfn" href="#consumer" id="ref-for-consumer⑨">consumers</a> with a complete overview of available <a data-link-type="dfn" href="#dataset-description" id="ref-for-dataset-description①①">dataset descriptions</a>,
+   <p>A <a data-link-type="dfn" href="#data-catalog" id="ref-for-data-catalog">data catalog</a> provides <a data-link-type="dfn" href="#consumer" id="ref-for-consumer①⓪">consumers</a> with a complete overview of available <a data-link-type="dfn" href="#dataset-description" id="ref-for-dataset-description①①">dataset descriptions</a>,
 which improves discoverability.</p>
    <blockquote>
     <p>Therefore, publishers <em>SHOULD</em> provide a catalog.</p>
    </blockquote>
-   <div class="example" id="example-207e1328">
-    <a class="self-link" href="#example-207e1328"></a>
+   <div class="example" id="example-08400791">
+    <a class="self-link" href="#example-08400791"></a>
     A catalog of available datasets:
 
     
@@ -3238,7 +3268,7 @@ which improves discoverability.</p>
   <c- p>},</c->
   <c- f>"publisher"</c-><c- p>:</c-> <c- p>{</c->
     <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Organization"</c-><c- p>,</c->
-    <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://www.kb.nl/"</c-><c- p>,</c->
+    <c- nd>"@id"</c-><c- p>:</c-> <c- u>"http://www.wikidata.org/entity/Q1526131"</c-><c- p>,</c->
     <c- f>"name"</c-><c- p>:</c-> <c- p>{</c->
       <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Koninklijke Bibliotheek"</c-><c- p>,</c->
       <c- nd>"@language"</c-><c- p>:</c-> <c- u>"nl"</c->
@@ -3517,7 +3547,7 @@ even if that resource is the same on all pages.</p>
                 
      <tr>
       <th scope="row"><a href="schema:contactPoint">schema:contactPoint</a>
-      <td>Contact information where end users can get in touch with questions about the dataset. Preferably use the details of the department that manages the dataset or catalogue, rather than an individual employee. See <a href="#contact">§ 4.3.2 Contact information</a>.
+      <td>Contact information where end users can get in touch with questions about the dataset. Preferably use the details of the department that manages the dataset or catalogue, rather than an individual employee. See <a href="#contact">§ 4.3.3 Contact information</a>.
       <td>0..n<br><small><a href="#v2">v2.0</a>: 1..n</small>
       <td>
                 Recommended
@@ -4422,7 +4452,7 @@ function parseHTML(markup) {
 "use strict";
 {
 let dfnPanelData = {
-"consumer": {"dfnID":"consumer","dfnText":"Consumer","external":false,"refSections":[{"refs":[{"id":"ref-for-consumer"}],"title":"1. Introduction"},{"refs":[{"id":"ref-for-consumer\u2460"}],"title":"4.1.2. Durable identifiers"},{"refs":[{"id":"ref-for-consumer\u2461"}],"title":"4.1.3. Resolvable dataset IRIs"},{"refs":[{"id":"ref-for-consumer\u2462"}],"title":"4.1.4. Information remains available"},{"refs":[{"id":"ref-for-consumer\u2463"}],"title":"4.2. Dataset information"},{"refs":[{"id":"ref-for-consumer\u2464"}],"title":"4.2.4. Versions"},{"refs":[{"id":"ref-for-consumer\u2465"}],"title":"4.3.2. Contact information"},{"refs":[{"id":"ref-for-consumer\u2466"}],"title":"4.4. Distributions"},{"refs":[{"id":"ref-for-consumer\u2467"}],"title":"4.4.1. Creation and modification dates"},{"refs":[{"id":"ref-for-consumer\u2468"}],"title":"4.5. Data catalog"}],"url":"#consumer"},
+"consumer": {"dfnID":"consumer","dfnText":"Consumer","external":false,"refSections":[{"refs":[{"id":"ref-for-consumer"}],"title":"1. Introduction"},{"refs":[{"id":"ref-for-consumer\u2460"}],"title":"4.1.2. Durable identifiers"},{"refs":[{"id":"ref-for-consumer\u2461"}],"title":"4.1.3. Resolvable dataset IRIs"},{"refs":[{"id":"ref-for-consumer\u2462"}],"title":"4.1.4. Information remains available"},{"refs":[{"id":"ref-for-consumer\u2463"}],"title":"4.2. Dataset information"},{"refs":[{"id":"ref-for-consumer\u2464"}],"title":"4.2.4. Versions"},{"refs":[{"id":"ref-for-consumer\u2465"}],"title":"4.3.1. Organization IRI"},{"refs":[{"id":"ref-for-consumer\u2466"}],"title":"4.3.3. Contact information"},{"refs":[{"id":"ref-for-consumer\u2467"}],"title":"4.4. Distributions"},{"refs":[{"id":"ref-for-consumer\u2468"}],"title":"4.4.1. Creation and modification dates"},{"refs":[{"id":"ref-for-consumer\u2460\u24ea"}],"title":"4.5. Data catalog"}],"url":"#consumer"},
 "data-catalog": {"dfnID":"data-catalog","dfnText":"Data catalog","external":false,"refSections":[{"refs":[{"id":"ref-for-data-catalog"}],"title":"4.5. Data catalog"},{"refs":[{"id":"ref-for-data-catalog\u2460"}],"title":"4.5.1. Pagination"}],"url":"#data-catalog"},
 "dataset": {"dfnID":"dataset","dfnText":"Dataset","external":false,"refSections":[{"refs":[{"id":"ref-for-dataset"}],"title":"1. Introduction"},{"refs":[{"id":"ref-for-dataset\u2460"},{"id":"ref-for-dataset\u2461"},{"id":"ref-for-dataset\u2462"},{"id":"ref-for-dataset\u2463"}],"title":"2. Definitions"},{"refs":[{"id":"ref-for-dataset\u2464"}],"title":"3. Conceptual model"},{"refs":[{"id":"ref-for-dataset\u2465"}],"title":"4.1.2. Durable identifiers"},{"refs":[{"id":"ref-for-dataset\u2466"}],"title":"4.1.3. Resolvable dataset IRIs"},{"refs":[{"id":"ref-for-dataset\u2467"}],"title":"4.2. Dataset information"},{"refs":[{"id":"ref-for-dataset\u2468"}],"title":"4.3. Creator/publisher information"}],"url":"#dataset"},
 "dataset-description": {"dfnID":"dataset-description","dfnText":"Dataset description","external":false,"refSections":[{"refs":[{"id":"ref-for-dataset-description"}],"title":"1. Introduction"},{"refs":[{"id":"ref-for-dataset-description\u2460"}],"title":"1.3. Version 2.0"},{"refs":[{"id":"ref-for-dataset-description\u2461"}],"title":"2. Definitions"},{"refs":[{"id":"ref-for-dataset-description\u2462"}],"title":"4.1. Available in RDF"},{"refs":[{"id":"ref-for-dataset-description\u2463"},{"id":"ref-for-dataset-description\u2464"},{"id":"ref-for-dataset-description\u2465"}],"title":"4.1.1. Content-Type"},{"refs":[{"id":"ref-for-dataset-description\u2466"},{"id":"ref-for-dataset-description\u2467"}],"title":"4.1.3. Resolvable dataset IRIs"},{"refs":[{"id":"ref-for-dataset-description\u2468"}],"title":"4.2.3. Creation, publication and modification dates"},{"refs":[{"id":"ref-for-dataset-description\u2460\u24ea"}],"title":"4.2.4. Versions"},{"refs":[{"id":"ref-for-dataset-description\u2460\u2460"}],"title":"4.5. Data catalog"},{"refs":[{"id":"ref-for-dataset-description\u2460\u2461"}],"title":"4.6.5. Full example"},{"refs":[{"id":"ref-for-dataset-description\u2460\u2462"},{"id":"ref-for-dataset-description\u2460\u2463"}],"title":"5.1. Running the shapes yourself"}],"url":"#dataset-description"},
