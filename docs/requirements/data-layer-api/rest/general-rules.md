@@ -76,15 +76,11 @@ The data layer _MUST_ use media types to enable open and extensible content nego
 
 ## JSON-LD
 
-The API uses JSON by default: JSON is easy to parse and is supported natively in most programming languages. The data layer serialises this JSON as [JSON-LD 1.1](https://www.w3.org/TR/json-ld11/), a format for Linked Data. JSON-LD is the default media type of the API. Because JSON-LD is JSON, a presentation layer that only knows JSON can parse a JSON-LD response like any other JSON document.
+The API uses JSON by default: JSON is easy to parse and is supported natively in most programming languages. The data layer serialises this JSON as [JSON-LD 1.1](https://www.w3.org/TR/json-ld11/), a format for linked data. JSON-LD is the default media type of the API. Because JSON-LD is JSON, a presentation layer that only knows JSON can parse a JSON-LD response like any other JSON document.
 
 1. The data layer _MUST_ support `application/ld+json` and `application/json` in the `Accept` header: a presentation layer _MAY_ request either.
 1. If a presentation layer does not send the `Accept` header, or sends a media range that accepts `application/ld+json` (such as `*/*` or `application/*`), the data layer _MUST_ serve JSON-LD.
 1. The data layer _MUST_ send `Content-Type: application/ld+json` when it serves JSON-LD, and `Content-Type: application/json` when the presentation layer requests `application/json` only.
-
-The data layer _MUST_ keep JSON-LD out of the way of presentation layers that do not need it. The response body is the same in all cases: it is JSON, and it includes the JSON-LD context in its `@context` property. A presentation layer that requests `application/json` receives that body labelled `application/json`; it treats the response as plain JSON.
-
-The data layer _MUST_ publish a JSON-LD context document that maps the [terms](https://www.w3.org/TR/json-ld11/#terms) it uses to URIs. Every response body _MUST_ include that context in its `@context` property as a reference to the document.
 
 ### Example
 
@@ -124,7 +120,7 @@ Content-Type: application/json
 Vary: Accept
 ```
 
-Both responses carry the same body, including the `@context` property. The conventional presentation layer treats the body as plain JSON and ignores the `@context` it does not need.
+Both responses carry the same body. A JSON-LD-aware presentation layer interprets the body as linked data. A conventional presentation layer treats the body as plain JSON.
 
 ## Languages
 

@@ -279,7 +279,7 @@ An example of the response body of a collection:
 
 The response indicates that this collection contains 195 entities, spread over 20 pages, and that it supports keyword search for it.
 
-Another collection has the same structure. Which capabilities a collection has is a choice of the data layer. In the example underneath the data layer also supports facets and suggestions for its 'Masterpieces' collection. The `facets` property points to the list of the collection's facet collections, and the `suggestions` property points to the list of its suggestion collections.
+Another example of the response body of a collection, with extended capabilities:
 
 ```json
 {
@@ -319,6 +319,8 @@ Another collection has the same structure. Which capabilities a collection has i
   }
 }
 ```
+
+The response indicates that this collection supports keyword search, facets and suggestions.
 
 ## Endpoint: Retrieve a page in a collection
 
@@ -438,9 +440,9 @@ An example of the response body:
 
 A page can carry the results of the facets that the presentation layer requested in a dedicated `facets` property.
 
-An entry in the `facets` property mirrors the facet collection it belongs to. If that facet collection is divided into pages, the entry is a `FacetPage`. If it is not, the entry is the `FacetCollection` itself, which lists its facet items inline. A presentation layer therefore has to accept both shapes. It distinguishes them by the `type` of the entry, as set out in the response body above.
+An entry in the `facets` property mirrors the facet collection it belongs to. If that facet collection is divided into pages, the entry is a `FacetPage`. If it is not, the entry is the `FacetCollection` itself, which lists its facet items inline. A presentation layer therefore has to accept both shapes. It distinguishes them by the `type` of the entry.
 
-Both shapes are allowed in one `facets` property. A data layer is easier to use, however, when all of its facet collections have the same shape. A data layer _SHOULD_ therefore either divide all of its facet collections into pages, or divide none of them. Then every entry in `facets` has the same type, and a presentation layer can read all of them in one way.
+Both shapes are allowed in one `facets` property. The API of a data layer is easier to use, however, when all of its facet collections have the same shape. A data layer _SHOULD_ therefore either divide all of its facet collections into pages, or divide none of them. Then every entry in `facets` has the same type, and a presentation layer can read all of them in one way.
 
 The results in `facets` belong to the whole collection, not to one page. They depend on the query in the request, such as `q` and `filter`, and not on `page`. Every page of the same collection for the same query therefore carries the same facet results; only the `items` change when a presentation layer moves to the next page. A presentation layer can request the facets on the first page and reuse the results on the following pages.
 
@@ -581,7 +583,7 @@ An example of a response body in which the presentation layer requested two face
 
 An example of a response body in which the presentation layer requested two facets collections that are divided into pages. Both entries in `facets` are a `FacetPage`. A presentation layer reads every entry in the same way, and follows the `next` property of an entry to see more values of that facet.
 
-An entry is the complete response body of a `FacetPage`, the same body that the endpoint [Retrieve a page in a facet collection](facets.md#endpoint-retrieve-a-page-in-a-facet-collection) returns, including `prev` and `next`. The entries below have no `prev`, because they are the first page of their facet collection. Their `partOf` carries `totalItems`, `first` and `last`, so a presentation layer that wants a different page of that facet follows one of those, or calls the endpoint. It does not page backwards from the entry itself.
+An entry is the complete response body of a `FacetPage`, the same body that the endpoint [Retrieve a page in a facet collection](facets.md#endpoint-retrieve-a-page-in-a-facet-collection) returns, including `prev` and `next`. The entries below have no `prev`, because they are the first page of their facet collection. Their `partOf` carries `totalItems`, `first` and `last`, so a presentation layer that wants a different page of that facet follows one of those.
 
 ```json
 {

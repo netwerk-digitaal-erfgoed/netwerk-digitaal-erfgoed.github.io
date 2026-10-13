@@ -100,7 +100,7 @@ The URI of an entity always has the form `/{version}/entities/{entity}`:
 - `entities` is fixed. Every entity URI contains it.
 - `{entity}` is the path identifier, and it is variable. The data layer determines it.
 
-The `id` of an entity is nearly always its full URI, for example `https://example.org/v1/entities/1234`: the API uses this URI in response bodies and in other payloads wherever it refers to the entity. The path identifier `{entity}` is only the part after `/entities/`, for example `1234`. The requirements and examples in this section are about the path identifier.
+The `id` of an entity is its full URI, for example `https://example.org/v1/entities/1234`: the API uses this URI wherever it refers to the entity. The path identifier `{entity}` is the part after `/entities/`, for example `1234`. The requirements and examples in this section are about the path identifier.
 
 The data layer _MUST_ determine the `{entity}` in line with the following requirements:
 
@@ -159,7 +159,7 @@ GET /v1/entities/1234
 Host: example.org
 ```
 
-The request indicates that the data layer should return the entity with ID `1234`.
+The request indicates that the data layer should return the entity with path identifier `1234`.
 
 The response body depends on the data model of the entity. An example:
 
@@ -200,6 +200,6 @@ The response indicates that this entity is a `HeritageObject` and has name 'The 
 
 :::note
 
-This specification does not define an endpoint that retrieves a list of all entities. A presentation layer finds the entities of a data layer through [collections](collections.md): a data layer groups its entities into curated collections, and a presentation layer browses a collection or filters its items to find the entities it needs.
+This specification does not define an endpoint that retrieves a list of all entities. A presentation layer finds the entities of a data layer through [curated collections](collections.md). A data layer groups its entities into these collections, and a presentation layer browses a collection or filters its items to find the entities it needs.
 
 :::

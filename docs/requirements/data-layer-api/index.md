@@ -40,6 +40,8 @@ The keywords _MAY_, _MUST_, _MUST NOT_, _OPTIONAL_, _RECOMMENDED_, _SHOULD_, and
 - Add references to the [gedragsprofielen digitaal erfgoed](https://zenodo.org/records/14938780).
 - Make a clean separation between the specification of the interface and the behaviour of the data layer (what it must or should do).
 - Include a 'Metamodel Informatiemodellering' (MIM), explaining the information model on which the API is grounded.
-- Describe the integration with the IIIF APIs, for interacting with media objects and their metadata.
+- Describe the integration with the IIIF APIs, for interacting with media objects and their metadata. For example:
+  - A data layer should be able to publish its own IIIF collection(s) with manifests from data providers
+  - A data layer should [retrieve and cache media object dimensions](https://github.com/netwerk-digitaal-erfgoed/netwerk-digitaal-erfgoed.github.io/issues/143) from IIIF info.json files from data providers so that presentation layers do not have to request these real-time
 
 :::
