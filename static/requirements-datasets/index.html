@@ -1490,7 +1490,7 @@ Possible extra rowspan handling
 </style>
   <meta content="Bikeshed version 49e9fdd4f, updated Tue Oct 13 14:27:53 2026 -0700" name="generator">
   <link href="https://docs.nde.nl/requirements-datasets/" rel="canonical">
-  <meta content="3af756b005051017b9ec325d5fc7e393341dbf25" name="revision">
+  <meta content="ebe56704ef67c331d576a27de459c77a892abca1" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>
 td, th {
@@ -4411,6 +4411,49 @@ even if that resource is the same on all pages.</p>
        <tr>
         <th scope="row"><a href="http://purl.org/dc/terms/conformsTo">dct:conformsTo</a>
         <td>Standards or specifications the distribution conforms to. For SPARQL endpoints, this must include the SPARQL protocol URI. See <a href="#usage-information">§ 5.4.2 Usage information</a>.
+        <td>0..n
+        <td>
+                Recommended
+                
+       <tr>
+        <th scope="row"><a href="http://purl.org/dc/terms/title">dct:title</a>
+        <td>The name of the distribution.
+        <td>0..n
+        <td>
+                Recommended
+                
+       <tr>
+        <th scope="row"><a href="http://purl.org/dc/terms/description">dct:description</a>
+        <td>Distribution description
+        <td>0..n
+        <td>
+                Recommended
+                
+       <tr>
+        <th scope="row"><a href="http://purl.org/dc/terms/issued">dct:issued</a>
+        <td>The date of formal issuance (such as publication) of the distribution. See <a href="#distribution-date">§ 5.4.1 Creation and modification dates</a>.
+        <td>0..n
+        <td>
+                Recommended
+                
+       <tr>
+        <th scope="row"><a href="http://purl.org/dc/terms/modified">dct:modified</a>
+        <td>The most recent date on which the distribution was changed or modified. See <a href="#distribution-date">§ 5.4.1 Creation and modification dates</a>.
+        <td>0..n
+        <td>
+                Recommended
+                
+       <tr>
+        <th scope="row"><a href="http://www.w3.org/ns/dcat#byteSize">dcat:byteSize</a>
+        <td>Distribution file size in bytes.
+        <td>0..n
+        <td>
+                Recommended
+                
+       <tr>
+        <th scope="row"><a href="http://xmlns.com/foaf/0.1/page">foaf:page</a>
+        <td>A documentation page that describes or provides access to this distribution, such as a SPARQL UI or a download landing page.
+            <code>dcat:accessURL</code> and <code>dcat:downloadURL</code> point to the distribution itself (the API endpoint or the data file).
         <td>0..n
         <td>
                 Recommended
