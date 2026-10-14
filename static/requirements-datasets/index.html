@@ -1490,7 +1490,7 @@ Possible extra rowspan handling
 </style>
   <meta content="Bikeshed version 49e9fdd4f, updated Tue Oct 13 14:27:53 2026 -0700" name="generator">
   <link href="https://docs.nde.nl/requirements-datasets/" rel="canonical">
-  <meta content="ebe56704ef67c331d576a27de459c77a892abca1" name="revision">
+  <meta content="38d959b27d575698e755c67d755b84aed5b2071b" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>
 td, th {
@@ -2543,7 +2543,13 @@ By following these requirements, publishers enable users to find and use their d
 
     // The tab bars added height above a deep link’s target.
     if (location.hash) {
-      document.getElementById(decodeURIComponent(location.hash.slice(1)))?.scrollIntoView();
+      let id = location.hash.slice(1);
+      try {
+        id = decodeURIComponent(id);
+      } catch {
+        // A malformed escape such as #100% is not a valid ID either way.
+      }
+      document.getElementById(id)?.scrollIntoView();
     }
   });
 })();
@@ -2829,10 +2835,12 @@ RDF formats include <a data-link-type="biblio" href="#biblio-json-ld" title="JSO
     <p><a data-link-type="dfn" href="#publisher" id="ref-for-publisher⑤">Publishers</a> <em>MUST</em> make their <a data-link-type="dfn" href="#dataset-description" id="ref-for-dataset-description④">dataset description</a> available in RDF.</p>
    </blockquote>
    <p>Publishers <em>MAY</em> use either the Schema.org <a data-link-type="biblio" href="#biblio-schema-org" title="Schema.org">[SCHEMA-ORG]</a> or the DCAT-AP-NL 3.0 <a data-link-type="biblio" href="#biblio-dcat-ap-nl" title="DCAT-AP-NL 3.0">[DCAT-AP-NL]</a> vocabulary (see <a href="#examples">§ 1.3 Code examples</a>).</p>
-   <div class="example" id="example-6708d55b">
-    <a class="self-link" href="#example-6708d55b"></a>
-    <a href="https://developers.google.com/search/docs/guides/intro-structured-data#structured-data">Google recommends</a>
-    including the JSON-LD directly in the HTML source of web pages.
+   <div class="example" id="example-ad15e6ee">
+    <a class="self-link" href="#example-ad15e6ee"></a>
+    You can include the JSON-LD directly in the HTML source of web pages,
+    as <a href="https://developers.google.com/search/docs/guides/intro-structured-data#structured-data">Google recommends</a> for Schema.org.
+    Google documents <a href="https://developers.google.com/search/docs/appearance/structured-data/organization">organization markup</a> in Schema.org only,
+    so use the Schema.org version to make the organization known to search engines.
 
 
     <p>So, on your organization’s web page, for instance <a href="https://www.kb.nl">www.kb.nl</a>, include:</p>
@@ -4593,8 +4601,8 @@ even if that resource is the same on all pages.</p>
     </div>
    </div>
    <h4 class="heading settled" data-level="5.6.6" id="dataset-example"><span class="secno">5.6.6. </span><span class="content">Full example</span><a class="self-link" href="#dataset-example"></a></h4>
-   <div class="example" id="example-d613ace8">
-    <a class="self-link" href="#example-d613ace8"></a>
+   <div class="example" id="example-19287a20">
+    <a class="self-link" href="#example-19287a20"></a>
     A full <a data-link-type="dfn" href="#dataset-description" id="ref-for-dataset-description①③">dataset description</a> that includes <a href="#dataset-attributes">required and recommended attributes</a>.
 
     
@@ -4689,7 +4697,7 @@ even if that resource is the same on all pages.</p>
     <c- p>{</c->
       <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Organization"</c-><c- p>,</c->
       <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com"</c-><c- p>,</c->
-      <c- f>"identifier"</c-><c- p>:</c-> <c- u>"test"</c-><c- p>,</c->
+      <c- f>"identifier"</c-><c- p>:</c-> <c- u>"NL-HaKB"</c-><c- p>,</c->
       <c- f>"name"</c-><c- p>:</c-> <c- p>{</c->
         <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Koninklijke Bibliotheek"</c-><c- p>,</c->
         <c- nd>"@language"</c-><c- p>:</c-> <c- u>"nl"</c->
@@ -4827,7 +4835,7 @@ even if that resource is the same on all pages.</p>
     <c- p>{</c->
       <c- nd>"@type"</c-><c- p>:</c-> <c- u>"foaf:Organization"</c-><c- p>,</c->
       <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com"</c-><c- p>,</c->
-      <c- f>"dct:identifier"</c-><c- p>:</c-> <c- u>"test"</c-><c- p>,</c->
+      <c- f>"dct:identifier"</c-><c- p>:</c-> <c- u>"NL-HaKB"</c-><c- p>,</c->
       <c- f>"foaf:name"</c-><c- p>:</c-> <c- p>{</c->
         <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Koninklijke Bibliotheek"</c-><c- p>,</c->
         <c- nd>"@language"</c-><c- p>:</c-> <c- u>"nl"</c->
