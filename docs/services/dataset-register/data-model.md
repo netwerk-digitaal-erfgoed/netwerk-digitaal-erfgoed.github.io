@@ -190,7 +190,8 @@ reflects the latest validation. The [`nde:warningCount`](#schemaentrypoint) on t
 denormalised count of the `sh:Warning`-severity results in this report, kept on the registration so
 applications can filter on it without reading the report.
 
-The graph is removed when the registration is [deleted](api.md).
+The graph is removed when the registration is [deleted](api.md), and when a crawl yields no report
+because the URL returns an error or no longer contains a dataset.
 
 ## Distribution health
 
