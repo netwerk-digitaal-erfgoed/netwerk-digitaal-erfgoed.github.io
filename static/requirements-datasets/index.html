@@ -1488,13 +1488,46 @@ Possible extra rowspan handling
 		}
 	}
 </style>
-  <meta content="Bikeshed version ea4009a02, updated Thu Sep 17 15:24:44 2026 -0700" name="generator">
+  <meta content="Bikeshed version 49e9fdd4f, updated Tue Oct 13 14:27:53 2026 -0700" name="generator">
   <link href="https://docs.nde.nl/requirements-datasets/" rel="canonical">
-  <meta content="8b1218d35d864667c03fd9dc1f6474e49796766c" name="revision">
+  <meta content="ecf47166b9ecbe52053a08c96d8f75be09d61d85" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>
 td, th {
     vertical-align: top;
+}
+
+/* Schema.org and DCAT alternatives, shown as tabs that switch together. */
+.vocab-tablist {
+    display: flex;
+    gap: 0.25em;
+    margin-bottom: 0.5em;
+    border-bottom: 1px solid var(--example-border);
+}
+.vocab-tablist [role="tab"] {
+    margin-bottom: -1px;
+    padding: 0.25em 0.75em;
+    border: none;
+    border-bottom: 3px solid transparent;
+    background: none;
+    color: var(--text);
+    font: inherit;
+    cursor: pointer;
+}
+.vocab-tablist [role="tab"][aria-selected="true"] {
+    border-bottom-color: var(--a-normal-text);
+    color: var(--a-normal-text);
+    font-weight: bold;
+}
+.vocab-tablist [role="tab"]:focus-visible,
+.vocab-tabs > [role="tabpanel"]:focus-visible {
+    outline: 2px solid var(--a-normal-text);
+    outline-offset: 2px;
+}
+:root[data-vocab="schema"] .vocab-tabs > [data-vocab="dcat"],
+:root[data-vocab="dcat"] .vocab-tabs > [data-vocab="schema"] {
+    /* Beats Bikeshed’s display: grid on line-numbered code blocks. */
+    display: none !important;
 }
 </style>
 <style>/* Boilerplate: style-autolinks */
@@ -2292,7 +2325,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <p data-fill-with="logo"></p>
    <h1 class="no-ref p-name" id="title">Requirements for Datasets</h1>
    <h2 class="heading no-num no-ref no-toc settled" id="profile-and-date"><span class="content">Living Standard,
-    <time class="dt-updated" datetime="2026-10-13">13 October 2026</time></span></h2>
+    <time class="dt-updated" datetime="2026-10-14">14 October 2026</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -2312,7 +2345,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <p class="copyright" data-fill-with="copyright"><a href="http://creativecommons.org/publicdomain/zero/1.0/" rel="license"><img alt="CC0" height="15" src="https://licensebuttons.net/p/zero/1.0/80x15.png" width="80"></a>
 To the extent possible under law, the editors have waived all copyright
 and related or neighboring rights to this work.
-In addition, as of 13 October 2026,
+In addition, as of 14 October 2026,
 the editors have made this specification available under the
 <a href="https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0" rel="license">Open Web Foundation Agreement Version 1.0</a>,
 which is available at https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0.
@@ -2383,9 +2416,10 @@ By following these requirements, publishers enable users to find and use their d
        <ol class="toc">
         <li><a href="#dataset-attributes"><span class="secno">5.6.1</span> <span class="content">Dataset attributes</span></a>
         <li><a href="#organization-attributes"><span class="secno">5.6.2</span> <span class="content">Organization attributes</span></a>
-        <li><a href="#distribution-attributes"><span class="secno">5.6.3</span> <span class="content">Distribution attributes</span></a>
-        <li><a href="#datacatalog-attributes"><span class="secno">5.6.4</span> <span class="content">DataCatalog attributes</span></a>
-        <li><a href="#dataset-example"><span class="secno">5.6.5</span> <span class="content">Full example</span></a>
+        <li><a href="#contactpoint-attributes"><span class="secno">5.6.3</span> <span class="content">Contact point attributes</span></a>
+        <li><a href="#distribution-attributes"><span class="secno">5.6.4</span> <span class="content">Distribution attributes</span></a>
+        <li><a href="#datacatalog-attributes"><span class="secno">5.6.5</span> <span class="content">DataCatalog attributes</span></a>
+        <li><a href="#dataset-example"><span class="secno">5.6.6</span> <span class="content">Full example</span></a>
        </ol>
      </ol>
     <li>
@@ -2436,6 +2470,84 @@ By following these requirements, publishers enable users to find and use their d
    </ol>
   </nav>
   <main>
+<script>
+// Turns each .vocab-tabs group into tabs. Picking a vocabulary in one group
+// switches every group on the page, and the choice is remembered.
+(() => {
+  const vocabularies = { schema: 'Schema.org', dcat: 'DCAT' };
+  const storageKey = 'nde-datasets-vocabulary';
+  const tabs = [];
+
+  const select = (vocabulary) => {
+    document.documentElement.dataset.vocab = vocabulary;
+    for (const tab of tabs) {
+      const selected = tab.dataset.vocab === vocabulary;
+      tab.setAttribute('aria-selected', String(selected));
+      tab.tabIndex = selected ? 0 : -1;
+    }
+  };
+
+  // Hide the other vocabulary before the page renders, so a deep link
+  // does not land on content that is about to disappear.
+  let stored = null;
+  try {
+    stored = localStorage.getItem(storageKey);
+  } catch {}
+  select(Object.hasOwn(vocabularies, stored ?? '') ? stored : 'schema');
+
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.vocab-tabs').forEach((group, groupIndex) => {
+      const tablist = document.createElement('div');
+      tablist.className = 'vocab-tablist';
+      tablist.setAttribute('role', 'tablist');
+      tablist.setAttribute('aria-label', 'Vocabulary');
+
+      for (const panel of group.querySelectorAll(':scope > [data-vocab]')) {
+        const vocabulary = panel.dataset.vocab;
+        const tab = document.createElement('button');
+        tab.type = 'button';
+        tab.id = `vocab-tab-${groupIndex}-${vocabulary}`;
+        tab.dataset.vocab = vocabulary;
+        tab.textContent = vocabularies[vocabulary];
+        tab.setAttribute('role', 'tab');
+        panel.id ||= `vocab-panel-${groupIndex}-${vocabulary}`;
+        panel.tabIndex = 0;
+        panel.setAttribute('role', 'tabpanel');
+        panel.setAttribute('aria-labelledby', tab.id);
+        tab.setAttribute('aria-controls', panel.id);
+
+        tab.addEventListener('click', () => {
+          // Keep the clicked tab in place while groups above it change height.
+          const topBefore = tab.getBoundingClientRect().top;
+          select(vocabulary);
+          window.scrollBy(0, tab.getBoundingClientRect().top - topBefore);
+          try {
+            localStorage.setItem(storageKey, vocabulary);
+          } catch {}
+        });
+        tab.addEventListener('keydown', (event) => {
+          if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+          const siblings = [...tablist.children];
+          const step = event.key === 'ArrowRight' ? 1 : -1;
+          const next = siblings[(siblings.indexOf(tab) + step + siblings.length) % siblings.length];
+          next.click();
+          next.focus();
+        });
+
+        tablist.append(tab);
+        tabs.push(tab);
+      }
+      group.prepend(tablist);
+    });
+    select(document.documentElement.dataset.vocab);
+
+    // The tab bars added height above a deep link’s target.
+    if (location.hash) {
+      document.getElementById(decodeURIComponent(location.hash.slice(1)))?.scrollIntoView();
+    }
+  });
+})();
+</script>
    <h2 class="heading settled" data-level="1" id="introduction"><span class="secno">1. </span><span class="content">Introduction</span><a class="self-link" href="#introduction"></a></h2>
    <p><em>This section is non-normative.</em></p>
    <p>To enable <a data-link-type="dfn" href="#dataset" id="ref-for-dataset">datasets</a> to be found and used,
@@ -2469,16 +2581,20 @@ this document is based on broader, international best practices for publishing d
    <p>These requirements incorporate a previous <a href="https://github.com/netwerk-digitaal-erfgoed/project-organisations-datasets/tree/master/publication-model">publication model</a>,
 which provides more background on choices made here.</p>
    <h3 class="heading settled" data-level="1.3" id="examples"><span class="secno">1.3. </span><span class="content">Code examples</span><a class="self-link" href="#examples"></a></h3>
-   <p>RDF code examples are in the <a data-link-type="biblio" href="#biblio-schema-org" title="Schema.org">[SCHEMA-ORG]</a> vocabulary, serialized as <a data-link-type="biblio" href="#biblio-json-ld" title="JSON-LD 1.0">[JSON-LD]</a>.</p>
-   <p>While other vocabularies, such as <a data-link-type="biblio" href="#biblio-vocab-dcat-3" title="Data Catalog Vocabulary (DCAT) - Version 3">[VOCAB-DCAT-3]</a> can also be used,
-Schema.org has the advantage that it’s <a href="https://github.com/netwerk-digitaal-erfgoed/project-organisations-datasets/tree/master/publication-model#considerations">better picked up by search engines</a>,
-improving findability, one of the main goals of publishing datasets on the web.</p>
+   <p><a data-link-type="dfn" href="#publisher" id="ref-for-publisher①">Publishers</a> can describe their datasets in either of two vocabularies:
+Schema.org <a data-link-type="biblio" href="#biblio-schema-org" title="Schema.org">[SCHEMA-ORG]</a> or DCAT-AP-NL 3.0 <a data-link-type="biblio" href="#biblio-dcat-ap-nl" title="DCAT-AP-NL 3.0">[DCAT-AP-NL]</a>, the Dutch application profile of <a data-link-type="biblio" href="#biblio-vocab-dcat-3" title="Data Catalog Vocabulary (DCAT) - Version 3">[VOCAB-DCAT-3]</a>.
+The <a href="https://datasetregister.netwerkdigitaalerfgoed.nl/?lang=en">NDE Dataset Register</a> accepts both
+and converts every <a data-link-type="dfn" href="#dataset-description" id="ref-for-dataset-description①">dataset description</a> to DCAT-AP-NL 3.0.
+Search engines such as Google Dataset Search read Schema.org;
+DCAT-AP-NL 3.0 is the standard for Dutch government data catalogs.</p>
+   <p>Every RDF code example is given in both vocabularies, serialized as <a data-link-type="biblio" href="#biblio-json-ld" title="JSON-LD 1.0">[JSON-LD]</a>.
+Use the tabs above an example to switch between them; all examples and attribute tables switch together.</p>
    <h2 class="heading settled" data-level="2" id="v2"><span class="secno">2. </span><span class="content">Version 2.0</span><a class="self-link" href="#v2"></a></h2>
    <p>Version 2.0 takes effect on Monday 3 May 2027.
 Until that date, the <a href="https://datasetregister.netwerkdigitaalerfgoed.nl/?lang=en">NDE Dataset Register</a>
-accepts <a data-link-type="dfn" href="#dataset-description" id="ref-for-dataset-description①">dataset descriptions</a> that break a version 2.0 rule and reports each broken rule as a warning.
+accepts <a data-link-type="dfn" href="#dataset-description" id="ref-for-dataset-description②">dataset descriptions</a> that break a version 2.0 rule and reports each broken rule as a warning.
 From that date, it rejects new and updated dataset descriptions that break one.
-A dataset without a <code>creator</code>, for example, is registered with a warning before that date and refused from it.</p>
+A dataset without a creator (<code>schema:creator</code> or <code>dct:creator</code>), for example, is registered with a warning before that date and refused from it.</p>
    <p>A dataset that is already registered is not removed on that date.
 If its description breaks a version 2.0 rule, the Register marks it as invalid the next time it reads the description.</p>
    <p>The changes follow DCAT-AP-NL 3.0, the format into which the Register converts every dataset description.
@@ -2493,7 +2609,7 @@ The <a href="https://docs.nde.nl/blog/2026/04/15/dataset-requirements-v2">announ
      <p>A collection of metadata records. These are made available through the dataset’s <a data-link-type="dfn" href="#distribution" id="ref-for-distribution">distributions</a>.</p>
     <dt data-md><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="dataset-description">Dataset description</dfn>
     <dd data-md>
-     <p>Metadata about the <a data-link-type="dfn" href="#dataset" id="ref-for-dataset①">dataset</a>, including the dataset’s name and <a data-link-type="dfn" href="#publisher" id="ref-for-publisher①">publisher</a>.
+     <p>Metadata about the <a data-link-type="dfn" href="#dataset" id="ref-for-dataset①">dataset</a>, including the dataset’s name and <a data-link-type="dfn" href="#publisher" id="ref-for-publisher②">publisher</a>.
 This description must be distinguished from the metadata records themselves.</p>
      <p>For example: imagine a dataset of Van Gogh paintings called ‘Sunflowers’,
 which is published by the Van Gogh Museum under a specific license.
@@ -2504,7 +2620,7 @@ which may include descriptions of paintings, persons, places etc.
 These are <em>not</em> part of the dataset description.</p>
     <dt data-md><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="data-catalog">Data catalog</dfn>
     <dd data-md>
-     <p>A collection of <a data-link-type="dfn" href="#dataset-description" id="ref-for-dataset-description②">dataset descriptions</a>.</p>
+     <p>A collection of <a data-link-type="dfn" href="#dataset-description" id="ref-for-dataset-description③">dataset descriptions</a>.</p>
     <dt data-md><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="distribution">Distribution</dfn>
     <dd data-md>
      <p>A channel through which a <a data-link-type="dfn" href="#dataset" id="ref-for-dataset②">dataset</a> is made available,
@@ -2523,10 +2639,10 @@ or for querying (such as a <a data-link-type="biblio" href="#biblio-sparql11-ove
 This would probably be 'heritage institution' in <a href="https://www.netwerkdigitaalerfgoed.nl/wp-content/uploads/2019/05/190513-DERA2.0-ENG.pdf">DERA</a>.</p>
     <dt data-md><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="consumer">Consumer</dfn>
     <dd data-md>
-     <p>On organization, individual or service platform that uses one or more <a data-link-type="dfn" href="#dataset" id="ref-for-dataset④">datasets</a> that are provided by a <a data-link-type="dfn" href="#publisher" id="ref-for-publisher②">publisher</a>.</p>
+     <p>On organization, individual or service platform that uses one or more <a data-link-type="dfn" href="#dataset" id="ref-for-dataset④">datasets</a> that are provided by a <a data-link-type="dfn" href="#publisher" id="ref-for-publisher③">publisher</a>.</p>
    </dl>
    <h2 class="heading settled" data-level="4" id="conceptual-model"><span class="secno">4. </span><span class="content">Conceptual model</span><a class="self-link" href="#conceptual-model"></a></h2>
-   <p>The model consists of four resource types: <a data-link-type="dfn" href="#publisher" id="ref-for-publisher③">organizations or persons</a> publish <a data-link-type="dfn" href="#dataset" id="ref-for-dataset⑤">datasets</a>, which are available in <a data-link-type="dfn" href="#distribution" id="ref-for-distribution①">distributions</a>.
+   <p>The model consists of four resource types: <a data-link-type="dfn" href="#publisher" id="ref-for-publisher④">organizations or persons</a> publish <a data-link-type="dfn" href="#dataset" id="ref-for-dataset⑤">datasets</a>, which are available in <a data-link-type="dfn" href="#distribution" id="ref-for-distribution①">distributions</a>.
 Optionally, the datasets are grouped in data catalogs.</p>
    <svg content="<mxfile host=&quot;Electron&quot; modified=&quot;2021-10-05T07:07:49.264Z&quot; agent=&quot;5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/15.4.0 Chrome/91.0.4472.164 Electron/13.5.0 Safari/537.36&quot; etag=&quot;wlF9FwQLq7R4mR6CaEHz&quot; version=&quot;15.4.0&quot; type=&quot;device&quot; pages=&quot;2&quot;><diagram id=&quot;urrUrFw95YwCIsGvFkr1&quot; name=&quot;Overview&quot;>3Vpbc5s6EP41fnSGi8HwGNtpmlP3Mm1PktOXjgwCdCwjCiKx8+srGckgg4nvuTxk4l2tFrH77bcrjzvmcDa/TkESfSY+xB1D8+cdc9QxDF3XbPaPaxaFxnX7hSJMkS+MSsUP9ASFUhPaHPkwUwwpIZiiRFV6JI6hRxUdSFPyqJoFBKtPTUAIa4ofHsB17R3yaVRoHaNf6j9CFEbyybrtFiszII3Fm2QR8MljRWVedcxhSggtPs3mQ4h58GRcin0fNqyuDpbCmG6z4VfvOu8m2Zd/8ttpNPXcyHafuropDkcX8o2hzwIgRJLSiIQkBviq1A5Sksc+5G51JpU2Y0ISofwfUroQ2QQ5JUwV0RkWq3CO6H3l83/ss3ZhCWnEwaNJYSGFmKaL+6pQ2cXFcttSKvf5lxwHTIxJDAvNB4SxWM9oSqZwSDBJmcaHAcgxi+egiAsPxsZ4C1VG8tQTVn96wb3dvXGNz1/GNpok8Go+6YoYU5CGkLbYOfYKFqyeIJlB9iJsYwoxoOhBPQgQwA5XdmIre1uwqBgkBMU0q3j+xhXMQNaoIwAqKlR313D0nL2u2LMPxQmkVHmVUrXEZjNOG0PDH8Cf+QBwLuLgI5Y6NMkpIvFBINb2AzEGE4gHwJuGS1cSQQJkAKMwZiKGAUdTQGIqPOm9FbpOCSbpcA3BdXSJtGoXum33lcxahbQb/Eq8SBMSBBk7qoqRXVFB/OjT4PprlnpJf9ofDsbffz90rYPJyyMz5O2PgX1JqR07FcryMMgyfsIKa+kNeJJw89hzYHoWgMnW8SzAzktfhrYbfRn2cemrsc2aNfbqGDaWxKBA2P6TE7nQzZYpvmQGei+Zl4vsU8j/Y8QSnkHpjJ2t8FesNlbHmENPRXENPA8wpYjNQJdiYYZ8vygeyE4EJkt/HMciOcy5NehYI95OE+ChOPy5LCBrdQjuEc4VBIiJTXgr56QqZjdXfQuPWY6rZvgwGhN+u7ra9QzVwVFIrrXOjg6em+832wKnApaAkZDkq45h+gA6gVebo9iK7TlwEjRxVZYUk3qA5pyIN3NVDTUbsy6reJVzU8iP5dCuS11UGdgt90JzN2NBSeaumXPsWua+piGIWQk1Di1HjfIJgupsGVO57ZCANt9WjIMb/l5Nfr8bxL7DQWNbfbaXm3By9+9l+K3763b6dPfJmoBrKgekN3LzMF/24tEMuXoNH4d9k3yCURaxfvvqmveAUEpmbKFf6sbLe8zIOLSjt9R1S0vvq833WB1d9dp1TtDS28qygqkRoGDI/jAJX29bOAfvN8bLqcXLZ7GSyXl39/6DqHzbW9mp7/i1crN7F5ZSb+twKUIgdu3iSO+veSqCVPN0rJ7gNrSENRxybCQHEWV72nS7YRazGmrSOVVN6rUgcA4bkccYE+DXArI7c7XXWZUUn62x1ixuPw6vf9FQz8BZWbH+leh7jLq+NvSdMept/LqG+6ZedOK+fWB4X+4Sp708fZq9M9Jn45dYvbdOn6s0vgX+bExBcyW/6xS8NjI13vwUsUMOThBlJpY/ICjG2/JnGObVXw==</diagram><diagram id=&quot;a6mHWFwkpfAQTan6lGMU&quot; name=&quot;Classes&quot;>ldHJDsIgEADQr+FoYouperWucYv24BnLWEig0yDG6tdbQxeJFz0Bj2FgBkJjXS4MK8QWOSgS9nlJ6JSEYTCIomp4y6MRGjjJjOS1dZDIJ9TYr/UmOVy9QIuorCx8TDHPIbWeMWPw7oddUPm3FiyDL0hSpr71JLkVTkfhsPMlyEw0NwfR2O1o1gTXlVwF43j/IDojNDaI1s10GYN6d6/tizju10xPVnLztLvbBg9n6Llk83+OtCUYyO2vqatJ97Rq4f0wnb0A</diagram></mxfile>" height="421px" version="1.1" viewBox="-0.5 -0.5 391 421" width="391px" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <defs></defs>
@@ -2710,18 +2826,18 @@ Optionally, the datasets are grouped in data catalogs.</p>
 it needs to be published in an <a href="https://www.w3.org/TR/rdf11-primer/#section-graph-syntax">RDF format</a>.
 RDF formats include <a data-link-type="biblio" href="#biblio-json-ld" title="JSON-LD 1.0">[JSON-LD]</a>, <a data-link-type="biblio" href="#biblio-turtle" title="RDF 1.1 Turtle">[Turtle]</a> and <a data-link-type="biblio" href="#biblio-trig" title="RDF 1.1 TriG">[TriG]</a>.</p>
    <blockquote>
-    <p><a data-link-type="dfn" href="#publisher" id="ref-for-publisher④">Publishers</a> <em>MUST</em> make their <a data-link-type="dfn" href="#dataset-description" id="ref-for-dataset-description③">dataset description</a> available in RDF.</p>
+    <p><a data-link-type="dfn" href="#publisher" id="ref-for-publisher⑤">Publishers</a> <em>MUST</em> make their <a data-link-type="dfn" href="#dataset-description" id="ref-for-dataset-description④">dataset description</a> available in RDF.</p>
    </blockquote>
-   <p>Both the Schema.org and DCAT vocabularies <em>MAY</em> be used;
-Schema.org is <a href="#examples">recommended</a>.</p>
-   <div class="example" id="example-97362c07">
-    <a class="self-link" href="#example-97362c07"></a>
+   <p>Publishers <em>MAY</em> use either the Schema.org <a data-link-type="biblio" href="#biblio-schema-org" title="Schema.org">[SCHEMA-ORG]</a> or the DCAT-AP-NL 3.0 <a data-link-type="biblio" href="#biblio-dcat-ap-nl" title="DCAT-AP-NL 3.0">[DCAT-AP-NL]</a> vocabulary (see <a href="#examples">§ 1.3 Code examples</a>).</p>
+   <div class="example" id="example-6708d55b">
+    <a class="self-link" href="#example-6708d55b"></a>
     <a href="https://developers.google.com/search/docs/guides/intro-structured-data#structured-data">Google recommends</a>
     including the JSON-LD directly in the HTML source of web pages.
 
 
     <p>So, on your organization’s web page, for instance <a href="https://www.kb.nl">www.kb.nl</a>, include:</p>
-<pre class="highlight"><c- p>&lt;</c-><c- f>html</c-><c- p>></c->
+    <div class="vocab-tabs">
+<pre class="highlight" data-vocab="schema"><c- p>&lt;</c-><c- f>html</c-><c- p>></c->
   <c- p>&lt;</c-><c- f>head</c-><c- p>></c->
     <c- p>&lt;</c-><c- f>title</c-><c- p>></c->Koninklijke Bibliotheek<c- p>&lt;/</c-><c- f>title</c-><c- p>></c->
     <c- p>&lt;</c-><c- f>script</c-> <c- e>type</c-><c- o>=</c-><c- s>"application/ld+json"</c-><c- p>></c->
@@ -2741,18 +2857,41 @@ Schema.org is <a href="#examples">recommended</a>.</p>
   <c- p>&lt;/</c-><c- f>body</c-><c- p>></c->
 <c- p>&lt;/</c-><c- f>html</c-><c- p>></c->
 </pre>
+<pre class="highlight" data-vocab="dcat"><c- p>&lt;</c-><c- f>html</c-><c- p>></c->
+  <c- p>&lt;</c-><c- f>head</c-><c- p>></c->
+    <c- p>&lt;</c-><c- f>title</c-><c- p>></c->Koninklijke Bibliotheek<c- p>&lt;/</c-><c- f>title</c-><c- p>></c->
+    <c- p>&lt;</c-><c- f>script</c-> <c- e>type</c-><c- o>=</c-><c- s>"application/ld+json"</c-><c- p>></c->
+      <c- p>{</c->
+        <c- u>"@context"</c-><c- o>:</c-> <c- p>{</c->
+          <c- u>"foaf"</c-><c- o>:</c-> <c- u>"http://xmlns.com/foaf/0.1/"</c->
+        <c- p>},</c->
+        <c- u>"@type"</c-><c- o>:</c-> <c- u>"foaf:Organization"</c-><c- p>,</c->
+        <c- u>"@id"</c-><c- o>:</c-> <c- u>"http://www.wikidata.org/entity/Q1526131"</c-><c- p>,</c->
+        <c- u>"foaf:name"</c-><c- o>:</c-> <c- p>{</c->
+          <c- u>"@value"</c-><c- o>:</c-> <c- u>"Koninklijke Bibliotheek"</c-><c- p>,</c->
+          <c- u>"@language"</c-><c- o>:</c-> <c- u>"nl"</c->
+        <c- p>}</c->
+      <c- p>}</c->
+    <c- p>&lt;/</c-><c- f>script</c-><c- p>></c->
+  <c- p>&lt;/</c-><c- f>head</c-><c- p>></c->
+  <c- p>&lt;</c-><c- f>body</c-><c- p>></c->
+    Here continues the web page of the organization...
+  <c- p>&lt;/</c-><c- f>body</c-><c- p>></c->
+<c- p>&lt;/</c-><c- f>html</c-><c- p>></c->
+</pre>
+    </div>
    </div>
    <p>See also <a href="https://w3c.github.io/dwbp/usecasesv1.html#R-FormatMachineRead">Data on the Web Best Practices Use Cases &amp; Requirements § R-FormatMachineRead</a>.</p>
    <h4 class="heading settled" data-level="5.1.1" id="content-type"><span class="secno">5.1.1. </span><span class="content">Content-Type</span><a class="self-link" href="#content-type"></a></h4>
-   <p>Clients that retrieve <a data-link-type="dfn" href="#dataset-description" id="ref-for-dataset-description④">dataset descriptions</a> rely on the HTTP <code>Content-Type</code> header
+   <p>Clients that retrieve <a data-link-type="dfn" href="#dataset-description" id="ref-for-dataset-description⑤">dataset descriptions</a> rely on the HTTP <code>Content-Type</code> header
 to determine how the response should be parsed.</p>
    <blockquote>
-    <p>Therefore, the URL at which a <a data-link-type="dfn" href="#dataset-description" id="ref-for-dataset-description⑤">dataset description</a> is published
+    <p>Therefore, the URL at which a <a data-link-type="dfn" href="#dataset-description" id="ref-for-dataset-description⑥">dataset description</a> is published
 <em>MUST</em> be served with a <code>Content-Type</code> header whose media type matches the RDF serialization of the response body.</p>
    </blockquote>
    <p>Recognized RDF media types include <code>application/ld+json</code> for <a data-link-type="biblio" href="#biblio-json-ld" title="JSON-LD 1.0">[JSON-LD]</a>, <code>text/turtle</code> for <a data-link-type="biblio" href="#biblio-turtle" title="RDF 1.1 Turtle">[Turtle]</a>,
 <code>application/n-triples</code> for <a data-link-type="biblio" href="#biblio-n-triples" title="RDF 1.1 N-Triples">[N-TRIPLES]</a> and <code>application/rdf+xml</code> for RDF/XML.
-When the <a data-link-type="dfn" href="#dataset-description" id="ref-for-dataset-description⑥">dataset description</a> is embedded in an HTML page (see <a href="#rdf">§ 5.1 Available in RDF</a>), <code>text/html</code> is acceptable.</p>
+When the <a data-link-type="dfn" href="#dataset-description" id="ref-for-dataset-description⑦">dataset description</a> is embedded in an HTML page (see <a href="#rdf">§ 5.1 Available in RDF</a>), <code>text/html</code> is acceptable.</p>
    <h4 class="heading settled" data-level="5.1.2" id="identifiers"><span class="secno">5.1.2. </span><span class="content">Durable identifiers</span><a class="self-link" href="#identifiers"></a></h4>
    <p><a data-link-type="dfn" href="#consumer" id="ref-for-consumer①">Consumers</a> want to refer to datasets. They prefer to do so by linking to them.</p>
    <blockquote>
@@ -2762,14 +2901,14 @@ Publishers <em>MUST</em> use HTTP <a data-link-type="biblio" href="#biblio-iri" 
    <p>See also <a href="https://w3c.github.io/dwbp/usecasesv1.html#R-UniqueIdentifier">Data on the Web Best Practices Use Cases &amp; Requirements § R-UniqueIdentifier</a> and <a href="https://w3c.github.io/dwbp/usecasesv1.html#R-PersistentIdentification">Data on the Web Best Practices Use Cases &amp; Requirements § R-PersistentIdentification</a>.</p>
    <h4 class="heading settled" data-level="5.1.3" id="resolvable-iris"><span class="secno">5.1.3. </span><span class="content">Resolvable dataset IRIs</span><a class="self-link" href="#resolvable-iris"></a></h4>
    <p><a data-link-type="dfn" href="#consumer" id="ref-for-consumer②">Consumers</a> want to look up a <a data-link-type="dfn" href="#dataset" id="ref-for-dataset⑦">dataset</a> by its IRI.
-When the dataset IRI resolves, consumers can retrieve both the machine-readable <a data-link-type="dfn" href="#dataset-description" id="ref-for-dataset-description⑦">dataset description</a> (via <a href="https://httpwg.org/specs/rfc9110.html#content.negotiation">content negotiation</a>)
+When the dataset IRI resolves, consumers can retrieve both the machine-readable <a data-link-type="dfn" href="#dataset-description" id="ref-for-dataset-description⑧">dataset description</a> (via <a href="https://httpwg.org/specs/rfc9110.html#content.negotiation">content negotiation</a>)
 and a human-readable HTML page without needing a separate landing page URL.</p>
    <blockquote>
     <p>Therefore, publishers <em>SHOULD</em> ensure that the dataset IRI resolves
-and serves both an RDF representation (the <a data-link-type="dfn" href="#dataset-description" id="ref-for-dataset-description⑧">dataset description</a>) and an HTML representation.
+and serves both an RDF representation (the <a data-link-type="dfn" href="#dataset-description" id="ref-for-dataset-description⑨">dataset description</a>) and an HTML representation.
 The HTML representation <em>MUST</em> be consistent with and include at least all details (such as distributions) from the RDF representation.</p>
    </blockquote>
-   <p>When the dataset IRI resolves to an HTML page, a separate <code>mainEntityOfPage</code> is not needed (see <a href="#more-information">§ 5.2.5 More information</a>).</p>
+   <p>When the dataset IRI resolves to an HTML page, a separate <code>schema:mainEntityOfPage</code> or <code>dcat:landingPage</code> is not needed (see <a href="#more-information">§ 5.2.5 More information</a>).</p>
    <h4 class="heading settled" data-level="5.1.4" id="available"><span class="secno">5.1.4. </span><span class="content">Information remains available</span><a class="self-link" href="#available"></a></h4>
    <p>Datasets will be used by all kinds of <a data-link-type="dfn" href="#consumer" id="ref-for-consumer③">consumers</a> and their systems.
 For stability, users must be able to trust that the datasets will remain available
@@ -2794,12 +2933,13 @@ This information answers user questions such as:</p>
    </ul>
    <h4 class="heading settled" data-level="5.2.1" id="dataset-basic"><span class="secno">5.2.1. </span><span class="content">Basic information</span><a class="self-link" href="#dataset-basic"></a></h4>
    <p>Publishers <em>MUST</em> include basic information about the dataset, at the very minimum its HTTP <a data-link-type="biblio" href="#biblio-iri" title="Internationalized Resource Identifiers (IRIs)">[IRI]</a> and name.</p>
-   <div class="example" id="example-29272dbb">
-    <a class="self-link" href="#example-29272dbb"></a>
+   <div class="example" id="example-4e5847a4">
+    <a class="self-link" href="#example-4e5847a4"></a>
     Basic dataset information:
 
     
-<pre class="highlight"><c- p>{</c->
+    <div class="vocab-tabs">
+<pre class="highlight" data-vocab="schema"><c- p>{</c->
   <c- nd>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org/"</c-><c- p>,</c->
   <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Dataset"</c-><c- p>,</c->
   <c- nd>"@id"</c-><c- p>:</c-> <c- u>"http://data.bibliotheken.nl/doc/dataset/rise-alba"</c-><c- p>,</c->
@@ -2815,25 +2955,62 @@ This information answers user questions such as:</p>
   <c- p>]</c->
 <c- p>}</c->
 </pre>
+<pre class="highlight" data-vocab="dcat"><c- p>{</c->
+  <c- nd>"@context"</c-><c- p>:</c-> <c- p>{</c->
+    <c- f>"dcat"</c-><c- p>:</c-> <c- u>"http://www.w3.org/ns/dcat#"</c-><c- p>,</c->
+    <c- f>"dct"</c-><c- p>:</c-> <c- u>"http://purl.org/dc/terms/"</c->
+  <c- p>},</c->
+  <c- nd>"@type"</c-><c- p>:</c-> <c- u>"dcat:Dataset"</c-><c- p>,</c->
+  <c- nd>"@id"</c-><c- p>:</c-> <c- u>"http://data.bibliotheken.nl/doc/dataset/rise-alba"</c-><c- p>,</c->
+  <c- f>"dct:title"</c-><c- p>:</c-> <c- p>[</c->
+    <c- p>{</c->
+      <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Alba amicorum van de Koninklijke Bibliotheek"</c-><c- p>,</c->
+      <c- nd>"@language"</c-><c- p>:</c-> <c- u>"nl"</c->
+    <c- p>},</c->
+    <c- p>{</c->
+      <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Alba amicorum of the Dutch Royal Library"</c-><c- p>,</c->
+      <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c->
+    <c- p>}</c->
+  <c- p>]</c->
+<c- p>}</c->
+</pre>
+    </div>
    </div>
    <h4 class="heading settled" data-level="5.2.2" id="dataset-license"><span class="secno">5.2.2. </span><span class="content">License</span><a class="self-link" href="#dataset-license"></a></h4>
    <p>License applicable to the dataset. This license is inherited by all distributions that do not specify their own license. Publishers <em>MUST</em> make known under which <a href="https://www.w3.org/TR/dwbp/#licenses">license</a> the dataset may be used.</p>
    <p>This license specifies the conditions under which the metadata records in the dataset may be accessed and reused. It does not cover the heritage objects (either physical or digital) that the metadata describes. Access conditions for these objects should be specified in their own descriptions within the dataset.</p>
    <p>The DERA requires metadata to be published openly, so this value <em>SHOULD</em> be an open license that allows consumers to reuse the data, such as <code>https://creativecommons.org/publicdomain/zero/1.0/</code> (CC0), <code>https://creativecommons.org/licenses/by/4.0/</code> (CC BY 4.0), or <code>https://creativecommons.org/licenses/by-sa/4.0/</code> (CC BY-SA 4.0). Adopting a non-open license will severely limit reuse and does not comply with the DERA principles.</p>
    <p>The value <em>MUST</em> be the canonical URI of a license. For example, use <code>https://creativecommons.org/publicdomain/zero/1.0/</code> instead of <code>https://creativecommons.org/publicdomain/zero/1.0/deed.nl</code>.</p>
-   <div class="example" id="example-c3bca005">
-    <a class="self-link" href="#example-c3bca005"></a>
-    Specify a license for the dataset:
+   <div class="example" id="example-fc65be85">
+    <a class="self-link" href="#example-fc65be85"></a>
+    Specify a license for the dataset.
+    In DCAT-AP-NL 3.0, the license belongs to each distribution rather than to the dataset:
 
     
-<pre class="highlight"><c- p>{</c->
+    <div class="vocab-tabs">
+<pre class="highlight" data-vocab="schema"><c- p>{</c->
   <c- nd>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org/"</c-><c- p>,</c->
   <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Dataset"</c-><c- p>,</c->
   <c- f>"license"</c-><c- p>:</c-> <c- u>"https://creativecommons.org/publicdomain/zero/1.0/"</c->
 <c- p>}</c->
 </pre>
+<pre class="highlight" data-vocab="dcat"><c- p>{</c->
+  <c- nd>"@context"</c-><c- p>:</c-> <c- p>{</c->
+    <c- f>"dcat"</c-><c- p>:</c-> <c- u>"http://www.w3.org/ns/dcat#"</c-><c- p>,</c->
+    <c- f>"dct"</c-><c- p>:</c-> <c- u>"http://purl.org/dc/terms/"</c->
+  <c- p>},</c->
+  <c- nd>"@type"</c-><c- p>:</c-> <c- u>"dcat:Dataset"</c-><c- p>,</c->
+  <c- f>"dcat:distribution"</c-><c- p>:</c-> <c- p>{</c->
+    <c- nd>"@type"</c-><c- p>:</c-> <c- u>"dcat:Distribution"</c-><c- p>,</c->
+    <c- f>"dct:license"</c-><c- p>:</c-> <c- p>{</c->
+      <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://creativecommons.org/publicdomain/zero/1.0/"</c->
+    <c- p>}</c->
+  <c- p>}</c->
+<c- p>}</c->
+</pre>
+    </div>
    </div>
-   <p><a href="https://docs.geostandaarden.nl/dcat/dcat-ap-nl30/">DCAT-AP-NL 3.0</a> requires the use of Creative Commons licences
+   <p>DCAT-AP-NL 3.0 <a data-link-type="biblio" href="#biblio-dcat-ap-nl" title="DCAT-AP-NL 3.0">[DCAT-AP-NL]</a> requires the use of Creative Commons licences
 and defines a <a href="https://definities.geostandaarden.nl/dcat-ap-nl/id/waardelijst/licenties/">value list</a> for licences.
 The default <em>SHOULD</em> be <a href="https://creativecommons.org/publicdomain/zero/1.0/">CC0</a> (<code>https://creativecommons.org/publicdomain/zero/1.0/</code>).
 The following table lists the recommended canonical license IRIs.
@@ -2861,18 +3038,19 @@ Creative Commons IRIs <em>MUST</em> use <code>https://</code> and end with a tra
       <td><code>https://creativecommons.org/licenses/by-nc-nd/4.0/</code>
    </table>
    <div class="advisement">
-    In v2.0 of this specification, the license <em>MUST</em> be one of the IRIs listed above.
+    In <a href="#v2">v2.0</a> of this specification, the license <em>MUST</em> be one of the IRIs listed above.
 </div>
    <p>See also <a href="https://w3c.github.io/dwbp/usecasesv1.html#R-LicenseAvailable">Data on the Web Best Practices Use Cases &amp; Requirements § R-LicenseAvailable</a>.</p>
    <h4 class="heading settled" data-level="5.2.3" id="dataset-date"><span class="secno">5.2.3. </span><span class="content">Creation, publication and modification dates</span><a class="self-link" href="#dataset-date"></a></h4>
-   <p>Publishers <em>SHOULD</em> make known when the <a data-link-type="dfn" href="#dataset-description" id="ref-for-dataset-description⑨">dataset description</a> was originally created, published and when it was last updated.
+   <p>Publishers <em>SHOULD</em> make known when the <a data-link-type="dfn" href="#dataset-description" id="ref-for-dataset-description①⓪">dataset description</a> was originally created, published and when it was last updated.
 The dates <em>MUST</em> be valid according to <a data-link-type="biblio" href="#biblio-iso8601" title="Representation of dates and times. ISO 8601:2004.">[ISO8601]</a>.</p>
-   <div class="example" id="example-bb0355e3">
-    <a class="self-link" href="#example-bb0355e3"></a>
+   <div class="example" id="example-1b4933b4">
+    <a class="self-link" href="#example-1b4933b4"></a>
     Specify dataset description dates:
 
     
-<pre class="highlight"><c- p>{</c->
+    <div class="vocab-tabs">
+<pre class="highlight" data-vocab="schema"><c- p>{</c->
   <c- nd>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org/"</c-><c- p>,</c->
   <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Dataset"</c-><c- p>,</c->
   <c- f>"dateCreated"</c-><c- p>:</c-> <c- u>"2019-04-14"</c-><c- p>,</c->
@@ -2880,29 +3058,45 @@ The dates <em>MUST</em> be valid according to <a data-link-type="biblio" href="#
   <c- f>"dateModified"</c-><c- p>:</c-> <c- u>"2019-08-15"</c->
 <c- p>}</c->
 </pre>
+<pre class="highlight" data-vocab="dcat"><c- p>{</c->
+  <c- nd>"@context"</c-><c- p>:</c-> <c- p>{</c->
+    <c- f>"dcat"</c-><c- p>:</c-> <c- u>"http://www.w3.org/ns/dcat#"</c-><c- p>,</c->
+    <c- f>"dct"</c-><c- p>:</c-> <c- u>"http://purl.org/dc/terms/"</c-><c- p>,</c->
+    <c- f>"xsd"</c-><c- p>:</c-> <c- u>"http://www.w3.org/2001/XMLSchema#"</c->
+  <c- p>},</c->
+  <c- nd>"@type"</c-><c- p>:</c-> <c- u>"dcat:Dataset"</c-><c- p>,</c->
+  <c- f>"dct:created"</c-><c- p>:</c-> <c- p>{</c-> <c- nd>"@value"</c-><c- p>:</c-> <c- u>"2019-04-14"</c-><c- p>,</c-> <c- nd>"@type"</c-><c- p>:</c-> <c- u>"xsd:date"</c-> <c- p>},</c->
+  <c- f>"dct:issued"</c-><c- p>:</c-> <c- p>{</c-> <c- nd>"@value"</c-><c- p>:</c-> <c- u>"2019-05-21"</c-><c- p>,</c-> <c- nd>"@type"</c-><c- p>:</c-> <c- u>"xsd:date"</c-> <c- p>},</c->
+  <c- f>"dct:modified"</c-><c- p>:</c-> <c- p>{</c-> <c- nd>"@value"</c-><c- p>:</c-> <c- u>"2019-08-15"</c-><c- p>,</c-> <c- nd>"@type"</c-><c- p>:</c-> <c- u>"xsd:date"</c-> <c- p>}</c->
+<c- p>}</c->
+</pre>
+    </div>
    </div>
    <h4 class="heading settled" data-level="5.2.4" id="dataset-versions"><span class="secno">5.2.4. </span><span class="content">Versions</span><a class="self-link" href="#dataset-versions"></a></h4>
-   <p>A <a data-link-type="dfn" href="#dataset-description" id="ref-for-dataset-description①⓪">dataset description</a> may change over time.
+   <p>A <a data-link-type="dfn" href="#dataset-description" id="ref-for-dataset-description①①">dataset description</a> may change over time.
 <a data-link-type="dfn" href="#consumer" id="ref-for-consumer⑤">Consumers</a>, such as researchers, may want to determine which information was valid at a certain moment.</p>
    <blockquote>
     <p>Therefore, publishers <em>SHOULD</em> not only publish the current version of the dataset description,
 but keep historical versions accessible to users.</p>
    </blockquote>
-   <p>It is up to the <a data-link-type="dfn" href="#publisher" id="ref-for-publisher⑤">publisher</a> to determine when to publish new versions.</p>
+   <p>It is up to the <a data-link-type="dfn" href="#publisher" id="ref-for-publisher⑥">publisher</a> to determine when to publish new versions.</p>
    <p>See also <a href="https://w3c.github.io/dwbp/bp.html#dataVersioning">Data on the Web Best Practices § dataVersioning</a>.</p>
    <h4 class="heading settled" data-level="5.2.5" id="more-information"><span class="secno">5.2.5. </span><span class="content">More information</span><a class="self-link" href="#more-information"></a></h4>
    <p>If more information is available, publishers <em>SHOULD</em> add it.</p>
-   <div class="example" id="example-5e680fdd">
-    <a class="self-link" href="#example-5e680fdd"></a>
+   <div class="example" id="example-9cbaf93f">
+    <a class="self-link" href="#example-9cbaf93f"></a>
     More information about the dataset.
 
     
-<pre class="highlight line-numbered"><span class="line-no" data-line="1"></span><span class="line"><c- p>{</c-></span><span class="line-no" data-line="2"></span><span class="line">  <c- nd>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org/"</c-><c- p>,</c-></span><span class="line-no" data-line="3"></span><span class="line">  <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Dataset"</c-><c- p>,</c-></span><span class="line-no" data-line="4"></span><span class="line">  <c- f>"description"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="5"></span><span class="line">    <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Alba amicorum van de Koninklijke Bibliotheek, een dataset gedefinieerd voor het Europeana Rise of Literacy project."</c-><c- p>,</c-></span><span class="line-no" data-line="6"></span><span class="line">    <c- nd>"@language"</c-><c- p>:</c-> <c- u>"nl"</c-></span><span class="line-no" data-line="7"></span><span class="line">  <c- p>},</c-></span><span class="line-no" data-line="8"></span><span class="line">  <c- f>"mainEntityOfPage"</c-><c- p>:</c-> <c- u>"https://www.kb.nl/bronnen-zoekwijzers/kb-collecties/moderne-handschriften-vanaf-ca-1550/alba-amicorum"</c-></span><span class="line-no" data-line="9"></span><span class="line"><c- p>}</c-></span></pre>
+    <div class="vocab-tabs">
+<pre class="highlight line-numbered" data-vocab="schema"><span class="line-no" data-line="1"></span><span class="line"><c- p>{</c-></span><span class="line-no" data-line="2"></span><span class="line">  <c- nd>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org/"</c-><c- p>,</c-></span><span class="line-no" data-line="3"></span><span class="line">  <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Dataset"</c-><c- p>,</c-></span><span class="line-no" data-line="4"></span><span class="line">  <c- f>"description"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="5"></span><span class="line">    <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Alba amicorum van de Koninklijke Bibliotheek, een dataset gedefinieerd voor het Europeana Rise of Literacy project."</c-><c- p>,</c-></span><span class="line-no" data-line="6"></span><span class="line">    <c- nd>"@language"</c-><c- p>:</c-> <c- u>"nl"</c-></span><span class="line-no" data-line="7"></span><span class="line">  <c- p>},</c-></span><span class="line-no" data-line="8"></span><span class="line">  <c- f>"mainEntityOfPage"</c-><c- p>:</c-> <c- u>"https://www.kb.nl/bronnen-zoekwijzers/kb-collecties/moderne-handschriften-vanaf-ca-1550/alba-amicorum"</c-></span><span class="line-no" data-line="9"></span><span class="line"><c- p>}</c-></span></pre>
+<pre class="highlight line-numbered" data-vocab="dcat"><span class="line-no" data-line="1"></span><span class="line"><c- p>{</c-></span><span class="line-no" data-line="2"></span><span class="line">  <c- nd>"@context"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="3"></span><span class="line">    <c- f>"dcat"</c-><c- p>:</c-> <c- u>"http://www.w3.org/ns/dcat#"</c-><c- p>,</c-></span><span class="line-no" data-line="4"></span><span class="line">    <c- f>"dct"</c-><c- p>:</c-> <c- u>"http://purl.org/dc/terms/"</c-></span><span class="line-no" data-line="5"></span><span class="line">  <c- p>},</c-></span><span class="line-no" data-line="6"></span><span class="line">  <c- nd>"@type"</c-><c- p>:</c-> <c- u>"dcat:Dataset"</c-><c- p>,</c-></span><span class="line-no" data-line="7"></span><span class="line">  <c- f>"dct:description"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="8"></span><span class="line">    <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Alba amicorum van de Koninklijke Bibliotheek, een dataset gedefinieerd voor het Europeana Rise of Literacy project."</c-><c- p>,</c-></span><span class="line-no" data-line="9"></span><span class="line">    <c- nd>"@language"</c-><c- p>:</c-> <c- u>"nl"</c-></span><span class="line-no" data-line="10"></span><span class="line">  <c- p>},</c-></span><span class="line-no" data-line="11"></span><span class="line">  <c- f>"dcat:landingPage"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="12"></span><span class="line">    <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://www.kb.nl/bronnen-zoekwijzers/kb-collecties/moderne-handschriften-vanaf-ca-1550/alba-amicorum"</c-></span><span class="line-no" data-line="13"></span><span class="line">  <c- p>}</c-></span><span class="line-no" data-line="14"></span><span class="line"><c- p>}</c-></span></pre>
+    </div>
    </div>
    <p>See <a href="#dataset-attributes">§ 5.6.1 Dataset attributes</a> for an overview of attributes.</p>
    <h3 class="heading settled" data-level="5.3" id="creator-publisher-information"><span class="secno">5.3. </span><span class="content">Creator/publisher information</span><a class="self-link" href="#creator-publisher-information"></a></h3>
    <p>Users want to know where the <a data-link-type="dfn" href="#dataset" id="ref-for-dataset⑨">dataset</a> came from (<a href="https://w3c.github.io/dwbp/bp.html#provenance">provenance</a>).
-The dataset’s creator and/or <a data-link-type="dfn" href="#publisher" id="ref-for-publisher⑥">publisher</a> is either a person or an organization.
+The dataset’s creator and/or <a data-link-type="dfn" href="#publisher" id="ref-for-publisher⑦">publisher</a> is either a person or an organization.
 Providing information about the person/organization behind the dataset answers user questions such as:</p>
    <ul>
     <li data-md>
@@ -2915,12 +3109,13 @@ Providing information about the person/organization behind the dataset answers u
 At the least, the organization’s name and HTTP IRI must be provided.
 The organization’s name <em>SHOULD</em> be a language-tagged string.</p>
    </blockquote>
-   <div class="example" id="example-e40573c3">
-    <a class="self-link" href="#example-e40573c3"></a>
+   <div class="example" id="example-2a614d6a">
+    <a class="self-link" href="#example-2a614d6a"></a>
     An organization description:
 
     
-<pre class="highlight"><c- p>{</c->
+    <div class="vocab-tabs">
+<pre class="highlight" data-vocab="schema"><c- p>{</c->
   <c- nd>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org/"</c-><c- p>,</c->
   <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Organization"</c-><c- p>,</c->
   <c- nd>"@id"</c-><c- p>:</c-> <c- u>"http://www.wikidata.org/entity/Q1526131"</c-><c- p>,</c->
@@ -2934,23 +3129,54 @@ The organization’s name <em>SHOULD</em> be a language-tagged string.</p>
   <c- p>}</c->
 <c- p>}</c->
 </pre>
+<pre class="highlight" data-vocab="dcat"><c- p>{</c->
+  <c- nd>"@context"</c-><c- p>:</c-> <c- p>{</c->
+    <c- f>"foaf"</c-><c- p>:</c-> <c- u>"http://xmlns.com/foaf/0.1/"</c->
+  <c- p>},</c->
+  <c- nd>"@type"</c-><c- p>:</c-> <c- u>"foaf:Organization"</c-><c- p>,</c->
+  <c- nd>"@id"</c-><c- p>:</c-> <c- u>"http://www.wikidata.org/entity/Q1526131"</c-><c- p>,</c->
+  <c- f>"foaf:name"</c-><c- p>:</c-> <c- p>{</c->
+    <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Koninklijke Bibliotheek"</c-><c- p>,</c->
+    <c- nd>"@language"</c-><c- p>:</c-> <c- u>"nl"</c->
+  <c- p>},</c->
+  <c- f>"foaf:nick"</c-><c- p>:</c-> <c- p>{</c->
+    <c- nd>"@value"</c-><c- p>:</c-> <c- u>"KB"</c-><c- p>,</c->
+    <c- nd>"@language"</c-><c- p>:</c-> <c- u>"nl"</c->
+  <c- p>}</c->
+<c- p>}</c->
+</pre>
+    </div>
    </div>
    <p>See <a href="#organization-attributes">§ 5.6.2 Organization attributes</a> for a full overview of organization attributes.</p>
-   <div class="example" id="example-8acb68f9">
-    <a class="self-link" href="#example-8acb68f9"></a>
+   <div class="example" id="example-c9fa7a90">
+    <a class="self-link" href="#example-c9fa7a90"></a>
     A person description:
 
     
-<pre class="highlight"><c- p>{</c->
+    <div class="vocab-tabs">
+<pre class="highlight" data-vocab="schema"><c- p>{</c->
   <c- nd>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org/"</c-><c- p>,</c->
   <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Person"</c-><c- p>,</c->
   <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com"</c-><c- p>,</c->
   <c- f>"name"</c-><c- p>:</c-> <c- p>{</c->
-      <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Jan Jansen"</c-><c- p>,</c->
-      <c- nd>"@language"</c-><c- p>:</c-> <c- u>"nl"</c->
+    <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Jan Jansen"</c-><c- p>,</c->
+    <c- nd>"@language"</c-><c- p>:</c-> <c- u>"nl"</c->
   <c- p>}</c->
 <c- p>}</c->
 </pre>
+<pre class="highlight" data-vocab="dcat"><c- p>{</c->
+  <c- nd>"@context"</c-><c- p>:</c-> <c- p>{</c->
+    <c- f>"foaf"</c-><c- p>:</c-> <c- u>"http://xmlns.com/foaf/0.1/"</c->
+  <c- p>},</c->
+  <c- nd>"@type"</c-><c- p>:</c-> <c- u>"foaf:Person"</c-><c- p>,</c->
+  <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com"</c-><c- p>,</c->
+  <c- f>"foaf:name"</c-><c- p>:</c-> <c- p>{</c->
+    <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Jan Jansen"</c-><c- p>,</c->
+    <c- nd>"@language"</c-><c- p>:</c-> <c- u>"nl"</c->
+  <c- p>}</c->
+<c- p>}</c->
+</pre>
+    </div>
    </div>
    <h4 class="heading settled" data-level="5.3.1" id="organization-iri"><span class="secno">5.3.1. </span><span class="content">Organization IRI</span><a class="self-link" href="#organization-iri"></a></h4>
    <p><a data-link-type="dfn" href="#consumer" id="ref-for-consumer⑥">Consumers</a> use the organization’s IRI to tell which datasets come from the same organization.
@@ -2980,56 +3206,75 @@ Publishers <em>SHOULD</em> use the same IRI in all their dataset descriptions, k
      <p>a URL that identifies one collection website of the organization.</p>
    </ul>
    <p>The validator warns about known software supplier addresses and Wikidata web pages.
-Publishers <em>MAY</em> link to other identifiers of the organization, such as its Wikidata entity, with <code>sameAs</code>.</p>
+Publishers <em>MAY</em> link to other identifiers of the organization, such as its Wikidata entity, with <code>schema:sameAs</code> or <code>owl:sameAs</code>.</p>
    <h4 class="heading settled" data-level="5.3.2" id="isil"><span class="secno">5.3.2. </span><span class="content">ISIL identifier</span><a class="self-link" href="#isil"></a></h4>
    <blockquote>
     <p>Publishers <em>SHOULD</em> include the organization’s <a href="https://www.nationaalarchief.nl/archiveren/kennisbank/isil-codes">ISIL code</a>.</p>
    </blockquote>
-   <div class="example" id="example-e10070f2">
-    <a class="self-link" href="#example-e10070f2"></a>
+   <div class="example" id="example-5e75bee2">
+    <a class="self-link" href="#example-5e75bee2"></a>
     An organization with an ISIL code:
 
     
-<pre class="highlight"><c- p>{</c->
+    <div class="vocab-tabs">
+<pre class="highlight" data-vocab="schema"><c- p>{</c->
   <c- nd>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org/"</c-><c- p>,</c->
   <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Organization"</c-><c- p>,</c->
   <c- nd>"@id"</c-><c- p>:</c-> <c- u>"http://www.wikidata.org/entity/Q1526131"</c-><c- p>,</c->
   <c- f>"identifier"</c-><c- p>:</c-> <c- u>"NL-HaKB"</c->
 <c- p>}</c->
 </pre>
+<pre class="highlight" data-vocab="dcat"><c- p>{</c->
+  <c- nd>"@context"</c-><c- p>:</c-> <c- p>{</c->
+    <c- f>"dct"</c-><c- p>:</c-> <c- u>"http://purl.org/dc/terms/"</c-><c- p>,</c->
+    <c- f>"foaf"</c-><c- p>:</c-> <c- u>"http://xmlns.com/foaf/0.1/"</c->
+  <c- p>},</c->
+  <c- nd>"@type"</c-><c- p>:</c-> <c- u>"foaf:Organization"</c-><c- p>,</c->
+  <c- nd>"@id"</c-><c- p>:</c-> <c- u>"http://www.wikidata.org/entity/Q1526131"</c-><c- p>,</c->
+  <c- f>"dct:identifier"</c-><c- p>:</c-> <c- u>"NL-HaKB"</c->
+<c- p>}</c->
+</pre>
+    </div>
    </div>
    <h4 class="heading settled" data-level="5.3.3" id="contact"><span class="secno">5.3.3. </span><span class="content">Contact information</span><a class="self-link" href="#contact"></a></h4>
    <p>Publishers <em>SHOULD</em> include contact information so <a data-link-type="dfn" href="#consumer" id="ref-for-consumer⑦">consumers</a> can reach them with questions or feedback.
 If contact information is provided, it <em>MUST</em> include a name and e-mail address.
 The e-mail address <em>SHOULD</em> be an organizational or departmental address rather than a personal one for GDPR compliance.</p>
-   <div class="example" id="example-06ee0b62">
-    <a class="self-link" href="#example-06ee0b62"></a>
-    A publisher with contact information.
+   <p>In Schema.org, the contact point belongs to the publisher (<code>schema:contactPoint</code>).
+In DCAT-AP-NL 3.0, it belongs to the dataset or catalog (<code>dcat:contactPoint</code>),
+and the e-mail address is a <code>mailto:</code> IRI.</p>
+   <div class="example" id="example-df02626e">
+    <a class="self-link" href="#example-df02626e"></a>
+    A dataset with contact information.
 
     
-<pre class="highlight line-numbered"><span class="line-no" data-line="1"></span><span class="line"><c- p>{</c-></span><span class="line-no" data-line="2"></span><span class="line">  <c- nd>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org/"</c-><c- p>,</c-></span><span class="line-no" data-line="3"></span><span class="line">  <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Dataset"</c-><c- p>,</c-></span><span class="line-no" data-line="4"></span><span class="line">  <c- f>"publisher"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="5"></span><span class="line">    <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Organization"</c-><c- p>,</c-></span><span class="line-no" data-line="6"></span><span class="line">    <c- nd>"@id"</c-><c- p>:</c-> <c- u>"http://www.wikidata.org/entity/Q1526131"</c-><c- p>,</c-></span><span class="line-no" data-line="7"></span><span class="line">    <c- f>"name"</c-><c- p>:</c-> <c- u>"Koninklijke Bibliotheek"</c-><c- p>,</c-></span><span class="line-no" data-line="8"></span><span class="line">    <c- f>"alternateName"</c-><c- p>:</c-> <c- u>"KB"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="9"></span><span class="highlight-line line">    <c- f>"contactPoint"</c-><c- p>:</c-> <c- p>{</c-></span><span class="highlight-line line-no" data-line="10"></span><span class="highlight-line line">      <c- nd>"@type"</c-><c- p>:</c-> <c- u>"ContactPoint"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="11"></span><span class="highlight-line line">      <c- f>"name"</c-><c- p>:</c-> <c- p>{</c-></span><span class="highlight-line line-no" data-line="12"></span><span class="highlight-line line">        <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Datasets Department"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="13"></span><span class="highlight-line line">        <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c-></span><span class="highlight-line line-no" data-line="14"></span><span class="highlight-line line">      <c- p>},</c-></span><span class="highlight-line line-no" data-line="15"></span><span class="highlight-line line">      <c- f>"email"</c-><c- p>:</c-> <c- u>"datasets@kb.nl"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="16"></span><span class="highlight-line line">      <c- f>"telephone"</c-><c- p>:</c-> <c- u>"+31 6 12345678"</c-></span><span class="highlight-line line-no" data-line="17"></span><span class="highlight-line line">    <c- p>}</c-></span><span class="line-no" data-line="18"></span><span class="line">  <c- p>}</c-></span><span class="line-no" data-line="19"></span><span class="line"><c- p>}</c-></span></pre>
+    <div class="vocab-tabs">
+<pre class="highlight line-numbered" data-vocab="schema"><span class="line-no" data-line="1"></span><span class="line"><c- p>{</c-></span><span class="line-no" data-line="2"></span><span class="line">  <c- nd>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org/"</c-><c- p>,</c-></span><span class="line-no" data-line="3"></span><span class="line">  <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Dataset"</c-><c- p>,</c-></span><span class="line-no" data-line="4"></span><span class="line">  <c- f>"publisher"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="5"></span><span class="line">    <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Organization"</c-><c- p>,</c-></span><span class="line-no" data-line="6"></span><span class="line">    <c- nd>"@id"</c-><c- p>:</c-> <c- u>"http://www.wikidata.org/entity/Q1526131"</c-><c- p>,</c-></span><span class="line-no" data-line="7"></span><span class="line">    <c- f>"name"</c-><c- p>:</c-> <c- u>"Koninklijke Bibliotheek"</c-><c- p>,</c-></span><span class="line-no" data-line="8"></span><span class="line">    <c- f>"alternateName"</c-><c- p>:</c-> <c- u>"KB"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="9"></span><span class="highlight-line line">    <c- f>"contactPoint"</c-><c- p>:</c-> <c- p>{</c-></span><span class="highlight-line line-no" data-line="10"></span><span class="highlight-line line">      <c- nd>"@type"</c-><c- p>:</c-> <c- u>"ContactPoint"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="11"></span><span class="highlight-line line">      <c- f>"name"</c-><c- p>:</c-> <c- p>{</c-></span><span class="highlight-line line-no" data-line="12"></span><span class="highlight-line line">        <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Datasets Department"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="13"></span><span class="highlight-line line">        <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c-></span><span class="highlight-line line-no" data-line="14"></span><span class="highlight-line line">      <c- p>},</c-></span><span class="highlight-line line-no" data-line="15"></span><span class="highlight-line line">      <c- f>"email"</c-><c- p>:</c-> <c- u>"datasets@kb.nl"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="16"></span><span class="highlight-line line">      <c- f>"telephone"</c-><c- p>:</c-> <c- u>"+31 6 12345678"</c-></span><span class="highlight-line line-no" data-line="17"></span><span class="highlight-line line">    <c- p>}</c-></span><span class="line-no" data-line="18"></span><span class="line">  <c- p>}</c-></span><span class="line-no" data-line="19"></span><span class="line"><c- p>}</c-></span></pre>
+<pre class="highlight line-numbered" data-vocab="dcat"><span class="line-no" data-line="1"></span><span class="line"><c- p>{</c-></span><span class="line-no" data-line="2"></span><span class="line">  <c- nd>"@context"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="3"></span><span class="line">    <c- f>"dcat"</c-><c- p>:</c-> <c- u>"http://www.w3.org/ns/dcat#"</c-><c- p>,</c-></span><span class="line-no" data-line="4"></span><span class="line">    <c- f>"vcard"</c-><c- p>:</c-> <c- u>"http://www.w3.org/2006/vcard/ns#"</c-></span><span class="line-no" data-line="5"></span><span class="line">  <c- p>},</c-></span><span class="line-no" data-line="6"></span><span class="line">  <c- nd>"@type"</c-><c- p>:</c-> <c- u>"dcat:Dataset"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="7"></span><span class="highlight-line line">  <c- f>"dcat:contactPoint"</c-><c- p>:</c-> <c- p>{</c-></span><span class="highlight-line line-no" data-line="8"></span><span class="highlight-line line">    <c- nd>"@type"</c-><c- p>:</c-> <c- u>"vcard:Kind"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="9"></span><span class="highlight-line line">    <c- f>"vcard:fn"</c-><c- p>:</c-> <c- p>{</c-></span><span class="highlight-line line-no" data-line="10"></span><span class="highlight-line line">      <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Datasets Department"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="11"></span><span class="highlight-line line">      <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c-></span><span class="highlight-line line-no" data-line="12"></span><span class="highlight-line line">    <c- p>},</c-></span><span class="highlight-line line-no" data-line="13"></span><span class="highlight-line line">    <c- f>"vcard:hasEmail"</c-><c- p>:</c-> <c- p>{</c-></span><span class="highlight-line line-no" data-line="14"></span><span class="highlight-line line">      <c- nd>"@id"</c-><c- p>:</c-> <c- u>"mailto:datasets@kb.nl"</c-></span><span class="highlight-line line-no" data-line="15"></span><span class="highlight-line line">    <c- p>}</c-></span><span class="highlight-line line-no" data-line="16"></span><span class="highlight-line line">  <c- p>}</c-></span><span class="line-no" data-line="17"></span><span class="line"><c- p>}</c-></span></pre>
+    </div>
    </div>
    <h4 class="heading settled" data-level="5.3.4" id="dataset-publisher"><span class="secno">5.3.4. </span><span class="content">Dataset publisher</span><a class="self-link" href="#dataset-publisher"></a></h4>
    <p>The person/organization data is then included as the dataset’s publisher:</p>
-   <div class="example" id="example-ccc4a34d">
-    <a class="self-link" href="#example-ccc4a34d"></a>
+   <div class="example" id="example-fa569b49">
+    <a class="self-link" href="#example-fa569b49"></a>
     A dataset with an organization as publisher.
 
     
-<pre class="highlight"><c- p>{</c->
+    <div class="vocab-tabs">
+<pre class="highlight" data-vocab="schema"><c- p>{</c->
   <c- nd>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org/"</c-><c- p>,</c->
   <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Dataset"</c-><c- p>,</c->
   <c- f>"publisher"</c-><c- p>:</c-> <c- p>{</c->
     <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Organization"</c-><c- p>,</c->
     <c- nd>"@id"</c-><c- p>:</c-> <c- u>"http://www.wikidata.org/entity/Q1526131"</c-><c- p>,</c->
-    <c- f>"identifier"</c-><c- p>:</c-> <c- f>"NL-HaKB"</c->
+    <c- f>"identifier"</c-><c- p>:</c-> <c- u>"NL-HaKB"</c-><c- p>,</c->
     <c- f>"name"</c-><c- p>:</c-> <c- p>{</c->
-        <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Koninklijke Bibliotheek"</c-><c- p>,</c->
-        <c- f>"language"</c-><c- p>:</c-> <c- u>"nl"</c->
+      <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Koninklijke Bibliotheek"</c-><c- p>,</c->
+      <c- nd>"@language"</c-><c- p>:</c-> <c- u>"nl"</c->
     <c- p>},</c->
     <c- f>"alternateName"</c-><c- p>:</c-> <c- p>{</c->
-        <c- nd>"@value"</c-><c- p>:</c-> <c- u>"KB"</c-><c- p>,</c->
-        <c- nd>"@language"</c-><c- p>:</c-> <c- u>"nl"</c->
+      <c- nd>"@value"</c-><c- p>:</c-> <c- u>"KB"</c-><c- p>,</c->
+      <c- nd>"@language"</c-><c- p>:</c-> <c- u>"nl"</c->
     <c- p>},</c->
     <c- f>"contactPoint"</c-><c- p>:</c-> <c- p>{</c->
       <c- nd>"@type"</c-><c- p>:</c-> <c- u>"ContactPoint"</c-><c- p>,</c->
@@ -3043,13 +3288,48 @@ The e-mail address <em>SHOULD</em> be an organizational or departmental address 
   <c- p>}</c->
 <c- p>}</c->
 </pre>
+<pre class="highlight" data-vocab="dcat"><c- p>{</c->
+  <c- nd>"@context"</c-><c- p>:</c-> <c- p>{</c->
+    <c- f>"dcat"</c-><c- p>:</c-> <c- u>"http://www.w3.org/ns/dcat#"</c-><c- p>,</c->
+    <c- f>"dct"</c-><c- p>:</c-> <c- u>"http://purl.org/dc/terms/"</c-><c- p>,</c->
+    <c- f>"foaf"</c-><c- p>:</c-> <c- u>"http://xmlns.com/foaf/0.1/"</c-><c- p>,</c->
+    <c- f>"vcard"</c-><c- p>:</c-> <c- u>"http://www.w3.org/2006/vcard/ns#"</c->
+  <c- p>},</c->
+  <c- nd>"@type"</c-><c- p>:</c-> <c- u>"dcat:Dataset"</c-><c- p>,</c->
+  <c- f>"dct:publisher"</c-><c- p>:</c-> <c- p>{</c->
+    <c- nd>"@type"</c-><c- p>:</c-> <c- u>"foaf:Organization"</c-><c- p>,</c->
+    <c- nd>"@id"</c-><c- p>:</c-> <c- u>"http://www.wikidata.org/entity/Q1526131"</c-><c- p>,</c->
+    <c- f>"dct:identifier"</c-><c- p>:</c-> <c- u>"NL-HaKB"</c-><c- p>,</c->
+    <c- f>"foaf:name"</c-><c- p>:</c-> <c- p>{</c->
+      <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Koninklijke Bibliotheek"</c-><c- p>,</c->
+      <c- nd>"@language"</c-><c- p>:</c-> <c- u>"nl"</c->
+    <c- p>},</c->
+    <c- f>"foaf:nick"</c-><c- p>:</c-> <c- p>{</c->
+      <c- nd>"@value"</c-><c- p>:</c-> <c- u>"KB"</c-><c- p>,</c->
+      <c- nd>"@language"</c-><c- p>:</c-> <c- u>"nl"</c->
+    <c- p>}</c->
+  <c- p>},</c->
+  <c- f>"dcat:contactPoint"</c-><c- p>:</c-> <c- p>{</c->
+    <c- nd>"@type"</c-><c- p>:</c-> <c- u>"vcard:Kind"</c-><c- p>,</c->
+    <c- f>"vcard:fn"</c-><c- p>:</c-> <c- p>{</c->
+      <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Datasets Department"</c-><c- p>,</c->
+      <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c->
+    <c- p>},</c->
+    <c- f>"vcard:hasEmail"</c-><c- p>:</c-> <c- p>{</c->
+      <c- nd>"@id"</c-><c- p>:</c-> <c- u>"mailto:datasets@kb.nl"</c->
+    <c- p>}</c->
+  <c- p>}</c->
+<c- p>}</c->
+</pre>
+    </div>
    </div>
-   <div class="example" id="example-5892567a">
-    <a class="self-link" href="#example-5892567a"></a>
+   <div class="example" id="example-847e75eb">
+    <a class="self-link" href="#example-847e75eb"></a>
     A dataset with a person as publisher.
 
     
-<pre class="highlight"><c- p>{</c->
+    <div class="vocab-tabs">
+<pre class="highlight" data-vocab="schema"><c- p>{</c->
   <c- nd>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org/"</c-><c- p>,</c->
   <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Dataset"</c-><c- p>,</c->
   <c- f>"publisher"</c-><c- p>:</c-> <c- p>{</c->
@@ -3062,6 +3342,24 @@ The e-mail address <em>SHOULD</em> be an organizational or departmental address 
   <c- p>}</c->
 <c- p>}</c->
 </pre>
+<pre class="highlight" data-vocab="dcat"><c- p>{</c->
+  <c- nd>"@context"</c-><c- p>:</c-> <c- p>{</c->
+    <c- f>"dcat"</c-><c- p>:</c-> <c- u>"http://www.w3.org/ns/dcat#"</c-><c- p>,</c->
+    <c- f>"dct"</c-><c- p>:</c-> <c- u>"http://purl.org/dc/terms/"</c-><c- p>,</c->
+    <c- f>"foaf"</c-><c- p>:</c-> <c- u>"http://xmlns.com/foaf/0.1/"</c->
+  <c- p>},</c->
+  <c- nd>"@type"</c-><c- p>:</c-> <c- u>"dcat:Dataset"</c-><c- p>,</c->
+  <c- f>"dct:publisher"</c-><c- p>:</c-> <c- p>{</c->
+    <c- nd>"@type"</c-><c- p>:</c-> <c- u>"foaf:Person"</c-><c- p>,</c->
+    <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com"</c-><c- p>,</c->
+    <c- f>"foaf:name"</c-><c- p>:</c-> <c- p>{</c->
+      <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Jan Jansen"</c-><c- p>,</c->
+      <c- nd>"@language"</c-><c- p>:</c-> <c- u>"nl"</c->
+    <c- p>}</c->
+  <c- p>}</c->
+<c- p>}</c->
+</pre>
+    </div>
    </div>
    <h3 class="heading settled" data-level="5.4" id="dataset-distributions"><span class="secno">5.4. </span><span class="content">Distributions</span><a class="self-link" href="#dataset-distributions"></a></h3>
    <p><a data-link-type="dfn" href="#consumer" id="ref-for-consumer⑧">Consumers</a> that are interested in a dataset should be able to access the data in it.
@@ -3073,32 +3371,54 @@ Each distribution <em>MUST</em> have at least a MIME format and the URL where th
    <p>Examples of distributions are data dumps in one or more RDF serializations, such as JSON-LD and Turtle,
 CSV files, SPARQL endpoints, OAI-PMH endpoints or other <a data-link-type="dfn" href="#web-api" id="ref-for-web-api">web APIs</a>.
 All distributions of a dataset <em>MUST</em> contain broadly the same data.</p>
-   <p><code>schema:contentUrl</code> is the URL of the distribution itself: the data file, or the endpoint of the <a data-link-type="dfn" href="#web-api" id="ref-for-web-api①">web API</a>.
+   <p>The URL of the distribution itself – the data file, or the endpoint of the <a data-link-type="dfn" href="#web-api" id="ref-for-web-api①">web API</a> – goes in
+<code>schema:contentUrl</code> (Schema.org) or <code>dcat:accessURL</code> (DCAT-AP-NL 3.0).
+For a download, DCAT-AP-NL 3.0 also puts the file URL in <code>dcat:downloadURL</code>.
 If a documentation page describes or provides access to the distribution alongside it – for example a SPARQL query editor for the endpoint, or a download landing page –
-add it on the distribution with <code>schema:documentation</code>.</p>
-   <div class="example" id="example-fadf5ed9">
-    <a class="self-link" href="#example-fadf5ed9"></a>
+add it on the distribution with <code>schema:documentation</code> or <code>foaf:page</code>.</p>
+   <p>The format of the distribution goes in <code>schema:encodingFormat</code> or <code>dcat:mediaType</code>.
+A <a data-link-type="dfn" href="#web-api" id="ref-for-web-api②">web API</a> identifies its protocol instead (see <a href="#usage-information">§ 5.4.2 Usage information</a>):
+in Schema.org with <code>schema:usageInfo</code>;
+in DCAT-AP-NL 3.0 with <code>dct:conformsTo</code>, next to a <code>dct:format</code> from the <a href="https://op.europa.eu/en/web/eu-vocabularies/concept-scheme/-/resource?uri=http://publications.europa.eu/resource/authority/file-type">EU file type list</a>.</p>
+   <div class="example" id="example-ace854b0">
+    <a class="self-link" href="#example-ace854b0"></a>
     A minimal definition of a SPARQL endpoint distribution.
     In the Schema.org vocabulary, each type of distribution is called a <a href="https://schema.org/DataDownload">DataDownload</a>,
     even if it is a query endpoint.
 
     
-<pre class="highlight"><c- p>{</c->
+    <div class="vocab-tabs">
+<pre class="highlight" data-vocab="schema"><c- p>{</c->
   <c- nd>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org/"</c-><c- p>,</c->
   <c- nd>"@type"</c-><c- p>:</c-> <c- u>"DataDownload"</c-><c- p>,</c->
   <c- f>"contentUrl"</c-><c- p>:</c-> <c- u>"http://vocab.getty.edu/sparql"</c-><c- p>,</c->
   <c- f>"usageInfo"</c-><c- p>:</c-> <c- u>"https://www.w3.org/TR/sparql11-protocol/"</c->
 <c- p>}</c->
 </pre>
+<pre class="highlight" data-vocab="dcat"><c- p>{</c->
+  <c- nd>"@context"</c-><c- p>:</c-> <c- p>{</c->
+    <c- f>"dcat"</c-><c- p>:</c-> <c- u>"http://www.w3.org/ns/dcat#"</c-><c- p>,</c->
+    <c- f>"dct"</c-><c- p>:</c-> <c- u>"http://purl.org/dc/terms/"</c->
+  <c- p>},</c->
+  <c- nd>"@type"</c-><c- p>:</c-> <c- u>"dcat:Distribution"</c-><c- p>,</c->
+  <c- f>"dcat:accessURL"</c-><c- p>:</c-> <c- p>{</c-> <c- nd>"@id"</c-><c- p>:</c-> <c- u>"http://vocab.getty.edu/sparql"</c-> <c- p>},</c->
+  <c- f>"dct:conformsTo"</c-><c- p>:</c-> <c- p>{</c-> <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://www.w3.org/TR/sparql11-protocol/"</c-> <c- p>},</c->
+  <c- f>"dct:format"</c-><c- p>:</c-> <c- p>{</c-> <c- nd>"@id"</c-><c- p>:</c-> <c- u>"http://publications.europa.eu/resource/authority/file-type/SPARQLQ"</c-> <c- p>},</c->
+  <c- f>"dct:license"</c-><c- p>:</c-> <c- p>{</c-> <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://creativecommons.org/publicdomain/zero/1.0/"</c-> <c- p>}</c->
+<c- p>}</c->
+</pre>
+    </div>
    </div>
-   <p>The distributions are then included under the <code>distribution</code> attribute with the dataset.</p>
-   <div class="example" id="example-5eb27f5c">
-    <a class="self-link" href="#example-5eb27f5c"></a>
+   <p>The distributions are then included under the <code>schema:distribution</code> or <code>dcat:distribution</code> attribute with the dataset.</p>
+   <div class="example" id="example-629bbea4">
+    <a class="self-link" href="#example-629bbea4"></a>
     A dataset with one SPARQL and two download distributions.
-    The SPARQL endpoint separates the endpoint URL (<code>contentUrl</code>) from its query UI (<code>documentation</code>).
+    The SPARQL endpoint separates the endpoint URL (<code>schema:contentUrl</code> or <code>dcat:accessURL</code>)
+    from its query UI (<code>schema:documentation</code> or <code>foaf:page</code>).
 
     
-<pre class="highlight"><c- p>{</c->
+    <div class="vocab-tabs">
+<pre class="highlight" data-vocab="schema"><c- p>{</c->
   <c- nd>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org/"</c-><c- p>,</c->
   <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Dataset"</c-><c- p>,</c->
   <c- f>"distribution"</c-><c- p>:</c-> <c- p>[</c->
@@ -3121,36 +3441,87 @@ add it on the distribution with <code>schema:documentation</code>.</p>
   <c- p>]</c->
 <c- p>}</c->
 </pre>
+<pre class="highlight" data-vocab="dcat"><c- p>{</c->
+  <c- nd>"@context"</c-><c- p>:</c-> <c- p>{</c->
+    <c- f>"dcat"</c-><c- p>:</c-> <c- u>"http://www.w3.org/ns/dcat#"</c-><c- p>,</c->
+    <c- f>"dct"</c-><c- p>:</c-> <c- u>"http://purl.org/dc/terms/"</c-><c- p>,</c->
+    <c- f>"foaf"</c-><c- p>:</c-> <c- u>"http://xmlns.com/foaf/0.1/"</c->
+  <c- p>},</c->
+  <c- nd>"@type"</c-><c- p>:</c-> <c- u>"dcat:Dataset"</c-><c- p>,</c->
+  <c- f>"dcat:distribution"</c-><c- p>:</c-> <c- p>[</c->
+    <c- p>{</c->
+      <c- nd>"@type"</c-><c- p>:</c-> <c- u>"dcat:Distribution"</c-><c- p>,</c->
+      <c- f>"dcat:accessURL"</c-><c- p>:</c-> <c- p>{</c-> <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://service.archief.nl/sparql"</c-> <c- p>},</c->
+      <c- f>"foaf:page"</c-><c- p>:</c-> <c- p>{</c-> <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://www.nationaalarchief.nl/onderzoeken/sparql"</c-> <c- p>},</c->
+      <c- f>"dct:conformsTo"</c-><c- p>:</c-> <c- p>{</c-> <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://www.w3.org/TR/sparql11-protocol/"</c-> <c- p>},</c->
+      <c- f>"dct:format"</c-><c- p>:</c-> <c- p>{</c-> <c- nd>"@id"</c-><c- p>:</c-> <c- u>"http://publications.europa.eu/resource/authority/file-type/SPARQLQ"</c-> <c- p>},</c->
+      <c- f>"dct:license"</c-><c- p>:</c-> <c- p>{</c-> <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://creativecommons.org/publicdomain/zero/1.0/"</c-> <c- p>}</c->
+    <c- p>},</c->
+    <c- p>{</c->
+      <c- nd>"@type"</c-><c- p>:</c-> <c- u>"dcat:Distribution"</c-><c- p>,</c->
+      <c- f>"dcat:mediaType"</c-><c- p>:</c-> <c- p>{</c-> <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://www.iana.org/assignments/media-types/application/ld+json"</c-> <c- p>},</c->
+      <c- f>"dcat:accessURL"</c-><c- p>:</c-> <c- p>{</c-> <c- nd>"@id"</c-><c- p>:</c-> <c- u>"http://data.bibliotheken.nl/id/dataset/rise-alba.json"</c-> <c- p>},</c->
+      <c- f>"dcat:downloadURL"</c-><c- p>:</c-> <c- p>{</c-> <c- nd>"@id"</c-><c- p>:</c-> <c- u>"http://data.bibliotheken.nl/id/dataset/rise-alba.json"</c-> <c- p>},</c->
+      <c- f>"dct:license"</c-><c- p>:</c-> <c- p>{</c-> <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://creativecommons.org/publicdomain/zero/1.0/"</c-> <c- p>}</c->
+    <c- p>},</c->
+    <c- p>{</c->
+      <c- nd>"@type"</c-><c- p>:</c-> <c- u>"dcat:Distribution"</c-><c- p>,</c->
+      <c- f>"dcat:mediaType"</c-><c- p>:</c-> <c- p>{</c-> <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://www.iana.org/assignments/media-types/text/csv"</c-> <c- p>},</c->
+      <c- f>"dcat:compressFormat"</c-><c- p>:</c-> <c- p>{</c-> <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://www.iana.org/assignments/media-types/application/gzip"</c-> <c- p>},</c->
+      <c- f>"dcat:accessURL"</c-><c- p>:</c-> <c- p>{</c-> <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com/data.csv.gz"</c-> <c- p>},</c->
+      <c- f>"dcat:downloadURL"</c-><c- p>:</c-> <c- p>{</c-> <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com/data.csv.gz"</c-> <c- p>},</c->
+      <c- f>"dct:license"</c-><c- p>:</c-> <c- p>{</c-> <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://creativecommons.org/publicdomain/zero/1.0/"</c-> <c- p>}</c->
+    <c- p>}</c->
+  <c- p>]</c->
+<c- p>}</c->
+</pre>
+    </div>
    </div>
-   <p>See <a href="#distribution-attributes">§ 5.6.3 Distribution attributes</a> for a full overview.</p>
+   <p>See <a href="#distribution-attributes">§ 5.6.4 Distribution attributes</a> for a full overview.</p>
    <div class="advisement">
-    In v2.0 of this specification, <code>contentUrl</code> <em>MUST</em> be an IRI.
+    In <a href="#v2">v2.0</a> of this specification, <code>schema:contentUrl</code> <em>MUST</em> be an IRI.
     String and <code>xsd:anyURI</code> literals will no longer be accepted.
+    Versions up to 1.15.1 of this specification said the reverse here – that <code>contentUrl</code> must become an <code>xsd:anyURI</code> literal – which was a mistake.
     A <code>contentUrl</code> written as a JSON string in JSON-LD with the Schema.org context, as in the example above, is read as an IRI and stays valid.
+    In DCAT-AP-NL 3.0, write <code>dcat:accessURL</code> and <code>dcat:downloadURL</code> as IRIs, with <code>@id</code> in JSON-LD.
 </div>
    <h4 class="heading settled" data-level="5.4.1" id="distribution-date"><span class="secno">5.4.1. </span><span class="content">Creation and modification dates</span><a class="self-link" href="#distribution-date"></a></h4>
-   <p>Publishers <em>SHOULD</em> make known when the <a data-link-type="dfn" href="#distribution" id="ref-for-distribution③">distribution</a> was originally created and when it was last updated,
+   <p>Publishers <em>SHOULD</em> make known when the <a data-link-type="dfn" href="#distribution" id="ref-for-distribution③">distribution</a> was first published and when it was last updated,
 so <a data-link-type="dfn" href="#consumer" id="ref-for-consumer⑨">consumers</a> can efficiently stay up-to-date with the latest changes.
 Please note that this is different from the <a href="#dataset-date">dataset description’s dates</a>.
 Datetimes (<code>2019-08-15T08:05:00Z</code>) are preferred because they offer greater precision,
 but simple dates (<code>2019-04-14</code>) are also allowed.</p>
-   <div class="example" id="example-bec7408c">
-    <a class="self-link" href="#example-bec7408c"></a>
+   <div class="example" id="example-274a6463">
+    <a class="self-link" href="#example-274a6463"></a>
     Specify distribution dates:
 
     
-<pre class="highlight"><c- p>{</c->
+    <div class="vocab-tabs">
+<pre class="highlight" data-vocab="schema"><c- p>{</c->
   <c- nd>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org/"</c-><c- p>,</c->
-  <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Distribution"</c-><c- p>,</c->
-  <c- f>"dateCreated"</c-><c- p>:</c-> <c- u>"2019-04-14"</c-><c- p>,</c->
+  <c- nd>"@type"</c-><c- p>:</c-> <c- u>"DataDownload"</c-><c- p>,</c->
+  <c- f>"datePublished"</c-><c- p>:</c-> <c- u>"2019-04-14"</c-><c- p>,</c->
   <c- f>"dateModified"</c-><c- p>:</c-> <c- u>"2019-08-15T08:05:00"</c->
 <c- p>}</c->
 </pre>
+<pre class="highlight" data-vocab="dcat"><c- p>{</c->
+  <c- nd>"@context"</c-><c- p>:</c-> <c- p>{</c->
+    <c- f>"dcat"</c-><c- p>:</c-> <c- u>"http://www.w3.org/ns/dcat#"</c-><c- p>,</c->
+    <c- f>"dct"</c-><c- p>:</c-> <c- u>"http://purl.org/dc/terms/"</c-><c- p>,</c->
+    <c- f>"xsd"</c-><c- p>:</c-> <c- u>"http://www.w3.org/2001/XMLSchema#"</c->
+  <c- p>},</c->
+  <c- nd>"@type"</c-><c- p>:</c-> <c- u>"dcat:Distribution"</c-><c- p>,</c->
+  <c- f>"dct:issued"</c-><c- p>:</c-> <c- p>{</c-> <c- nd>"@value"</c-><c- p>:</c-> <c- u>"2019-04-14"</c-><c- p>,</c-> <c- nd>"@type"</c-><c- p>:</c-> <c- u>"xsd:date"</c-> <c- p>},</c->
+  <c- f>"dct:modified"</c-><c- p>:</c-> <c- p>{</c-> <c- nd>"@value"</c-><c- p>:</c-> <c- u>"2019-08-15T08:05:00"</c-><c- p>,</c-> <c- nd>"@type"</c-><c- p>:</c-> <c- u>"xsd:dateTime"</c-> <c- p>}</c->
+<c- p>}</c->
+</pre>
+    </div>
    </div>
    <h4 class="heading settled" data-level="5.4.2" id="usage-information"><span class="secno">5.4.2. </span><span class="content">Usage information</span><a class="self-link" href="#usage-information"></a></h4>
-   <p>Each distribution <em>SHOULD</em> include one or more <a href="https://schema.org/usageInfo">schema:usageInfo</a> IRIs
+   <p>Each distribution <em>SHOULD</em> include one or more <a href="https://schema.org/usageInfo">schema:usageInfo</a> (Schema.org)
+or <a href="http://purl.org/dc/terms/conformsTo">dct:conformsTo</a> (DCAT-AP-NL 3.0) IRIs
 that describe what the distribution provides.</p>
-   <p>For <a data-link-type="dfn" href="#web-api" id="ref-for-web-api②">web APIs</a>, this <em>MUST</em> be the IRI of the protocol specification (such as SPARQL or OAI-PMH).
+   <p>For <a data-link-type="dfn" href="#web-api" id="ref-for-web-api③">web APIs</a>, this <em>MUST</em> be the IRI of the protocol specification (such as SPARQL or OAI-PMH).
 The Dataset Register uses this IRI to identify the distribution as an API.</p>
    <p>For downloads as well as APIs, this <em>MUST</em> be the IRI of the application profile(s) that the data conforms to.</p>
    <table>
@@ -3218,12 +3589,13 @@ The Dataset Register uses this IRI to identify the distribution as an API.</p>
       <td>API
       <td><code>https://www.ogc.org/standards/wms/</code>
    </table>
-   <div class="example" id="example-50d92e51">
-    <a class="self-link" href="#example-50d92e51"></a>
+   <div class="example" id="example-4d82ac1e">
+    <a class="self-link" href="#example-4d82ac1e"></a>
     A download distribution that conforms to <a data-link-type="biblio" href="#biblio-schema-ap-nde" title="Schema.org Application Profile for Datasets">[SCHEMA-AP-NDE]</a>:
 
     
-<pre class="highlight"><c- p>{</c->
+    <div class="vocab-tabs">
+<pre class="highlight" data-vocab="schema"><c- p>{</c->
   <c- nd>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org/"</c-><c- p>,</c->
   <c- nd>"@type"</c-><c- p>:</c-> <c- u>"DataDownload"</c-><c- p>,</c->
   <c- f>"encodingFormat"</c-><c- p>:</c-> <c- u>"application/ld+json"</c-><c- p>,</c->
@@ -3231,33 +3603,63 @@ The Dataset Register uses this IRI to identify the distribution as an API.</p>
   <c- f>"usageInfo"</c-><c- p>:</c-> <c- u>"https://docs.nde.nl/schema-profile/"</c->
 <c- p>}</c->
 </pre>
+<pre class="highlight" data-vocab="dcat"><c- p>{</c->
+  <c- nd>"@context"</c-><c- p>:</c-> <c- p>{</c->
+    <c- f>"dcat"</c-><c- p>:</c-> <c- u>"http://www.w3.org/ns/dcat#"</c-><c- p>,</c->
+    <c- f>"dct"</c-><c- p>:</c-> <c- u>"http://purl.org/dc/terms/"</c->
+  <c- p>},</c->
+  <c- nd>"@type"</c-><c- p>:</c-> <c- u>"dcat:Distribution"</c-><c- p>,</c->
+  <c- f>"dcat:mediaType"</c-><c- p>:</c-> <c- p>{</c-> <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://www.iana.org/assignments/media-types/application/ld+json"</c-> <c- p>},</c->
+  <c- f>"dcat:accessURL"</c-><c- p>:</c-> <c- p>{</c-> <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com/data.jsonld"</c-> <c- p>},</c->
+  <c- f>"dcat:downloadURL"</c-><c- p>:</c-> <c- p>{</c-> <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com/data.jsonld"</c-> <c- p>},</c->
+  <c- f>"dct:conformsTo"</c-><c- p>:</c-> <c- p>{</c-> <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://docs.nde.nl/schema-profile/"</c-> <c- p>}</c->
+<c- p>}</c->
+</pre>
+    </div>
    </div>
-   <div class="example" id="example-6ead3d38">
-    <a class="self-link" href="#example-6ead3d38"></a>
+   <div class="example" id="example-46d8eff3">
+    <a class="self-link" href="#example-46d8eff3"></a>
     A SPARQL distribution that returns RDF conforming to <a data-link-type="biblio" href="#biblio-schema-ap-nde" title="Schema.org Application Profile for Datasets">[SCHEMA-AP-NDE]</a>:
 
     
-<pre class="highlight"><c- p>{</c->
+    <div class="vocab-tabs">
+<pre class="highlight" data-vocab="schema"><c- p>{</c->
   <c- nd>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org/"</c-><c- p>,</c->
   <c- nd>"@type"</c-><c- p>:</c-> <c- u>"DataDownload"</c-><c- p>,</c->
   <c- f>"contentUrl"</c-><c- p>:</c-> <c- u>"https://example.com/sparql"</c-><c- p>,</c->
   <c- f>"usageInfo"</c-><c- p>:</c-> <c- p>[</c-> <c- u>"https://www.w3.org/TR/sparql11-protocol/"</c-><c- p>,</c-> <c- u>"https://docs.nde.nl/schema-profile/"</c-> <c- p>]</c->
 <c- p>}</c->
 </pre>
+<pre class="highlight" data-vocab="dcat"><c- p>{</c->
+  <c- nd>"@context"</c-><c- p>:</c-> <c- p>{</c->
+    <c- f>"dcat"</c-><c- p>:</c-> <c- u>"http://www.w3.org/ns/dcat#"</c-><c- p>,</c->
+    <c- f>"dct"</c-><c- p>:</c-> <c- u>"http://purl.org/dc/terms/"</c->
+  <c- p>},</c->
+  <c- nd>"@type"</c-><c- p>:</c-> <c- u>"dcat:Distribution"</c-><c- p>,</c->
+  <c- f>"dcat:accessURL"</c-><c- p>:</c-> <c- p>{</c-> <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com/sparql"</c-> <c- p>},</c->
+  <c- f>"dct:format"</c-><c- p>:</c-> <c- p>{</c-> <c- nd>"@id"</c-><c- p>:</c-> <c- u>"http://publications.europa.eu/resource/authority/file-type/SPARQLQ"</c-> <c- p>},</c->
+  <c- f>"dct:conformsTo"</c-><c- p>:</c-> <c- p>[</c->
+    <c- p>{</c-> <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://www.w3.org/TR/sparql11-protocol/"</c-> <c- p>},</c->
+    <c- p>{</c-> <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://docs.nde.nl/schema-profile/"</c-> <c- p>}</c->
+  <c- p>]</c->
+<c- p>}</c->
+</pre>
+    </div>
    </div>
    <p>See also <a href="https://w3c.github.io/dwbp/usecasesv1.html#R-APIDocumented">Data on the Web Best Practices Use Cases &amp; Requirements § R-APIDocumented</a>.</p>
    <h3 class="heading settled" data-level="5.5" id="data-catalog-info"><span class="secno">5.5. </span><span class="content">Data catalog</span><a class="self-link" href="#data-catalog-info"></a></h3>
-   <p>A <a data-link-type="dfn" href="#data-catalog" id="ref-for-data-catalog">data catalog</a> provides <a data-link-type="dfn" href="#consumer" id="ref-for-consumer①⓪">consumers</a> with a complete overview of available <a data-link-type="dfn" href="#dataset-description" id="ref-for-dataset-description①①">dataset descriptions</a>,
+   <p>A <a data-link-type="dfn" href="#data-catalog" id="ref-for-data-catalog">data catalog</a> provides <a data-link-type="dfn" href="#consumer" id="ref-for-consumer①⓪">consumers</a> with a complete overview of available <a data-link-type="dfn" href="#dataset-description" id="ref-for-dataset-description①②">dataset descriptions</a>,
 which improves discoverability.</p>
    <blockquote>
     <p>Therefore, publishers <em>SHOULD</em> provide a catalog.</p>
    </blockquote>
-   <div class="example" id="example-08400791">
-    <a class="self-link" href="#example-08400791"></a>
+   <div class="example" id="example-de93eba5">
+    <a class="self-link" href="#example-de93eba5"></a>
     A catalog of available datasets:
 
     
-<pre class="highlight"><c- p>{</c->
+    <div class="vocab-tabs">
+<pre class="highlight" data-vocab="schema"><c- p>{</c->
   <c- nd>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org/"</c-><c- p>,</c->
   <c- nd>"@type"</c-><c- p>:</c-> <c- u>"DataCatalog"</c-><c- p>,</c->
   <c- nd>"@id"</c-><c- p>:</c-> <c- u>"http://data.bibliotheken.nl/id/datacatalog"</c-><c- p>,</c->
@@ -3289,422 +3691,872 @@ which improves discoverability.</p>
   <c- p>]</c->
 <c- p>}</c->
 </pre>
+<pre class="highlight" data-vocab="dcat"><c- p>{</c->
+  <c- nd>"@context"</c-><c- p>:</c-> <c- p>{</c->
+    <c- f>"dcat"</c-><c- p>:</c-> <c- u>"http://www.w3.org/ns/dcat#"</c-><c- p>,</c->
+    <c- f>"dct"</c-><c- p>:</c-> <c- u>"http://purl.org/dc/terms/"</c-><c- p>,</c->
+    <c- f>"foaf"</c-><c- p>:</c-> <c- u>"http://xmlns.com/foaf/0.1/"</c-><c- p>,</c->
+    <c- f>"vcard"</c-><c- p>:</c-> <c- u>"http://www.w3.org/2006/vcard/ns#"</c->
+  <c- p>},</c->
+  <c- nd>"@type"</c-><c- p>:</c-> <c- u>"dcat:Catalog"</c-><c- p>,</c->
+  <c- nd>"@id"</c-><c- p>:</c-> <c- u>"http://data.bibliotheken.nl/id/datacatalog"</c-><c- p>,</c->
+  <c- f>"dct:title"</c-><c- p>:</c-> <c- p>{</c->
+    <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Linked Data van de KB"</c-><c- p>,</c->
+    <c- nd>"@language"</c-><c- p>:</c-> <c- u>"nl"</c->
+  <c- p>},</c->
+  <c- f>"dct:description"</c-><c- p>:</c-> <c- p>{</c->
+    <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Alle linked data zoals beschikbaar gesteld door de Koninklijke Bibliotheek."</c-><c- p>,</c->
+    <c- nd>"@language"</c-><c- p>:</c-> <c- u>"nl"</c->
+  <c- p>},</c->
+  <c- f>"dct:publisher"</c-><c- p>:</c-> <c- p>{</c->
+    <c- nd>"@type"</c-><c- p>:</c-> <c- u>"foaf:Organization"</c-><c- p>,</c->
+    <c- nd>"@id"</c-><c- p>:</c-> <c- u>"http://www.wikidata.org/entity/Q1526131"</c-><c- p>,</c->
+    <c- f>"foaf:name"</c-><c- p>:</c-> <c- p>{</c->
+      <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Koninklijke Bibliotheek"</c-><c- p>,</c->
+      <c- nd>"@language"</c-><c- p>:</c-> <c- u>"nl"</c->
+    <c- p>}</c->
+  <c- p>},</c->
+  <c- f>"dcat:contactPoint"</c-><c- p>:</c-> <c- p>{</c->
+    <c- nd>"@type"</c-><c- p>:</c-> <c- u>"vcard:Kind"</c-><c- p>,</c->
+    <c- f>"vcard:fn"</c-><c- p>:</c-> <c- p>{</c->
+      <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Datasets Department"</c-><c- p>,</c->
+      <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c->
+    <c- p>},</c->
+    <c- f>"vcard:hasEmail"</c-><c- p>:</c-> <c- p>{</c-> <c- nd>"@id"</c-><c- p>:</c-> <c- u>"mailto:datasets@kb.nl"</c-> <c- p>}</c->
+  <c- p>},</c->
+  <c- f>"dcat:dataset"</c-><c- p>:</c-> <c- p>[</c->
+    <c- p>{</c->
+      <c- nd>"@type"</c-><c- p>:</c-> <c- u>"dcat:Dataset"</c-><c- p>,</c->
+      <c- nd>"@id"</c-><c- p>:</c-> <c- u>"http://data.bibliotheken.nl/id/dataset/rise-alba"</c-><c- p>,</c->
+      ...
+    <c- p>},</c->
+    <c- p>{</c->
+      ...
+    <c- p>}</c->
+  <c- p>]</c->
+<c- p>}</c->
+</pre>
+    </div>
    </div>
-   <p>See <a href="#datacatalog-attributes">§ 5.6.4 DataCatalog attributes</a> for a full overview of catalog attributes.</p>
+   <p>See <a href="#datacatalog-attributes">§ 5.6.5 DataCatalog attributes</a> for a full overview of catalog attributes.</p>
    <h4 class="heading settled" data-level="5.5.1" id="data-catalog-pagination"><span class="secno">5.5.1. </span><span class="content">Pagination</span><a class="self-link" href="#data-catalog-pagination"></a></h4>
    <p>Large <a data-link-type="dfn" href="#data-catalog" id="ref-for-data-catalog①">data catalogs</a> may be harder to process for clients.</p>
    <blockquote>
-    <p>Therefore, <a data-link-type="dfn" href="#publisher" id="ref-for-publisher⑦">publishers</a> <em>SHOULD</em> split large data catalogs in parts of at most a 1000 datasets, using the
+    <p>Therefore, <a data-link-type="dfn" href="#publisher" id="ref-for-publisher⑧">publishers</a> <em>SHOULD</em> split large data catalogs in parts of at most a 1000 datasets, using the
 <a href="https://www.markus-lanthaler.com/hydra/spec/latest/core/#example-20-a-hydra-partialcollectionview-splits-a-collection-into-multiple-views">Hydra Core Vocabulary</a>.</p>
    </blockquote>
    <p>Each page <em>MUST</em> be a complete RDF document in itself.
 Related resources, such as the publishing organization, must be described on each page,
 even if that resource is the same on all pages.</p>
-   <div class="example" id="example-b489c4c9">
-    <a class="self-link" href="#example-b489c4c9"></a>
+   <div class="example" id="example-4395a092">
+    <a class="self-link" href="#example-4395a092"></a>
     A paginated catalog:
 
     
-<pre class="highlight line-numbered"><span class="line-no" data-line="1"></span><span class="line"><c- p>{</c-></span><span class="line-no" data-line="2"></span><span class="line">  <c- nd>"@context"</c-><c- p>:</c-> <c- p>[</c-></span><span class="line-no" data-line="3"></span><span class="line">    <c- u>"https://schema.org/"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="4"></span><span class="highlight-line line">    <c- p>{</c-><c- f>"hydra"</c-><c- p>:</c-> <c- u>"http://www.w3.org/ns/hydra/core#"</c-><c- p>}</c-></span><span class="line-no" data-line="5"></span><span class="line">  <c- p>],</c-></span><span class="highlight-line line-no" data-line="6"></span><span class="highlight-line line">  <c- nd>"@type"</c-><c- p>:</c-> <c- p>[</c-><c- u>"DataCatalog"</c-><c- p>,</c-> <c- u>"hydra:Collection"</c-><c- p>],</c-></span><span class="line-no" data-line="7"></span><span class="line">  <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com/catalog"</c-><c- p>,</c-></span><span class="line-no" data-line="8"></span><span class="line">  <c- f>"name"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="9"></span><span class="line">    <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Paginated catalog of datasets"</c-><c- p>,</c-></span><span class="line-no" data-line="10"></span><span class="line">    <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c-></span><span class="line-no" data-line="11"></span><span class="line">  <c- p>},</c-></span><span class="line-no" data-line="12"></span><span class="line">  <c- f>"description"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="13"></span><span class="line">    <c- nd>"@value"</c-><c- p>:</c-> <c- u>"This catalog is paginated using the Hydra Core Vocabulary."</c-><c- p>,</c-></span><span class="line-no" data-line="14"></span><span class="line">    <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c-></span><span class="line-no" data-line="15"></span><span class="line">  <c- p>},</c-></span><span class="highlight-line line-no" data-line="16"></span><span class="highlight-line line">  <c- f>"publisher"</c-><c- p>:</c-> <c- p>{</c-></span><span class="highlight-line line-no" data-line="17"></span><span class="highlight-line line">    <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Organization"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="18"></span><span class="highlight-line line">    <c- nd>"@id"</c-><c- p>:</c-> <c- u>"/publisher"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="19"></span><span class="highlight-line line">    <c- f>"name"</c-><c- p>:</c-> <c- p>{</c-></span><span class="highlight-line line-no" data-line="20"></span><span class="highlight-line line">      <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Example Publisher"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="21"></span><span class="highlight-line line">      <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c-></span><span class="highlight-line line-no" data-line="22"></span><span class="highlight-line line">    <c- p>}</c-></span><span class="highlight-line line-no" data-line="23"></span><span class="highlight-line line">  <c- p>},</c-></span><span class="line-no" data-line="24"></span><span class="line">  <c- f>"hydra:view"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="25"></span><span class="line">    <c- nd>"@id"</c-><c- p>:</c-> <c- u>"/catalog?page=1"</c-><c- p>,</c-></span><span class="line-no" data-line="26"></span><span class="line">    <c- nd>"@type"</c-><c- p>:</c-> <c- u>"hydra:PartialCollectionView"</c-><c- p>,</c-></span><span class="line-no" data-line="27"></span><span class="line">    <c- f>"hydra:first"</c-><c- p>:</c-> <c- p>{</c-><c- nd>"@id"</c-><c- p>:</c-> <c- u>"/catalog?page=1"</c-><c- p>},</c-></span><span class="line-no" data-line="28"></span><span class="line">    <c- f>"hydra:next"</c-><c- p>:</c-> <c- p>{</c-><c- nd>"@id"</c-><c- p>:</c-> <c- u>"/catalog?page=2"</c-><c- p>},</c-></span><span class="line-no" data-line="29"></span><span class="line">    <c- f>"hydra:last"</c-><c- p>:</c-> <c- p>{</c-><c- nd>"@id"</c-><c- p>:</c-> <c- u>"/catalog?page=498"</c-><c- p>}</c-></span><span class="line-no" data-line="30"></span><span class="line">  <c- p>},</c-></span><span class="line-no" data-line="31"></span><span class="line">  <c- f>"dataset"</c-><c- p>:</c-> <c- p>[</c-></span><span class="line-no" data-line="32"></span><span class="line">    <c- p>{</c-></span><span class="line-no" data-line="33"></span><span class="line">      <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Dataset"</c-><c- p>,</c-></span><span class="line-no" data-line="34"></span><span class="line">      <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com/dataset/1"</c-><c- p>,</c-></span><span class="line-no" data-line="35"></span><span class="line">      ...</span><span class="line-no" data-line="36"></span><span class="line">    <c- p>},</c-></span><span class="line-no" data-line="37"></span><span class="line">    <c- p>{</c-></span><span class="line-no" data-line="38"></span><span class="line">      <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Dataset"</c-><c- p>,</c-></span><span class="line-no" data-line="39"></span><span class="line">      <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com/dataset/2"</c-><c- p>,</c-></span><span class="line-no" data-line="40"></span><span class="line">      ...</span><span class="line-no" data-line="41"></span><span class="line">    <c- p>},</c-></span><span class="line-no" data-line="42"></span><span class="line">    ...</span><span class="line-no" data-line="43"></span><span class="line">  <c- p>]</c-></span><span class="line-no" data-line="44"></span><span class="line"><c- p>}</c-></span></pre>
+    <div class="vocab-tabs">
+<pre class="highlight line-numbered" data-vocab="schema"><span class="line-no" data-line="1"></span><span class="line"><c- p>{</c-></span><span class="line-no" data-line="2"></span><span class="line">  <c- nd>"@context"</c-><c- p>:</c-> <c- p>[</c-></span><span class="line-no" data-line="3"></span><span class="line">    <c- u>"https://schema.org/"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="4"></span><span class="highlight-line line">    <c- p>{</c-><c- f>"hydra"</c-><c- p>:</c-> <c- u>"http://www.w3.org/ns/hydra/core#"</c-><c- p>}</c-></span><span class="line-no" data-line="5"></span><span class="line">  <c- p>],</c-></span><span class="highlight-line line-no" data-line="6"></span><span class="highlight-line line">  <c- nd>"@type"</c-><c- p>:</c-> <c- p>[</c-><c- u>"DataCatalog"</c-><c- p>,</c-> <c- u>"hydra:Collection"</c-><c- p>],</c-></span><span class="line-no" data-line="7"></span><span class="line">  <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com/catalog"</c-><c- p>,</c-></span><span class="line-no" data-line="8"></span><span class="line">  <c- f>"name"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="9"></span><span class="line">    <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Paginated catalog of datasets"</c-><c- p>,</c-></span><span class="line-no" data-line="10"></span><span class="line">    <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c-></span><span class="line-no" data-line="11"></span><span class="line">  <c- p>},</c-></span><span class="line-no" data-line="12"></span><span class="line">  <c- f>"description"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="13"></span><span class="line">    <c- nd>"@value"</c-><c- p>:</c-> <c- u>"This catalog is paginated using the Hydra Core Vocabulary."</c-><c- p>,</c-></span><span class="line-no" data-line="14"></span><span class="line">    <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c-></span><span class="line-no" data-line="15"></span><span class="line">  <c- p>},</c-></span><span class="line-no" data-line="16"></span><span class="line">  <c- f>"publisher"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="17"></span><span class="line">    <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Organization"</c-><c- p>,</c-></span><span class="line-no" data-line="18"></span><span class="line">    <c- nd>"@id"</c-><c- p>:</c-> <c- u>"/publisher"</c-><c- p>,</c-></span><span class="line-no" data-line="19"></span><span class="line">    <c- f>"name"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="20"></span><span class="line">      <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Example Publisher"</c-><c- p>,</c-></span><span class="line-no" data-line="21"></span><span class="line">      <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c-></span><span class="line-no" data-line="22"></span><span class="line">    <c- p>}</c-></span><span class="line-no" data-line="23"></span><span class="line">  <c- p>},</c-></span><span class="highlight-line line-no" data-line="24"></span><span class="highlight-line line">  <c- f>"hydra:view"</c-><c- p>:</c-> <c- p>{</c-></span><span class="highlight-line line-no" data-line="25"></span><span class="highlight-line line">    <c- nd>"@id"</c-><c- p>:</c-> <c- u>"/catalog?page=1"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="26"></span><span class="highlight-line line">    <c- nd>"@type"</c-><c- p>:</c-> <c- u>"hydra:PartialCollectionView"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="27"></span><span class="highlight-line line">    <c- f>"hydra:first"</c-><c- p>:</c-> <c- p>{</c-><c- nd>"@id"</c-><c- p>:</c-> <c- u>"/catalog?page=1"</c-><c- p>},</c-></span><span class="highlight-line line-no" data-line="28"></span><span class="highlight-line line">    <c- f>"hydra:next"</c-><c- p>:</c-> <c- p>{</c-><c- nd>"@id"</c-><c- p>:</c-> <c- u>"/catalog?page=2"</c-><c- p>},</c-></span><span class="highlight-line line-no" data-line="29"></span><span class="highlight-line line">    <c- f>"hydra:last"</c-><c- p>:</c-> <c- p>{</c-><c- nd>"@id"</c-><c- p>:</c-> <c- u>"/catalog?page=498"</c-><c- p>}</c-></span><span class="highlight-line line-no" data-line="30"></span><span class="highlight-line line">  <c- p>},</c-></span><span class="line-no" data-line="31"></span><span class="line">  <c- f>"dataset"</c-><c- p>:</c-> <c- p>[</c-></span><span class="line-no" data-line="32"></span><span class="line">    <c- p>{</c-></span><span class="line-no" data-line="33"></span><span class="line">      <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Dataset"</c-><c- p>,</c-></span><span class="line-no" data-line="34"></span><span class="line">      <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com/dataset/1"</c-><c- p>,</c-></span><span class="line-no" data-line="35"></span><span class="line">      ...</span><span class="line-no" data-line="36"></span><span class="line">    <c- p>},</c-></span><span class="line-no" data-line="37"></span><span class="line">    <c- p>{</c-></span><span class="line-no" data-line="38"></span><span class="line">      <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Dataset"</c-><c- p>,</c-></span><span class="line-no" data-line="39"></span><span class="line">      <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com/dataset/2"</c-><c- p>,</c-></span><span class="line-no" data-line="40"></span><span class="line">      ...</span><span class="line-no" data-line="41"></span><span class="line">    <c- p>},</c-></span><span class="line-no" data-line="42"></span><span class="line">    ...</span><span class="line-no" data-line="43"></span><span class="line">  <c- p>]</c-></span><span class="line-no" data-line="44"></span><span class="line"><c- p>}</c-></span></pre>
+<pre class="highlight line-numbered" data-vocab="dcat"><span class="line-no" data-line="1"></span><span class="line"><c- p>{</c-></span><span class="line-no" data-line="2"></span><span class="line">  <c- nd>"@context"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="3"></span><span class="line">    <c- f>"dcat"</c-><c- p>:</c-> <c- u>"http://www.w3.org/ns/dcat#"</c-><c- p>,</c-></span><span class="line-no" data-line="4"></span><span class="line">    <c- f>"dct"</c-><c- p>:</c-> <c- u>"http://purl.org/dc/terms/"</c-><c- p>,</c-></span><span class="line-no" data-line="5"></span><span class="line">    <c- f>"foaf"</c-><c- p>:</c-> <c- u>"http://xmlns.com/foaf/0.1/"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="6"></span><span class="highlight-line line">    <c- f>"hydra"</c-><c- p>:</c-> <c- u>"http://www.w3.org/ns/hydra/core#"</c-></span><span class="line-no" data-line="7"></span><span class="line">  <c- p>},</c-></span><span class="highlight-line line-no" data-line="8"></span><span class="highlight-line line">  <c- nd>"@type"</c-><c- p>:</c-> <c- p>[</c-><c- u>"dcat:Catalog"</c-><c- p>,</c-> <c- u>"hydra:Collection"</c-><c- p>],</c-></span><span class="line-no" data-line="9"></span><span class="line">  <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com/catalog"</c-><c- p>,</c-></span><span class="line-no" data-line="10"></span><span class="line">  <c- f>"dct:title"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="11"></span><span class="line">    <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Paginated catalog of datasets"</c-><c- p>,</c-></span><span class="line-no" data-line="12"></span><span class="line">    <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c-></span><span class="line-no" data-line="13"></span><span class="line">  <c- p>},</c-></span><span class="line-no" data-line="14"></span><span class="line">  <c- f>"dct:description"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="15"></span><span class="line">    <c- nd>"@value"</c-><c- p>:</c-> <c- u>"This catalog is paginated using the Hydra Core Vocabulary."</c-><c- p>,</c-></span><span class="line-no" data-line="16"></span><span class="line">    <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c-></span><span class="line-no" data-line="17"></span><span class="line">  <c- p>},</c-></span><span class="line-no" data-line="18"></span><span class="line">  <c- f>"dct:publisher"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="19"></span><span class="line">    <c- nd>"@type"</c-><c- p>:</c-> <c- u>"foaf:Organization"</c-><c- p>,</c-></span><span class="line-no" data-line="20"></span><span class="line">    <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com/publisher"</c-><c- p>,</c-></span><span class="line-no" data-line="21"></span><span class="line">    <c- f>"foaf:name"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="22"></span><span class="line">      <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Example Publisher"</c-><c- p>,</c-></span><span class="line-no" data-line="23"></span><span class="line">      <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c-></span><span class="line-no" data-line="24"></span><span class="line">    <c- p>}</c-></span><span class="line-no" data-line="25"></span><span class="line">  <c- p>},</c-></span><span class="highlight-line line-no" data-line="26"></span><span class="highlight-line line">  <c- f>"hydra:view"</c-><c- p>:</c-> <c- p>{</c-></span><span class="highlight-line line-no" data-line="27"></span><span class="highlight-line line">    <c- nd>"@id"</c-><c- p>:</c-> <c- u>"/catalog?page=1"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="28"></span><span class="highlight-line line">    <c- nd>"@type"</c-><c- p>:</c-> <c- u>"hydra:PartialCollectionView"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="29"></span><span class="highlight-line line">    <c- f>"hydra:first"</c-><c- p>:</c-> <c- p>{</c-><c- nd>"@id"</c-><c- p>:</c-> <c- u>"/catalog?page=1"</c-><c- p>},</c-></span><span class="highlight-line line-no" data-line="30"></span><span class="highlight-line line">    <c- f>"hydra:next"</c-><c- p>:</c-> <c- p>{</c-><c- nd>"@id"</c-><c- p>:</c-> <c- u>"/catalog?page=2"</c-><c- p>},</c-></span><span class="highlight-line line-no" data-line="31"></span><span class="highlight-line line">    <c- f>"hydra:last"</c-><c- p>:</c-> <c- p>{</c-><c- nd>"@id"</c-><c- p>:</c-> <c- u>"/catalog?page=498"</c-><c- p>}</c-></span><span class="highlight-line line-no" data-line="32"></span><span class="highlight-line line">  <c- p>},</c-></span><span class="line-no" data-line="33"></span><span class="line">  <c- f>"dcat:dataset"</c-><c- p>:</c-> <c- p>[</c-></span><span class="line-no" data-line="34"></span><span class="line">    <c- p>{</c-></span><span class="line-no" data-line="35"></span><span class="line">      <c- nd>"@type"</c-><c- p>:</c-> <c- u>"dcat:Dataset"</c-><c- p>,</c-></span><span class="line-no" data-line="36"></span><span class="line">      <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com/dataset/1"</c-><c- p>,</c-></span><span class="line-no" data-line="37"></span><span class="line">      ...</span><span class="line-no" data-line="38"></span><span class="line">    <c- p>},</c-></span><span class="line-no" data-line="39"></span><span class="line">    <c- p>{</c-></span><span class="line-no" data-line="40"></span><span class="line">      <c- nd>"@type"</c-><c- p>:</c-> <c- u>"dcat:Dataset"</c-><c- p>,</c-></span><span class="line-no" data-line="41"></span><span class="line">      <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com/dataset/2"</c-><c- p>,</c-></span><span class="line-no" data-line="42"></span><span class="line">      ...</span><span class="line-no" data-line="43"></span><span class="line">    <c- p>},</c-></span><span class="line-no" data-line="44"></span><span class="line">    ...</span><span class="line-no" data-line="45"></span><span class="line">  <c- p>]</c-></span><span class="line-no" data-line="46"></span><span class="line"><c- p>}</c-></span></pre>
+    </div>
    </div>
    <h3 class="heading settled" data-level="5.6" id="overview"><span class="secno">5.6. </span><span class="content">Overview of attributes</span><a class="self-link" href="#overview"></a></h3>
    <p>This is an overview of required and recommended attributes.</p>
    <h4 class="heading settled" data-level="5.6.1" id="dataset-attributes"><span class="secno">5.6.1. </span><span class="content">Dataset attributes</span><a class="self-link" href="#dataset-attributes"></a></h4>
-   <table>
-    <caption><a href="schema:Dataset">schema:Dataset</a> properties</caption>
-    <thead>
-     <tr>
-      <th>Property
-      <th>Description
-      <th>Cardinality
-      <th>Usage
-    <tbody>
-     <tr>
-      <th scope="row">@id
-      <td>The HTTP <a data-link-type="biblio" href="#biblio-iri" title="Internationalized Resource Identifiers (IRIs)">[IRI]</a> of the Dataset.
-      <td>1
-      <td>Required
-     <tr>
-      <th scope="row"><a href="schema:name">schema:name</a>
-      <td>A name given to the dataset. See <a href="#dataset-basic">§ 5.2.1 Basic information</a>.
-      <td>1..n
-      <td>
+   <div class="vocab-tabs">
+    <div data-vocab="schema">
+     <table>
+      <caption><a href="https://schema.org/Dataset">schema:Dataset</a> properties</caption>
+      <thead>
+       <tr>
+        <th>Property
+        <th>Description
+        <th>Cardinality
+        <th>Usage
+      <tbody>
+       <tr>
+        <th scope="row">@id
+        <td>The HTTP <a data-link-type="biblio" href="#biblio-iri" title="Internationalized Resource Identifiers (IRIs)">[IRI]</a> of the Dataset.
+        <td>1
+        <td>Required
+       <tr>
+        <th scope="row"><a href="https://schema.org/name">schema:name</a>
+        <td>A name given to the dataset. See <a href="#dataset-basic">§ 5.2.1 Basic information</a>.
+        <td>1..n
+        <td>
                 Required
                         <br><small><a href="#v2">v2.0</a>: must be rdf:langString</small>
                     
-     <tr>
-      <th scope="row"><a href="schema:description">schema:description</a>
-      <td>A description of the contents of the dataset.
+       <tr>
+        <th scope="row"><a href="https://schema.org/description">schema:description</a>
+        <td>A description of the contents of the dataset.
         Preferably at least three sentences and at most one paragraph (2,000 characters).
         The discoverability of the dataset depends in part on the quality of the description.
         Consider different audiences – both domain experts and others –
         for whom the text should be understandable. See <a href="#dataset-basic">§ 5.2.1 Basic information</a>.
-      <td>1..n
-      <td>
+        <td>1..n
+        <td>
                 Recommended
                     <br><small><a href="#v2">v2.0</a>: becomes required; must be rdf:langString</small>
                     
-     <tr>
-      <th scope="row"><a href="schema:publisher">schema:publisher</a>
-      <td>An entity (organisation or person) responsible for making the Dataset available. See <a href="#creator-publisher-information">§ 5.3 Creator/publisher information</a>.
-      <td>1
-      <td>
+       <tr>
+        <th scope="row"><a href="https://schema.org/publisher">schema:publisher</a>
+        <td>An entity (organisation or person) responsible for making the Dataset available. See <a href="#creator-publisher-information">§ 5.3 Creator/publisher information</a>.
+        <td>1
+        <td>
                 Required
                         
-     <tr>
-      <th scope="row"><a href="schema:license">schema:license</a>
-      <td>
-       License applicable to the dataset. This license is inherited by all distributions that do not specify their own license. Publishers <em>MUST</em> make known under which <a href="https://www.w3.org/TR/dwbp/#licenses">license</a> the dataset may be used.
+       <tr>
+        <th scope="row"><a href="https://schema.org/license">schema:license</a>
+        <td>
+         License applicable to the dataset. This license is inherited by all distributions that do not specify their own license. Publishers <em>MUST</em> make known under which <a href="https://www.w3.org/TR/dwbp/#licenses">license</a> the dataset may be used.
 
 
-       <p>This license specifies the conditions under which the metadata records in the dataset may be accessed and reused. It does not cover the heritage objects (either physical or digital) that the metadata describes. Access conditions for these objects should be specified in their own descriptions within the dataset.</p>
-       <p>The <a data-link-type="biblio" href="#biblio-dera" title="Digital Heritage Reference Architecture">[DERA]</a> requires metadata to be published openly, so this value <em>SHOULD</em> be an open license that allows consumers to reuse the data, such as <code>https://creativecommons.org/publicdomain/zero/1.0/</code> (CC0), <code>https://creativecommons.org/licenses/by/4.0/</code> (CC BY 4.0), or <code>https://creativecommons.org/licenses/by-sa/4.0/</code> (CC BY-SA 4.0). Adopting a non-open license will severely limit reuse and does not comply with the <a data-link-type="biblio" href="#biblio-dera" title="Digital Heritage Reference Architecture">[DERA]</a> principles.</p>
-       <p>The value <em>MUST</em> be the canonical URI of a license. For example, use <code>https://creativecommons.org/publicdomain/zero/1.0/</code> instead of <code>https://creativecommons.org/publicdomain/zero/1.0/deed.nl</code>. See <a href="#dataset-license">§ 5.2.2 License</a>.</p>
-      <td>1
-      <td>
+         <p>This license specifies the conditions under which the metadata records in the dataset may be accessed and reused. It does not cover the heritage objects (either physical or digital) that the metadata describes. Access conditions for these objects should be specified in their own descriptions within the dataset.</p>
+         <p>The <a data-link-type="biblio" href="#biblio-dera" title="Digital Heritage Reference Architecture">[DERA]</a> requires metadata to be published openly, so this value <em>SHOULD</em> be an open license that allows consumers to reuse the data, such as <code>https://creativecommons.org/publicdomain/zero/1.0/</code> (CC0), <code>https://creativecommons.org/licenses/by/4.0/</code> (CC BY 4.0), or <code>https://creativecommons.org/licenses/by-sa/4.0/</code> (CC BY-SA 4.0). Adopting a non-open license will severely limit reuse and does not comply with the <a data-link-type="biblio" href="#biblio-dera" title="Digital Heritage Reference Architecture">[DERA]</a> principles.</p>
+         <p>The value <em>MUST</em> be the canonical URI of a license. For example, use <code>https://creativecommons.org/publicdomain/zero/1.0/</code> instead of <code>https://creativecommons.org/publicdomain/zero/1.0/deed.nl</code>. See <a href="#dataset-license">§ 5.2.2 License</a>.</p>
+        <td>1
+        <td>
                 Required
                         <br><small><a href="#v2">v2.0</a>: must be IRI</small>
                     
-     <tr>
-      <th scope="row"><a href="schema:distribution">schema:distribution</a>
-      <td>Distributions through which the dataset can be retrieved, such as as a download or via an API. See <a href="#dataset-distributions">§ 5.4 Distributions</a>.
-      <td>1..n
-      <td>
+       <tr>
+        <th scope="row"><a href="https://schema.org/distribution">schema:distribution</a>
+        <td>Distributions through which the dataset can be retrieved, such as as a download or via an API. See <a href="#dataset-distributions">§ 5.4 Distributions</a>.
+        <td>1..n
+        <td>
                 Recommended
                     
-     <tr>
-      <th scope="row"><a href="schema:creator">schema:creator</a>
-      <td>An entity (organisation or person) responsible for producing the dataset. See <a href="#creator-publisher-information">§ 5.3 Creator/publisher information</a>.
-      <td>1..n
-      <td>
+       <tr>
+        <th scope="row"><a href="https://schema.org/creator">schema:creator</a>
+        <td>An entity (organisation or person) responsible for producing the dataset. See <a href="#creator-publisher-information">§ 5.3 Creator/publisher information</a>.
+        <td>1..n
+        <td>
                 Recommended
                     <br><small><a href="#v2">v2.0</a>: becomes required</small>
                     
-     <tr>
-      <th scope="row"><a href="schema:datePublished">schema:datePublished</a>
-      <td>The date of formal issuance (such as publication) of the dataset. See <a href="#dataset-date">§ 5.2.3 Creation, publication and modification dates</a>.
-      <td>1
-      <td>
+       <tr>
+        <th scope="row"><a href="https://schema.org/datePublished">schema:datePublished</a>
+        <td>The date of formal issuance (such as publication) of the dataset. See <a href="#dataset-date">§ 5.2.3 Creation, publication and modification dates</a>.
+        <td>1
+        <td>
                 Recommended
                     <br><small><a href="#v2">v2.0</a>: must be valid ISO 8601</small>
                     
-     <tr>
-      <th scope="row"><a href="schema:dateCreated">schema:dateCreated</a>
-      <td>The date on which the dataset was created. See <a href="#dataset-date">§ 5.2.3 Creation, publication and modification dates</a>.
-      <td>1
-      <td>
+       <tr>
+        <th scope="row"><a href="https://schema.org/dateCreated">schema:dateCreated</a>
+        <td>The date on which the dataset was created. See <a href="#dataset-date">§ 5.2.3 Creation, publication and modification dates</a>.
+        <td>1
+        <td>
                 Recommended
                     <br><small><a href="#v2">v2.0</a>: must be valid ISO 8601</small>
                     
-     <tr>
-      <th scope="row"><a href="schema:dateModified">schema:dateModified</a>
-      <td>The most recent date on which the dataset was changed or modified. See <a href="#dataset-date">§ 5.2.3 Creation, publication and modification dates</a>.
-      <td>1
-      <td>
+       <tr>
+        <th scope="row"><a href="https://schema.org/dateModified">schema:dateModified</a>
+        <td>The most recent date on which the dataset was changed or modified. See <a href="#dataset-date">§ 5.2.3 Creation, publication and modification dates</a>.
+        <td>1
+        <td>
                 Recommended
                     <br><small><a href="#v2">v2.0</a>: must be valid ISO 8601</small>
                     
-     <tr>
-      <th scope="row"><a href="schema:version">schema:version</a>
-      <td>Version identifier of the dataset, such as a semantic version number or a date. See <a href="#dataset-versions">§ 5.2.4 Versions</a>.
-      <td>0..1
-      <td>
+       <tr>
+        <th scope="row"><a href="https://schema.org/version">schema:version</a>
+        <td>Version identifier of the dataset, such as a semantic version number or a date. See <a href="#dataset-versions">§ 5.2.4 Versions</a>.
+        <td>0..1
+        <td>
                 Recommended
                 
-     <tr>
-      <th scope="row"><a href="schema:inLanguage">schema:inLanguage</a>
-      <td>The natural language of the textual values within the dataset – that is, of the metadata records themselves (titles, descriptions, and so on). Use a <a data-link-type="biblio" href="#biblio-bcp47" title="Tags for Identifying Languages">[BCP47]</a> language code, such as <code>nl</code> or <code>en</code>.
-      <td>0..n
-      <td>
+       <tr>
+        <th scope="row"><a href="https://schema.org/inLanguage">schema:inLanguage</a>
+        <td>The natural language of the textual values within the dataset – that is, of the metadata records themselves (titles, descriptions, and so on). Use a <a data-link-type="biblio" href="#biblio-bcp47" title="Tags for Identifying Languages">[BCP47]</a> language code, such as <code>nl</code> or <code>en</code>.
+        <td>0..n
+        <td>
                 Recommended
                 <br><small><a href="#v2">v2.0</a>: must match <code>^[a-zA-Z]{2,3}(-[a-zA-Z0-9]+)*$</code></small>
                     
-     <tr>
-      <th scope="row"><a href="schema:mainEntityOfPage">schema:mainEntityOfPage</a>
-      <td>A web page that provides access to the Dataset, its Distributions and/or additional information. Not needed when the dataset URI itself resolves to an HTML page. The human-readable description <em>MUST</em> be consistent with and include at least all details (such as distributions) from the RDF dataset description. See <a href="#resolvable-iris">§ 5.1.3 Resolvable dataset IRIs</a>.
-      <td>0..n
-      <td>
+       <tr>
+        <th scope="row"><a href="https://schema.org/mainEntityOfPage">schema:mainEntityOfPage</a>
+        <td>A web page that provides access to the Dataset, its Distributions and/or additional information. Not needed when the dataset URI itself resolves to an HTML page. The human-readable description <em>MUST</em> be consistent with and include at least all details (such as distributions) from the RDF dataset description. See <a href="#resolvable-iris">§ 5.1.3 Resolvable dataset IRIs</a>.
+        <td>0..n
+        <td>
                 Recommended
                 
-     <tr>
-      <th scope="row"><a href="schema:isBasedOn">schema:isBasedOn</a>
-      <td>The URI of a dataset this dataset is based on (previously schema:isBasedOnUrl).
-      <td>0..n
-      <td>
+       <tr>
+        <th scope="row"><a href="https://schema.org/isBasedOn">schema:isBasedOn</a>
+        <td>The URI of a dataset this dataset is based on (previously schema:isBasedOnUrl).
+        <td>0..n
+        <td>
                 Recommended
                 
-     <tr>
-      <th scope="row"><a href="schema:citation">schema:citation</a>
-      <td>A citation or reference for the dataset.
-      <td>0..n
-      <td>
+       <tr>
+        <th scope="row"><a href="https://schema.org/citation">schema:citation</a>
+        <td>A citation or reference for the dataset.
+        <td>0..n
+        <td>
                 Recommended
                 
-     <tr>
-      <th scope="row"><a href="schema:genre">schema:genre</a>
-      <td><code>schema:genre</code> is deprecated. Use <code>schema:about</code> with a URI (e.g. from AAT or GTAA via the Network of Terms) for both subject and material type.
-      <td>0
-      <td>
+       <tr>
+        <th scope="row"><a href="https://schema.org/genre">schema:genre</a>
+        <td><code>schema:genre</code> is deprecated. Use <code>schema:about</code> with a URI (e.g. from AAT or GTAA via the Network of Terms) for both subject and material type.
+        <td>0
+        <td>
                 Discouraged
                 <br><small><a href="#v2">v2.0</a>: no longer allowed</small>
                     
-     <tr>
-      <th scope="row"><a href="schema:about">schema:about</a>
-      <td>The subject matter of the dataset, covering both topical themes (such as ‘post-war reconstruction’ or ‘colonial history’) and material types (such as ‘photographs’ or ‘architectural drawings’). Use a URI from a controlled vocabulary (e.g. AAT, GTAA, or Brinkman via the <a href="https://termennetwerk.netwerkdigitaalerfgoed.nl/en">Network of Terms</a>).
-      <td>1..n
-      <td>
+       <tr>
+        <th scope="row"><a href="https://schema.org/about">schema:about</a>
+        <td>The subject matter of the dataset, covering both topical themes (such as ‘post-war reconstruction’ or ‘colonial history’) and material types (such as ‘photographs’ or ‘architectural drawings’). Use a URI from a controlled vocabulary (e.g. AAT, GTAA, or Brinkman via the <a href="https://termennetwerk.netwerkdigitaalerfgoed.nl/en">Network of Terms</a>).
+        <td>1..n
+        <td>
                 Recommended
                     
-     <tr>
-      <th scope="row"><a href="schema:spatialCoverage">schema:spatialCoverage</a>
-      <td>The geographical area to which the data in the dataset pertains. Use a URI from a controlled vocabulary such as <a href="https://www.geonames.org/">GeoNames</a> via the <a href="https://termennetwerk.netwerkdigitaalerfgoed.nl/en">Network of Terms</a>. Provide only the most specific (lowest) level, for example the URI for Roermond and not the one for Limburg or the Netherlands. Broader areas can be derived from the term’s hierarchical relations.
-      <td>1..n
-      <td>
+       <tr>
+        <th scope="row"><a href="https://schema.org/spatialCoverage">schema:spatialCoverage</a>
+        <td>The geographical area to which the data in the dataset pertains. Use a URI from a controlled vocabulary such as <a href="https://www.geonames.org/">GeoNames</a> via the <a href="https://termennetwerk.netwerkdigitaalerfgoed.nl/en">Network of Terms</a>. Provide only the most specific (lowest) level, for example the URI for Roermond and not the one for Limburg or the Netherlands. Broader areas can be derived from the term’s hierarchical relations.
+        <td>1..n
+        <td>
                 Recommended
                     <br><small><a href="#v2">v2.0</a>: must be IRI</small>
                     
-     <tr>
-      <th scope="row"><a href="schema:temporalCoverage">schema:temporalCoverage</a>
-      <td>The time period to which the dataset pertains. The value must be an ISO 8601 date or time interval (such as ‘2011’, ‘2011/2012’, ‘1889-06/07’ for shortened notation, ‘-0431/-0404’ or ‘-13000/-10000’ for BCE dates, or ‘1440/..’ for an open-ended range), or an HTTP(S) URI.
-      <td>1..n
-      <td>
+       <tr>
+        <th scope="row"><a href="https://schema.org/temporalCoverage">schema:temporalCoverage</a>
+        <td>The time period to which the dataset pertains. The value must be an ISO 8601 date or time interval (such as ‘2011’, ‘2011/2012’, ‘1889-06/07’ for shortened notation, ‘-0431/-0404’ or ‘-13000/-10000’ for BCE dates, or ‘1440/..’ for an open-ended range), or an HTTP(S) URI.
+        <td>1..n
+        <td>
                 Recommended
                     <br><small><a href="#v2">v2.0</a>: becomes required</small>
                     
-     <tr>
-      <th scope="row"><a href="schema:hasPart">schema:hasPart</a>
-      <td>Indicates a dataset that is part of this dataset and also available as a separate dataset.
-      <td>0..n
-      <td>
+       <tr>
+        <th scope="row"><a href="https://schema.org/hasPart">schema:hasPart</a>
+        <td>Indicates a dataset that is part of this dataset and also available as a separate dataset.
+        <td>0..n
+        <td>
                 Recommended
                 
-     <tr>
-      <th scope="row"><a href="schema:includedInDataCatalog">schema:includedInDataCatalog</a>
-      <td>The HTTP <a data-link-type="biblio" href="#biblio-iri" title="Internationalized Resource Identifiers (IRIs)">[IRI]</a>(s) of the data catalog(s) that the dataset belongs to.
-      <td>0..n
-      <td>
+       <tr>
+        <th scope="row"><a href="https://schema.org/includedInDataCatalog">schema:includedInDataCatalog</a>
+        <td>The HTTP <a data-link-type="biblio" href="#biblio-iri" title="Internationalized Resource Identifiers (IRIs)">[IRI]</a>(s) of the data catalog(s) that the dataset belongs to.
+        <td>0..n
+        <td>
                 Recommended
                 <br><small><a href="#v2">v2.0</a>: must be IRI</small>
                     
-     <tr>
-      <th scope="row"><a href="dct:accrualPeriodicity">dct:accrualPeriodicity</a>
-      <td>How often the dataset is updated.
+       <tr>
+        <th scope="row"><a href="http://purl.org/dc/terms/accrualPeriodicity">dct:accrualPeriodicity</a>
+        <td>How often the dataset is updated.
         Use a value from the EU frequency list,
         for example http://publications.europa.eu/resource/authority/frequency/WEEKLY .
-      <td>0..1
-      <td>
+        <td>0..1
+        <td>
                 Recommended
                 
-     <tr>
-      <th scope="row"><a href="dct:accessRights">dct:accessRights</a>
-      <td>Information about who can access the dataset. Use a value from the EU Access Rights vocabulary. Defaults to <code>PUBLIC</code> if not provided.
-      <td>0..1
-      <td>
+       <tr>
+        <th scope="row"><a href="http://purl.org/dc/terms/accessRights">dct:accessRights</a>
+        <td>Information about who can access the dataset. Use a value from the EU Access Rights vocabulary. Defaults to <code>PUBLIC</code> if not provided.
+        <td>0..1
+        <td>
                 Recommended
                 
-   </table>
-   <h4 class="heading settled" data-level="5.6.2" id="organization-attributes"><span class="secno">5.6.2. </span><span class="content">Organization attributes</span><a class="self-link" href="#organization-attributes"></a></h4>
-   <table>
-    <caption><a href="schema:Organization">schema:Organization</a> properties</caption>
-    <thead>
-     <tr>
-      <th>Property
-      <th>Description
-      <th>Cardinality
-      <th>Usage
-    <tbody>
-     <tr>
-      <th scope="row">@id
-      <td>The HTTP <a data-link-type="biblio" href="#biblio-iri" title="Internationalized Resource Identifiers (IRIs)">[IRI]</a> of the Organization.
-      <td>1
-      <td>Required
-     <tr>
-      <th scope="row"><a href="schema:name">schema:name</a>
-      <td>The full name of the publisher or creator.
-      <td>1..n
-      <td>
+     </table>
+    </div>
+    <div data-vocab="dcat">
+     <table>
+      <caption><a href="http://www.w3.org/ns/dcat#Dataset">dcat:Dataset</a> properties</caption>
+      <thead>
+       <tr>
+        <th>Property
+        <th>Description
+        <th>Cardinality
+        <th>Usage
+      <tbody>
+       <tr>
+        <th scope="row">@id
+        <td>The HTTP <a data-link-type="biblio" href="#biblio-iri" title="Internationalized Resource Identifiers (IRIs)">[IRI]</a> of the Dataset.
+        <td>1
+        <td>Required
+       <tr>
+        <th scope="row"><a href="http://purl.org/dc/terms/title">dct:title</a>
+        <td>A name given to the dataset. See <a href="#dataset-basic">§ 5.2.1 Basic information</a>.
+        <td>1..n
+        <td>
                 Required
                         <br><small><a href="#v2">v2.0</a>: must be rdf:langString</small>
                     
-     <tr>
-      <th scope="row"><a href="schema:alternateName">schema:alternateName</a>
-      <td>Alternative names such as an abbreviation that the organization is known under.
-      <td>0..n
-      <td>
+       <tr>
+        <th scope="row"><a href="http://purl.org/dc/terms/description">dct:description</a>
+        <td>A description of the contents of the dataset.
+        Preferably at least three sentences and at most one paragraph (2,000 characters).
+        The discoverability of the dataset depends in part on the quality of the description.
+        Consider different audiences – both domain experts and others –
+        for whom the text should be understandable. See <a href="#dataset-basic">§ 5.2.1 Basic information</a>.
+        <td>1..n
+        <td>
+                Recommended
+                    <br><small><a href="#v2">v2.0</a>: becomes required; must be rdf:langString</small>
+                    
+       <tr>
+        <th scope="row"><a href="http://purl.org/dc/terms/created">dct:created</a>
+        <td>The date on which the dataset was created. See <a href="#dataset-date">§ 5.2.3 Creation, publication and modification dates</a>.
+        <td>1
+        <td>
+                Recommended
+                    <br><small><a href="#v2">v2.0</a>: must be valid ISO 8601</small>
+                    
+       <tr>
+        <th scope="row"><a href="http://purl.org/dc/terms/issued">dct:issued</a>
+        <td>The date of formal issuance (such as publication) of the dataset. See <a href="#dataset-date">§ 5.2.3 Creation, publication and modification dates</a>.
+        <td>1
+        <td>
+                Recommended
+                    <br><small><a href="#v2">v2.0</a>: must be valid ISO 8601</small>
+                    
+       <tr>
+        <th scope="row"><a href="http://purl.org/dc/terms/modified">dct:modified</a>
+        <td>The most recent date on which the dataset was changed or modified. See <a href="#dataset-date">§ 5.2.3 Creation, publication and modification dates</a>.
+        <td>1
+        <td>
+                Recommended
+                    <br><small><a href="#v2">v2.0</a>: must be valid ISO 8601</small>
+                    
+       <tr>
+        <th scope="row"><a href="http://purl.org/dc/terms/spatial">dct:spatial</a>
+        <td>The geographical area to which the data in the dataset pertains. Use a URI from a controlled vocabulary such as <a href="https://www.geonames.org/">GeoNames</a>. Find place URIs via the <a href="https://termennetwerk.netwerkdigitaalerfgoed.nl/en">Network of Terms</a>.
+        <td>1..n
+        <td>
+                Recommended
+                    <br><small><a href="#v2">v2.0</a>: must be IRI</small>
+                    
+       <tr>
+        <th scope="row"><a href="http://purl.org/dc/terms/temporal">dct:temporal</a>
+        <td>The time period to which the dataset pertains. The value must be an ISO 8601 date or time interval (such as ‘2011’, ‘2011/2012’, ‘1889-06/07’ for shortened notation, ‘-0431/-0404’ for BCE dates, or ‘1440/..’ for an open-ended range), or an HTTP(S) URI.
+        <td>1..n
+        <td>
+                Recommended
+                    <br><small><a href="#v2">v2.0</a>: must be valid ISO 8601 or IRI</small>
+                    
+       <tr>
+        <th scope="row"><a href="http://purl.org/dc/terms/language">dct:language</a>
+        <td>The natural language of the textual values in the dataset. Use a value from the <a href="https://op.europa.eu/en/web/eu-vocabularies/concept-scheme/-/resource?uri=http://publications.europa.eu/resource/authority/language">EU Vocabularies Languages Named Authority List</a>.
+        <td>1..n
+        <td>
+                Recommended
+                    <br><small><a href="#v2">v2.0</a>: must match <code>^http://publications\.europa\.eu/resource/authority/language/</code></small>
+                    
+       <tr>
+        <th scope="row"><a href="http://purl.org/dc/terms/publisher">dct:publisher</a>
+        <td>An entity (organisation or person) responsible for making the Dataset available. See <a href="#creator-publisher-information">§ 5.3 Creator/publisher information</a>.
+        <td>1
+        <td>
+                Recommended
+                    <br><small><a href="#v2">v2.0</a>: becomes required</small>
+                    
+       <tr>
+        <th scope="row"><a href="http://purl.org/dc/terms/creator">dct:creator</a>
+        <td>An entity (organisation or person) responsible for producing the dataset. See <a href="#creator-publisher-information">§ 5.3 Creator/publisher information</a>.
+        <td>1..n
+        <td>
+                Recommended
+                    <br><small><a href="#v2">v2.0</a>: becomes required</small>
+                    
+       <tr>
+        <th scope="row"><a href="http://www.w3.org/ns/dcat#contactPoint">dcat:contactPoint</a>
+        <td>Contact information where end users can get in touch with questions about the dataset.
+        This contains the e-mail address or a link (URL) to the contact form of the responsible organization.
+        The e-mail address should be a functional e-mail address of the organization or department. See <a href="#contact">§ 5.3.3 Contact information</a>.
+        <td>1
+        <td>
+                Recommended
+                    <br><small><a href="#v2">v2.0</a>: becomes required</small>
+                    
+       <tr>
+        <th scope="row"><a href="http://www.w3.org/ns/dcat#theme">dcat:theme</a>
+        <td>The category of the dataset. Use at least one value from the European Dataset Theme Vocabulary.
+        It is recommended to also include values from domain-specific vocabularies.
+        The default theme ‘Education, culture and sport’ (data-theme/EDUC) is auto-assigned.
+        <td>0..n
+        <td>
+                Recommended
+                
+       <tr>
+        <th scope="row"><a href="http://www.w3.org/ns/dcat#distribution">dcat:distribution</a>
+        <td>An available representation of the dataset. See <a href="#dataset-distributions">§ 5.4 Distributions</a>.
+        <td>1..n
+        <td>
+                Recommended
+                    
+       <tr>
+        <th scope="row"><a href="http://purl.org/dc/terms/accrualPeriodicity">dct:accrualPeriodicity</a>
+        <td>How often the dataset is updated.
+        Use a value from the EU frequency list,
+        for example http://publications.europa.eu/resource/authority/frequency/WEEKLY .
+        <td>0..1
+        <td>
+                Recommended
+                
+       <tr>
+        <th scope="row"><a href="http://purl.org/dc/terms/accessRights">dct:accessRights</a>
+        <td>Information about who can access the dataset. Use a value from the EU Access Rights vocabulary. Defaults to <code>PUBLIC</code> if not provided.
+        <td>0..1
+        <td>
+                Recommended
+                
+       <tr>
+        <th scope="row"><a href="http://www.w3.org/ns/dcat#landingPage">dcat:landingPage</a>
+        <td>A web page that provides access to the Dataset, its Distributions and/or additional information. Not needed when the dataset URI itself resolves to an HTML page. The human-readable description <em>MUST</em> be consistent with and include at least all details (such as distributions) from the RDF dataset description. See <a href="#resolvable-iris">§ 5.1.3 Resolvable dataset IRIs</a>.
+        <td>0..n
+        <td>
+                Recommended
+                
+       <tr>
+        <th scope="row"><a href="http://purl.org/dc/terms/source">dct:source</a>
+        <td>The URI of a dataset this dataset is based on.
+        <td>0..n
+        <td>
+                Recommended
+                
+     </table>
+    </div>
+   </div>
+   <h4 class="heading settled" data-level="5.6.2" id="organization-attributes"><span class="secno">5.6.2. </span><span class="content">Organization attributes</span><a class="self-link" href="#organization-attributes"></a></h4>
+   <div class="vocab-tabs">
+    <div data-vocab="schema">
+     <table>
+      <caption><a href="https://schema.org/Organization">schema:Organization</a> properties</caption>
+      <thead>
+       <tr>
+        <th>Property
+        <th>Description
+        <th>Cardinality
+        <th>Usage
+      <tbody>
+       <tr>
+        <th scope="row">@id
+        <td>The HTTP <a data-link-type="biblio" href="#biblio-iri" title="Internationalized Resource Identifiers (IRIs)">[IRI]</a> of the Organization.
+        <td>1
+        <td>Required
+       <tr>
+        <th scope="row"><a href="https://schema.org/name">schema:name</a>
+        <td>The full name of the publisher or creator.
+        <td>1..n
+        <td>
+                Required
+                        <br><small><a href="#v2">v2.0</a>: must be rdf:langString</small>
+                    
+       <tr>
+        <th scope="row"><a href="https://schema.org/alternateName">schema:alternateName</a>
+        <td>Alternative names such as an abbreviation that the organization is known under.
+        <td>0..n
+        <td>
                 Recommended
                 <br><small><a href="#v2">v2.0</a>: must be rdf:langString</small>
                     
-     <tr>
-      <th scope="row"><a href="schema:identifier">schema:identifier</a>
-      <td>Identifier(s) of the organization, at least its <a href="https://www.nationaalarchief.nl/archiveren/kennisbank/isil-codes">ISIL code</a>.
-      <td>0..n
-      <td>
+       <tr>
+        <th scope="row"><a href="https://schema.org/identifier">schema:identifier</a>
+        <td>Identifier(s) of the organization, at least its <a href="https://www.nationaalarchief.nl/archiveren/kennisbank/isil-codes">ISIL code</a>.
+        <td>0..n
+        <td>
                 Recommended
                 
-     <tr>
-      <th scope="row"><a href="schema:sameAs">schema:sameAs</a>
-      <td>Links to the organization in other databases.
-      <td>0..n
-      <td>
+       <tr>
+        <th scope="row"><a href="https://schema.org/sameAs">schema:sameAs</a>
+        <td>Links to the organization in other databases.
+        <td>0..n
+        <td>
                 Recommended
                 
-     <tr>
-      <th scope="row"><a href="schema:contactPoint">schema:contactPoint</a>
-      <td>Contact information where end users can get in touch with questions about the dataset. Preferably use the details of the department that manages the dataset or catalogue, rather than an individual employee. See <a href="#contact">§ 5.3.3 Contact information</a>.
-      <td>0..n<br><small><a href="#v2">v2.0</a>: 1..n</small>
-      <td>
+       <tr>
+        <th scope="row"><a href="https://schema.org/contactPoint">schema:contactPoint</a>
+        <td>Contact information where end users can get in touch with questions about the dataset. Preferably use the details of the department that manages the dataset or catalogue, rather than an individual employee. See <a href="#contact">§ 5.3.3 Contact information</a>.
+        <td>0..n<br><small><a href="#v2">v2.0</a>: 1..n</small>
+        <td>
                 Recommended
                 <br><small><a href="#v2">v2.0</a>: becomes required</small>
                     
-   </table>
-   <h4 class="heading settled" data-level="5.6.3" id="distribution-attributes"><span class="secno">5.6.3. </span><span class="content">Distribution attributes</span><a class="self-link" href="#distribution-attributes"></a></h4>
-   <table>
-    <caption><a href="schema:DataDownload">schema:DataDownload</a> properties</caption>
-    <thead>
-     <tr>
-      <th>Property
-      <th>Description
-      <th>Cardinality
-      <th>Usage
-    <tbody>
-     <tr>
-      <th scope="row"><a href="schema:contentUrl">schema:contentUrl</a>
-      <td>The URL that provides direct access to the distribution itself: the data file or the <a data-link-type="dfn" href="#web-api" id="ref-for-web-api③">web API</a> endpoint.
-                Use <code>schema:documentation</code> if there is also a documentation page that describes or provides access to the distribution (such as a SPARQL UI or a download landing page).
-      <td>1
-      <td>
-                Required
-                        <br><small><a href="#v2">v2.0</a>: must be IRI</small>
-                    
-     <tr>
-      <th scope="row"><a href="schema:encodingFormat">schema:encodingFormat</a>
-      <td>The media type of the downloadable file. Use a value from the <a data-link-type="biblio" href="#biblio-iana-media-types" title="Media Types">[IANA-MEDIA-TYPES]</a> list. The value should indicate the media type of the response of schema:contentUrl when no Accept header is included in the request. When the distribution is compressed, the compression format (such as <code>zip</code>, <code>gzip</code>) must be included (such as <code>text/turtle+gzip</code>).
-      <td>0..1
-      <td>
-                Recommended
-                <br><small><a href="#v2">v2.0</a>: max 1</small>
-                    
-     <tr>
-      <th scope="row"><a href="schema:description">schema:description</a>
-      <td>Distribution description
-      <td>1..n
-      <td>
-                Recommended
-                    
-     <tr>
-      <th scope="row"><a href="schema:datePublished">schema:datePublished</a>
-      <td>The date of formal issuance (such as publication) of the distribution. See <a href="#distribution-date">§ 5.4.1 Creation and modification dates</a>.
-      <td>0..1
-      <td>
-                Recommended
-                <br><small><a href="#v2">v2.0</a>: must be valid ISO 8601</small>
-                    
-     <tr>
-      <th scope="row"><a href="schema:dateModified">schema:dateModified</a>
-      <td>The most recent date on which the distribution was changed or modified. See <a href="#distribution-date">§ 5.4.1 Creation and modification dates</a>.
-      <td>0..1
-      <td>
-                Recommended
-                <br><small><a href="#v2">v2.0</a>: must be valid ISO 8601</small>
-                    
-     <tr>
-      <th scope="row"><a href="schema:inLanguage">schema:inLanguage</a>
-      <td>Language or languages in which the distribution is available. Use a <a data-link-type="biblio" href="#biblio-bcp47" title="Tags for Identifying Languages">[BCP47]</a> language code, such as <code>nl</code>.
-      <td>0..n
-      <td>
-                Recommended
-                <br><small><a href="#v2">v2.0</a>: must match <code>^[a-zA-Z]{2,3}(-[a-zA-Z0-9]+)*$</code></small>
-                    
-     <tr>
-      <th scope="row"><a href="schema:license">schema:license</a>
-      <td>License applicable to this distribution, overriding the parent dataset’s license. Optional; only set this when the distribution carries a different license from the dataset.
-      <td>0..1
-      <td>
-                Recommended
-                <br><small><a href="#v2">v2.0</a>: must be IRI</small>
-                    
-     <tr>
-      <th scope="row"><a href="schema:contentSize">schema:contentSize</a>
-      <td>Distribution file size in bytes.
-      <td>0..1
-      <td>
-                Recommended
-                
-     <tr>
-      <th scope="row"><a href="schema:usageInfo">schema:usageInfo</a>
-      <td>A link to the documentation: for downloads, the application profile, vocabulary or ontology; for <a data-link-type="dfn" href="#web-api" id="ref-for-web-api④">web API</a>s (such as SPARQL or OAI-PMH), the protocol specification.
-                It lets consumers tell a full data dump from an API that exposes only part of the data. See <a href="#usage-information">§ 5.4.2 Usage information</a>.
-      <td>0..n
-      <td>
-                Recommended
-                <br><small><a href="#v2">v2.0</a>: must be IRI</small>
-                    
-     <tr>
-      <th scope="row"><a href="schema:documentation">schema:documentation</a>
-      <td>A documentation page that describes or provides access to this distribution, such as a SPARQL UI or a download landing page.
-                <code>schema:contentUrl</code> points to the distribution itself (the data file or the API endpoint).
-      <td>0..n
-      <td>
-                Recommended
-                
-   </table>
-   <h4 class="heading settled" data-level="5.6.4" id="datacatalog-attributes"><span class="secno">5.6.4. </span><span class="content">DataCatalog attributes</span><a class="self-link" href="#datacatalog-attributes"></a></h4>
-   <table>
-    <caption><a href="schema:DataCatalog">schema:DataCatalog</a> properties</caption>
-    <thead>
-     <tr>
-      <th>Property
-      <th>Description
-      <th>Cardinality
-      <th>Usage
-    <tbody>
-     <tr>
-      <th scope="row">@id
-      <td>The HTTP <a data-link-type="biblio" href="#biblio-iri" title="Internationalized Resource Identifiers (IRIs)">[IRI]</a> of the DataCatalog.
-      <td>1
-      <td>Recommended<br><small><a href="#v2">v2.0</a>: must be IRI</small>
-     <tr>
-      <th scope="row"><a href="schema:name">schema:name</a>
-      <td>Name of the data catalog
-      <td>1..n
-      <td>
+     </table>
+    </div>
+    <div data-vocab="dcat">
+     <table>
+      <caption><a href="http://xmlns.com/foaf/0.1/Organization">foaf:Organization</a> properties</caption>
+      <thead>
+       <tr>
+        <th>Property
+        <th>Description
+        <th>Cardinality
+        <th>Usage
+      <tbody>
+       <tr>
+        <th scope="row">@id
+        <td>The HTTP <a data-link-type="biblio" href="#biblio-iri" title="Internationalized Resource Identifiers (IRIs)">[IRI]</a> of the Organization.
+        <td>1
+        <td>Required
+       <tr>
+        <th scope="row"><a href="http://xmlns.com/foaf/0.1/name">foaf:name</a>
+        <td>The name of the publisher or creator.
+        <td>1..n
+        <td>
                 Required
                         <br><small><a href="#v2">v2.0</a>: must be rdf:langString</small>
                     
-     <tr>
-      <th scope="row"><a href="schema:description">schema:description</a>
-      <td>A description of the contents of the data catalog.
+       <tr>
+        <th scope="row"><a href="http://xmlns.com/foaf/0.1/nick">foaf:nick</a>
+        <td>Alternative names such as an abbreviation that the organization is known under.
+        <td>0..n
+        <td>
+                Recommended
+                
+       <tr>
+        <th scope="row"><a href="http://purl.org/dc/terms/identifier">dct:identifier</a>
+        <td>Identifier(s) of the organization, at least its <a href="https://www.nationaalarchief.nl/archiveren/kennisbank/isil-codes">ISIL code</a>.
+        <td>0..n
+        <td>
+                Recommended
+                
+       <tr>
+        <th scope="row"><a href="http://www.w3.org/2002/07/owl#sameAs">owl:sameAs</a>
+        <td>Links to the organization in other databases.
+        <td>0..n
+        <td>
+                Recommended
+                
+     </table>
+    </div>
+   </div>
+   <h4 class="heading settled" data-level="5.6.3" id="contactpoint-attributes"><span class="secno">5.6.3. </span><span class="content">Contact point attributes</span><a class="self-link" href="#contactpoint-attributes"></a></h4>
+   <div class="vocab-tabs">
+    <div data-vocab="schema">
+     <table>
+      <caption><a href="https://schema.org/ContactPoint">schema:ContactPoint</a> properties</caption>
+      <thead>
+       <tr>
+        <th>Property
+        <th>Description
+        <th>Cardinality
+        <th>Usage
+      <tbody>
+       <tr>
+        <th scope="row"><a href="https://schema.org/name">schema:name</a>
+        <td>Name of the contact point, preferably a department (“Datasets department”) rather than an individual employee. Tag the value with a language so that a multilingual department name or a non-Latin personal name can be shown in the appropriate language.
+        <td>1..n
+        <td>
+                Required
+                        <br><small><a href="#v2">v2.0</a>: must be rdf:langString</small>
+                    
+       <tr>
+        <th scope="row"><a href="https://schema.org/email">schema:email</a>
+        <td>The email address of the contact point, preferably a functional address of the organization or department.
+        <td>1..n
+        <td>
+                Required
+                        
+     </table>
+    </div>
+    <div data-vocab="dcat">
+     <table>
+      <caption><a href="http://www.w3.org/2006/vcard/ns#Kind">vcard:Kind</a> properties</caption>
+      <thead>
+       <tr>
+        <th>Property
+        <th>Description
+        <th>Cardinality
+        <th>Usage
+      <tbody>
+       <tr>
+        <th scope="row"><a href="http://www.w3.org/2006/vcard/ns#fn">vcard:fn</a>
+        <td>Name of the contact point, preferably a department (“Datasets department”) rather than an individual employee.
+        <td>1..n
+        <td>
+                Required
+                        
+       <tr>
+        <th scope="row"><a href="http://www.w3.org/2006/vcard/ns#hasEmail">vcard:hasEmail</a>
+        <td>The email address of the contact point as a mailto: URL, preferably a functional address of the organization or department.
+        <td>1..n
+        <td>
+                Recommended
+                    <br><small><a href="#v2">v2.0</a>: becomes required; must be IRI</small>
+                    
+     </table>
+    </div>
+   </div>
+   <h4 class="heading settled" data-level="5.6.4" id="distribution-attributes"><span class="secno">5.6.4. </span><span class="content">Distribution attributes</span><a class="self-link" href="#distribution-attributes"></a></h4>
+   <div class="vocab-tabs">
+    <div data-vocab="schema">
+     <table>
+      <caption><a href="https://schema.org/DataDownload">schema:DataDownload</a> properties</caption>
+      <thead>
+       <tr>
+        <th>Property
+        <th>Description
+        <th>Cardinality
+        <th>Usage
+      <tbody>
+       <tr>
+        <th scope="row"><a href="https://schema.org/contentUrl">schema:contentUrl</a>
+        <td>The URL that provides direct access to the distribution itself: the data file or the <a data-link-type="dfn" href="#web-api" id="ref-for-web-api④">web API</a> endpoint.
+                Use <code>schema:documentation</code> if there is also a documentation page that describes or provides access to the distribution (such as a SPARQL UI or a download landing page).
+        <td>1
+        <td>
+                Required
+                        <br><small><a href="#v2">v2.0</a>: must be IRI</small>
+                    
+       <tr>
+        <th scope="row"><a href="https://schema.org/encodingFormat">schema:encodingFormat</a>
+        <td>The media type of the downloadable file. Use a value from the <a data-link-type="biblio" href="#biblio-iana-media-types" title="Media Types">[IANA-MEDIA-TYPES]</a> list. The value should indicate the media type of the response of schema:contentUrl when no Accept header is included in the request. When the distribution is compressed, the compression format (such as <code>zip</code>, <code>gzip</code>) must be included (such as <code>text/turtle+gzip</code>).
+        <td>0..1
+        <td>
+                Required: schema:encodingFormat or schema:usageInfo
+                    <br><small><a href="#v2">v2.0</a>: max 1</small>
+                    
+       <tr>
+        <th scope="row"><a href="https://schema.org/description">schema:description</a>
+        <td>Distribution description
+        <td>1..n
+        <td>
+                Recommended
+                    
+       <tr>
+        <th scope="row"><a href="https://schema.org/datePublished">schema:datePublished</a>
+        <td>The date of formal issuance (such as publication) of the distribution. See <a href="#distribution-date">§ 5.4.1 Creation and modification dates</a>.
+        <td>0..1
+        <td>
+                Recommended
+                <br><small><a href="#v2">v2.0</a>: must be valid ISO 8601</small>
+                    
+       <tr>
+        <th scope="row"><a href="https://schema.org/dateModified">schema:dateModified</a>
+        <td>The most recent date on which the distribution was changed or modified. See <a href="#distribution-date">§ 5.4.1 Creation and modification dates</a>.
+        <td>0..1
+        <td>
+                Recommended
+                <br><small><a href="#v2">v2.0</a>: must be valid ISO 8601</small>
+                    
+       <tr>
+        <th scope="row"><a href="https://schema.org/inLanguage">schema:inLanguage</a>
+        <td>Language or languages in which the distribution is available. Use a <a data-link-type="biblio" href="#biblio-bcp47" title="Tags for Identifying Languages">[BCP47]</a> language code, such as <code>nl</code>.
+        <td>0..n
+        <td>
+                Recommended
+                <br><small><a href="#v2">v2.0</a>: must match <code>^[a-zA-Z]{2,3}(-[a-zA-Z0-9]+)*$</code></small>
+                    
+       <tr>
+        <th scope="row"><a href="https://schema.org/license">schema:license</a>
+        <td>License applicable to this distribution, overriding the parent dataset’s license. Optional; only set this when the distribution carries a different license from the dataset. See <a href="#dataset-license">§ 5.2.2 License</a>.
+        <td>0..1
+        <td>
+                Recommended
+                <br><small><a href="#v2">v2.0</a>: must be IRI</small>
+                    
+       <tr>
+        <th scope="row"><a href="https://schema.org/contentSize">schema:contentSize</a>
+        <td>Distribution file size in bytes.
+        <td>0..1
+        <td>
+                Recommended
+                
+       <tr>
+        <th scope="row"><a href="https://schema.org/usageInfo">schema:usageInfo</a>
+        <td>A link to the documentation: for downloads, the application profile, vocabulary or ontology; for <a data-link-type="dfn" href="#web-api" id="ref-for-web-api⑤">web API</a>s (such as SPARQL or OAI-PMH), the protocol specification.
+                It lets consumers tell a full data dump from an API that exposes only part of the data. See <a href="#usage-information">§ 5.4.2 Usage information</a>.
+        <td>0..n
+        <td>
+                Required: schema:encodingFormat or schema:usageInfo
+                    <br><small><a href="#v2">v2.0</a>: must be IRI</small>
+                    
+       <tr>
+        <th scope="row"><a href="https://schema.org/documentation">schema:documentation</a>
+        <td>A documentation page that describes or provides access to this distribution, such as a SPARQL UI or a download landing page.
+                <code>schema:contentUrl</code> points to the distribution itself (the data file or the API endpoint).
+        <td>0..n
+        <td>
+                Recommended
+                
+     </table>
+    </div>
+    <div data-vocab="dcat">
+     <table>
+      <caption><a href="http://www.w3.org/ns/dcat#Distribution">dcat:Distribution</a> properties</caption>
+      <thead>
+       <tr>
+        <th>Property
+        <th>Description
+        <th>Cardinality
+        <th>Usage
+      <tbody>
+       <tr>
+        <th scope="row"><a href="http://www.w3.org/ns/dcat#mediaType">dcat:mediaType</a>
+        <td>The media type of the distribution according to the IANA classification.
+        <td>0..1
+        <td>
+                Required: dcat:mediaType or dct:format
+                    
+       <tr>
+        <th scope="row"><a href="http://www.w3.org/ns/dcat#accessURL">dcat:accessURL</a>
+        <td>The URL that provides access to a distribution of the dataset.
+        <td>0..n
+        <td>
+                Required: dcat:accessURL or dcat:downloadURL
+                    
+       <tr>
+        <th scope="row"><a href="http://www.w3.org/ns/dcat#downloadURL">dcat:downloadURL</a>
+        <td>The URL of the downloadable file in a specific format.
+        <td>0..n
+        <td>
+                Required: dcat:accessURL or dcat:downloadURL
+                    
+       <tr>
+        <th scope="row"><a href="http://www.w3.org/ns/dcat#compressFormat">dcat:compressFormat</a>
+        <td>The compression format of the distribution, as a media type from the <a data-link-type="biblio" href="#biblio-iana-media-types" title="Media Types">[IANA-MEDIA-TYPES]</a> list (such as <code>application/gzip</code>). This is the usual way to declare compression in DCAT; a suffix on <code>dcat:mediaType</code> (such as <code>text/turtle+gzip</code>) is accepted as well. If both are given, <code>dcat:compressFormat</code> takes precedence. A value that is not a media type (such as <code>gzip</code> rather than <code>application/gzip</code>) is not recorded.
+        <td>0..n
+        <td>
+                Recommended
+                
+       <tr>
+        <th scope="row"><a href="http://purl.org/dc/terms/conformsTo">dct:conformsTo</a>
+        <td>Standards or specifications the distribution conforms to. For SPARQL endpoints, this must include the SPARQL protocol URI. See <a href="#usage-information">§ 5.4.2 Usage information</a>.
+        <td>0..n
+        <td>
+                Recommended
+                
+       <tr>
+        <th scope="row"><a href="http://purl.org/dc/terms/license">dct:license</a>
+        <td>The license under which the distribution is made available. See <a href="#dataset-license">§ 5.2.2 License</a>.
+        <td>1
+        <td>
+                Recommended
+                    <br><small><a href="#v2">v2.0</a>: becomes required; must be IRI</small>
+                    
+       <tr>
+        <th scope="row"><a href="http://purl.org/dc/terms/language">dct:language</a>
+        <td>The natural language of the textual values in the distribution. Use a value from the <a href="https://op.europa.eu/en/web/eu-vocabularies/concept-scheme/-/resource?uri=http://publications.europa.eu/resource/authority/language">EU Vocabularies Languages Named Authority List</a>.
+        <td>0..n
+        <td>
+                Recommended
+                <br><small><a href="#v2">v2.0</a>: must match <code>^http://publications\.europa\.eu/resource/authority/language/</code></small>
+                    
+       <tr>
+        <th scope="row"><a href="http://purl.org/dc/terms/format">dct:format</a>
+        <td>The format of the distribution.
+        <td>0..n
+        <td>
+                Required: dcat:mediaType or dct:format
+                    
+     </table>
+    </div>
+   </div>
+   <h4 class="heading settled" data-level="5.6.5" id="datacatalog-attributes"><span class="secno">5.6.5. </span><span class="content">DataCatalog attributes</span><a class="self-link" href="#datacatalog-attributes"></a></h4>
+   <div class="vocab-tabs">
+    <div data-vocab="schema">
+     <table>
+      <caption><a href="https://schema.org/DataCatalog">schema:DataCatalog</a> properties</caption>
+      <thead>
+       <tr>
+        <th>Property
+        <th>Description
+        <th>Cardinality
+        <th>Usage
+      <tbody>
+       <tr>
+        <th scope="row">@id
+        <td>The HTTP <a data-link-type="biblio" href="#biblio-iri" title="Internationalized Resource Identifiers (IRIs)">[IRI]</a> of the DataCatalog.
+        <td>1
+        <td>Recommended<br><small><a href="#v2">v2.0</a>: must be IRI</small>
+       <tr>
+        <th scope="row"><a href="https://schema.org/name">schema:name</a>
+        <td>Name of the data catalog
+        <td>1..n
+        <td>
+                Required
+                        <br><small><a href="#v2">v2.0</a>: must be rdf:langString</small>
+                    
+       <tr>
+        <th scope="row"><a href="https://schema.org/description">schema:description</a>
+        <td>A description of the contents of the data catalog.
                 Preferably at least three sentences and at most one paragraph (2,000 characters).
                 The discoverability of the data catalog depends in part on the quality of the description.
                 Consider different audiences – both domain experts and others –
                 for whom the text should be understandable.
-      <td>1..n
-      <td>
+        <td>1..n
+        <td>
                 Recommended
                     <br><small><a href="#v2">v2.0</a>: becomes required; must be rdf:langString</small>
                     
-     <tr>
-      <th scope="row"><a href="schema:publisher">schema:publisher</a>
-      <td>Publisher of the data catalog See <a href="#creator-publisher-information">§ 5.3 Creator/publisher information</a>.
-      <td>1
-      <td>
+       <tr>
+        <th scope="row"><a href="https://schema.org/publisher">schema:publisher</a>
+        <td>Publisher of the data catalog See <a href="#creator-publisher-information">§ 5.3 Creator/publisher information</a>.
+        <td>1
+        <td>
                 Recommended
                     <br><small><a href="#v2">v2.0</a>: becomes required</small>
                     
-     <tr>
-      <th scope="row"><a href="schema:dataset">schema:dataset</a>
-      <td>Dataset(s) in the data catalog
-      <td>1..n
-      <td>
+       <tr>
+        <th scope="row"><a href="https://schema.org/dataset">schema:dataset</a>
+        <td>Dataset(s) in the data catalog
+        <td>1..n
+        <td>
                 Recommended
                     
-   </table>
-   <h4 class="heading settled" data-level="5.6.5" id="dataset-example"><span class="secno">5.6.5. </span><span class="content">Full example</span><a class="self-link" href="#dataset-example"></a></h4>
-   <div class="example" id="example-22f8b22b">
-    <a class="self-link" href="#example-22f8b22b"></a>
-    A full <a data-link-type="dfn" href="#dataset-description" id="ref-for-dataset-description①②">dataset description</a> that includes <a href="#dataset-attributes">required and recommended attributes</a>.
+     </table>
+    </div>
+    <div data-vocab="dcat">
+     <table>
+      <caption><a href="http://www.w3.org/ns/dcat#Catalog">dcat:Catalog</a> properties</caption>
+      <thead>
+       <tr>
+        <th>Property
+        <th>Description
+        <th>Cardinality
+        <th>Usage
+      <tbody>
+       <tr>
+        <th scope="row"><a href="http://purl.org/dc/terms/title">dct:title</a>
+        <td>The name of the catalog.
+        <td>1..n
+        <td>
+                Required
+                        <br><small><a href="#v2">v2.0</a>: must be rdf:langString</small>
+                    
+       <tr>
+        <th scope="row"><a href="http://purl.org/dc/terms/description">dct:description</a>
+        <td>A description of the catalog.
+        <td>1..n
+        <td>
+                Recommended
+                    <br><small><a href="#v2">v2.0</a>: becomes required; must be rdf:langString</small>
+                    
+       <tr>
+        <th scope="row"><a href="http://purl.org/dc/terms/publisher">dct:publisher</a>
+        <td>The organization responsible for publishing the catalog. See <a href="#creator-publisher-information">§ 5.3 Creator/publisher information</a>.
+        <td>1
+        <td>
+                Recommended
+                    <br><small><a href="#v2">v2.0</a>: becomes required</small>
+                    
+       <tr>
+        <th scope="row"><a href="http://www.w3.org/ns/dcat#contactPoint">dcat:contactPoint</a>
+        <td>Contact information where end users can get in touch with questions about the catalog.
+        This contains the e-mail address or a link (URL) to the contact form of the responsible organization.
+        The e-mail address should be a functional e-mail address of the organization or department. See <a href="#contact">§ 5.3.3 Contact information</a>.
+        <td>1
+        <td>
+                Recommended
+                    <br><small><a href="#v2">v2.0</a>: becomes required</small>
+                    
+       <tr>
+        <th scope="row"><a href="http://www.w3.org/ns/dcat#dataset">dcat:dataset</a>
+        <td>The datasets in the catalog.
+        <td>1..n
+        <td>
+                Required
+                        
+     </table>
+    </div>
+   </div>
+   <h4 class="heading settled" data-level="5.6.6" id="dataset-example"><span class="secno">5.6.6. </span><span class="content">Full example</span><a class="self-link" href="#dataset-example"></a></h4>
+   <div class="example" id="example-d613ace8">
+    <a class="self-link" href="#example-d613ace8"></a>
+    A full <a data-link-type="dfn" href="#dataset-description" id="ref-for-dataset-description①③">dataset description</a> that includes <a href="#dataset-attributes">required and recommended attributes</a>.
 
     
+    <div class="vocab-tabs">
+     <div data-vocab="schema">
 <pre class="highlight include-code"><c- p>{</c->
   <c- nd>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org"</c-><c- p>,</c->
   <c- nd>"@graph"</c-><c- p>:</c-> <c- p>[</c->
@@ -3809,15 +4661,150 @@ even if that resource is the same on all pages.</p>
   <c- p>]</c->
 <c- p>}</c->
 </pre>
+     </div>
+     <div data-vocab="dcat">
+<pre class="highlight include-code"><c- p>{</c->
+  <c- nd>"@context"</c-><c- p>:</c-> <c- p>{</c->
+    <c- f>"dcat"</c-><c- p>:</c-> <c- u>"http://www.w3.org/ns/dcat#"</c-><c- p>,</c->
+    <c- f>"dct"</c-><c- p>:</c-> <c- u>"http://purl.org/dc/terms/"</c-><c- p>,</c->
+    <c- f>"foaf"</c-><c- p>:</c-> <c- u>"http://xmlns.com/foaf/0.1/"</c-><c- p>,</c->
+    <c- f>"owl"</c-><c- p>:</c-> <c- u>"http://www.w3.org/2002/07/owl#"</c-><c- p>,</c->
+    <c- f>"vcard"</c-><c- p>:</c-> <c- u>"http://www.w3.org/2006/vcard/ns#"</c-><c- p>,</c->
+    <c- f>"xsd"</c-><c- p>:</c-> <c- u>"http://www.w3.org/2001/XMLSchema#"</c->
+  <c- p>},</c->
+  <c- nd>"@graph"</c-><c- p>:</c-> <c- p>[</c->
+    <c- p>{</c->
+      <c- nd>"@type"</c-><c- p>:</c-> <c- u>"dcat:Dataset"</c-><c- p>,</c->
+      <c- nd>"@id"</c-><c- p>:</c-> <c- u>"http://data.bibliotheken.nl/id/dataset/rise-alba"</c-><c- p>,</c->
+      <c- f>"dct:title"</c-><c- p>:</c-> <c- p>[</c->
+        <c- p>{</c->
+          <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Alba amicorum van de Koninklijke Bibliotheek"</c-><c- p>,</c->
+          <c- nd>"@language"</c-><c- p>:</c-> <c- u>"nl"</c->
+        <c- p>},</c->
+        <c- p>{</c->
+          <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Alba amicorum of the Dutch Royal Library"</c-><c- p>,</c->
+          <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c->
+        <c- p>}</c->
+      <c- p>],</c->
+      <c- f>"dct:description"</c-><c- p>:</c-> <c- p>{</c->
+        <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Description only in English"</c-><c- p>,</c->
+        <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c->
+      <c- p>},</c->
+      <c- f>"dcat:theme"</c-><c- p>:</c-> <c- p>{</c-> <c- nd>"@id"</c-><c- p>:</c-> <c- u>"http://vocab.getty.edu/aat/300026680"</c-> <c- p>},</c->
+      <c- f>"dcat:landingPage"</c-><c- p>:</c-> <c- p>{</c->
+        <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://www.kb.nl/bronnen-zoekwijzers/kb-collecties/moderne-handschriften-vanaf-ca-1550/alba-amicorum"</c->
+      <c- p>},</c->
+      <c- f>"dct:language"</c-><c- p>:</c-> <c- p>[</c->
+        <c- p>{</c-> <c- nd>"@id"</c-><c- p>:</c-> <c- u>"http://publications.europa.eu/resource/authority/language/NLD"</c-> <c- p>},</c->
+        <c- p>{</c-> <c- nd>"@id"</c-><c- p>:</c-> <c- u>"http://publications.europa.eu/resource/authority/language/ENG"</c-> <c- p>}</c->
+      <c- p>],</c->
+      <c- f>"dct:spatial"</c-><c- p>:</c-> <c- p>{</c-> <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://sws.geonames.org/2750405/"</c-> <c- p>},</c->
+      <c- f>"dct:temporal"</c-><c- p>:</c-> <c- u>"1939/1945"</c-><c- p>,</c->
+      <c- f>"dct:publisher"</c-><c- p>:</c-> <c- p>{</c-> <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com"</c-> <c- p>},</c->
+      <c- f>"dct:creator"</c-><c- p>:</c-> <c- p>[</c->
+        <c- p>{</c->
+          <c- nd>"@type"</c-><c- p>:</c-> <c- u>"foaf:Person"</c-><c- p>,</c->
+          <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com/creator1"</c-><c- p>,</c->
+          <c- f>"foaf:name"</c-><c- p>:</c-> <c- p>{</c-> <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Creator 1"</c-><c- p>,</c-> <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c-> <c- p>}</c->
+        <c- p>},</c->
+        <c- p>{</c->
+          <c- nd>"@type"</c-><c- p>:</c-> <c- u>"foaf:Person"</c-><c- p>,</c->
+          <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com/creator2"</c-><c- p>,</c->
+          <c- f>"foaf:name"</c-><c- p>:</c-> <c- p>{</c-> <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Creator 2"</c-><c- p>,</c-> <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c-> <c- p>}</c->
+        <c- p>},</c->
+        <c- p>{</c-> <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com"</c-> <c- p>}</c->
+      <c- p>],</c->
+      <c- f>"dcat:contactPoint"</c-><c- p>:</c-> <c- p>{</c->
+        <c- nd>"@type"</c-><c- p>:</c-> <c- u>"vcard:Kind"</c-><c- p>,</c->
+        <c- f>"vcard:fn"</c-><c- p>:</c-> <c- p>{</c-> <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Datasets Manager"</c-><c- p>,</c-> <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c-> <c- p>},</c->
+        <c- f>"vcard:hasEmail"</c-><c- p>:</c-> <c- p>{</c-> <c- nd>"@id"</c-><c- p>:</c-> <c- u>"mailto:datasets@example.com"</c-> <c- p>}</c->
+      <c- p>},</c->
+      <c- f>"dct:created"</c-><c- p>:</c-> <c- p>{</c-> <c- nd>"@value"</c-><c- p>:</c-> <c- u>"2021-05-27"</c-><c- p>,</c-> <c- nd>"@type"</c-><c- p>:</c-> <c- u>"xsd:date"</c-> <c- p>},</c->
+      <c- f>"dct:issued"</c-><c- p>:</c-> <c- p>{</c-> <c- nd>"@value"</c-><c- p>:</c-> <c- u>"2021-05-28"</c-><c- p>,</c-> <c- nd>"@type"</c-><c- p>:</c-> <c- u>"xsd:date"</c-> <c- p>},</c->
+      <c- f>"dct:modified"</c-><c- p>:</c-> <c- p>{</c->
+        <c- nd>"@value"</c-><c- p>:</c-> <c- u>"2021-05-27T09:56:21.370767"</c-><c- p>,</c->
+        <c- nd>"@type"</c-><c- p>:</c-> <c- u>"xsd:dateTime"</c->
+      <c- p>},</c->
+      <c- f>"dcat:distribution"</c-><c- p>:</c-> <c- p>[</c->
+        <c- p>{</c->
+          <c- nd>"@type"</c-><c- p>:</c-> <c- u>"dcat:Distribution"</c-><c- p>,</c->
+          <c- f>"dcat:mediaType"</c-><c- p>:</c-> <c- p>{</c->
+            <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://www.iana.org/assignments/media-types/application/rdf+xml"</c->
+          <c- p>},</c->
+          <c- f>"dcat:accessURL"</c-><c- p>:</c-> <c- p>{</c->
+            <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://data.bibliotheken.nl/id/dataset/rise-alba.rdf"</c->
+          <c- p>},</c->
+          <c- f>"dcat:downloadURL"</c-><c- p>:</c-> <c- p>{</c->
+            <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://data.bibliotheken.nl/id/dataset/rise-alba.rdf"</c->
+          <c- p>},</c->
+          <c- f>"dcat:byteSize"</c-><c- p>:</c-> <c- p>{</c-> <c- nd>"@value"</c-><c- p>:</c-> <c- u>"12582912"</c-><c- p>,</c-> <c- nd>"@type"</c-><c- p>:</c-> <c- u>"xsd:nonNegativeInteger"</c-> <c- p>},</c->
+          <c- f>"dct:description"</c-><c- p>:</c-> <c- u>"RDF/XML dump"</c-><c- p>,</c->
+          <c- f>"dct:license"</c-><c- p>:</c-> <c- p>{</c->
+            <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://creativecommons.org/publicdomain/zero/1.0/"</c->
+          <c- p>}</c->
+        <c- p>},</c->
+        <c- p>{</c->
+          <c- nd>"@type"</c-><c- p>:</c-> <c- u>"dcat:Distribution"</c-><c- p>,</c->
+          <c- f>"dcat:mediaType"</c-><c- p>:</c-> <c- p>{</c->
+            <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://www.iana.org/assignments/media-types/application/ld+json"</c->
+          <c- p>},</c->
+          <c- f>"dcat:accessURL"</c-><c- p>:</c-> <c- p>{</c->
+            <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://data.bibliotheken.nl/id/dataset/rise-alba.jsonld"</c->
+          <c- p>},</c->
+          <c- f>"dcat:downloadURL"</c-><c- p>:</c-> <c- p>{</c->
+            <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://data.bibliotheken.nl/id/dataset/rise-alba.jsonld"</c->
+          <c- p>},</c->
+          <c- f>"dct:conformsTo"</c-><c- p>:</c-> <c- p>{</c-> <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://docs.nde.nl/schema-profile/"</c-> <c- p>},</c->
+          <c- f>"dct:description"</c-><c- p>:</c-> <c- u>"JSON-LD dump"</c-><c- p>,</c->
+          <c- f>"dct:license"</c-><c- p>:</c-> <c- p>{</c->
+            <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://creativecommons.org/publicdomain/zero/1.0/"</c->
+          <c- p>}</c->
+        <c- p>},</c->
+        <c- p>{</c->
+          <c- nd>"@type"</c-><c- p>:</c-> <c- u>"dcat:Distribution"</c-><c- p>,</c->
+          <c- f>"dcat:accessURL"</c-><c- p>:</c-> <c- p>{</c->
+            <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://data.bibliotheken.nl/id/dataset/sparql"</c->
+          <c- p>},</c->
+          <c- f>"foaf:page"</c-><c- p>:</c-> <c- p>{</c->
+            <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://data.bibliotheken.nl/KB/Production/sparql"</c->
+          <c- p>},</c->
+          <c- f>"dct:conformsTo"</c-><c- p>:</c-> <c- p>{</c->
+            <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://www.w3.org/TR/sparql11-protocol/"</c->
+          <c- p>},</c->
+          <c- f>"dct:format"</c-><c- p>:</c-> <c- p>{</c->
+            <c- nd>"@id"</c-><c- p>:</c-> <c- u>"http://publications.europa.eu/resource/authority/file-type/SPARQLQ"</c->
+          <c- p>},</c->
+          <c- f>"dct:description"</c-><c- p>:</c-> <c- u>"SPARQL endpoint"</c-><c- p>,</c->
+          <c- f>"dct:license"</c-><c- p>:</c-> <c- p>{</c->
+            <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://creativecommons.org/publicdomain/zero/1.0/"</c->
+          <c- p>}</c->
+        <c- p>}</c->
+      <c- p>]</c->
+    <c- p>},</c->
+    <c- p>{</c->
+      <c- nd>"@type"</c-><c- p>:</c-> <c- u>"foaf:Organization"</c-><c- p>,</c->
+      <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com"</c-><c- p>,</c->
+      <c- f>"dct:identifier"</c-><c- p>:</c-> <c- u>"test"</c-><c- p>,</c->
+      <c- f>"foaf:name"</c-><c- p>:</c-> <c- p>{</c->
+        <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Koninklijke Bibliotheek"</c-><c- p>,</c->
+        <c- nd>"@language"</c-><c- p>:</c-> <c- u>"nl"</c->
+      <c- p>},</c->
+      <c- f>"owl:sameAs"</c-><c- p>:</c-> <c- p>{</c-> <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://ror.org/02w4jbg70"</c-> <c- p>}</c->
+    <c- p>}</c->
+  <c- p>]</c->
+<c- p>}</c->
+</pre>
+     </div>
+    </div>
    </div>
    <h2 class="heading settled" data-level="6" id="tools"><span class="secno">6. </span><span class="content">Tools</span><a class="self-link" href="#tools"></a></h2>
    <p><em>This section is non-normative.</em></p>
    <p>Developers can use the <a href="https://datasetregister.netwerkdigitaalerfgoed.nl/api/">NDE Register API</a> to validate datasets and catalogs against the requirements described in this document.
 The <a data-link-type="biblio" href="#biblio-shacl" title="Shapes Constraint Language (SHACL)">[SHACL]</a> shape graph used to validate datasets and catalogs is available at <a href="https://datasetregister.netwerkdigitaalerfgoed.nl/api/shacl">/shacl</a>.</p>
    <h3 class="heading settled" data-level="6.1" id="validating-yourself"><span class="secno">6.1. </span><span class="content">Running the shapes yourself</span><a class="self-link" href="#validating-yourself"></a></h3>
-   <p>The shapes target Schema.org properties in the <code>https://schema.org/</code> namespace.
+   <p>The Schema.org shapes target properties in the <code>https://schema.org/</code> namespace.
 Schema.org’s own JSON-LD context maps its terms to <code>http://schema.org/</code>,
-so a <a data-link-type="dfn" href="#dataset-description" id="ref-for-dataset-description①③">dataset description</a> validated against that context matches no shape at all
+so a Schema.org <a data-link-type="dfn" href="#dataset-description" id="ref-for-dataset-description①④">dataset description</a> validated against that context matches no shape at all
 and the report comes back <code>sh:conforms true</code> without anything having been checked.
 Since Schema.org release 30.1 that context also no longer types <code>mainEntityOfPage</code>, <code>license</code>
 and the date properties, which turns values that should be IRIs and dates into plain strings.</p>
@@ -3838,9 +4825,12 @@ so you get the report the <a href="https://datasetregister.netwerkdigitaalerfgoe
 <c- p>}</c->
 </pre>
    </div>
-   <p>Keep serving your <a data-link-type="dfn" href="#dataset-description" id="ref-for-dataset-description①④">dataset description</a> itself with <code>"@context": "https://schema.org/"</code>:
+   <p>Keep serving your <a data-link-type="dfn" href="#dataset-description" id="ref-for-dataset-description①⑤">dataset description</a> itself with <code>"@context": "https://schema.org/"</code>:
 the Register substitutes the context on its side when it reads your description,
 so there is nothing to change in what you publish.</p>
+   <p>DCAT-AP-NL 3.0 descriptions need no such step.
+Their JSON-LD declares the namespaces itself, as in the examples in this document,
+so you can validate them as they are.</p>
    <p>Google’s <a href="https://search.google.com/test/rich-results">Rich Results Test</a> (previously Structured Data Testing Tool)
 can help with testing RDF metadata in general.</p>
    <h2 class="heading settled" data-level="7" id="changes"><span class="secno">7. </span><span class="content">Changes</span><a class="self-link" href="#changes"></a></h2>
@@ -4207,6 +5197,8 @@ can help with testing RDF metadata in general.</p>
   <dl>
    <dt id="biblio-bcp47">[BCP47]
    <dd>Addison Phillips; Mark Davis. <a href="https://www.rfc-editor.org/info/bcp47"><cite>Tags for Identifying Languages</cite></a>. September 2009. Best Current Practice. URL: <a href="https://www.rfc-editor.org/info/bcp47">https://www.rfc-editor.org/info/bcp47</a>
+   <dt id="biblio-dcat-ap-nl">[DCAT-AP-NL]
+   <dd><a href="https://docs.geostandaarden.nl/dcat/dcat-ap-nl30/"><cite>DCAT-AP-NL 3.0</cite></a>. URL: <a href="https://docs.geostandaarden.nl/dcat/dcat-ap-nl30/">https://docs.geostandaarden.nl/dcat/dcat-ap-nl30/</a>
    <dt id="biblio-dera">[DERA]
    <dd><a href="https://dera.netwerkdigitaalerfgoed.nl"><cite>Digital Heritage Reference Architecture</cite></a>. URL: <a href="https://dera.netwerkdigitaalerfgoed.nl">https://dera.netwerkdigitaalerfgoed.nl</a>
    <dt id="biblio-dwbp">[DWBP]
@@ -4221,6 +5213,8 @@ can help with testing RDF metadata in general.</p>
    <dd>Guus Schreiber; Yves Raimond. <a href="https://www.w3.org/TR/rdf11-primer/"><cite>RDF 1.1 Primer</cite></a>. 24 June 2014. NOTE. URL: <a href="https://www.w3.org/TR/rdf11-primer/">https://www.w3.org/TR/rdf11-primer/</a>
    <dt id="biblio-rfc2119">[RFC2119]
    <dd>S. Bradner. <a href="https://datatracker.ietf.org/doc/html/rfc2119"><cite>Key words for use in RFCs to Indicate Requirement Levels</cite></a>. March 1997. Best Current Practice. URL: <a href="https://datatracker.ietf.org/doc/html/rfc2119">https://datatracker.ietf.org/doc/html/rfc2119</a>
+   <dt id="biblio-schema-org">[SCHEMA-ORG]
+   <dd>W3C Schema.org Community Group. <a href="https://schema.org/"><cite>Schema.org</cite></a>. 6.0. URL: <a href="https://schema.org/">https://schema.org/</a>
   </dl>
   <h3 class="heading no-num no-ref settled" id="informative"><span class="content">Non-Normative References</span><a class="self-link" href="#informative"></a></h3>
   <dl>
@@ -4234,8 +5228,6 @@ can help with testing RDF metadata in general.</p>
    <dd>Gavin Carothers; Andy Seaborne. <a href="https://w3c.github.io/rdf-n-triples/spec/"><cite>RDF 1.1 N-Triples</cite></a>. URL: <a href="https://w3c.github.io/rdf-n-triples/spec/">https://w3c.github.io/rdf-n-triples/spec/</a>
    <dt id="biblio-schema-ap-nde">[SCHEMA-AP-NDE]
    <dd>David de Boer. <a href="https://docs.nde.nl/schema-profile/"><cite>Schema.org Application Profile for Datasets</cite></a>. Living Specification. URL: <a href="https://docs.nde.nl/schema-profile/">https://docs.nde.nl/schema-profile/</a>
-   <dt id="biblio-schema-org">[SCHEMA-ORG]
-   <dd>W3C Schema.org Community Group. <a href="https://schema.org/"><cite>Schema.org</cite></a>. 6.0. URL: <a href="https://schema.org/">https://schema.org/</a>
    <dt id="biblio-shacl">[SHACL]
    <dd>Holger Knublauch; Dimitris Kontokostas. <a href="https://w3c.github.io/data-shapes/shacl/"><cite>Shapes Constraint Language (SHACL)</cite></a>. URL: <a href="https://w3c.github.io/data-shapes/shacl/">https://w3c.github.io/data-shapes/shacl/</a>
    <dt id="biblio-sparql11-overview">[SPARQL11-OVERVIEW]
@@ -4456,11 +5448,11 @@ let dfnPanelData = {
 "consumer": {"dfnID":"consumer","dfnText":"Consumer","external":false,"refSections":[{"refs":[{"id":"ref-for-consumer"}],"title":"1. Introduction"},{"refs":[{"id":"ref-for-consumer\u2460"}],"title":"5.1.2. Durable identifiers"},{"refs":[{"id":"ref-for-consumer\u2461"}],"title":"5.1.3. Resolvable dataset IRIs"},{"refs":[{"id":"ref-for-consumer\u2462"}],"title":"5.1.4. Information remains available"},{"refs":[{"id":"ref-for-consumer\u2463"}],"title":"5.2. Dataset information"},{"refs":[{"id":"ref-for-consumer\u2464"}],"title":"5.2.4. Versions"},{"refs":[{"id":"ref-for-consumer\u2465"}],"title":"5.3.1. Organization IRI"},{"refs":[{"id":"ref-for-consumer\u2466"}],"title":"5.3.3. Contact information"},{"refs":[{"id":"ref-for-consumer\u2467"}],"title":"5.4. Distributions"},{"refs":[{"id":"ref-for-consumer\u2468"}],"title":"5.4.1. Creation and modification dates"},{"refs":[{"id":"ref-for-consumer\u2460\u24ea"}],"title":"5.5. Data catalog"}],"url":"#consumer"},
 "data-catalog": {"dfnID":"data-catalog","dfnText":"Data catalog","external":false,"refSections":[{"refs":[{"id":"ref-for-data-catalog"}],"title":"5.5. Data catalog"},{"refs":[{"id":"ref-for-data-catalog\u2460"}],"title":"5.5.1. Pagination"}],"url":"#data-catalog"},
 "dataset": {"dfnID":"dataset","dfnText":"Dataset","external":false,"refSections":[{"refs":[{"id":"ref-for-dataset"}],"title":"1. Introduction"},{"refs":[{"id":"ref-for-dataset\u2460"},{"id":"ref-for-dataset\u2461"},{"id":"ref-for-dataset\u2462"},{"id":"ref-for-dataset\u2463"}],"title":"3. Definitions"},{"refs":[{"id":"ref-for-dataset\u2464"}],"title":"4. Conceptual model"},{"refs":[{"id":"ref-for-dataset\u2465"}],"title":"5.1.2. Durable identifiers"},{"refs":[{"id":"ref-for-dataset\u2466"}],"title":"5.1.3. Resolvable dataset IRIs"},{"refs":[{"id":"ref-for-dataset\u2467"}],"title":"5.2. Dataset information"},{"refs":[{"id":"ref-for-dataset\u2468"}],"title":"5.3. Creator/publisher information"}],"url":"#dataset"},
-"dataset-description": {"dfnID":"dataset-description","dfnText":"Dataset description","external":false,"refSections":[{"refs":[{"id":"ref-for-dataset-description"}],"title":"1. Introduction"},{"refs":[{"id":"ref-for-dataset-description\u2460"}],"title":"2. Version 2.0"},{"refs":[{"id":"ref-for-dataset-description\u2461"}],"title":"3. Definitions"},{"refs":[{"id":"ref-for-dataset-description\u2462"}],"title":"5.1. Available in RDF"},{"refs":[{"id":"ref-for-dataset-description\u2463"},{"id":"ref-for-dataset-description\u2464"},{"id":"ref-for-dataset-description\u2465"}],"title":"5.1.1. Content-Type"},{"refs":[{"id":"ref-for-dataset-description\u2466"},{"id":"ref-for-dataset-description\u2467"}],"title":"5.1.3. Resolvable dataset IRIs"},{"refs":[{"id":"ref-for-dataset-description\u2468"}],"title":"5.2.3. Creation, publication and modification dates"},{"refs":[{"id":"ref-for-dataset-description\u2460\u24ea"}],"title":"5.2.4. Versions"},{"refs":[{"id":"ref-for-dataset-description\u2460\u2460"}],"title":"5.5. Data catalog"},{"refs":[{"id":"ref-for-dataset-description\u2460\u2461"}],"title":"5.6.5. Full example"},{"refs":[{"id":"ref-for-dataset-description\u2460\u2462"},{"id":"ref-for-dataset-description\u2460\u2463"}],"title":"6.1. Running the shapes yourself"}],"url":"#dataset-description"},
+"dataset-description": {"dfnID":"dataset-description","dfnText":"Dataset description","external":false,"refSections":[{"refs":[{"id":"ref-for-dataset-description"}],"title":"1. Introduction"},{"refs":[{"id":"ref-for-dataset-description\u2460"}],"title":"1.3. Code examples"},{"refs":[{"id":"ref-for-dataset-description\u2461"}],"title":"2. Version 2.0"},{"refs":[{"id":"ref-for-dataset-description\u2462"}],"title":"3. Definitions"},{"refs":[{"id":"ref-for-dataset-description\u2463"}],"title":"5.1. Available in RDF"},{"refs":[{"id":"ref-for-dataset-description\u2464"},{"id":"ref-for-dataset-description\u2465"},{"id":"ref-for-dataset-description\u2466"}],"title":"5.1.1. Content-Type"},{"refs":[{"id":"ref-for-dataset-description\u2467"},{"id":"ref-for-dataset-description\u2468"}],"title":"5.1.3. Resolvable dataset IRIs"},{"refs":[{"id":"ref-for-dataset-description\u2460\u24ea"}],"title":"5.2.3. Creation, publication and modification dates"},{"refs":[{"id":"ref-for-dataset-description\u2460\u2460"}],"title":"5.2.4. Versions"},{"refs":[{"id":"ref-for-dataset-description\u2460\u2461"}],"title":"5.5. Data catalog"},{"refs":[{"id":"ref-for-dataset-description\u2460\u2462"}],"title":"5.6.6. Full example"},{"refs":[{"id":"ref-for-dataset-description\u2460\u2463"},{"id":"ref-for-dataset-description\u2460\u2464"}],"title":"6.1. Running the shapes yourself"}],"url":"#dataset-description"},
 "distribution": {"dfnID":"distribution","dfnText":"Distribution","external":false,"refSections":[{"refs":[{"id":"ref-for-distribution"}],"title":"3. Definitions"},{"refs":[{"id":"ref-for-distribution\u2460"}],"title":"4. Conceptual model"},{"refs":[{"id":"ref-for-distribution\u2461"}],"title":"5.4. Distributions"},{"refs":[{"id":"ref-for-distribution\u2462"}],"title":"5.4.1. Creation and modification dates"}],"url":"#distribution"},
 "machine-readability": {"dfnID":"machine-readability","dfnText":"Machine-readability","external":false,"refSections":[{"refs":[{"id":"ref-for-machine-readability"}],"title":"1. Introduction"},{"refs":[{"id":"ref-for-machine-readability\u2460"}],"title":"5.1. Available in RDF"}],"url":"#machine-readability"},
-"publisher": {"dfnID":"publisher","dfnText":"Publisher","external":false,"refSections":[{"refs":[{"id":"ref-for-publisher"}],"title":"1. Introduction"},{"refs":[{"id":"ref-for-publisher\u2460"},{"id":"ref-for-publisher\u2461"}],"title":"3. Definitions"},{"refs":[{"id":"ref-for-publisher\u2462"}],"title":"4. Conceptual model"},{"refs":[{"id":"ref-for-publisher\u2463"}],"title":"5.1. Available in RDF"},{"refs":[{"id":"ref-for-publisher\u2464"}],"title":"5.2.4. Versions"},{"refs":[{"id":"ref-for-publisher\u2465"}],"title":"5.3. Creator/publisher information"},{"refs":[{"id":"ref-for-publisher\u2466"}],"title":"5.5.1. Pagination"}],"url":"#publisher"},
-"web-api": {"dfnID":"web-api","dfnText":"Web API","external":false,"refSections":[{"refs":[{"id":"ref-for-web-api"},{"id":"ref-for-web-api\u2460"}],"title":"5.4. Distributions"},{"refs":[{"id":"ref-for-web-api\u2461"}],"title":"5.4.2. Usage information"},{"refs":[{"id":"ref-for-web-api\u2462"},{"id":"ref-for-web-api\u2463"}],"title":"5.6.3. Distribution attributes"}],"url":"#web-api"},
+"publisher": {"dfnID":"publisher","dfnText":"Publisher","external":false,"refSections":[{"refs":[{"id":"ref-for-publisher"}],"title":"1. Introduction"},{"refs":[{"id":"ref-for-publisher\u2460"}],"title":"1.3. Code examples"},{"refs":[{"id":"ref-for-publisher\u2461"},{"id":"ref-for-publisher\u2462"}],"title":"3. Definitions"},{"refs":[{"id":"ref-for-publisher\u2463"}],"title":"4. Conceptual model"},{"refs":[{"id":"ref-for-publisher\u2464"}],"title":"5.1. Available in RDF"},{"refs":[{"id":"ref-for-publisher\u2465"}],"title":"5.2.4. Versions"},{"refs":[{"id":"ref-for-publisher\u2466"}],"title":"5.3. Creator/publisher information"},{"refs":[{"id":"ref-for-publisher\u2467"}],"title":"5.5.1. Pagination"}],"url":"#publisher"},
+"web-api": {"dfnID":"web-api","dfnText":"Web API","external":false,"refSections":[{"refs":[{"id":"ref-for-web-api"},{"id":"ref-for-web-api\u2460"},{"id":"ref-for-web-api\u2461"}],"title":"5.4. Distributions"},{"refs":[{"id":"ref-for-web-api\u2462"}],"title":"5.4.2. Usage information"},{"refs":[{"id":"ref-for-web-api\u2463"},{"id":"ref-for-web-api\u2464"}],"title":"5.6.4. Distribution attributes"}],"url":"#web-api"},
 };
 
 document.addEventListener("DOMContentLoaded", ()=>{
