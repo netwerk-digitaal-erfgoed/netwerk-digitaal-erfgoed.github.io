@@ -26,6 +26,18 @@ In OpenRefine, open the column you want to reconcile and choose **Reconcile → 
 
 In the reconciliation dialog, select **Reconcile against no particular type**. Network of Terms endpoints don’t advertise a default type for their candidates, and leaving the default option (“Reconcile against the suggested type”) selected makes OpenRefine match every cell against an empty type set, so no candidates come back. Picking “no particular type” lets the source’s own search query decide what counts as a match.
 
+## Adding columns from reconciled terms
+
+Once a column is reconciled, choose **Edit column → Add columns from reconciled values…** to fetch more of what the source states about each term. The data-extension endpoint offers these properties and returns the ones you select, each empty where the source states nothing:
+
+| Property | Values |
+| --- | --- |
+| `prefLabels`, `altLabels`, `scopeNotes` | Labels and notes, in the selected language |
+| `birthDates`, `deathDates` | Dates of a person, as EDTF strings |
+| `birthPlaces`, `deathPlaces`, `genders` | Names, or IRIs where the source names nothing |
+| `broaderTerms`, `narrowerTerms`, `relatedTerms` | Terms in the same source, as reconciled entities named by their preferred label; IRIs where the source gives no label |
+| `exactMatches` | IRIs of the same term in other sources, such as ULAN, VIAF or Wikidata |
+
 ## Language selection
 
 Reconciliation endpoints honor the standard `Accept-Language` HTTP header for content
