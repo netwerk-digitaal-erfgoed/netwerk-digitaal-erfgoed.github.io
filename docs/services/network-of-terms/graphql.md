@@ -455,6 +455,123 @@ cover several genres.
 
 :::
 
+### Persons
+
+For a person, the same layer is the `person` field: when they were born and died, where,
+what they did, their nationality, and the split of their name into given and family
+name where the source states it. Their full names stay on `prefLabel` and `altLabel`,
+and their alignments to other sources on `exactMatch`, as for any term.
+
+```graphql title="Birth and death of the person a term denotes" {6-20}
+query {
+  lookup(uris: ["https://data.rkd.nl/artists/66219"], languages: [nl]) {
+    result {
+      ... on TranslatedTerm {
+        prefLabel { language value }
+        person {
+          givenName { language value }
+          familyName { language value }
+          birthDate
+          deathDate
+          birthPlace { uri name { language value } }
+          deathPlace { uri name { language value } }
+          hasOccupation {
+            occupation { uri name { language value } }
+            roleName { language value }
+            startDate
+            endDate
+          }
+          nationality { uri name { language value } }
+        }
+      }
+      ... on Error {
+        message
+      }
+    }
+  }
+}
+```
+
+```json title="Response (abridged)"
+{
+  "prefLabel": [{ "language": "nl", "value": "Rembrandt" }],
+  "person": {
+    "givenName": [],
+    "familyName": [],
+    "birthDate": "1606-07-15/1607",
+    "deathDate": "1669-10-04",
+    "birthPlace": [
+      {
+        "uri": "https://data.rkd.nl/thesaurus/11",
+        "name": [{ "language": "nl", "value": "Leiden (stad)" }]
+      }
+    ],
+    "deathPlace": [
+      {
+        "uri": "https://data.rkd.nl/thesaurus/29",
+        "name": [{ "language": "nl", "value": "Amsterdam (stad)" }]
+      }
+    ],
+    "hasOccupation": [
+      {
+        "occupation": null,
+        "roleName": [{ "language": "nl", "value": "schilder" }],
+        "startDate": null,
+        "endDate": null
+      },
+      {
+        "occupation": null,
+        "roleName": [{ "language": "nl", "value": "etser" }],
+        "startDate": null,
+        "endDate": null
+      }
+    ],
+    "nationality": [
+      {
+        "uri": "https://data.rkd.nl/thesaurus/4",
+        "name": [{ "language": "nl", "value": "Noord-Nederlands" }]
+      }
+    ]
+  }
+}
+```
+
+**Dates are EDTF strings**, the [Extended Date/Time Format](https://www.loc.gov/standards/datetime/):
+the Library of Congress profile of ISO 8601. Historical persons rarely come with a full
+date, so the field holds whatever precision the source knows – `1606`, `1606-07`,
+`1606-07-15` – an interval such as Rembrandt’s `1606-07-15/1607`, or a qualified date
+such as `1620~` for circa. The value is passed through as the source states it and is
+not validated, so parse it with an EDTF library rather than as a plain date. A source
+that states no date leaves the field `null`.
+
+**Places and nationality are entities the source mentions.** Each has a `uri` where the
+source identifies it as a term in its own vocabulary, with the names that vocabulary
+gives it, and a `name` alone where the source only names it, in which case `uri` is
+`null`. RKDartists identifies a birth place and a nationality in its thesaurus and names
+them in Dutch and English; WO2-biografieën only names its places. The vocabularies differ
+per source and are not harmonised, but where a `uri` belongs to a source the Network of
+Terms covers, as Regiotermen Fryslân’s GeoNames birth places do, `lookup` resolves it to
+a term with a `place` node of its own.
+
+Several `birthPlace` entries are alternatives the source could not decide between, not
+several places: RKDartists records every birthplace the literature gives for a painter
+like Sassetta, Cortona or Siena, and keeps the discussion in its scope note.
+
+**Occupations are roles**, in the shape of schema.org’s `Role`: the `occupation` as a
+reference where the source identifies it as a term, the `roleName` where the source only
+names it, and `startDate` and `endDate` as EDTF strings where the source states a
+period. RKDartists publishes occupations only as names, so they come back as `roleName`
+with no period; a source that publishes dated roles, as the STCN does for its printers
+and booksellers, fills all of it.
+
+**Given and family name** are filled by sources that publish them apart, such as the
+NTA and Muziekschatten. RKDartists publishes names whole, so for Rembrandt both are empty
+and `prefLabel` is the name.
+
+`person` is `null` when the source describes no person, whether because the term denotes
+something else or because the source states none of these facts about the person. The
+`scopeNote` a source composed from the same data is unchanged.
+
 ## Discover reconciliation endpoints
 
 Sources that offer a [Reconciliation API](reconciliation.md) advertise it via the `features` field. Each feature has a `type` and a `url`; the entry with `type: RECONCILIATION` carries the endpoint URL to configure in OpenRefine.
