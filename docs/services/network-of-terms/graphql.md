@@ -89,6 +89,33 @@ Accept-Language: en
 See [Language selection](#language-selection) for the full picture of how language is
 negotiated across the API, including the `languages` parameter that controls term labels.
 
+### Source availability
+
+Every 5 minutes, the Network of Terms sends a test search to each terminology source.
+A source counts as available if it answers correctly within 10 seconds.
+
+The `status` field on a source shows the result of the latest check:
+
+* `isAvailable`: whether the source answered correctly
+* `lastChecked`: when the check ran, as an ISO 8601 timestamp.
+
+```graphql title="Check availability of all sources"
+query {
+  sources {
+    uri
+    name
+    status {
+      isAvailable
+      lastChecked
+    }
+  }
+}
+```
+
+`status` can lag behind by a few minutes and is `null` if the source has not been checked.
+The API still searches sources marked unavailable, so check `result`, not `status`,
+to see whether a search succeeded.
+
 ## Search terms
 
 ### Query a single source
@@ -164,7 +191,7 @@ A terminology source object has:
 * `genres`: subjects that the source contains information about
 * `features`: capabilities supported by the source (e.g. `GENRE_FILTER`)
 * `mainEntityOfPage`: a website that provides more information about the source
-* `status`: availability of the source’s endpoint, with sub-fields `isAvailable` (boolean) and `lastChecked` (ISO 8601 timestamp).
+* `status`: availability of the source’s endpoint, with sub-fields `isAvailable` (boolean) and `lastChecked` (ISO 8601 timestamp); see [Source availability](#source-availability).
 
 #### Terms
 
