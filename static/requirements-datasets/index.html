@@ -1490,7 +1490,7 @@ Possible extra rowspan handling
 </style>
   <meta content="Bikeshed version 49e9fdd4f, updated Tue Oct 13 14:27:53 2026 -0700" name="generator">
   <link href="https://docs.nde.nl/requirements-datasets/" rel="canonical">
-  <meta content="0a54f419bad570e88bf678a1ecde10c82c150810" name="revision">
+  <meta content="8f0d065f427c94dbfdfa9c53e61350b953b4e3ae" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>
 /* NDE house style for Bikeshed specifications, from netwerk-digitaal-erfgoed/workflows.
@@ -1530,8 +1530,10 @@ Possible extra rowspan handling
 :where(main table thead th) {
     border-bottom: 2px solid var(--text);
 }
+/* Black on light pages and white on dark ones, at a strength that shows on both.
+   Bikeshed’s own sidebar colour is all but invisible on its black background. */
 :where(main table tbody tr:nth-child(even)) {
-    background: var(--tocsidebar-bg);
+    background: light-dark(rgb(0 0 0 / 6%), rgb(255 255 255 / 10%));
 }
 :where(main table code) {
     overflow-wrap: anywhere;
