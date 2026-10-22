@@ -66,10 +66,10 @@ The following table lists common status codes:
 
 ## Media types
 
-The data layer _MUST_ use media types to enable open and extensible content negotiation. The rules of this section apply to every response of a data layer, whatever the media type of its content, such as JSON data, binary files or a CSV for download.
+The data layer must use media types to enable open and extensible content negotiation. The rules of this section apply to every response of a data layer, whatever the media type of its content, such as JSON data, binary files or a CSV for download. This section lists the main requirements — see the [HTTP Semantics](https://www.rfc-editor.org/info/rfc9110/) for more information.
 
 1. A presentation layer _MAY_ send the `Accept` header in its request. Its value _MUST_ conform to the [HTTP semantics](https://www.rfc-editor.org/info/rfc9110/#section-12.5.1). For example, the value may contain a specific media type (e.g. `application/json`), a list of media types (e.g. `application/json, application/problem+json`) or any media type (`*/*`).
-1. If a presentation layer sends the `Accept` header with a media type the data layer does not support, the data layer _MUST_ respond with a `406 Not Acceptable` status code.
+1. The data layer _MUST_ negotiate the media type from the list of media ranges in the `Accept` header. If one or more of the requested media types are supported, the data layer _MUST_ select the most preferred supported media type and send its content in that media type. If none of the requested media types are supported, the data layer _MUST_ respond with a `406 Not Acceptable` status code.
 1. If a presentation layer does not send the `Accept` header, the data layer _MUST_ send the content in its default media type.
 1. The data layer _MUST_ send the media type of its response in the `Content-Type` header. Its value _MUST_ conform to the [HTTP semantics](https://www.rfc-editor.org/info/rfc9110/#section-8.3).
 1. The data layer _MUST_ send the `Vary: Accept` header to indicate to a presentation layer that it supports content negotiation for media types. This tells a presentation layer that changing the value of the `Accept` header in a request will yield a different representation of a resource.
@@ -124,14 +124,20 @@ Both responses carry the same body. A JSON-LD-aware presentation layer interpret
 
 ## Languages
 
-Heritage information is available in one or more languages, such as Dutch or English. The data layer _MUST_ allow presentation layers to request information in a preferred language, even if the data layer only exposes information in one language.
+Heritage information is available in one or more languages, such as Dutch or English. The data layer must allow presentation layers to request information in a preferred language, even if the data layer only exposes information in one language. This section lists the main requirements — see the [HTTP Semantics](https://www.rfc-editor.org/info/rfc9110/) for more information.
 
-1. A presentation layer _MAY_ send the `Accept-Language` header in its request to indicate which language it prefers. Its value _MUST_ conform to the [HTTP semantics](https://www.rfc-editor.org/info/rfc9110/#section-12.5.4).
-1. If a presentation layer sends the `Accept-Language` header with a language tag that the data layer does not support, the data layer _MUST_ respond with a `406 Not Acceptable` status code.
+1. A presentation layer _MAY_ send the `Accept-Language` header in its request to indicate which language it prefers. Its value _MUST_ conform to the [HTTP semantics](https://www.rfc-editor.org/info/rfc9110/#section-12.5.4). For example, the value may contain a specific language tag (e.g. `nl`), a list of language tags (e.g. `nl, en`) or any language (`*`).
+1. The data layer _MUST_ negotiate the language from the list of language tags in the `Accept-Language` header. If one or more of the requested languages are supported, the data layer _MUST_ select the most preferred supported language and send its content in that language. If none of the requested languages are supported, the data layer _MUST_ respond with a `406 Not Acceptable` status code.
 1. If a presentation layer does not send the `Accept-Language` header, the data layer _MUST_ send its content in its default language.
 1. The data layer _MUST_ send the language tag of the content in the `Content-Language` header. Its value _MUST_ conform to the [HTTP semantics](https://www.rfc-editor.org/info/rfc9110/#section-8.5).
 1. The data layer _MUST NOT_ serve its content in different languages in one response. Instead, a presentation layer _MUST_ issue separate requests for each language, with different `Accept-Language` header values.
 1. The data layer _MUST_ send the `Vary: Accept-Language` header to indicate to a presentation layer that it supports content negotiation for languages. This informs a presentation layer that changing the value of the `Accept-Language` header in a request will yield a different, language-aware representation of a resource.
+
+:::note To be discussed
+
+How can a presentation layer discover the supported languages? Should we add a separate discovery endpoint (e.g. `/v1/languages`, returning a collection of languages)? Or should a presentation layer rely upon the [OpenAPI definition](#documentation), documenting the languages? The first one makes sense if we treat languages as 'data'. The second one makes sense if we treat languages as 'documentation'.
+
+:::
 
 ### Example
 
@@ -155,6 +161,26 @@ Vary: Accept-Language
 
 The response indicates that the content is in Dutch and that a new request to the same resource with a different `Accept-Language` header value will result in a different representation of the resource.
 
+Another example request from a presentation layer:
+
+```http
+GET /v1/entities/1234
+Host: example.org
+Accept-Language: de, nl
+```
+
+This tells the data layer that the presentation layer prefers the content to be in German, otherwise in Dutch.
+
+An example of the response headers of the data layer:
+
+```http
+HTTP/2 200 OK
+Content-Language: nl
+Vary: Accept-Language
+```
+
+The response indicates that the content is in Dutch: German is not supported by the data layer.
+
 ## Character encoding
 
 Character encoding defines how characters are converted into bytes by the data layer for transmission to a presentation layer. The data layer _MUST_ encode all payload responses using [UTF-8](https://www.rfc-editor.org/info/rfc3629/), except for payloads that are binary by nature, such as images.
@@ -164,7 +190,7 @@ Character encoding defines how characters are converted into bytes by the data l
 Compression reduces the size of a response body as it is transmitted to a presentation layer, improving performance and reducing bandwidth use. The data layer _SHOULD_ support compression. This section lists the main requirements — see the [HTTP Semantics](https://www.rfc-editor.org/info/rfc9110/#section-8.4.1) for more information.
 
 1. A presentation layer _MAY_ send the `Accept-Encoding` header in its request to indicate which compression schemes it supports, such as `gzip`, `br`, `deflate` or `zstd`. Its value _MUST_ conform to the [HTTP semantics](https://www.rfc-editor.org/info/rfc9110/#field.accept-encoding).
-1. If a presentation layer sends the `Accept-Encoding` header, the data layer _MAY_ compress the response body using one of the schemes the presentation layer supports. The data layer _MUST_ then send the `Content-Encoding` header to indicate which scheme it used; its value _MUST_ conform to the [HTTP semantics](https://www.rfc-editor.org/info/rfc9110/#field.content-encoding).
+1. If a presentation layer sends the `Accept-Encoding` header, the data layer _MAY_ compress the response body using one of the schemes the presentation layer supports. The data layer _MUST_ then send the `Content-Encoding` header to indicate which scheme it used. Its value _MUST_ conform to the [HTTP semantics](https://www.rfc-editor.org/info/rfc9110/#field.content-encoding).
 1. If a presentation layer does not send the `Accept-Encoding` header, or requests only schemes the data layer does not support, the data layer _MUST_ send the response body uncompressed, without a `Content-Encoding` header.
 1. If the data layer supports compression, it _MUST_ send the `Vary: Accept-Encoding` header to indicate to a presentation layer that responses can differ based on the value of the `Accept-Encoding` request header. This informs a presentation layer that changing the value of the `Accept-Encoding` header in a request will yield a differently compressed representation of a resource.
 
