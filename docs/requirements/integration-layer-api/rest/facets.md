@@ -1,5 +1,5 @@
 ---
-slug: /data-layer-api/rest/facets
+slug: /integration-layer-api/rest/facets
 sidebar_position: 7
 ---
 
@@ -13,9 +13,9 @@ In this specification, the word _facet_ always means a **facet collection**: a l
 
 A presentation layer can browse the facet items in a facet collection, filter them, and ask for suggestions for them — just like any other collection. What makes a facet collection special is what its items hold: each item points to a value a user can use to narrow a search.
 
-Facets are tied to a particular collection — the context collection — ensuring that results remain within the context of that collection. A data layer _MAY_ offer facets for any collection, except for a facet collection itself.
+Facets are tied to a particular collection — the context collection — ensuring that results remain within the context of that collection. An integration layer _MAY_ offer facets for any collection, except for a facet collection itself.
 
-Facets are optional. A data layer _MAY_ implement them, depending on its requirements. A data layer advertises the facet collections it supports for a collection in the generic [`facets` property](resources.md#collection) of that collection. The property points to the list of facet collections, which a presentation layer retrieves with the endpoint [Retrieve the facet collections of a collection](#endpoint-retrieve-the-facet-collections-of-a-collection).
+Facets are optional. An integration layer _MAY_ implement them, depending on its requirements. An integration layer advertises the facet collections it supports for a collection in the generic [`facets` property](resources.md#collection) of that collection. The property points to the list of facet collections, which a presentation layer retrieves with the endpoint [Retrieve the facet collections of a collection](#endpoint-retrieve-the-facet-collections-of-a-collection).
 
 ## Data model
 
@@ -26,7 +26,7 @@ Facets are optional. A data layer _MAY_ implement them, depending on its require
 | Facet Page               | An ordered sublist of facet items within a Facet Collection. Specialisation of Page.                                                                                                                                                                                                                          |
 | Facet Item               | A selectable option within a Facet Collection or Facet Page, pointing to a resource.                                                                                                                                                                                                                          |
 | Resource                 | A 'thing' of a certain type. Every value of a facet item is a resource. See [Resources](resources.md).                                                                                                                                                                                                        |
-| Facet Value              | A value of a facet item, e.g. a value with the name 'Jan de Vries'. A data layer uses a Facet Value to group several resources that have the same name into one facet item. It has no identity of its own.                                                                                                    |
+| Facet Value              | A value of a facet item, e.g. a value with the name 'Jan de Vries'. An integration layer uses a Facet Value to group several resources that have the same name into one facet item. It has no identity of its own.                                                                                            |
 | Facet Range Value        | A value of a facet item that covers a range, such as the years 1900 to 1950 or an age from 30 to 40. It has a `name`, a lower bound `min` and an upper bound `max`. It has no form of its own: a range value is either a Facet Date Range Value or a Facet Number Range Value. Specialisation of Facet Value. |
 | Facet Date Range Value   | A range of dates, such as the years 1900 to 1950. Its `min` and `max` are dates in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601). Specialisation of Facet Range Value.                                                                                                                                   |
 | Facet Number Range Value | A range of numbers, such as an age from 30 to 40. Its `min` and `max` are numbers. Specialisation of Facet Range Value.                                                                                                                                                                                       |
@@ -119,7 +119,7 @@ FacetItem --> Resource : value
 
 ## Facet collections
 
-The data layer determines which facet collections to support. For example, a data layer that exposes information about...
+The integration layer determines which facet collections to support. For example, an integration layer that exposes information about...
 
 1. **paintings** defines the facet collection 'Technique', to categorise the techniques used for creating the works of art;
 1. **military personnel** defines the facet collection 'Military rank', to categorise the ranks of the persons;
@@ -155,12 +155,12 @@ A resource with an `id` stands for one single thing. For example, an entity has 
 
 A `FacetValue` does not have an `id`: it does not stand for one single thing but for several. All of them have the same name. The `count` of the facet item is the total number of occurrences of all of them together.
 
-This difference matters when several resources have the same name. In a 'Creator' facet, three different persons can all be called 'Jan de Vries'. A data layer has two choices:
+This difference matters when several resources have the same name. In a 'Creator' facet, three different persons can all be called 'Jan de Vries'. An integration layer has two choices:
 
 - **Use an entity for every person.** The facet has three items. All three items have the name 'Jan de Vries'. Every item has its own `id` and its own `count`. A user sees the same name three times, and sees nothing that tells the three items apart.
 - **Use one `FacetValue` for the name.** The facet has one item, called 'Jan de Vries'. The item has no `id`. Its `count` is the sum of the occurrences of the three persons together.
 
-A data layer can make this choice for each facet collection separately. The choice is the same for every kind of value, since collections can have the same name as well.
+An integration layer can make this choice for each facet collection separately. The choice is the same for every kind of value, since collections can have the same name as well.
 
 A facet collection _MUST_ use the same kind of value for all its items. This makes sure a presentation layer can present every item in the same way. A 'Creator' facet therefore uses either entities or `FacetValue`s, not a mixture of the two.
 
@@ -172,15 +172,15 @@ A `FacetRangeValue` is a `FacetValue` that covers a range instead of one value. 
 
 The `type` of a value says how to read its bounds. The `min` and `max` of a `FacetDateRangeValue` _MUST_ be dates in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601). For example, '1900', '1900-01' and '1900-01-01' are all dates. The `min` and `max` of a `FacetNumberRangeValue` _MUST_ be numbers.
 
-A range value _MUST_ include its lower bound, but not its upper bound. For example, the value '1900–1909' has a `min` of `1900-01-01` and a `max` of `1910-01-01`: it covers 1 January 1900 up to, but not including, 1 January 1910. A range value _MAY_ have no lower bound or no upper bound: the value 'before 1500' has no upper bound, and the value 'after 1900' has no lower bound. The data layer _MAY_ leave out values that have no occurrences.
+A range value _MUST_ include its lower bound, but not its upper bound. For example, the value '1900–1909' has a `min` of `1900-01-01` and a `max` of `1910-01-01`: it covers 1 January 1900 up to, but not including, 1 January 1910. A range value _MAY_ have no lower bound or no upper bound: the value 'before 1500' has no upper bound, and the value 'after 1900' has no lower bound. The integration layer _MAY_ leave out values that have no occurrences.
 
-A facet collection _MUST NOT_ mix range values of different types, for example `FacetDateRangeValue`s together with `FacetNumberRangeValue`s. This makes sure a presentation layer can display the range values correctly. A facet collection _MAY_ return its range values in any order. If the client does not ask for a particular order, the data layer _SHOULD_ return them from the lowest to the highest, so that a presentation layer can place them in the right order, for example on the axis of a histogram.
+A facet collection _MUST NOT_ mix range values of different types, for example `FacetDateRangeValue`s together with `FacetNumberRangeValue`s. This makes sure a presentation layer can display the range values correctly. A facet collection _MAY_ return its range values in any order. If the client does not ask for a particular order, the integration layer _SHOULD_ return them from the lowest to the highest, so that a presentation layer can place them in the right order, for example on the axis of a histogram.
 
-The `name` is the label of the value. The data layer may use any text in it, such as '1900–1950', 'between 1900 and 1950', or '1900 to 1950'. A presentation layer _MUST NOT_ read the bounds out of the `name` — it must use the `min` and `max` properties. A presentation layer can use the bounds to place every facet value on a scale. It can draw a histogram, with one bar per value from its lower bound to its upper bound. It can draw a timeline, with one band per value that shows how long the range lasts.
+The `name` is the label of the value. The integration layer may use any text in it, such as '1900–1950', 'between 1900 and 1950', or '1900 to 1950'. A presentation layer _MUST NOT_ read the bounds out of the `name` — it must use the `min` and `max` properties. A presentation layer can use the bounds to place every facet value on a scale. It can draw a histogram, with one bar per value from its lower bound to its upper bound. It can draw a timeline, with one band per value that shows how long the range lasts.
 
 ## Endpoint: Retrieve the facet collections of a collection
 
-The endpoint retrieves all facet collections of a collection. The data layer _MUST_ implement this endpoint if it supports facets.
+The endpoint retrieves all facet collections of a collection. The integration layer _MUST_ implement this endpoint if it supports facets.
 
 ### HTTP request
 
@@ -223,7 +223,7 @@ The response body _MUST_ contain at least the following properties:
 | `belongsTo.type`      | string          | 1           | The type of the collection. It _MUST_ be `Collection` or a specialisation.                                                                                                  |
 | `belongsTo.name`      | string          | 1           | The name of the collection.                                                                                                                                                 |
 
-The data layer _MUST NOT_ divide this collection into pages. The response body therefore does not contain `first` or `last`.
+The integration layer _MUST NOT_ divide this collection into pages. The response body therefore does not contain `first` or `last`.
 
 ### Example
 
@@ -234,9 +234,9 @@ GET /v1/collections/objects/facets
 Host: example.org
 ```
 
-The request indicates that the data layer should return all facet collections of a curated collection (`objects`).
+The request indicates that the integration layer should return all facet collections of a curated collection (`objects`).
 
-An example of the response body of the data layer:
+An example of the response body of the integration layer:
 
 ```json
 {
@@ -277,7 +277,7 @@ An example of the response body of the data layer:
 
 ## Endpoint: Retrieve a facet collection
 
-The endpoint retrieves a facet collection. The data layer _MUST_ implement this endpoint if it supports facets.
+The endpoint retrieves a facet collection. The integration layer _MUST_ implement this endpoint if it supports facets.
 
 ### HTTP request
 
@@ -293,12 +293,12 @@ The endpoint retrieves a facet collection. The data layer _MUST_ implement this 
 
 ### Query parameters
 
-| Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                              |
-| --------- | --------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `q`       | string    | 0 or 1      | A keyword query for filtering the facet items. Minimum length: defined by the data layer (e.g. 3 characters). Maximum length: defined by the data layer (e.g. 25 characters).                                                                            |
-| `size`    | number    | 0 or 1      | The maximum number of facet items to retrieve. Minimum: 1. Default: 10. Maximum: defined by the data layer (e.g. 100).                                                                                                                                   |
-| `orderBy` | string    | 0 or 1      | The sorting order of the facet items. One of `count`, `value`. Default: `count:desc` (most frequent item first). The data layer defines which property of the value it sorts by (e.g. the `name`). For a range value, the data layer sorts by its `min`. |
-| `filter`  | string    | 0 or more   | The rules for filtering the facet items. See [Filters](resources.md#filters).                                                                                                                                                                            |
+| Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                                            |
+| --------- | --------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `q`       | string    | 0 or 1      | A keyword query for filtering the facet items. Minimum length: defined by the integration layer (e.g. 3 characters). Maximum length: defined by the integration layer (e.g. 25 characters).                                                                            |
+| `size`    | number    | 0 or 1      | The maximum number of facet items to retrieve. Minimum: 1. Default: 10. Maximum: defined by the integration layer (e.g. 100).                                                                                                                                          |
+| `orderBy` | string    | 0 or 1      | The sorting order of the facet items. One of `count`, `value`. Default: `count:desc` (most frequent item first). The integration layer defines which property of the value it sorts by (e.g. the `name`). For a range value, the integration layer sorts by its `min`. |
+| `filter`  | string    | 0 or more   | The rules for filtering the facet items. See [Filters](resources.md#filters).                                                                                                                                                                                          |
 
 :::note To do
 
@@ -325,7 +325,7 @@ The response body _MUST_ contain at least the following properties:
 | `items`               | array      | 0 or 1      | A list of the facet items in the collection. Not set if the collection is divided into [pages](resources.md#page).                                                                                                                                               |
 | `items[*]`            | FacetItem  | 1           | A facet item.                                                                                                                                                                                                                                                    |
 | `items[*].type`       | string     | 1           | The type of the facet item. It _MUST_ be `FacetItem`.                                                                                                                                                                                                            |
-| `items[*].count`      | number     | 1           | The number of occurrences of the value. If the value is a `FacetValue`, the count covers all resources that the data layer grouped into it.                                                                                                                      |
+| `items[*].count`      | number     | 1           | The number of occurrences of the value. If the value is a `FacetValue`, the count covers all resources that the integration layer grouped into it.                                                                                                               |
 | `items[*].value`      | Resource   | 1           | The value of the facet item: an entity, a collection, or a facet value that groups several resources.                                                                                                                                                            |
 | `items[*].value.type` | string     | 1           | The type of the value of the facet item. It _MUST_ be `Resource` or a specialisation. See [Facet items](#facet-items).                                                                                                                                           |
 | `items[*].value.id`   | string     | 0 or 1      | The identifier of the value. Not set if the value is a `FacetValue`; a facet value has no identity.                                                                                                                                                              |
@@ -346,7 +346,7 @@ The response body _MUST_ contain at least the following properties:
 | `suggestions.id`      | string     | 1           | The identifier of the list.                                                                                                                                                                                                                                      |
 | `suggestions.type`    | string     | 1           | The type of the list. It _MUST_ be `Collection` or a specialisation.                                                                                                                                                                                             |
 | `suggestions.name`    | string     | 1           | The name of the list.                                                                                                                                                                                                                                            |
-| `capabilities`        | array      | 0 or 1      | The URIs of the capabilities the data layer implements for this collection. _MUST_ be omitted if the collection supports no capabilities. See [Capability discovery](resources.md#capability-discovery).                                                         |
+| `capabilities`        | array      | 0 or 1      | The URIs of the capabilities the integration layer implements for this collection. _MUST_ be omitted if the collection supports no capabilities. See [Capability discovery](resources.md#capability-discovery).                                                  |
 
 ### Example
 
@@ -357,9 +357,9 @@ GET /v1/collections/objects/facets/centuries
 Host: example.org
 ```
 
-The request indicates that the data layer should return a facet collection (`centuries`) of a curated collection (`objects`).
+The request indicates that the integration layer should return a facet collection (`centuries`) of a curated collection (`objects`).
 
-An example of the response body of the data layer if the facet collection lists date ranges as its `items`:
+An example of the response body of the integration layer if the facet collection lists date ranges as its `items`:
 
 ```json
 {
@@ -415,9 +415,9 @@ GET /v1/collections/objects/facets/creators
 Host: example.org
 ```
 
-The request indicates that the data layer should return a facet collection (`creators`) of a curated collection (`objects`).
+The request indicates that the integration layer should return a facet collection (`creators`) of a curated collection (`objects`).
 
-An example of the response body of the data layer if the facet collection is not divided into pages and lists entities as its `items`:
+An example of the response body of the integration layer if the facet collection is not divided into pages and lists entities as its `items`:
 
 ```json
 {
@@ -463,7 +463,7 @@ An example of the response body of the data layer if the facet collection is not
 }
 ```
 
-An example of the response body of the data layer for the request above, if the facet collection lists `FacetValue`s as its `items`:
+An example of the response body of the integration layer for the request above, if the facet collection lists `FacetValue`s as its `items`:
 
 ```json
 {
@@ -505,9 +505,9 @@ GET /v1/collections/objects/facets/collections
 Host: example.org
 ```
 
-The request indicates that the data layer should return a facet collection (`collections`) of a curated collection (`objects`).
+The request indicates that the integration layer should return a facet collection (`collections`) of a curated collection (`objects`).
 
-An example of the response body of the data layer if the facet collection lists collections as its `items`:
+An example of the response body of the integration layer if the facet collection lists collections as its `items`:
 
 ```json
 {
@@ -546,7 +546,7 @@ An example of the response body of the data layer if the facet collection lists 
 
 The response indicates that a user can narrow the search down to the resources in one of the collections.
 
-An example of the response body of the data layer for the request above, if the facet collection is divided into pages:
+An example of the response body of the integration layer for the request above, if the facet collection is divided into pages:
 
 ```json
 {
@@ -574,7 +574,7 @@ An example of the response body of the data layer for the request above, if the 
 
 ## Endpoint: Retrieve a page in a facet collection
 
-The endpoint retrieves a page in a facet collection. The data layer _MUST_ implement this endpoint for every facet collection it divides into [pages](resources.md#page).
+The endpoint retrieves a page in a facet collection. The integration layer _MUST_ implement this endpoint for every facet collection it divides into [pages](resources.md#page).
 
 ### HTTP request
 
@@ -590,13 +590,13 @@ The endpoint retrieves a page in a facet collection. The data layer _MUST_ imple
 
 ### Query parameters
 
-| Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                              |
-| --------- | --------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `page`    | string    | 1           | The identifier of the page: a page number or cursor, depending on the [pagination strategy](resources.md#page-navigation-and-cursor-navigation) of the data layer.                                                                                       |
-| `q`       | string    | 0 or 1      | A keyword query for filtering the facet items. Minimum length: defined by the data layer (e.g. 3 characters). Maximum length: defined by the data layer (e.g. 25 characters).                                                                            |
-| `size`    | number    | 0 or 1      | The maximum number of facet items to retrieve. Minimum: 1. Default: 10. Maximum: defined by the data layer (e.g. 100).                                                                                                                                   |
-| `orderBy` | string    | 0 or 1      | The sorting order of the facet items. One of `count`, `value`. Default: `count:desc` (most frequent item first). The data layer defines which property of the value it sorts by (e.g. the `name`). For a range value, the data layer sorts by its `min`. |
-| `filter`  | string    | 0 or more   | The rules for filtering the facet items. See [Filters](resources.md#filters).                                                                                                                                                                            |
+| Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                                            |
+| --------- | --------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `page`    | string    | 1           | The identifier of the page: a page number or cursor, depending on the [pagination strategy](resources.md#page-navigation-and-cursor-navigation) of the integration layer.                                                                                              |
+| `q`       | string    | 0 or 1      | A keyword query for filtering the facet items. Minimum length: defined by the integration layer (e.g. 3 characters). Maximum length: defined by the integration layer (e.g. 25 characters).                                                                            |
+| `size`    | number    | 0 or 1      | The maximum number of facet items to retrieve. Minimum: 1. Default: 10. Maximum: defined by the integration layer (e.g. 100).                                                                                                                                          |
+| `orderBy` | string    | 0 or 1      | The sorting order of the facet items. One of `count`, `value`. Default: `count:desc` (most frequent item first). The integration layer defines which property of the value it sorts by (e.g. the `name`). For a range value, the integration layer sorts by its `min`. |
+| `filter`  | string    | 0 or more   | The rules for filtering the facet items. See [Filters](resources.md#filters).                                                                                                                                                                                          |
 
 :::note To do
 
@@ -621,7 +621,7 @@ The response body _MUST_ contain at least the following properties:
 | `items`                      | array           | 1           | A list of facet items.                                                                                                                                                                         |
 | `items[*]`                   | FacetItem       | 1           | A facet item.                                                                                                                                                                                  |
 | `items[*].type`              | string          | 1           | The type of the facet item. It _MUST_ be `FacetItem`.                                                                                                                                          |
-| `items[*].count`             | number          | 1           | The number of occurrences of the value. If the value is a `FacetValue`, the count covers all resources that the data layer grouped into it.                                                    |
+| `items[*].count`             | number          | 1           | The number of occurrences of the value. If the value is a `FacetValue`, the count covers all resources that the integration layer grouped into it.                                             |
 | `items[*].value`             | Resource        | 1           | The value of the facet item: an entity, a collection, or a facet value that groups several resources.                                                                                          |
 | `items[*].value.type`        | string          | 1           | The type of the value of the facet item. It _MUST_ be `Resource` or a specialisation. See [Facet items](#facet-items).                                                                         |
 | `items[*].value.id`          | string          | 0 or 1      | The identifier of the value. Not set if the value is a `FacetValue`; a facet value has no identity.                                                                                            |
@@ -656,9 +656,9 @@ GET /v1/collections/objects/facets/creators?page=3
 Host: example.org
 ```
 
-The request indicates that the data layer should return page 3 in a facet collection (`creators`) of a curated collection (`objects`).
+The request indicates that the integration layer should return page 3 in a facet collection (`creators`) of a curated collection (`objects`).
 
-An example of the response body of the data layer:
+An example of the response body of the integration layer:
 
 ```json
 {

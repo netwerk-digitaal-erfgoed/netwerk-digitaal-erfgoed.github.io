@@ -1,5 +1,5 @@
 ---
-slug: /data-layer-api/rest/suggestions
+slug: /integration-layer-api/rest/suggestions
 sidebar_position: 8
 ---
 
@@ -9,9 +9,9 @@ sidebar_position: 8
 
 A suggestion is a value displayed as a user types, such as a keyword, a name, or a facet value. For example: if a user types 'rem', suggestions might be 'Rembrandt' or 'Rem Koolhaas'. Suggestions help users save time. A user can select one of the suggested values and find resources matching the suggestion. This functionality is also known as autocompletion or typeahead.
 
-Suggestions are tied to a particular collection — the context collection — ensuring that results remain within the context of that collection. A data layer _MAY_ offer suggestions for any collection, except for a suggestion collection itself.
+Suggestions are tied to a particular collection — the context collection — ensuring that results remain within the context of that collection. An integration layer _MAY_ offer suggestions for any collection, except for a suggestion collection itself.
 
-Suggestions are optional. A data layer _MAY_ implement them, depending on its requirements. A data layer advertises the suggestion collections it supports for a collection in the generic [`suggestions` property](resources.md#collection) of that collection. The property points to the list of suggestion collections, which a presentation layer retrieves with endpoint [Retrieve the suggestion collections of a collection](#endpoint-retrieve-the-suggestion-collections-of-a-collection).
+Suggestions are optional. An integration layer _MAY_ implement them, depending on its requirements. An integration layer advertises the suggestion collections it supports for a collection in the generic [`suggestions` property](resources.md#collection) of that collection. The property points to the list of suggestion collections, which a presentation layer retrieves with endpoint [Retrieve the suggestion collections of a collection](#endpoint-retrieve-the-suggestion-collections-of-a-collection).
 
 ## Data model
 
@@ -96,26 +96,26 @@ SuggestionItem --> Resource : value
 
 ## Suggestion collections
 
-A data layer _MAY_ offer several suggestion collections for a collection, each with its own purpose. Every suggestion collection lists its resource types in `valueTypes`, so a presentation layer knows what it can expect before a user types anything. An type in `valueTypes` may be abstract — for example, `Entity` covers every entity type, such as `HeritageObject` and `Person`.
+An integration layer _MAY_ offer several suggestion collections for a collection, each with its own purpose. Every suggestion collection lists its resource types in `valueTypes`, so a presentation layer knows what it can expect before a user types anything. An type in `valueTypes` may be abstract — for example, `Entity` covers every entity type, such as `HeritageObject` and `Person`.
 
-A data layer decides which suggestion collections it supports. A data layer could offer the suggestion collections underneath for a [curated collection](collections.md) of heritage objects:
+An integration layer decides which suggestion collections it supports. An integration layer could offer the suggestion collections underneath for a [curated collection](collections.md) of heritage objects:
 
 1. **Keywords**. The `value` of a suggestion item is a keyword that matches the query, such as 'windmill'. A presentation layer uses the keyword as input to search, to find the objects that match it. The `valueTypes` are `["KeywordValue"]`.
 1. **Entities**. The `value` of a suggestion item is an entity that matches the query, such as a heritage object named 'A Watermill'. A presentation layer can take the user straight to a suggested entity, by [retrieving it](entities.md#endpoint-retrieve-an-entity). The `valueTypes` are `["Entity"]`.
 1. **Combinations of keywords and entities**. The `value` of a suggestion item is a keyword or an entity. A presentation layer shows both to a user. The `valueTypes` are `["KeywordValue", "Entity"]`.
 
-A data layer may offer a single suggestion collection instead of all three. It may also offer others, such as a collection of [facet values](facets.md) in the context of a facet collection.
+An integration layer may offer a single suggestion collection instead of all three. It may also offer others, such as a collection of [facet values](facets.md) in the context of a facet collection.
 
 ## Search strategies
 
-Suggestions can be found by using different search strategies. The data layer decides which strategy fits best. Common strategies include:
+Suggestions can be found by using different search strategies. The integration layer decides which strategy fits best. Common strategies include:
 
-1. **Prefix search**. Prefix search restricts results to strings that start with the user's input. For example, the query `mil` will return `mill`, but not `windmill`. This strategy is optimised for speed and predictability; it is best suited for scenarios where users are searching for specific resources by their primary name or when the data layer wants to encourage an 'autocomplete-as-you-type' experience starting from the first letter.
-1. **Infix search**. Infix search is a more flexible matching that looks for a query anywhere within a string. For example, the query `mil` will return `mill` and `windmill`. This is the recommended strategy when the data layer wants users to discover resources using parts of a name, even if they do not know exactly how the name begins. Be aware that infix search can be more computationally expensive than prefix search.
+1. **Prefix search**. Prefix search restricts results to strings that start with the user's input. For example, the query `mil` will return `mill`, but not `windmill`. This strategy is optimised for speed and predictability; it is best suited for scenarios where users are searching for specific resources by their primary name or when the integration layer wants to encourage an 'autocomplete-as-you-type' experience starting from the first letter.
+1. **Infix search**. Infix search is a more flexible matching that looks for a query anywhere within a string. For example, the query `mil` will return `mill` and `windmill`. This is the recommended strategy when the integration layer wants users to discover resources using parts of a name, even if they do not know exactly how the name begins. Be aware that infix search can be more computationally expensive than prefix search.
 
 ## Endpoint: Retrieve the suggestion collections of a collection
 
-The endpoint retrieves all suggestion collections of a collection. The data layer _MUST_ implement this endpoint if it supports suggestions.
+The endpoint retrieves all suggestion collections of a collection. The integration layer _MUST_ implement this endpoint if it supports suggestions.
 
 ### HTTP request
 
@@ -160,7 +160,7 @@ The response body _MUST_ contain at least the following properties:
 | `belongsTo.type`         | string               | 1           | The type of the context collection. It _MUST_ be `Collection` or a specialisation.                                                                                               |
 | `belongsTo.name`         | string               | 1           | The name of the context collection.                                                                                                                                              |
 
-The data layer _MUST NOT_ divide this collection into pages. The response body therefore does not contain `first` or `last`.
+The integration layer _MUST NOT_ divide this collection into pages. The response body therefore does not contain `first` or `last`.
 
 ### Example
 
@@ -171,9 +171,9 @@ GET /v1/collections/objects/suggestions
 Host: example.org
 ```
 
-The request indicates that the data layer should return all suggestion collections of a curated collection (`objects`).
+The request indicates that the integration layer should return all suggestion collections of a curated collection (`objects`).
 
-An example of the response body of the data layer:
+An example of the response body of the integration layer:
 
 ```json
 {
@@ -210,11 +210,11 @@ An example of the response body of the data layer:
 }
 ```
 
-The response indicates that the data layer supports three suggestion collections for a curated collection (`objects`). A presentation layer can choose any, depending on its requirements.
+The response indicates that the integration layer supports three suggestion collections for a curated collection (`objects`). A presentation layer can choose any, depending on its requirements.
 
 ## Endpoint: Retrieve a suggestion collection
 
-The endpoint retrieves the suggestion items of a suggestion collection that match a query. The `value` of a suggestion item is a resource, such as a keyword, a facet value, or an entity. A presentation layer can use a suggested resource as input to search and find the resources that match it. The data layer _MUST_ implement this endpoint if it supports suggestions.
+The endpoint retrieves the suggestion items of a suggestion collection that match a query. The `value` of a suggestion item is a resource, such as a keyword, a facet value, or an entity. A presentation layer can use a suggested resource as input to search and find the resources that match it. The integration layer _MUST_ implement this endpoint if it supports suggestions.
 
 ### HTTP request
 
@@ -230,12 +230,12 @@ The endpoint retrieves the suggestion items of a suggestion collection that matc
 
 ### Query parameters
 
-| Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                                       |
-| --------- | --------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `q`       | string    | 1           | A query for filtering the suggestion items. Minimum length: defined by the data layer (e.g. 3 characters). Maximum length: defined by the data layer (e.g. 25 characters). The data layer defines how the query is matched, e.g. by using prefix or infix search. |
-| `size`    | number    | 0 or 1      | The maximum number of suggestion items to retrieve. Minimum: 1. Default: 10. Maximum: defined by the data layer (e.g. 25).                                                                                                                                        |
-| `orderBy` | string    | 0 or 1      | The sorting order of the suggestion items. It _MUST_ be one of `relevance`, `value`. Default: `relevance:desc` (most relevant suggestion first). The data layer defines which property of the value it sorts by, such as the `name`.                              |
-| `filter`  | string    | 0 or more   | The rules for filtering the suggestion items. See [Filters](resources.md#filters).                                                                                                                                                                                |
+| Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                                                            |
+| --------- | --------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `q`       | string    | 1           | A query for filtering the suggestion items. Minimum length: defined by the integration layer (e.g. 3 characters). Maximum length: defined by the integration layer (e.g. 25 characters). The integration layer defines how the query is matched, e.g. by using prefix or infix search. |
+| `size`    | number    | 0 or 1      | The maximum number of suggestion items to retrieve. Minimum: 1. Default: 10. Maximum: defined by the integration layer (e.g. 25).                                                                                                                                                      |
+| `orderBy` | string    | 0 or 1      | The sorting order of the suggestion items. It _MUST_ be one of `relevance`, `value`. Default: `relevance:desc` (most relevant suggestion first). The integration layer defines which property of the value it sorts by, such as the `name`.                                            |
+| `filter`  | string    | 0 or more   | The rules for filtering the suggestion items. See [Filters](resources.md#filters).                                                                                                                                                                                                     |
 
 ### Request body
 
@@ -267,9 +267,9 @@ The response body _MUST_ contain at least the following properties:
 | `partOf.type`         | string         | 1           | The type of the collection. It _MUST_ be `Collection` or a specialisation.                                                                                                                                                                        |
 | `partOf.name`         | string         | 1           | The name of the collection.                                                                                                                                                                                                                       |
 
-The data layer _MUST NOT_ divide this collection into pages. The response body therefore does not contain `first` or `last`.
+The integration layer _MUST NOT_ divide this collection into pages. The response body therefore does not contain `first` or `last`.
 
-The data layer _MAY_ expose additional properties about a suggested value.
+The integration layer _MAY_ expose additional properties about a suggested value.
 
 ### Example
 
@@ -280,9 +280,9 @@ GET /v1/collections/objects/suggestions/combinations?q=mil
 Host: example.org
 ```
 
-The request indicates that the data layer should return the suggestion items of a suggestion collection (`combinations`) of a curated collection (`objects`) matching a specific query (`mil`).
+The request indicates that the integration layer should return the suggestion items of a suggestion collection (`combinations`) of a curated collection (`objects`) matching a specific query (`mil`).
 
-An example of the response body of the data layer:
+An example of the response body of the integration layer:
 
 ```json
 {

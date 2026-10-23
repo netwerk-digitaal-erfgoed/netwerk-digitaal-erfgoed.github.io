@@ -63,6 +63,18 @@ export default async function createConfig(): Promise<Config> {
         matomoUrl: 'https://matomo.netwerkdigitaalerfgoed.nl',
       },
     ],
+    [
+      '@docusaurus/plugin-client-redirects',
+      {
+        createRedirects: (path: string) =>
+          // Client-side redirects from the old 'data-layer-api' slugs to the
+          // new 'integration-layer-api' slugs. GitHub Pages can't do server-side
+          // rewrites - these run in the browser after the 404 shell loads.
+          /^\/integration-layer-api(\/|$)/.test(path)
+            ? path.replace('/integration-layer-api', '/data-layer-api')
+            : null,
+      },
+    ],
   ],
 
   // Even if you don't use internationalization, you can use this field to set

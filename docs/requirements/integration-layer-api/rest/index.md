@@ -1,5 +1,5 @@
 ---
-slug: /data-layer-api/rest
+slug: /integration-layer-api/rest
 sidebar_position: 1
 ---
 
@@ -7,7 +7,7 @@ sidebar_position: 1
 
 ## Introduction
 
-This specification defines how data layers and presentation layers exchange information using [REST](https://en.wikipedia.org/wiki/REST).
+This specification defines how integration layers and presentation layers exchange information using [REST](https://en.wikipedia.org/wiki/REST).
 
 ## Version
 
@@ -28,12 +28,12 @@ The specification follows these considerations:
 
 :::note To do
 
-- Explain that the API specification uses discovery patterns; it makes API implementations dynamic and self-documenting. This is essential for a generic, extensible specification that can be used by all sorts of data layers.
+- Explain that the API specification uses discovery patterns; it makes API implementations dynamic and self-documenting. This is essential for a generic, extensible specification that can be used by all sorts of integration layers.
 - Specify the root endpoint of the API, e.g. `/v1`. This endpoint allows presentation layers to discover the entry points and capabilities of the API (e.g. `/v1/entities`, `/v1/collections`).
-- Specify how a data layer can extend the capabilities of its API using the patterns in the specification, e.g. with custom functionality or resources. Add examples.
+- Specify how an integration layer can extend the capabilities of its API using the patterns in the specification, e.g. with custom functionality or resources. Add examples.
 
 :::
 
 ## A note about examples
 
-Various examples in this specification illustrate how the rules, data models and endpoints work. These examples assume a data layer API lives at `https://example.org/` and uses version `1`.
+Various examples in this specification illustrate how the rules, data models and endpoints work. These examples assume an integration layer API lives at `https://example.org/` and uses version `1`.

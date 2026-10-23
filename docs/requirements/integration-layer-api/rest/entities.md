@@ -1,5 +1,5 @@
 ---
-slug: /data-layer-api/rest/entities
+slug: /integration-layer-api/rest/entities
 sidebar_position: 5
 ---
 
@@ -9,13 +9,13 @@ sidebar_position: 5
 
 An entity is an identifiable 'thing' relevant to heritage. For example: 'The Night Watch' (a painting), 'Rembrandt' (a person), 'Amsterdam' (a place) and 'Brabantine Gothic' (a concept) are all entities.
 
-Entities are what every data layer is about. They are the heritage information that a data layer exposes through its API. Presentation layers present this information to their users. Everything else the data layer publishes — collections, facet values, keyword values — serves the entities: it organises, groups or finds them.
+Entities are what every integration layer is about. They are the heritage information that an integration layer exposes through its API. Presentation layers present this information to their users. Everything else the integration layer publishes — collections, facet values, keyword values — serves the entities: it organises, groups or finds them.
 
 ## Data model
 
-An entity is a specialisation of a [Resource](resources.md#resource): it has an `id`, a `type` and a `name`. An entity is abstract: there is no entity whose type is `Entity`. Every entity has one of the concrete types that a data layer defines, published as part of its [type vocabulary](types.md).
+An entity is a specialisation of a [Resource](resources.md#resource): it has an `id`, a `type` and a `name`. An entity is abstract: there is no entity whose type is `Entity`. Every entity has one of the concrete types that an integration layer defines, published as part of its [type vocabulary](types.md).
 
-The following class diagram visualises how entity types relate to a Resource and to each other. It shows two examples of the concrete types a data layer can define, 'Heritage object' and 'Person':
+The following class diagram visualises how entity types relate to a Resource and to each other. It shows two examples of the concrete types an integration layer can define, 'Heritage object' and 'Person':
 
 ```mermaid
 ---
@@ -50,9 +50,9 @@ Entity <|-- Person : type
 
 ## Entity types
 
-An entity can be of any type. A data layer decides which types are relevant to its API and the presentation layers it serves.
+An entity can be of any type. An integration layer decides which types are relevant to its API and the presentation layers it serves.
 
-For example, a data layer that exposes information about...
+For example, an integration layer that exposes information about...
 
 1. **all sorts of heritage objects** where the exact type does not matter, defines the generic entity type 'Heritage object';
 1. **books** and **cars** defines the specific entity types 'Book' and 'Car';
@@ -77,48 +77,51 @@ The following table provides examples of common entity types:
 
 :::note To do
 
-Describe the recommended data models (e.g. for a heritage object, a person, a place) using e.g. Schema.org concepts.
+Describe the recommended data models (e.g. for a heritage object, a person, a place) using Schema.org concepts.
 
 :::
 
 :::note To do
 
-Explain data modelling requirements, e.g.
+Explain data modelling requirements, e.g.:
 
-- Each entity must refer to the data provider's publication layer from which it came (e.g. `isBasedOn`), must have a licence (e.g. `license`) and must have an ID that a presentation layer can use, e.g. for bookmarking (e.g. `identifier`);
-- An entity should expose the [collections](collections.md) the entity is a member of. A presentation layer can then offer a 'more like this' or 'more from this collection' functionality.
+- An entity must have a publisher (e.g. `publisher`)
+- An entity must refer to the entity IRI of the data provider (e.g. `isBasedOn`)
+- An entity must have a licence (e.g. `license`)
+- An entity must have an ID that a presentation layer can use, e.g. for bookmarking by users (e.g. `identifier`)
+- An entity must expose the [collections](collections.md) it is a member of. A presentation layer can then offer a 'more like this' or 'more from this collection' functionality.
 
 :::
 
 ## Assigning identifiers to entities
 
-Every entity has a URI. A presentation layer uses that URI to retrieve the entity: requesting it returns the entity via the [Retrieve an entity](#endpoint-retrieve-an-entity) endpoint. The URI is also the identifier of the entity: wherever the entity appears — for example, in the items of a collection or in the properties of another entity — the data layer refers to it with this same URI.
+Every entity has a URI. A presentation layer uses that URI to retrieve the entity: requesting it returns the entity via the [Retrieve an entity](#endpoint-retrieve-an-entity) endpoint. The URI is also the identifier of the entity: wherever the entity appears — for example, in the items of a collection or in the properties of another entity — the integration layer refers to it with this same URI.
 
 The URI of an entity always has the form `/{version}/entities/{entity}`:
 
-- `{version}` is the version of the API of the data layer.
+- `{version}` is the version of the API of the integration layer.
 - `entities` is fixed. Every entity URI contains it.
-- `{entity}` is the path identifier, and it is variable. The data layer determines it.
+- `{entity}` is the path identifier, and it is variable. The integration layer determines it.
 
 The `id` of an entity is its full URI, for example `https://example.org/v1/entities/1234`: the API uses this URI wherever it refers to the entity. The path identifier `{entity}` is the part after `/entities/`, for example `1234`. The requirements and examples in this section are about the path identifier.
 
-The data layer _MUST_ determine the `{entity}` in line with the following requirements:
+The integration layer _MUST_ determine the `{entity}` in line with the following requirements:
 
 1. The `{entity}` _MUST_ be unique: two different entities never have the same `{entity}`.
-1. The `{entity}` _MUST_ be deterministic: when the data layer processes the data of a data provider again, it must yield the same `{entity}`. The entity may have changed properties in between, but its source identifier — the identifier that the data provider assigned to it — stays the same: that is how the data layer recognises the entity as the same one. The `{entity}` _MUST_ therefore be traceable to that source identifier. Otherwise a presentation layer cannot use the URI — for example, in the web address of a detail page, or when a user bookmarks, saves or favourites an entity.
+1. The `{entity}` _MUST_ be deterministic: when the integration layer processes the data of a data provider again, it must yield the same `{entity}`. The entity may have changed properties in between, but its source identifier — the identifier that the data provider assigned to it — stays the same: that is how the integration layer recognises the entity as the same one. The `{entity}` _MUST_ therefore be traceable to that source identifier. Otherwise a presentation layer cannot use the URI — for example, in the web address of a detail page, or when a user bookmarks, saves or favourites an entity.
 1. The `{entity}` _MUST_ not change when the version of the API changes: `/v1/entities/{entity}` may become `/v2/entities/{entity}`, but the `{entity}` stays the same.
 
-These requirements do not promise that an `{entity}` stays the same forever. A data layer cannot guarantee that: it depends on the data provider, and the source identifier may itself change.
+These requirements do not promise that an `{entity}` stays the same forever. An integration layer cannot guarantee that: it depends on the data provider, and the source identifier may itself change.
 
-The data layer _MAY_ choose any approach that satisfies the requirements of this section. The following approaches are examples of what an `{entity}` may look like:
+The integration layer _MAY_ choose any approach that satisfies the requirements of this section. The following approaches are examples of what an `{entity}` may look like:
 
 - **The `{entity}` _is_ the source identifier.** For example, the source identifier of 'The Night Watch' is `https://id.rijksmuseum.nl/200107928`. The URI of the entity is `https://example.org/v1/entities/https%3A%2F%2Fid.rijksmuseum.nl%2F200107928` (encoded so that it fits in a URI).
 - **The `{entity}` is a hash of the source identifier**. For example, the hash of the source identifier of 'The Night Watch' is `874f078c5723abf6f0d86dffbbb827b6c82cd0a26ee6c7657519cbab830cef4d` (created with the [BLAKE3](<https://en.wikipedia.org/wiki/BLAKE_(hash_function)>) hashing algorithm). The URI of the entity is `https://example.org/v1/entities/874f078c5723abf6f0d86dffbbb827b6c82cd0a26ee6c7657519cbab830cef4d`.
-- **The `{entity}` is an identifier generated by the data layer, traceable to the source identifier.** For example, `{entity}` is a number (`1234`) or a Nano ID (`d8fe02e4`), assigned the first time the data layer processes the entity and reused afterwards. The URI of the entity is `https://example.org/v1/entities/1234`.
+- **The `{entity}` is an identifier generated by the integration layer, traceable to the source identifier.** For example, `{entity}` is a number (`1234`) or a Nano ID (`d8fe02e4`), assigned the first time the integration layer processes the entity and reused afterwards. The URI of the entity is `https://example.org/v1/entities/1234`.
 
 ## Endpoint: Retrieve an entity
 
-The endpoint retrieves an entity. The data layer _MUST_ implement this endpoint if it publishes at least one entity.
+The endpoint retrieves an entity. The integration layer _MUST_ implement this endpoint if it publishes at least one entity.
 
 ### HTTP request
 
@@ -141,7 +144,7 @@ None.
 
 ### Response body
 
-The response body _MUST_ contain at least the properties underneath. Additional properties depend on the data model of the entity, defined by the data layer.
+The response body _MUST_ contain at least the properties underneath. Additional properties depend on the data model of the entity, defined by the integration layer.
 
 | Name       | Data type | Cardinality | Description                                                                 |
 | ---------- | --------- | ----------- | --------------------------------------------------------------------------- |
@@ -159,7 +162,7 @@ GET /v1/entities/1234
 Host: example.org
 ```
 
-The request indicates that the data layer should return the entity with path identifier `1234`.
+The request indicates that the integration layer should return the entity with path identifier `1234`.
 
 The response body depends on the data model of the entity. An example:
 
@@ -200,6 +203,6 @@ The response indicates that this entity is a `HeritageObject` and has name 'The 
 
 :::note
 
-This specification does not define an endpoint that retrieves a list of all entities. A presentation layer finds the entities of a data layer through [curated collections](collections.md). A data layer groups its entities into these collections, and a presentation layer browses a collection or filters its items to find the entities it needs.
+This specification does not define an endpoint that retrieves a list of all entities. A presentation layer finds the entities of an integration layer through [curated collections](collections.md). An integration layer groups its entities into these collections, and a presentation layer browses a collection or filters its items to find the entities it needs.
 
 :::
