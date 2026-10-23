@@ -127,6 +127,13 @@ once its description passes validation. A submission that is
 so it never appears here.
 
 Datasets are fetched from this URL on registration and when the crawler runs.
+When a fetch yields a valid description, the datasets found replace the ones the registration
+listed before. A dataset the registration no longer lists, for example because the publisher
+renamed its IRI, is removed with its description, its rating, and the
+[distribution health](#distribution-health) and [validity](#distribution-validity) records of
+URLs that no remaining dataset references. A dataset that another registration also lists is
+kept. When the URL fails or no longer validates, the registration keeps its datasets as they were
+last fetched. [Deleting](api.md) a registration removes its datasets the same way.
 
 | Property                                                     | Description                                                                                                                                                                                                                                                                                                    |
 | ------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
