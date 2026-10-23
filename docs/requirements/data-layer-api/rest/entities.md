@@ -85,8 +85,11 @@ Describe the recommended data models (e.g. for a heritage object, a person, a pl
 
 Explain data modelling requirements, e.g.
 
-- Each entity must refer to the data provider's publication layer from which it came (e.g. `isBasedOn`), must have a licence (e.g. `license`) and must have an ID that a presentation layer can use, e.g. for bookmarking (e.g. `identifier`);
-- An entity should expose the [collections](collections.md) the entity is a member of. A presentation layer can then offer a 'more like this' or 'more from this collection' functionality.
+- An entity must have a publisher (e.g. `publisher`)
+- An entity must refer to the entity IRI of the data provider (e.g. `isBasedOn`)
+- An entity must have a licence (e.g. `license`)
+- An entity must have an ID that a presentation layer can use, e.g. for bookmarking by users (e.g. `identifier`)
+- An entity must expose the [collections](collections.md) it is a member of. A presentation layer can then offer a 'more like this' or 'more from this collection' functionality.
 
 :::
 
