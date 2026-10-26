@@ -1490,7 +1490,7 @@ Possible extra rowspan handling
 </style>
   <meta content="Bikeshed version 49e9fdd4f, updated Tue Oct 13 14:27:53 2026 -0700" name="generator">
   <link href="https://docs.nde.nl/requirements-datasets/" rel="canonical">
-  <meta content="dc79ba906b89ce1d0255130dac6f47d53957a01f" name="revision">
+  <meta content="ef1ce3ae9b46d26cc7c95053f3926b685dafff4c" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>
 /* NDE house style for Bikeshed specifications, from netwerk-digitaal-erfgoed/workflows.
@@ -4102,10 +4102,9 @@ even if that resource is the same on all pages.</p>
        <tr>
         <th scope="row"><a href="http://purl.org/dc/terms/publisher">dct:publisher</a>
         <td>An entity (organisation or person) responsible for making the Dataset available. See <a href="#creator-publisher-information">§ 5.3 Creator/publisher information</a>.
-        <td>0..1<br><small><a href="#v2">v2.0</a>: 1</small>
+        <td>1
         <td>
-                Recommended
-                <br><small><a href="#v2">v2.0</a>: becomes required</small>
+                Required
                     
        <tr>
         <th scope="row"><a href="http://purl.org/dc/terms/creator">dct:creator</a>
@@ -4171,6 +4170,36 @@ even if that resource is the same on all pages.</p>
         <td>
                 Recommended
                 
+       <tr>
+        <th scope="row"><a href="http://www.w3.org/ns/dcat#version">dcat:version</a>
+        <td>Version identifier of the dataset, such as a semantic version number or a date. See <a href="#dataset-versions">§ 5.2.4 Versions</a>.
+        <td>0..1<br><small><a href="#v2">v2.0</a>: 1</small>
+        <td>
+                Recommended
+                <br><small><a href="#v2">v2.0</a>: becomes required</small>
+                    
+       <tr>
+        <th scope="row"><a href="http://purl.org/dc/terms/hasPart">dct:hasPart</a>
+        <td>Indicates a dataset that is part of this dataset and also available as a separate dataset.
+        <td>0..n
+        <td>
+                Recommended
+                
+       <tr>
+        <th scope="row"><a href="http://purl.org/dc/terms/isReferencedBy">dct:isReferencedBy</a>
+        <td>A citation or reference for the dataset.
+        <td>0..n
+        <td>
+                Recommended
+                
+       <tr>
+        <th scope="row"><a href="http://purl.org/dc/terms/isPartOf">dct:isPartOf</a>
+        <td>The HTTP <a data-link-type="biblio" href="#biblio-iri" title="Internationalized Resource Identifiers (IRIs)">[IRI]</a>(s) of the data catalog(s) that the dataset belongs to.
+        <td>0..n
+        <td>
+                Recommended
+                <br><small><a href="#v2">v2.0</a>: must be IRI</small>
+                    
      </table>
     </div>
    </div>
@@ -4494,14 +4523,16 @@ even if that resource is the same on all pages.</p>
         <td>0..n
         <td>
                 Recommended
-                
+                <br><small><a href="#v2">v2.0</a>: must be valid ISO 8601</small>
+                    
        <tr>
         <th scope="row"><a href="http://purl.org/dc/terms/modified">dct:modified</a>
         <td>The most recent date on which the distribution was changed or modified. See <a href="#distribution-date">§ 5.4.1 Creation and modification dates</a>.
         <td>0..n
         <td>
                 Recommended
-                
+                <br><small><a href="#v2">v2.0</a>: must be valid ISO 8601</small>
+                    
        <tr>
         <th scope="row"><a href="http://www.w3.org/ns/dcat#byteSize">dcat:byteSize</a>
         <td>Distribution file size in bytes.
@@ -4516,7 +4547,8 @@ even if that resource is the same on all pages.</p>
         <td>0..n
         <td>
                 Recommended
-                
+                <br><small><a href="#v2">v2.0</a>: must be IRI</small>
+                    
        <tr>
         <th scope="row"><a href="http://purl.org/dc/terms/license">dct:license</a>
         <td>The license under which the distribution is made available. See <a href="#dataset-license">§ 5.2.2 License</a>.
