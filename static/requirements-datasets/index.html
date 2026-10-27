@@ -1490,7 +1490,7 @@ Possible extra rowspan handling
 </style>
   <meta content="Bikeshed version 49e9fdd4f, updated Tue Oct 13 14:27:53 2026 -0700" name="generator">
   <link href="https://docs.nde.nl/requirements-datasets/" rel="canonical">
-  <meta content="cbf816603c554cd61bd273ce00c5636fd721b35a" name="revision">
+  <meta content="ade3fb0287f0fd78f06bfb83fb63abef3f017277" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>
 /* NDE house style for Bikeshed specifications, from netwerk-digitaal-erfgoed/workflows.
@@ -3846,10 +3846,7 @@ even if that resource is the same on all pages.</p>
         <th scope="row"><a href="https://schema.org/name">schema:name</a>
         <td>A name given to the dataset. See <a href="#dataset-basic">§ 5.2.1 Basic information</a>.
         <td>1..n
-        <td>
-                Required
-                    <br><small><a href="#v2">v2.0</a>: must be rdf:langString</small>
-                    
+        <td>Required<br><small><a href="#v2">v2.0</a>: must be rdf:langString</small>
        <tr>
         <th scope="row"><a href="https://schema.org/description">schema:description</a>
         <td>A description of the contents of the dataset.
@@ -3858,17 +3855,12 @@ even if that resource is the same on all pages.</p>
         Consider different audiences – both domain experts and others –
         for whom the text should be understandable. See <a href="#dataset-basic">§ 5.2.1 Basic information</a>.
         <td>0..n<br><small><a href="#v2">v2.0</a>: 1..n</small>
-        <td>
-                Recommended
-                <br><small><a href="#v2">v2.0</a>: becomes required; must be rdf:langString</small>
-                    
+        <td>Recommended<br><small><a href="#v2">v2.0</a>: becomes required; must be rdf:langString</small>
        <tr>
         <th scope="row"><a href="https://schema.org/publisher">schema:publisher</a>
         <td>An entity (organisation or person) responsible for making the Dataset available. See <a href="#creator-publisher-information">§ 5.3 Creator/publisher information</a>.
         <td>1
-        <td>
-                Required
-                    
+        <td>Required
        <tr>
         <th scope="row"><a href="https://schema.org/license">schema:license</a>
         <td>
@@ -3879,147 +3871,99 @@ even if that resource is the same on all pages.</p>
          <p>The <a data-link-type="biblio" href="#biblio-dera" title="Digital Heritage Reference Architecture">[DERA]</a> requires metadata to be published openly, so this value <em>SHOULD</em> be an open license that allows consumers to reuse the data, such as <code>http://creativecommons.org/publicdomain/zero/1.0/</code> (CC0), <code>http://creativecommons.org/licenses/by/4.0/</code> (CC BY 4.0), or <code>http://creativecommons.org/licenses/by-sa/4.0/</code> (CC BY-SA 4.0). Adopting a non-open license will severely limit reuse and does not comply with the <a data-link-type="biblio" href="#biblio-dera" title="Digital Heritage Reference Architecture">[DERA]</a> principles.</p>
          <p>The value <em>MUST</em> be the canonical URI of a license. For example, use <code>http://creativecommons.org/publicdomain/zero/1.0/</code> instead of <code>http://creativecommons.org/publicdomain/zero/1.0/deed.nl</code>. See <a href="#dataset-license">§ 5.2.2 License</a>.</p>
         <td>1
-        <td>
-                Required
-                    <br><small><a href="#v2">v2.0</a>: must be IRI</small>
-                    
+        <td>Required<br><small><a href="#v2">v2.0</a>: must be IRI</small>
        <tr>
         <th scope="row"><a href="https://schema.org/distribution">schema:distribution</a>
         <td>Distributions through which the dataset can be retrieved, such as as a download or via an API. See <a href="#dataset-distributions">§ 5.4 Distributions</a>.
         <td>0..n
-        <td>
-                Recommended
-                
+        <td>Recommended
        <tr>
         <th scope="row"><a href="https://schema.org/creator">schema:creator</a>
         <td>An entity (organisation or person) responsible for producing the dataset. See <a href="#creator-publisher-information">§ 5.3 Creator/publisher information</a>.
         <td>0..n<br><small><a href="#v2">v2.0</a>: 1..n</small>
-        <td>
-                Recommended
-                <br><small><a href="#v2">v2.0</a>: becomes required</small>
-                    
+        <td>Recommended<br><small><a href="#v2">v2.0</a>: becomes required</small>
        <tr>
         <th scope="row"><a href="https://schema.org/datePublished">schema:datePublished</a>
         <td>The date of formal issuance (such as publication) of the dataset. See <a href="#dataset-date">§ 5.2.3 Creation, publication and modification dates</a>.
         <td>0..1
-        <td>
-                Recommended
-                <br><small><a href="#v2">v2.0</a>: must be valid ISO 8601</small>
-                    
+        <td>Recommended<br><small><a href="#v2">v2.0</a>: must be valid ISO 8601</small>
        <tr>
         <th scope="row"><a href="https://schema.org/dateCreated">schema:dateCreated</a>
         <td>The date on which the dataset was created. See <a href="#dataset-date">§ 5.2.3 Creation, publication and modification dates</a>.
         <td>0..1
-        <td>
-                Recommended
-                <br><small><a href="#v2">v2.0</a>: must be valid ISO 8601</small>
-                    
+        <td>Recommended<br><small><a href="#v2">v2.0</a>: must be valid ISO 8601</small>
        <tr>
         <th scope="row"><a href="https://schema.org/dateModified">schema:dateModified</a>
         <td>The most recent date on which the dataset was changed or modified. See <a href="#dataset-date">§ 5.2.3 Creation, publication and modification dates</a>.
         <td>0..1
-        <td>
-                Recommended
-                <br><small><a href="#v2">v2.0</a>: must be valid ISO 8601</small>
-                    
+        <td>Recommended<br><small><a href="#v2">v2.0</a>: must be valid ISO 8601</small>
        <tr>
         <th scope="row"><a href="https://schema.org/version">schema:version</a>
         <td>Version identifier of the dataset, such as a semantic version number or a date. See <a href="#dataset-versions">§ 5.2.4 Versions</a>.
         <td>0..1
-        <td>
-                Recommended
-                
+        <td>Recommended
        <tr>
         <th scope="row"><a href="https://schema.org/inLanguage">schema:inLanguage</a>
         <td>The natural language of the textual values within the dataset – that is, of the metadata records themselves (titles, descriptions, and so on). Use a <a data-link-type="biblio" href="#biblio-bcp47" title="Tags for Identifying Languages">[BCP47]</a> language code, such as <code>nl</code> or <code>en</code>.
         <td>0..n
-        <td>
-                Recommended
-                <br><small><a href="#v2">v2.0</a>: must match <code>^[a-zA-Z]{2,3}(-[a-zA-Z0-9]+)*$</code></small>
-                    
+        <td>Recommended<br><small><a href="#v2">v2.0</a>: must match <code>^[a-zA-Z]{2,3}(-[a-zA-Z0-9]+)*$</code></small>
        <tr>
         <th scope="row"><a href="https://schema.org/mainEntityOfPage">schema:mainEntityOfPage</a>
         <td>A web page that provides access to the Dataset, its Distributions and/or additional information. Not needed when the dataset URI itself resolves to an HTML page. The human-readable description <em>MUST</em> be consistent with and include at least all details (such as distributions) from the RDF dataset description. See <a href="#resolvable-iris">§ 5.1.3 Resolvable dataset IRIs</a>.
         <td>0..n
-        <td>
-                Recommended
-                
+        <td>Recommended
        <tr>
         <th scope="row"><a href="https://schema.org/isBasedOn">schema:isBasedOn</a>
         <td>The URI of a dataset this dataset is based on (previously schema:isBasedOnUrl).
         <td>0..n
-        <td>
-                Recommended
-                
+        <td>Recommended
        <tr>
         <th scope="row"><a href="https://schema.org/citation">schema:citation</a>
         <td>A citation or reference for the dataset.
         <td>0..n
-        <td>
-                Recommended
-                
+        <td>Recommended
        <tr>
         <th scope="row"><a href="https://schema.org/genre">schema:genre</a>
         <td><code>schema:genre</code> is deprecated. Use <code>schema:about</code> with a URI (e.g. from AAT or GTAA via the Network of Terms) for both subject and material type.
         <td>0
-        <td>
-                Discouraged
-                <br><small><a href="#v2">v2.0</a>: no longer allowed</small>
-                    
+        <td>Discouraged<br><small><a href="#v2">v2.0</a>: no longer allowed</small>
        <tr>
         <th scope="row"><a href="https://schema.org/about">schema:about</a>
         <td>The subject matter of the dataset, covering both topical themes (such as ‘post-war reconstruction’ or ‘colonial history’) and material types (such as ‘photographs’ or ‘architectural drawings’). Use a URI from a controlled vocabulary (e.g. AAT, GTAA, or Brinkman via the <a href="https://termennetwerk.netwerkdigitaalerfgoed.nl/en">Network of Terms</a>).
         <td>0..n
-        <td>
-                Recommended
-                
+        <td>Recommended
        <tr>
         <th scope="row"><a href="https://schema.org/spatialCoverage">schema:spatialCoverage</a>
         <td>The geographical area to which the data in the dataset pertains. Use a URI from a controlled vocabulary such as <a href="https://www.geonames.org/">GeoNames</a> via the <a href="https://termennetwerk.netwerkdigitaalerfgoed.nl/en">Network of Terms</a>. Provide only the most specific (lowest) level, for example the URI for Roermond and not the one for Limburg or the Netherlands. Broader areas can be derived from the term’s hierarchical relations.
         <td>0..n
-        <td>
-                Recommended
-                <br><small><a href="#v2">v2.0</a>: must be IRI</small>
-                    
+        <td>Recommended<br><small><a href="#v2">v2.0</a>: must be IRI</small>
        <tr>
         <th scope="row"><a href="https://schema.org/temporalCoverage">schema:temporalCoverage</a>
         <td>The time period to which the dataset pertains. The value must be an ISO 8601 date or time interval (such as ‘2011’, ‘2011/2012’, ‘1889-06/07’ for shortened notation, ‘-0431/-0404’ or ‘-13000/-10000’ for BCE dates, or ‘1440/..’ for an open-ended range), or an HTTP(S) URI.
         <td>0..n
-        <td>
-                Recommended
-                <br><small><a href="#v2">v2.0</a>: must be valid ISO 8601 or IRI</small>
-                    
+        <td>Recommended<br><small><a href="#v2">v2.0</a>: must be valid ISO 8601 or IRI</small>
        <tr>
         <th scope="row"><a href="https://schema.org/hasPart">schema:hasPart</a>
         <td>Indicates a dataset that is part of this dataset and also available as a separate dataset.
         <td>0..n
-        <td>
-                Recommended
-                
+        <td>Recommended
        <tr>
         <th scope="row"><a href="https://schema.org/includedInDataCatalog">schema:includedInDataCatalog</a>
         <td>The HTTP <a data-link-type="biblio" href="#biblio-iri" title="Internationalized Resource Identifiers (IRIs)">[IRI]</a>(s) of the data catalog(s) that the dataset belongs to.
         <td>0..n
-        <td>
-                Recommended
-                <br><small><a href="#v2">v2.0</a>: must be IRI</small>
-                    
+        <td>Recommended<br><small><a href="#v2">v2.0</a>: must be IRI</small>
        <tr>
         <th scope="row"><a href="http://purl.org/dc/terms/accrualPeriodicity">dct:accrualPeriodicity</a>
         <td>How often the dataset is updated.
         Use a value from the EU frequency list,
         for example http://publications.europa.eu/resource/authority/frequency/WEEKLY .
         <td>0..1
-        <td>
-                Recommended
-                
+        <td>Recommended
        <tr>
         <th scope="row"><a href="http://purl.org/dc/terms/accessRights">dct:accessRights</a>
         <td>Information about who can access the dataset. Use a value from the EU Access Rights vocabulary. Defaults to <code>PUBLIC</code> if not provided.
         <td>0..1
-        <td>
-                Recommended
-                
+        <td>Recommended
      </table>
     </div>
     <div data-vocab="dcat">
@@ -4041,10 +3985,7 @@ even if that resource is the same on all pages.</p>
         <th scope="row"><a href="http://purl.org/dc/terms/title">dct:title</a>
         <td>A name given to the dataset. See <a href="#dataset-basic">§ 5.2.1 Basic information</a>.
         <td>1..n
-        <td>
-                Required
-                    <br><small><a href="#v2">v2.0</a>: must be rdf:langString</small>
-                    
+        <td>Required<br><small><a href="#v2">v2.0</a>: must be rdf:langString</small>
        <tr>
         <th scope="row"><a href="http://purl.org/dc/terms/description">dct:description</a>
         <td>A description of the contents of the dataset.
@@ -4053,158 +3994,108 @@ even if that resource is the same on all pages.</p>
         Consider different audiences – both domain experts and others –
         for whom the text should be understandable. See <a href="#dataset-basic">§ 5.2.1 Basic information</a>.
         <td>0..n<br><small><a href="#v2">v2.0</a>: 1..n</small>
-        <td>
-                Recommended
-                <br><small><a href="#v2">v2.0</a>: becomes required; must be rdf:langString</small>
-                    
+        <td>Recommended<br><small><a href="#v2">v2.0</a>: becomes required; must be rdf:langString</small>
        <tr>
         <th scope="row"><a href="http://purl.org/dc/terms/created">dct:created</a>
         <td>The date on which the dataset was created. See <a href="#dataset-date">§ 5.2.3 Creation, publication and modification dates</a>.
         <td>0..1
-        <td>
-                Recommended
-                <br><small><a href="#v2">v2.0</a>: must be valid ISO 8601</small>
-                    
+        <td>Recommended<br><small><a href="#v2">v2.0</a>: must be valid ISO 8601</small>
        <tr>
         <th scope="row"><a href="http://purl.org/dc/terms/issued">dct:issued</a>
         <td>The date of formal issuance (such as publication) of the dataset. See <a href="#dataset-date">§ 5.2.3 Creation, publication and modification dates</a>.
         <td>0..1
-        <td>
-                Recommended
-                <br><small><a href="#v2">v2.0</a>: must be valid ISO 8601</small>
-                    
+        <td>Recommended<br><small><a href="#v2">v2.0</a>: must be valid ISO 8601</small>
        <tr>
         <th scope="row"><a href="http://purl.org/dc/terms/modified">dct:modified</a>
         <td>The most recent date on which the dataset was changed or modified. See <a href="#dataset-date">§ 5.2.3 Creation, publication and modification dates</a>.
         <td>0..1
-        <td>
-                Recommended
-                <br><small><a href="#v2">v2.0</a>: must be valid ISO 8601</small>
-                    
+        <td>Recommended<br><small><a href="#v2">v2.0</a>: must be valid ISO 8601</small>
        <tr>
         <th scope="row"><a href="http://purl.org/dc/terms/spatial">dct:spatial</a>
         <td>The geographical area to which the data in the dataset pertains. Use a URI from a controlled vocabulary such as <a href="https://www.geonames.org/">GeoNames</a>. Find place URIs via the <a href="https://termennetwerk.netwerkdigitaalerfgoed.nl/en">Network of Terms</a>.
         <td>0..n
-        <td>
-                Recommended
-                <br><small><a href="#v2">v2.0</a>: must be IRI</small>
-                    
+        <td>Recommended<br><small><a href="#v2">v2.0</a>: must be IRI</small>
        <tr>
         <th scope="row"><a href="http://purl.org/dc/terms/temporal">dct:temporal</a>
         <td>The time period to which the dataset pertains. The value must be an ISO 8601 date or time interval (such as ‘2011’, ‘2011/2012’, ‘1889-06/07’ for shortened notation, ‘-0431/-0404’ or ‘-13000/-10000’ for BCE dates, or ‘1440/..’ for an open-ended range), or an HTTP(S) URI.
         <td>0..n
-        <td>
-                Recommended
-                <br><small><a href="#v2">v2.0</a>: must be valid ISO 8601 or IRI</small>
-                    
+        <td>Recommended<br><small><a href="#v2">v2.0</a>: must be valid ISO 8601 or IRI</small>
        <tr>
         <th scope="row"><a href="http://purl.org/dc/terms/language">dct:language</a>
         <td>The natural language of the textual values in the dataset. Use a value from the <a href="https://op.europa.eu/en/web/eu-vocabularies/concept-scheme/-/resource?uri=http://publications.europa.eu/resource/authority/language">EU Vocabularies Languages Named Authority List</a>.
         <td>0..n
-        <td>
-                Recommended
-                <br><small><a href="#v2">v2.0</a>: must match <code>^http://publications\.europa\.eu/resource/authority/language/</code></small>
-                    
+        <td>Recommended<br><small><a href="#v2">v2.0</a>: must match <code>^http://publications\.europa\.eu/resource/authority/language/</code></small>
        <tr>
         <th scope="row"><a href="http://purl.org/dc/terms/publisher">dct:publisher</a>
         <td>An entity (organisation or person) responsible for making the Dataset available. See <a href="#creator-publisher-information">§ 5.3 Creator/publisher information</a>.
         <td>1
-        <td>
-                Required
-                    
+        <td>Required
        <tr>
         <th scope="row"><a href="http://purl.org/dc/terms/creator">dct:creator</a>
         <td>An entity (organisation or person) responsible for producing the dataset. See <a href="#creator-publisher-information">§ 5.3 Creator/publisher information</a>.
         <td>0..n<br><small><a href="#v2">v2.0</a>: 1..n</small>
-        <td>
-                Recommended
-                <br><small><a href="#v2">v2.0</a>: becomes required</small>
-                    
+        <td>Recommended<br><small><a href="#v2">v2.0</a>: becomes required</small>
        <tr>
         <th scope="row"><a href="http://www.w3.org/ns/dcat#contactPoint">dcat:contactPoint</a>
         <td>Contact information where end users can get in touch with questions about the dataset.
         This contains the e-mail address or a link (URL) to the contact form of the responsible organization.
         The e-mail address should be a functional e-mail address of the organization or department. See <a href="#contact">§ 5.3.3 Contact information</a>.
         <td>0..1<br><small><a href="#v2">v2.0</a>: 1</small>
-        <td>
-                Recommended
-                <br><small><a href="#v2">v2.0</a>: becomes required</small>
-                    
+        <td>Recommended<br><small><a href="#v2">v2.0</a>: becomes required</small>
        <tr>
         <th scope="row"><a href="http://www.w3.org/ns/dcat#theme">dcat:theme</a>
         <td>The category of the dataset. Use at least one value from the European Dataset Theme Vocabulary.
         It is recommended to also include values from domain-specific vocabularies.
         The default theme ‘Education, culture and sport’ (data-theme/EDUC) is auto-assigned.
         <td>0..n
-        <td>
-                Recommended
-                
+        <td>Recommended
        <tr>
         <th scope="row"><a href="http://www.w3.org/ns/dcat#distribution">dcat:distribution</a>
         <td>An available representation of the dataset. See <a href="#dataset-distributions">§ 5.4 Distributions</a>.
         <td>0..n
-        <td>
-                Recommended
-                
+        <td>Recommended
        <tr>
         <th scope="row"><a href="http://purl.org/dc/terms/accrualPeriodicity">dct:accrualPeriodicity</a>
         <td>How often the dataset is updated.
         Use a value from the EU frequency list,
         for example http://publications.europa.eu/resource/authority/frequency/WEEKLY .
         <td>0..1
-        <td>
-                Recommended
-                
+        <td>Recommended
        <tr>
         <th scope="row"><a href="http://purl.org/dc/terms/accessRights">dct:accessRights</a>
         <td>Information about who can access the dataset. Use a value from the EU Access Rights vocabulary. Defaults to <code>PUBLIC</code> if not provided.
         <td>0..1
-        <td>
-                Recommended
-                
+        <td>Recommended
        <tr>
         <th scope="row"><a href="http://www.w3.org/ns/dcat#landingPage">dcat:landingPage</a>
         <td>A web page that provides access to the Dataset, its Distributions and/or additional information. Not needed when the dataset URI itself resolves to an HTML page. The human-readable description <em>MUST</em> be consistent with and include at least all details (such as distributions) from the RDF dataset description. See <a href="#resolvable-iris">§ 5.1.3 Resolvable dataset IRIs</a>.
         <td>0..n
-        <td>
-                Recommended
-                
+        <td>Recommended
        <tr>
         <th scope="row"><a href="http://purl.org/dc/terms/source">dct:source</a>
         <td>The URI of a dataset this dataset is based on.
         <td>0..n
-        <td>
-                Recommended
-                
+        <td>Recommended
        <tr>
         <th scope="row"><a href="http://www.w3.org/ns/dcat#version">dcat:version</a>
         <td>Version identifier of the dataset, such as a semantic version number or a date. See <a href="#dataset-versions">§ 5.2.4 Versions</a>.
         <td>0..1
-        <td>
-                Recommended
-                
+        <td>Recommended
        <tr>
         <th scope="row"><a href="http://purl.org/dc/terms/hasPart">dct:hasPart</a>
         <td>Indicates a dataset that is part of this dataset and also available as a separate dataset.
         <td>0..n
-        <td>
-                Recommended
-                
+        <td>Recommended
        <tr>
         <th scope="row"><a href="http://purl.org/dc/terms/isReferencedBy">dct:isReferencedBy</a>
         <td>A citation or reference for the dataset.
         <td>0..n
-        <td>
-                Recommended
-                
+        <td>Recommended
        <tr>
         <th scope="row"><a href="http://purl.org/dc/terms/isPartOf">dct:isPartOf</a>
         <td>The HTTP <a data-link-type="biblio" href="#biblio-iri" title="Internationalized Resource Identifiers (IRIs)">[IRI]</a>(s) of the data catalog(s) that the dataset belongs to.
         <td>0..n
-        <td>
-                Recommended
-                <br><small><a href="#v2">v2.0</a>: must be IRI</small>
-                    
+        <td>Recommended<br><small><a href="#v2">v2.0</a>: must be IRI</small>
      </table>
     </div>
    </div>
@@ -4229,40 +4120,27 @@ even if that resource is the same on all pages.</p>
         <th scope="row"><a href="https://schema.org/name">schema:name</a>
         <td>The full name of the publisher or creator.
         <td>1..n
-        <td>
-                Required
-                    <br><small><a href="#v2">v2.0</a>: must be rdf:langString</small>
-                    
+        <td>Required<br><small><a href="#v2">v2.0</a>: must be rdf:langString</small>
        <tr>
         <th scope="row"><a href="https://schema.org/alternateName">schema:alternateName</a>
         <td>Alternative names such as an abbreviation that the organization is known under.
         <td>0..n
-        <td>
-                Recommended
-                <br><small><a href="#v2">v2.0</a>: must be rdf:langString</small>
-                    
+        <td>Recommended<br><small><a href="#v2">v2.0</a>: must be rdf:langString</small>
        <tr>
         <th scope="row"><a href="https://schema.org/identifier">schema:identifier</a>
         <td>Identifier(s) of the organization, at least its <a href="https://www.nationaalarchief.nl/archiveren/kennisbank/isil-codes">ISIL code</a>.
         <td>0..n
-        <td>
-                Recommended
-                
+        <td>Recommended
        <tr>
         <th scope="row"><a href="https://schema.org/sameAs">schema:sameAs</a>
         <td>Links to the organization in other databases.
         <td>0..n
-        <td>
-                Recommended
-                
+        <td>Recommended
        <tr>
         <th scope="row"><a href="https://schema.org/contactPoint">schema:contactPoint</a>
         <td>Contact information where end users can get in touch with questions about the dataset. Preferably use the details of the department that manages the dataset or catalogue, rather than an individual employee. See <a href="#contact">§ 5.3.3 Contact information</a>.
         <td>0..n<br><small><a href="#v2">v2.0</a>: 1..n</small>
-        <td>
-                Recommended
-                <br><small><a href="#v2">v2.0</a>: becomes required</small>
-                    
+        <td>Recommended<br><small><a href="#v2">v2.0</a>: becomes required</small>
      </table>
     </div>
     <div data-vocab="dcat">
@@ -4284,32 +4162,22 @@ even if that resource is the same on all pages.</p>
         <th scope="row"><a href="http://xmlns.com/foaf/0.1/name">foaf:name</a>
         <td>The name of the publisher or creator.
         <td>1..n
-        <td>
-                Required
-                    <br><small><a href="#v2">v2.0</a>: must be rdf:langString</small>
-                    
+        <td>Required<br><small><a href="#v2">v2.0</a>: must be rdf:langString</small>
        <tr>
         <th scope="row"><a href="http://xmlns.com/foaf/0.1/nick">foaf:nick</a>
         <td>Alternative names such as an abbreviation that the organization is known under.
         <td>0..n
-        <td>
-                Recommended
-                <br><small><a href="#v2">v2.0</a>: must be rdf:langString</small>
-                    
+        <td>Recommended<br><small><a href="#v2">v2.0</a>: must be rdf:langString</small>
        <tr>
         <th scope="row"><a href="http://purl.org/dc/terms/identifier">dct:identifier</a>
         <td>Identifier(s) of the organization, at least its <a href="https://www.nationaalarchief.nl/archiveren/kennisbank/isil-codes">ISIL code</a>.
         <td>0..n
-        <td>
-                Recommended
-                
+        <td>Recommended
        <tr>
         <th scope="row"><a href="http://www.w3.org/2002/07/owl#sameAs">owl:sameAs</a>
         <td>Links to the organization in other databases.
         <td>0..n
-        <td>
-                Recommended
-                
+        <td>Recommended
      </table>
     </div>
    </div>
@@ -4329,17 +4197,12 @@ even if that resource is the same on all pages.</p>
         <th scope="row"><a href="https://schema.org/name">schema:name</a>
         <td>Name of the contact point, preferably a department (“Datasets department”) rather than an individual employee. Tag the value with a language so that a multilingual department name or a non-Latin personal name can be shown in the appropriate language.
         <td>1..n
-        <td>
-                Required
-                    <br><small><a href="#v2">v2.0</a>: must be rdf:langString</small>
-                    
+        <td>Required<br><small><a href="#v2">v2.0</a>: must be rdf:langString</small>
        <tr>
         <th scope="row"><a href="https://schema.org/email">schema:email</a>
         <td>The email address of the contact point, preferably a functional address of the organization or department.
         <td>1..n
-        <td>
-                Required
-                    
+        <td>Required
      </table>
     </div>
     <div data-vocab="dcat">
@@ -4356,18 +4219,12 @@ even if that resource is the same on all pages.</p>
         <th scope="row"><a href="http://www.w3.org/2006/vcard/ns#fn">vcard:fn</a>
         <td>Name of the contact point, preferably a department (“Datasets department”) rather than an individual employee. Tag the value with a language so that a multilingual department name or a non-Latin personal name can be shown in the appropriate language.
         <td>1..n
-        <td>
-                Required
-                    <br><small><a href="#v2">v2.0</a>: must be rdf:langString</small>
-                    
+        <td>Required<br><small><a href="#v2">v2.0</a>: must be rdf:langString</small>
        <tr>
         <th scope="row"><a href="http://www.w3.org/2006/vcard/ns#hasEmail">vcard:hasEmail</a>
         <td>The email address of the contact point as a mailto: URL, preferably a functional address of the organization or department.
         <td>1..n
-        <td>
-                Required
-                    <br><small><a href="#v2">v2.0</a>: must be IRI</small>
-                    
+        <td>Required<br><small><a href="#v2">v2.0</a>: must be IRI</small>
      </table>
     </div>
    </div>
@@ -4388,82 +4245,54 @@ even if that resource is the same on all pages.</p>
         <td>The URL that provides direct access to the distribution itself: the data file or the <a data-link-type="dfn" href="#web-api" id="ref-for-web-api④">web API</a> endpoint.
                 Use <code>schema:documentation</code> if there is also a documentation page that describes or provides access to the distribution (such as a SPARQL UI or a download landing page).
         <td>1
-        <td>
-                Required
-                    <br><small><a href="#v2">v2.0</a>: must be IRI</small>
-                    
+        <td>Required<br><small><a href="#v2">v2.0</a>: must be IRI</small>
        <tr>
         <th scope="row"><a href="https://schema.org/encodingFormat">schema:encodingFormat</a>
         <td>The media type of the downloadable file. Use a value from the <a data-link-type="biblio" href="#biblio-iana-media-types" title="Media Types">[IANA-MEDIA-TYPES]</a> list. The value should indicate the media type of the response of schema:contentUrl when no Accept header is included in the request. When the distribution is compressed, the compression format (such as <code>zip</code>, <code>gzip</code>) must be included (such as <code>text/turtle+gzip</code>).
         <td>0..1
-        <td>
-                Required: schema:encodingFormat or schema:usageInfo
-                    <br><small><a href="#v2">v2.0</a>: max 1</small>
-                    
+        <td>Required: schema:encodingFormat or schema:usageInfo<br><small><a href="#v2">v2.0</a>: max 1</small>
        <tr>
         <th scope="row"><a href="https://schema.org/description">schema:description</a>
         <td>Distribution description
         <td>0..n
-        <td>
-                Recommended
-                <br><small><a href="#v2">v2.0</a>: max one value per language</small>
-                    
+        <td>Recommended<br><small><a href="#v2">v2.0</a>: max one value per language</small>
        <tr>
         <th scope="row"><a href="https://schema.org/datePublished">schema:datePublished</a>
         <td>The date of formal issuance (such as publication) of the distribution. See <a href="#distribution-date">§ 5.4.1 Creation and modification dates</a>.
         <td>0..1
-        <td>
-                Recommended
-                <br><small><a href="#v2">v2.0</a>: must be valid ISO 8601</small>
-                    
+        <td>Recommended<br><small><a href="#v2">v2.0</a>: must be valid ISO 8601</small>
        <tr>
         <th scope="row"><a href="https://schema.org/dateModified">schema:dateModified</a>
         <td>The most recent date on which the distribution was changed or modified. See <a href="#distribution-date">§ 5.4.1 Creation and modification dates</a>.
         <td>0..1
-        <td>
-                Recommended
-                <br><small><a href="#v2">v2.0</a>: must be valid ISO 8601</small>
-                    
+        <td>Recommended<br><small><a href="#v2">v2.0</a>: must be valid ISO 8601</small>
        <tr>
         <th scope="row"><a href="https://schema.org/inLanguage">schema:inLanguage</a>
         <td>Language or languages in which the distribution is available. Use a <a data-link-type="biblio" href="#biblio-bcp47" title="Tags for Identifying Languages">[BCP47]</a> language code, such as <code>nl</code>.
         <td>0..n
-        <td>
-                Recommended
-                <br><small><a href="#v2">v2.0</a>: must match <code>^[a-zA-Z]{2,3}(-[a-zA-Z0-9]+)*$</code></small>
-                    
+        <td>Recommended<br><small><a href="#v2">v2.0</a>: must match <code>^[a-zA-Z]{2,3}(-[a-zA-Z0-9]+)*$</code></small>
        <tr>
         <th scope="row"><a href="https://schema.org/license">schema:license</a>
         <td>License applicable to this distribution, overriding the parent dataset’s license. Optional; only set this when the distribution carries a different license from the dataset. See <a href="#dataset-license">§ 5.2.2 License</a>.
         <td>0..1
-        <td>
-                Recommended
-                <br><small><a href="#v2">v2.0</a>: must be IRI</small>
-                    
+        <td>Recommended<br><small><a href="#v2">v2.0</a>: must be IRI</small>
        <tr>
         <th scope="row"><a href="https://schema.org/contentSize">schema:contentSize</a>
         <td>Distribution file size in bytes.
         <td>0..1
-        <td>
-                Recommended
-                
+        <td>Recommended
        <tr>
         <th scope="row"><a href="https://schema.org/usageInfo">schema:usageInfo</a>
         <td>A link to the documentation: for downloads, the application profile, vocabulary or ontology; for <a data-link-type="dfn" href="#web-api" id="ref-for-web-api⑤">web API</a>s (such as SPARQL or OAI-PMH), the protocol specification.
                 It lets consumers tell a full data dump from an API that exposes only part of the data. See <a href="#usage-information">§ 5.4.2 Usage information</a>.
         <td>0..n
-        <td>
-                Required: schema:encodingFormat or schema:usageInfo
-                    <br><small><a href="#v2">v2.0</a>: must be IRI</small>
-                    
+        <td>Required: schema:encodingFormat or schema:usageInfo<br><small><a href="#v2">v2.0</a>: must be IRI</small>
        <tr>
         <th scope="row"><a href="https://schema.org/documentation">schema:documentation</a>
         <td>A documentation page that describes or provides access to this distribution, such as a SPARQL UI or a download landing page.
                 <code>schema:contentUrl</code> points to the distribution itself (the data file or the API endpoint).
         <td>0..n
-        <td>
-                Recommended
-                
+        <td>Recommended
      </table>
     </div>
     <div data-vocab="dcat">
@@ -4480,109 +4309,73 @@ even if that resource is the same on all pages.</p>
         <th scope="row"><a href="http://www.w3.org/ns/dcat#mediaType">dcat:mediaType</a>
         <td>The media type of the distribution according to the IANA classification.
         <td>0..1
-        <td>
-                Required: dcat:mediaType or dct:format or dct:conformsTo
-                    
+        <td>Required: dcat:mediaType or dct:format or dct:conformsTo
        <tr>
         <th scope="row"><a href="http://www.w3.org/ns/dcat#accessURL">dcat:accessURL</a>
         <td>The URL that provides access to a distribution of the dataset.
         <td>0..1
-        <td>
-                Required: dcat:accessURL or dcat:downloadURL
-                    <br><small><a href="#v2">v2.0</a>: must be IRI</small>
-                    
+        <td>Required: dcat:accessURL or dcat:downloadURL<br><small><a href="#v2">v2.0</a>: must be IRI</small>
        <tr>
         <th scope="row"><a href="http://www.w3.org/ns/dcat#downloadURL">dcat:downloadURL</a>
         <td>The URL of the downloadable file in a specific format.
         <td>0..1
-        <td>
-                Required: dcat:accessURL or dcat:downloadURL
-                    <br><small><a href="#v2">v2.0</a>: must be IRI</small>
-                    
+        <td>Required: dcat:accessURL or dcat:downloadURL<br><small><a href="#v2">v2.0</a>: must be IRI</small>
        <tr>
         <th scope="row"><a href="http://www.w3.org/ns/dcat#compressFormat">dcat:compressFormat</a>
         <td>The compression format of the distribution, as a media type from the <a data-link-type="biblio" href="#biblio-iana-media-types" title="Media Types">[IANA-MEDIA-TYPES]</a> list (such as <code>application/gzip</code>). In DCAT, declare compression here, not in <code>dcat:mediaType</code>: a bare compression type (such as <code>application/zip</code>) or a suffix (such as <code>text/turtle+gzip</code>) there gives a warning. If both are given, <code>dcat:compressFormat</code> takes precedence. A value that is not a media type (such as <code>gzip</code> rather than <code>application/gzip</code>) is not recorded.
         <td>0..n
-        <td>
-                Recommended
-                
+        <td>Recommended
        <tr>
         <th scope="row"><a href="http://purl.org/dc/terms/conformsTo">dct:conformsTo</a>
         <td>Standards or specifications the distribution conforms to. For SPARQL endpoints, this must include the SPARQL protocol URI. See <a href="#usage-information">§ 5.4.2 Usage information</a>.
         <td>0..n
-        <td>
-                Required: dcat:mediaType or dct:format or dct:conformsTo
-                    <br><small><a href="#v2">v2.0</a>: must be IRI</small>
-                    
+        <td>Required: dcat:mediaType or dct:format or dct:conformsTo<br><small><a href="#v2">v2.0</a>: must be IRI</small>
        <tr>
         <th scope="row"><a href="http://purl.org/dc/terms/title">dct:title</a>
         <td>The name of the distribution.
         <td>0..n
-        <td>
-                Recommended
-                
+        <td>Recommended
        <tr>
         <th scope="row"><a href="http://purl.org/dc/terms/description">dct:description</a>
         <td>Distribution description
         <td>0..n
-        <td>
-                Recommended
-                <br><small><a href="#v2">v2.0</a>: max one value per language</small>
-                    
+        <td>Recommended<br><small><a href="#v2">v2.0</a>: max one value per language</small>
        <tr>
         <th scope="row"><a href="http://purl.org/dc/terms/issued">dct:issued</a>
         <td>The date of formal issuance (such as publication) of the distribution. See <a href="#distribution-date">§ 5.4.1 Creation and modification dates</a>.
         <td>0..1
-        <td>
-                Recommended
-                <br><small><a href="#v2">v2.0</a>: must be valid ISO 8601</small>
-                    
+        <td>Recommended<br><small><a href="#v2">v2.0</a>: must be valid ISO 8601</small>
        <tr>
         <th scope="row"><a href="http://purl.org/dc/terms/modified">dct:modified</a>
         <td>The most recent date on which the distribution was changed or modified. See <a href="#distribution-date">§ 5.4.1 Creation and modification dates</a>.
         <td>0..1
-        <td>
-                Recommended
-                <br><small><a href="#v2">v2.0</a>: must be valid ISO 8601</small>
-                    
+        <td>Recommended<br><small><a href="#v2">v2.0</a>: must be valid ISO 8601</small>
        <tr>
         <th scope="row"><a href="http://www.w3.org/ns/dcat#byteSize">dcat:byteSize</a>
         <td>Distribution file size in bytes.
         <td>0..1
-        <td>
-                Recommended
-                
+        <td>Recommended
        <tr>
         <th scope="row"><a href="http://xmlns.com/foaf/0.1/page">foaf:page</a>
         <td>A documentation page that describes or provides access to this distribution, such as a SPARQL UI or a download landing page.
             <code>dcat:accessURL</code> and <code>dcat:downloadURL</code> point to the distribution itself (the API endpoint or the data file).
         <td>0..n
-        <td>
-                Recommended
-                
+        <td>Recommended
        <tr>
         <th scope="row"><a href="http://purl.org/dc/terms/license">dct:license</a>
         <td>The license under which the distribution is made available. See <a href="#dataset-license">§ 5.2.2 License</a>.
         <td>0..1<br><small><a href="#v2">v2.0</a>: 1</small>
-        <td>
-                Recommended
-                <br><small><a href="#v2">v2.0</a>: becomes required; must be IRI</small>
-                    
+        <td>Recommended<br><small><a href="#v2">v2.0</a>: becomes required; must be IRI</small>
        <tr>
         <th scope="row"><a href="http://purl.org/dc/terms/language">dct:language</a>
         <td>The natural language of the textual values in the distribution. Use a value from the <a href="https://op.europa.eu/en/web/eu-vocabularies/concept-scheme/-/resource?uri=http://publications.europa.eu/resource/authority/language">EU Vocabularies Languages Named Authority List</a>.
         <td>0..n
-        <td>
-                Recommended
-                <br><small><a href="#v2">v2.0</a>: must match <code>^http://publications\.europa\.eu/resource/authority/language/</code></small>
-                    
+        <td>Recommended<br><small><a href="#v2">v2.0</a>: must match <code>^http://publications\.europa\.eu/resource/authority/language/</code></small>
        <tr>
         <th scope="row"><a href="http://purl.org/dc/terms/format">dct:format</a>
         <td>The format of the distribution.
         <td>0..n
-        <td>
-                Required: dcat:mediaType or dct:format or dct:conformsTo
-                    
+        <td>Required: dcat:mediaType or dct:format or dct:conformsTo
      </table>
     </div>
    </div>
@@ -4607,10 +4400,7 @@ even if that resource is the same on all pages.</p>
         <th scope="row"><a href="https://schema.org/name">schema:name</a>
         <td>Name of the data catalog
         <td>1..n
-        <td>
-                Required
-                    <br><small><a href="#v2">v2.0</a>: must be rdf:langString</small>
-                    
+        <td>Required<br><small><a href="#v2">v2.0</a>: must be rdf:langString</small>
        <tr>
         <th scope="row"><a href="https://schema.org/description">schema:description</a>
         <td>A description of the contents of the data catalog.
@@ -4619,25 +4409,17 @@ even if that resource is the same on all pages.</p>
                 Consider different audiences – both domain experts and others –
                 for whom the text should be understandable.
         <td>0..n<br><small><a href="#v2">v2.0</a>: 1..n</small>
-        <td>
-                Recommended
-                <br><small><a href="#v2">v2.0</a>: becomes required; must be rdf:langString</small>
-                    
+        <td>Recommended<br><small><a href="#v2">v2.0</a>: becomes required; must be rdf:langString</small>
        <tr>
         <th scope="row"><a href="https://schema.org/publisher">schema:publisher</a>
         <td>Publisher of the data catalog See <a href="#creator-publisher-information">§ 5.3 Creator/publisher information</a>.
         <td>0..1<br><small><a href="#v2">v2.0</a>: 1</small>
-        <td>
-                Recommended
-                <br><small><a href="#v2">v2.0</a>: becomes required</small>
-                    
+        <td>Recommended<br><small><a href="#v2">v2.0</a>: becomes required</small>
        <tr>
         <th scope="row"><a href="https://schema.org/dataset">schema:dataset</a>
         <td>Dataset(s) in the data catalog
         <td>1..n
-        <td>
-                Required
-                    
+        <td>Required
      </table>
     </div>
     <div data-vocab="dcat">
@@ -4654,43 +4436,29 @@ even if that resource is the same on all pages.</p>
         <th scope="row"><a href="http://purl.org/dc/terms/title">dct:title</a>
         <td>The name of the catalog.
         <td>1..n
-        <td>
-                Required
-                    <br><small><a href="#v2">v2.0</a>: must be rdf:langString</small>
-                    
+        <td>Required<br><small><a href="#v2">v2.0</a>: must be rdf:langString</small>
        <tr>
         <th scope="row"><a href="http://purl.org/dc/terms/description">dct:description</a>
         <td>A description of the catalog.
         <td>0..n<br><small><a href="#v2">v2.0</a>: 1..n</small>
-        <td>
-                Recommended
-                <br><small><a href="#v2">v2.0</a>: becomes required; must be rdf:langString</small>
-                    
+        <td>Recommended<br><small><a href="#v2">v2.0</a>: becomes required; must be rdf:langString</small>
        <tr>
         <th scope="row"><a href="http://purl.org/dc/terms/publisher">dct:publisher</a>
         <td>The organization responsible for publishing the catalog. See <a href="#creator-publisher-information">§ 5.3 Creator/publisher information</a>.
         <td>0..1<br><small><a href="#v2">v2.0</a>: 1</small>
-        <td>
-                Recommended
-                <br><small><a href="#v2">v2.0</a>: becomes required</small>
-                    
+        <td>Recommended<br><small><a href="#v2">v2.0</a>: becomes required</small>
        <tr>
         <th scope="row"><a href="http://www.w3.org/ns/dcat#contactPoint">dcat:contactPoint</a>
         <td>Contact information where end users can get in touch with questions about the catalog.
         This contains the e-mail address or a link (URL) to the contact form of the responsible organization.
         The e-mail address should be a functional e-mail address of the organization or department. See <a href="#contact">§ 5.3.3 Contact information</a>.
         <td>0..1<br><small><a href="#v2">v2.0</a>: 1</small>
-        <td>
-                Recommended
-                <br><small><a href="#v2">v2.0</a>: becomes required</small>
-                    
+        <td>Recommended<br><small><a href="#v2">v2.0</a>: becomes required</small>
        <tr>
         <th scope="row"><a href="http://www.w3.org/ns/dcat#dataset">dcat:dataset</a>
         <td>The datasets in the catalog.
         <td>1..n
-        <td>
-                Required
-                    
+        <td>Required
      </table>
     </div>
    </div>
