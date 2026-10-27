@@ -1490,7 +1490,7 @@ Possible extra rowspan handling
 </style>
   <meta content="Bikeshed version 49e9fdd4f, updated Tue Oct 13 14:27:53 2026 -0700" name="generator">
   <link href="https://docs.nde.nl/requirements-datasets/" rel="canonical">
-  <meta content="b47a403255c29a6f8f8076a2ad5e729470f91261" name="revision">
+  <meta content="f76ebba4715a6b8b8af777f35ee746febb7315f3" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>
 /* NDE house style for Bikeshed specifications, from netwerk-digitaal-erfgoed/workflows.
@@ -4250,7 +4250,7 @@ even if that resource is the same on all pages.</p>
         <th scope="row"><a href="https://schema.org/encodingFormat">schema:encodingFormat</a>
         <td>The media type of the downloadable file. Use a value from the <a data-link-type="biblio" href="#biblio-iana-media-types" title="Media Types">[IANA-MEDIA-TYPES]</a> list. The value should indicate the media type of the response of schema:contentUrl when no Accept header is included in the request. When the distribution is compressed, the compression format (such as <code>zip</code>, <code>gzip</code>) must be included (such as <code>text/turtle+gzip</code>).
         <td>0..1
-        <td>Required: schema:encodingFormat or schema:usageInfo<br><small><a href="#v2">v2.0</a>: max 1</small>
+        <td>Required: schema:encodingFormat or schema:usageInfo<br><small><a href="#v2">v2.0</a>: max 1; no SPARQL media type; no bare compression type; no x- media type</small>
        <tr>
         <th scope="row"><a href="https://schema.org/description">schema:description</a>
         <td>Distribution description
@@ -4309,7 +4309,7 @@ even if that resource is the same on all pages.</p>
         <th scope="row"><a href="http://www.w3.org/ns/dcat#mediaType">dcat:mediaType</a>
         <td>The media type of the distribution according to the IANA classification.
         <td>0..1
-        <td>Required: dcat:mediaType or dct:format or dct:conformsTo
+        <td>Required: dcat:mediaType or dct:format or dct:conformsTo<br><small><a href="#v2">v2.0</a>: no SPARQL media type; max 1; no x- media type; no compression type (use dcat:compressFormat); no compression suffix (use dcat:compressFormat)</small>
        <tr>
         <th scope="row"><a href="http://www.w3.org/ns/dcat#accessURL">dcat:accessURL</a>
         <td>The URL that provides access to a distribution of the dataset.
