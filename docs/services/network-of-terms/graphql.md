@@ -470,6 +470,80 @@ coordinate for – nothing distinguishes the two, so do not read significance in
 The place hierarchy stays on `broader` and `narrower`, where a client that walks
 hierarchies already looks for it. Only the coordinates move to `place`.
 
+### Organizations
+
+A term that denotes an organization carries an `organization` field, `null` like
+`place` when the source describes none. RKDartists and the KB Corporatiethesaurus fill
+it:
+
+```graphql title="What a source states about an organization" {6-13}
+query {
+  lookup(uris: ["https://data.rkd.nl/artists/104628"], languages: [nl]) {
+    result {
+      ... on TranslatedTerm {
+        prefLabel { language value }
+        organization {
+          additionalType { uri name { language value } }
+          foundingDate
+          dissolutionDate
+          location { uri name { language value } addressCountry }
+          parentOrganization { uri name { language value } }
+          event { startDate endDate location { uri name { language value } } }
+        }
+      }
+      ... on Error {
+        message
+      }
+    }
+  }
+}
+```
+
+```json title="Response (abridged)"
+{
+  "prefLabel": [{ "language": "nl", "value": "Société Céramique, N.V." }],
+  "organization": {
+    "additionalType": [
+      {
+        "uri": "https://data.rkd.nl/thesaurus/29602",
+        "name": [{ "language": "nl", "value": "aardewerkfabriek" }]
+      }
+    ],
+    "foundingDate": null,
+    "dissolutionDate": null,
+    "location": [
+      {
+        "uri": "https://data.rkd.nl/thesaurus/46",
+        "name": [{ "language": "nl", "value": "Maastricht (stad)" }],
+        "addressCountry": null
+      }
+    ],
+    "parentOrganization": [],
+    "event": [
+      {
+        "startDate": "1850",
+        "endDate": "1958",
+        "location": [
+          {
+            "uri": "https://data.rkd.nl/thesaurus/46",
+            "name": [{ "language": "nl", "value": "Maastricht (stad)" }]
+          }
+        ]
+      },
+      { "startDate": "1863", "endDate": "1958", "location": [] }
+    ]
+  }
+}
+```
+
+- Dates are EDTF strings, passed through as the source states them.
+- A `location` is a place the source links by `uri`, or an address it states only as
+  text, with `uri` null and the locality as `name`.
+- An `event` is a period in which the organization was active. It does not date the
+  organization’s existence: RKD has Société Céramique active in Maastricht from 1850,
+  under its predecessors, and under its own name from 1863. Use `foundingDate` and
+  `dissolutionDate` for that, which the KB states and RKD does not.
+
 :::note Only what SKOS cannot express
 
 This layer carries what SKOS has no way to state, and nothing else. Coordinates qualify;
