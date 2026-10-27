@@ -426,6 +426,8 @@ LIMIT 50
 
 Datasets whose sampled resources passed SHACL validation against the [Schema.org Application Profile for NDE](https://docs.nde.nl/schema-profile/). The `?n > 0` filter excludes datasets to which the profile doesn't apply (vacuous truth from an empty target set).
 
+A JSON-LD dump whose `@context` is Schema.org’s is read with `https://def.nde.nl/context.jsonld` instead, as the [Dataset Register does](../dataset-register/validation.md#json-ld-substitute-the-context). Since Schema.org 30.1, its own context turns `license`, `contentUrl` and other IRIs into strings and dates into plain text, which would fail the profile for reasons the publisher did not cause.
+
 ```sparql
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX dqv: <http://www.w3.org/ns/dqv#>
