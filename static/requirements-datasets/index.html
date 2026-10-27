@@ -1490,7 +1490,7 @@ Possible extra rowspan handling
 </style>
   <meta content="Bikeshed version 49e9fdd4f, updated Tue Oct 13 14:27:53 2026 -0700" name="generator">
   <link href="https://docs.nde.nl/requirements-datasets/" rel="canonical">
-  <meta content="32cf0a6d27a7be1a7a43ce8ea2b6d7534e7e38c0" name="revision">
+  <meta content="6f336e87bd946106c5419f33a4f47863bec51c9a" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>
 /* NDE house style for Bikeshed specifications, from netwerk-digitaal-erfgoed/workflows.
@@ -2369,7 +2369,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
 </p>
    <h1 class="no-ref p-name" id="title">Requirements for Datasets</h1>
    <h2 class="heading no-num no-ref no-toc settled" id="profile-and-date"><span class="content">Living Standard,
-    <time class="dt-updated" datetime="2026-10-26">26 October 2026</time></span></h2>
+    <time class="dt-updated" datetime="2026-10-27">27 October 2026</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -2389,7 +2389,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <p class="copyright" data-fill-with="copyright"><a href="http://creativecommons.org/publicdomain/zero/1.0/" rel="license"><img alt="CC0" height="15" src="https://licensebuttons.net/p/zero/1.0/80x15.png" width="80"></a>
 To the extent possible under law, the editors have waived all copyright
 and related or neighboring rights to this work.
-In addition, as of 26 October 2026,
+In addition, as of 27 October 2026,
 the editors have made this specification available under the
 <a href="https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0" rel="license">Open Web Foundation Agreement Version 1.0</a>,
 which is available at https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0.
@@ -3982,7 +3982,7 @@ even if that resource is the same on all pages.</p>
         <td>0..n
         <td>
                 Recommended
-                <br><small><a href="#v2">v2.0</a>: becomes required</small>
+                <br><small><a href="#v2">v2.0</a>: must be valid ISO 8601 or IRI</small>
                     
        <tr>
         <th scope="row"><a href="https://schema.org/hasPart">schema:hasPart</a>
@@ -4086,7 +4086,7 @@ even if that resource is the same on all pages.</p>
                     
        <tr>
         <th scope="row"><a href="http://purl.org/dc/terms/temporal">dct:temporal</a>
-        <td>The time period to which the dataset pertains. The value must be an ISO 8601 date or time interval (such as ‘2011’, ‘2011/2012’, ‘1889-06/07’ for shortened notation, ‘-0431/-0404’ for BCE dates, or ‘1440/..’ for an open-ended range), or an HTTP(S) URI.
+        <td>The time period to which the dataset pertains. The value must be an ISO 8601 date or time interval (such as ‘2011’, ‘2011/2012’, ‘1889-06/07’ for shortened notation, ‘-0431/-0404’ or ‘-13000/-10000’ for BCE dates, or ‘1440/..’ for an open-ended range), or an HTTP(S) URI.
         <td>0..n
         <td>
                 Recommended
@@ -4174,11 +4174,10 @@ even if that resource is the same on all pages.</p>
        <tr>
         <th scope="row"><a href="http://www.w3.org/ns/dcat#version">dcat:version</a>
         <td>Version identifier of the dataset, such as a semantic version number or a date. See <a href="#dataset-versions">§ 5.2.4 Versions</a>.
-        <td>0..1<br><small><a href="#v2">v2.0</a>: 1</small>
+        <td>0..1
         <td>
                 Recommended
-                <br><small><a href="#v2">v2.0</a>: becomes required</small>
-                    
+                
        <tr>
         <th scope="row"><a href="http://purl.org/dc/terms/hasPart">dct:hasPart</a>
         <td>Indicates a dataset that is part of this dataset and also available as a separate dataset.
@@ -4290,7 +4289,8 @@ even if that resource is the same on all pages.</p>
         <td>0..n
         <td>
                 Recommended
-                
+                <br><small><a href="#v2">v2.0</a>: must be rdf:langString</small>
+                    
        <tr>
         <th scope="row"><a href="http://purl.org/dc/terms/identifier">dct:identifier</a>
         <td>Identifier(s) of the organization, at least its <a href="https://www.nationaalarchief.nl/archiveren/kennisbank/isil-codes">ISIL code</a>.
@@ -4349,18 +4349,19 @@ even if that resource is the same on all pages.</p>
       <tbody>
        <tr>
         <th scope="row"><a href="http://www.w3.org/2006/vcard/ns#fn">vcard:fn</a>
-        <td>Name of the contact point, preferably a department (“Datasets department”) rather than an individual employee.
+        <td>Name of the contact point, preferably a department (“Datasets department”) rather than an individual employee. Tag the value with a language so that a multilingual department name or a non-Latin personal name can be shown in the appropriate language.
         <td>1..n
         <td>
                 Required
+                    <br><small><a href="#v2">v2.0</a>: must be rdf:langString</small>
                     
        <tr>
         <th scope="row"><a href="http://www.w3.org/2006/vcard/ns#hasEmail">vcard:hasEmail</a>
         <td>The email address of the contact point as a mailto: URL, preferably a functional address of the organization or department.
-        <td>0..n<br><small><a href="#v2">v2.0</a>: 1..n</small>
+        <td>1..n
         <td>
-                Recommended
-                <br><small><a href="#v2">v2.0</a>: becomes required; must be IRI</small>
+                Required
+                    <br><small><a href="#v2">v2.0</a>: must be IRI</small>
                     
      </table>
     </div>
@@ -4400,7 +4401,8 @@ even if that resource is the same on all pages.</p>
         <td>0..n
         <td>
                 Recommended
-                
+                <br><small><a href="#v2">v2.0</a>: max one value per language</small>
+                    
        <tr>
         <th scope="row"><a href="https://schema.org/datePublished">schema:datePublished</a>
         <td>The date of formal issuance (such as publication) of the distribution. See <a href="#distribution-date">§ 5.4.1 Creation and modification dates</a>.
@@ -4474,7 +4476,7 @@ even if that resource is the same on all pages.</p>
         <td>The media type of the distribution according to the IANA classification.
         <td>0..1
         <td>
-                Required: dcat:mediaType or dct:format
+                Required: dcat:mediaType or dct:format or dct:conformsTo
                     
        <tr>
         <th scope="row"><a href="http://www.w3.org/ns/dcat#accessURL">dcat:accessURL</a>
@@ -4482,6 +4484,7 @@ even if that resource is the same on all pages.</p>
         <td>0..1
         <td>
                 Required: dcat:accessURL or dcat:downloadURL
+                    <br><small><a href="#v2">v2.0</a>: must be IRI</small>
                     
        <tr>
         <th scope="row"><a href="http://www.w3.org/ns/dcat#downloadURL">dcat:downloadURL</a>
@@ -4489,10 +4492,11 @@ even if that resource is the same on all pages.</p>
         <td>0..1
         <td>
                 Required: dcat:accessURL or dcat:downloadURL
+                    <br><small><a href="#v2">v2.0</a>: must be IRI</small>
                     
        <tr>
         <th scope="row"><a href="http://www.w3.org/ns/dcat#compressFormat">dcat:compressFormat</a>
-        <td>The compression format of the distribution, as a media type from the <a data-link-type="biblio" href="#biblio-iana-media-types" title="Media Types">[IANA-MEDIA-TYPES]</a> list (such as <code>application/gzip</code>). This is the usual way to declare compression in DCAT; a suffix on <code>dcat:mediaType</code> (such as <code>text/turtle+gzip</code>) is accepted as well. If both are given, <code>dcat:compressFormat</code> takes precedence. A value that is not a media type (such as <code>gzip</code> rather than <code>application/gzip</code>) is not recorded.
+        <td>The compression format of the distribution, as a media type from the <a data-link-type="biblio" href="#biblio-iana-media-types" title="Media Types">[IANA-MEDIA-TYPES]</a> list (such as <code>application/gzip</code>). In DCAT, declare compression here, not in <code>dcat:mediaType</code>: a bare compression type (such as <code>application/zip</code>) or a suffix (such as <code>text/turtle+gzip</code>) there gives a warning. If both are given, <code>dcat:compressFormat</code> takes precedence. A value that is not a media type (such as <code>gzip</code> rather than <code>application/gzip</code>) is not recorded.
         <td>0..n
         <td>
                 Recommended
@@ -4502,8 +4506,9 @@ even if that resource is the same on all pages.</p>
         <td>Standards or specifications the distribution conforms to. For SPARQL endpoints, this must include the SPARQL protocol URI. See <a href="#usage-information">§ 5.4.2 Usage information</a>.
         <td>0..n
         <td>
-                Recommended
-                
+                Required: dcat:mediaType or dct:format or dct:conformsTo
+                    <br><small><a href="#v2">v2.0</a>: must be IRI</small>
+                    
        <tr>
         <th scope="row"><a href="http://purl.org/dc/terms/title">dct:title</a>
         <td>The name of the distribution.
@@ -4517,11 +4522,12 @@ even if that resource is the same on all pages.</p>
         <td>0..n
         <td>
                 Recommended
-                
+                <br><small><a href="#v2">v2.0</a>: max one value per language</small>
+                    
        <tr>
         <th scope="row"><a href="http://purl.org/dc/terms/issued">dct:issued</a>
         <td>The date of formal issuance (such as publication) of the distribution. See <a href="#distribution-date">§ 5.4.1 Creation and modification dates</a>.
-        <td>0..n
+        <td>0..1
         <td>
                 Recommended
                 <br><small><a href="#v2">v2.0</a>: must be valid ISO 8601</small>
@@ -4529,7 +4535,7 @@ even if that resource is the same on all pages.</p>
        <tr>
         <th scope="row"><a href="http://purl.org/dc/terms/modified">dct:modified</a>
         <td>The most recent date on which the distribution was changed or modified. See <a href="#distribution-date">§ 5.4.1 Creation and modification dates</a>.
-        <td>0..n
+        <td>0..1
         <td>
                 Recommended
                 <br><small><a href="#v2">v2.0</a>: must be valid ISO 8601</small>
@@ -4537,7 +4543,7 @@ even if that resource is the same on all pages.</p>
        <tr>
         <th scope="row"><a href="http://www.w3.org/ns/dcat#byteSize">dcat:byteSize</a>
         <td>Distribution file size in bytes.
-        <td>0..n
+        <td>0..1
         <td>
                 Recommended
                 
@@ -4548,8 +4554,7 @@ even if that resource is the same on all pages.</p>
         <td>0..n
         <td>
                 Recommended
-                <br><small><a href="#v2">v2.0</a>: must be IRI</small>
-                    
+                
        <tr>
         <th scope="row"><a href="http://purl.org/dc/terms/license">dct:license</a>
         <td>The license under which the distribution is made available. See <a href="#dataset-license">§ 5.2.2 License</a>.
@@ -4571,7 +4576,7 @@ even if that resource is the same on all pages.</p>
         <td>The format of the distribution.
         <td>0..n
         <td>
-                Required: dcat:mediaType or dct:format
+                Required: dcat:mediaType or dct:format or dct:conformsTo
                     
      </table>
     </div>
@@ -4624,10 +4629,10 @@ even if that resource is the same on all pages.</p>
        <tr>
         <th scope="row"><a href="https://schema.org/dataset">schema:dataset</a>
         <td>Dataset(s) in the data catalog
-        <td>0..n
+        <td>1..n
         <td>
-                Recommended
-                
+                Required
+                    
      </table>
     </div>
     <div data-vocab="dcat">
