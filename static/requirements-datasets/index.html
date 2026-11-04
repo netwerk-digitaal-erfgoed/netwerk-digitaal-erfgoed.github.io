@@ -1488,9 +1488,9 @@ Possible extra rowspan handling
 		}
 	}
 </style>
-  <meta content="Bikeshed version 49e9fdd4f, updated Tue Oct 13 14:27:53 2026 -0700" name="generator">
+  <meta content="Bikeshed version e0b165ae4, updated Mon Nov 2 15:16:49 2026 -0800" name="generator">
   <link href="https://docs.nde.nl/requirements-datasets/" rel="canonical">
-  <meta content="3ed2023404c6e32fef683f5715ab98f672e026e9" name="revision">
+  <meta content="06ce2c53409946d4a0bcd7b0451270532612fa7b" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>
 /* NDE house style for Bikeshed specifications, from netwerk-digitaal-erfgoed/workflows.
@@ -1923,14 +1923,17 @@ figure.table figcaption:not(.no-marker)::before {
     height: auto;
     max-height: 500px;
     overflow: auto;
+    margin: 0;
     padding: 0.5em 0.75em;
     font: small Helvetica Neue, sans-serif, Droid Sans Fallback;
     background: var(--dfnpanel-bg);
     color: var(--dfnpanel-text);
     border: outset 0.2em;
     white-space: normal; /* in case it's moved into a pre */
+    inset: auto;
+    position-area: bottom span-right;
+    position-try-fallbacks: flip-block, flip-inline, flip-block flip-inline;
 }
-.dfn-panel:not(.on) { display: none; }
 .dfn-panel * { margin: 0; padding: 0; text-indent: 0; }
 .dfn-panel > b { display: block; }
 .dfn-panel a { color: var(--dfnpanel-text); }
@@ -1950,6 +1953,9 @@ figure.table figcaption:not(.no-marker)::before {
 .dfn-panel.activated {
     display: inline-block;
     position: fixed;
+    position-area: none;
+    top: auto;
+    right: auto;
     left: 8px;
     bottom: 2em;
     margin: 0 auto;
@@ -2006,7 +2012,8 @@ figure.table figcaption:not(.no-marker)::before {
     opacity: 1;
 }
 
-.dfn-paneled[role="button"] { cursor: help; }
+.dfn-paneled { cursor: help; }
+.dfn-paneled > .dfn-panelbutton { all: unset; }
 
 .highlighted {
     animation: target-fade 3s;
@@ -2369,7 +2376,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
 </p>
    <h1 class="no-ref p-name" id="title">Requirements for Datasets</h1>
    <h2 class="heading no-num no-ref no-toc settled" id="profile-and-date"><span class="content">Living Standard,
-    <time class="dt-updated" datetime="2026-10-27">27 October 2026</time></span></h2>
+    <time class="dt-updated" datetime="2026-11-04">4 November 2026</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -2389,7 +2396,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <p class="copyright" data-fill-with="copyright"><a href="http://creativecommons.org/publicdomain/zero/1.0/" rel="license"><img alt="CC0" height="15" src="https://licensebuttons.net/p/zero/1.0/80x15.png" width="80"></a>
 To the extent possible under law, the editors have waived all copyright
 and related or neighboring rights to this work.
-In addition, as of 27 October 2026,
+In addition, as of 4 November 2026,
 the editors have made this specification available under the
 <a href="https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0" rel="license">Open Web Foundation Agreement Version 1.0</a>,
 which is available at https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0.
@@ -3303,7 +3310,10 @@ Publishers <em>MAY</em> link to other identifiers of the organization, such as i
    <h4 class="heading settled" data-level="5.3.3" id="contact"><span class="secno">5.3.3. </span><span class="content">Contact information</span><a class="self-link" href="#contact"></a></h4>
    <p>Publishers <em>SHOULD</em> include contact information so <a data-link-type="dfn" href="#consumer" id="ref-for-consumer⑧">consumers</a> can reach them with questions or feedback.
 If contact information is provided, it <em>MUST</em> include a name and e-mail address.
-The e-mail address <em>SHOULD</em> be an organizational or departmental address rather than a personal one for GDPR compliance.</p>
+The e-mail address <em>SHOULD</em> be an organizational or departmental address rather than a personal one for GDPR compliance.
+The e-mail address <em>SHOULD</em> reach the publisher.
+In <a href="#v2">v2.0</a> of this specification, it <em>MUST NOT</em> be a placeholder on a reserved domain such as <code>example.org</code>,
+and it <em>MUST NOT</em> repeat the <code>mailto:</code> prefix.</p>
    <p>In Schema.org, the contact point belongs to the publisher (<code>schema:contactPoint</code>).
 In DCAT-AP-NL 3.0, it belongs to the dataset or catalog (<code>dcat:contactPoint</code>),
 and the e-mail address is a <code>mailto:</code> IRI.</p>
@@ -4463,8 +4473,8 @@ even if that resource is the same on all pages.</p>
     </div>
    </div>
    <h4 class="heading settled" data-level="5.6.6" id="dataset-example"><span class="secno">5.6.6. </span><span class="content">Full example</span><a class="self-link" href="#dataset-example"></a></h4>
-   <div class="example" id="example-0c11e8c8">
-    <a class="self-link" href="#example-0c11e8c8"></a>
+   <div class="example" id="example-0a8d9717">
+    <a class="self-link" href="#example-0a8d9717"></a>
     A full <a data-link-type="dfn" href="#dataset-description" id="ref-for-dataset-description①③">dataset description</a> that includes <a href="#dataset-attributes">required and recommended attributes</a>.
 
     
@@ -4568,7 +4578,7 @@ even if that resource is the same on all pages.</p>
       <c- f>"contactPoint"</c-><c- p>:</c-> <c- p>{</c->
         <c- nd>"@type"</c-><c- p>:</c-> <c- u>"ContactPoint"</c-><c- p>,</c->
         <c- f>"name"</c-><c- p>:</c-> <c- p>{</c-> <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Datasets Manager"</c-><c- p>,</c-> <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c-> <c- p>},</c->
-        <c- f>"email"</c-><c- p>:</c-> <c- u>"datasets@example.com"</c->
+        <c- f>"email"</c-><c- p>:</c-> <c- u>"datasets@kb.nl"</c->
       <c- p>}</c->
     <c- p>}</c->
   <c- p>]</c->
@@ -4630,7 +4640,7 @@ even if that resource is the same on all pages.</p>
       <c- f>"dcat:contactPoint"</c-><c- p>:</c-> <c- p>{</c->
         <c- nd>"@type"</c-><c- p>:</c-> <c- u>"vcard:Kind"</c-><c- p>,</c->
         <c- f>"vcard:fn"</c-><c- p>:</c-> <c- p>{</c-> <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Datasets Manager"</c-><c- p>,</c-> <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c-> <c- p>},</c->
-        <c- f>"vcard:hasEmail"</c-><c- p>:</c-> <c- p>{</c-> <c- nd>"@id"</c-><c- p>:</c-> <c- u>"mailto:datasets@example.com"</c-> <c- p>}</c->
+        <c- f>"vcard:hasEmail"</c-><c- p>:</c-> <c- p>{</c-> <c- nd>"@id"</c-><c- p>:</c-> <c- u>"mailto:datasets@kb.nl"</c-> <c- p>}</c->
       <c- p>},</c->
       <c- f>"dct:created"</c-><c- p>:</c-> <c- p>{</c-> <c- nd>"@value"</c-><c- p>:</c-> <c- u>"2021-05-27"</c-><c- p>,</c-> <c- nd>"@type"</c-><c- p>:</c-> <c- u>"xsd:date"</c-> <c- p>},</c->
       <c- f>"dct:issued"</c-><c- p>:</c-> <c- p>{</c-> <c- nd>"@value"</c-><c- p>:</c-> <c- u>"2021-05-28"</c-><c- p>,</c-> <c- nd>"@type"</c-><c- p>:</c-> <c- u>"xsd:date"</c-> <c- p>},</c->
@@ -5393,16 +5403,6 @@ let dfnPanelData = {
 
 document.addEventListener("DOMContentLoaded", ()=>{
     genAllDfnPanels();
-
-    document.body.addEventListener("click", (e) => {
-        // If not handled already, just hide all dfn panels.
-        hideAllDfnPanels();
-    });
-});
-
-window.addEventListener("resize", () => {
-    // Pin any visible dfn panel
-    queryAll(".dfn-panel.on, .dfn-panel.activated").forEach(el=>positionDfnPanel(el));
 });
 
 function genAllDfnPanels() {
@@ -5414,16 +5414,17 @@ function genAllDfnPanels() {
             continue;
         }
         dfn.panelData = panelData;
-        insertDfnPopupAction(dfn);
+        genDfnPanel(dfn, panelData);
     }
 }
 
 function genDfnPanel(dfn, { dfnID, url, dfnText, refSections, external }) {
-    const dfnPanel = mk.aside({
-        class: "dfn-panel on",
+    const dfnPanel = mk.dialog({
+        class: "dfn-panel",
         id: `infopanel-for-${dfnID}`,
+        popover: "hint",
         "data-for": dfnID,
-        "aria-labelled-by":`infopaneltitle-for-${dfnID}`,
+        "aria-labelledby": `infopaneltitle-for-${dfnID}`,
         },
         mk.span({id:`infopaneltitle-for-${dfnID}`, style:"display:none"},
             `Info about the '${dfnText}' ${external?"external":""} reference.`),
@@ -5455,106 +5456,34 @@ function genDfnPanel(dfn, { dfnID, url, dfnText, refSections, external }) {
         event.stopPropagation();
         refocusOnTarget(event);
     });
-    dfnPanel.addEventListener('keydown', (event) => {
-        if(event.keyCode == 27) { // Escape key
-            hideDfnPanel({dfnPanel});
-            event.stopPropagation();
-            event.preventDefault();
+
+    dfnPanel.addEventListener('toggle', event=>{
+        if(event.newState == "closed") {
+            unpinDfnPanel(dfnPanel);
         }
     });
 
     dfnPanel.dfn = dfn;
     dfn.dfnPanel = dfnPanel;
+    dfn.after(dfnPanel);
+    const button = mk.button(
+        {
+            class:"dfn-panelbutton",
+            "popovertarget":dfnPanel.id
+        },
+        ...dfn.childNodes
+    );
+    dfn.append(button);
     return dfnPanel;
-}
-
-
-
-function hideAllDfnPanels() {
-    // Delete the currently-active dfn panel.
-    queryAll(".dfn-panel").forEach(dfnPanel=>hideDfnPanel({dfnPanel}));
-}
-
-function showDfnPanel(dfn) {
-    hideAllDfnPanels(); // Only display one at a time.
-
-    dfn.setAttribute("aria-expanded", "true");
-
-    const dfnPanel = genDfnPanel(dfn, dfn.panelData);
-
-    // Give the dfn a unique tabindex, and then
-    // give all the tabbable panel bits successive indexes.
-    let tabIndex = 100;
-    dfn.tabIndex = tabIndex++;
-    const tabbable = dfnPanel.querySelectorAll(":is(a, button)");
-    for (const el of tabbable) {
-        el.tabIndex = tabIndex++;
-    }
-
-    append(document.body, dfnPanel);
-    positionDfnPanel(dfnPanel);
-}
-
-function positionDfnPanel(dfnPanel) {
-    const dfn = dfnPanel.dfn;
-    const dfnPos = getBounds(dfn);
-    dfnPanel.style.top = dfnPos.bottom + "px";
-    dfnPanel.style.left = dfnPos.left + "px";
-
-    const panelPos = dfnPanel.getBoundingClientRect();
-    const panelMargin = 8;
-    const maxRight = document.body.parentNode.clientWidth - panelMargin;
-    if (panelPos.right > maxRight) {
-        const overflowAmount = panelPos.right - maxRight;
-        const newLeft = Math.max(panelMargin, dfnPos.left - overflowAmount);
-        dfnPanel.style.left = newLeft + "px";
-    }
 }
 
 function pinDfnPanel(dfnPanel) {
     // Switch it to "activated" state, which pins it.
     dfnPanel.classList.add("activated");
-    dfnPanel.style.position = "fixed";
-    dfnPanel.style.left = null;
-    dfnPanel.style.top = null;
 }
 
-function hideDfnPanel({dfn, dfnPanel}) {
-    if(!dfnPanel) dfnPanel = dfn.dfnPanel;
-    if(!dfn) dfn = dfnPanel.dfn;
-    dfn.dfnPanel = undefined;
-    dfnPanel.dfn = undefined;
-    dfn.setAttribute("aria-expanded", "false");
-    dfn.tabIndex = undefined;
-    dfnPanel.remove()
-}
-
-function toggleDfnPanel(dfn) {
-    if(dfn.dfnPanel) {
-        hideDfnPanel(dfn);
-    } else {
-        showDfnPanel(dfn);
-    }
-}
-
-function insertDfnPopupAction(dfn) {
-    dfn.setAttribute('role', 'button');
-    dfn.setAttribute('aria-expanded', 'false')
-    dfn.tabIndex = 0;
-    dfn.classList.add('has-dfn-panel');
-    dfn.addEventListener('click', (event) => {
-        toggleDfnPanel(dfn);
-        event.stopPropagation();
-    });
-    dfn.addEventListener('keypress', (event) => {
-        const kc = event.keyCode;
-        // 32->Space, 13->Enter
-        if(kc == 32 || kc == 13) {
-            toggleDfnPanel(dfn);
-            event.stopPropagation();
-            event.preventDefault();
-        }
-    });
+function unpinDfnPanel(dfnPanel) {
+    dfnPanel.classList.remove("activated");
 }
 
 function refocusOnTarget(event) {
@@ -5564,21 +5493,6 @@ function refocusOnTarget(event) {
         // This is needed after browser scrolls to the destination.
         target.focus();
     });
-}
-
-// TODO: shared util
-// Returns the root-level absolute position {left and top} of element.
-function getBounds(el, relativeTo=document.body) {
-    const relativeRect = relativeTo.getBoundingClientRect();
-    const elRect = el.getBoundingClientRect();
-    const top = elRect.top - relativeRect.top;
-    const left = elRect.left - relativeRect.left;
-    return {
-        top,
-        left,
-        bottom: top + elRect.height,
-        right: left + elRect.width,
-    }
 }
 
 function scrollToTargetAndHighlight(event) {
