@@ -32,14 +32,14 @@ A common name such as ‘Jan Jansen’ has many namesakes. If your data holds mo
 
 | Property | Value |
 | --- | --- |
-| `givenName`, `familyName` | A name |
-| `birthDate`, `deathDate` | A date of any precision, such as `1851`, `1851-03-02` or the [EDTF](https://www.loc.gov/standards/datetime/) interval `1606-07-15/1607` |
-| `birthPlace`, `deathPlace`, `nationality` | A name, or a reconciled place with its IRI |
-| `gender` | `male` or `female`, in English or Dutch, or `https://schema.org/Male` or `https://schema.org/Female` |
-| `hasOccupation` | The name of an occupation or role, or a reconciled occupation |
-| `parent`, `children`, `spouse`, `sibling` | A name, or a reconciled person |
+| `givenNames`, `familyNames` | A name |
+| `birthDates`, `deathDates` | A date of any precision, such as `1851`, `1851-03-02` or the [EDTF](https://www.loc.gov/standards/datetime/) interval `1606-07-15/1607` |
+| `birthPlaces`, `deathPlaces`, `nationalities` | A name, or a reconciled place with its IRI |
+| `genders` | `male` or `female`, in English or Dutch, or `https://schema.org/Male` or `https://schema.org/Female` |
+| `occupations` | The name of an occupation or role, or a reconciled occupation |
+| `parents`, `children`, `spouses`, `siblings` | A name, or a reconciled person |
 
-The property IDs are those of the GraphQL `Person`; OpenRefine also offers them by their translated names, such as ‘Geboortedatum’.
+The property IDs are the same as those for [adding columns from reconciled terms](#adding-columns-from-reconciled-terms); OpenRefine also offers them by their translated names, such as ‘Geboortedatum’.
 
 How a candidate scores:
 
