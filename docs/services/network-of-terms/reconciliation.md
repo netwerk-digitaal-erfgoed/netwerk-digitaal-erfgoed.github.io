@@ -30,9 +30,11 @@ In the reconciliation dialog, choose the type to reconcile against:
 | --- | --- |
 | **Concept** (`http://www.w3.org/2004/02/skos/core#Concept`) | Every term |
 | **Person** (`https://schema.org/Person`) | Only terms that the source describes as persons |
+| **Place** (`https://schema.org/Place`) | Only terms that the source describes as places |
+| **Organization** (`https://schema.org/Organization`) | Only terms that the source describes as organizations |
 | **Reconcile against no particular type** | Every term, like Concept |
 
-OpenRefine suggests a type based on the candidates it finds for the first cells, so for a source of persons it suggests Person. Choose Person to leave out concepts and places that have the same name as a person.
+OpenRefine suggests a type based on the candidates it finds for the first cells, so for a source of persons it suggests Person. Choose Person, Place or Organization to leave out other terms with the same name, such as a place named after a person.
 
 Hover over a candidate to see its preview. A person’s preview shows what tells namesakes apart: birth and death, occupation, gender, nationality and family members, and broader and narrower terms where the source states them. Other terms show their broader, narrower and related terms.
 
@@ -75,7 +77,7 @@ Once a column is reconciled, choose **Edit column → Add columns from reconcile
 | `exactMatches` | IRIs of the same term in other sources, such as ULAN, VIAF or Wikidata |
 | `seeAlso` | IRIs of web pages about the term, such as the records a person was reconstructed from |
 
-For a column reconciled against Person, the dialog leaves out `broaderTerms` and `narrowerTerms`, which sources seldom state for a person; reconcile against Concept to get them. The family member columns are reconciled against Person themselves, so you can add their properties in turn: the birth dates of a person’s parents, for example.
+For a column reconciled against Person, the dialog leaves out `broaderTerms` and `narrowerTerms`, which sources seldom state for a person; reconcile against Concept to get them. The family member columns are reconciled against Person themselves, so you can add their properties in turn: the birth dates of a person’s parents, for example. For a column reconciled against Place or Organization, the dialog leaves out the properties of a person.
 
 ## Language selection
 
