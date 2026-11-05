@@ -24,7 +24,15 @@ endpoints themselves.
 
 In OpenRefine, open the column you want to reconcile and choose **Reconcile → Start reconciling…**. The first time you use a Network of Terms endpoint, click **Add standard service…** and paste the endpoint URL for the source (for example `https://termennetwerk-api.netwerkdigitaalerfgoed.nl/reconcile/https://data.cultureelerfgoed.nl/term/id/cht`). OpenRefine remembers the service for subsequent projects.
 
-In the reconciliation dialog, choose the type to reconcile against. Every term is a **Concept** (`http://www.w3.org/2004/02/skos/core#Concept`), and a term the source types as a person is a **Person** (`https://schema.org/Person`) too. OpenRefine suggests a type from the candidates for the first cells, so it offers Person for a source of persons. Reconcile against Person to leave out the concepts and places in a source that share a person’s name. **Reconcile against no particular type** keeps every candidate the source’s search query finds.
+In the reconciliation dialog, choose the type to reconcile against:
+
+| Type | Matches |
+| --- | --- |
+| **Concept** (`http://www.w3.org/2004/02/skos/core#Concept`) | Every term |
+| **Person** (`https://schema.org/Person`) | Only terms that the source describes as persons |
+| **Reconcile against no particular type** | Every term, like Concept |
+
+OpenRefine suggests a type based on the candidates it finds for the first cells, so for a source of persons it suggests Person. Choose Person to leave out concepts and places that have the same name as a person.
 
 Hover over a candidate to see its preview. A person’s preview shows what tells namesakes apart: birth and death, occupation, gender, nationality and family members. Other terms show their broader, narrower and related terms.
 
