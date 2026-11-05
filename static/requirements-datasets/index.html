@@ -1490,7 +1490,7 @@ Possible extra rowspan handling
 </style>
   <meta content="Bikeshed version e0b165ae4, updated Mon Nov 2 15:16:49 2026 -0800" name="generator">
   <link href="https://docs.nde.nl/requirements-datasets/" rel="canonical">
-  <meta content="7162537f505667249c06abbec32549567969d4c9" name="revision">
+  <meta content="49938e97274b2ea260cec2ac75438518b06aee1f" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>
 /* NDE house style for Bikeshed specifications, from netwerk-digitaal-erfgoed/workflows.
@@ -1540,14 +1540,15 @@ Possible extra rowspan handling
 }
 </style>
 <style>
-/* Schema.org and DCAT alternatives, shown as tabs that switch together. */
-.vocab-tablist {
+/* Tabs that show one of several alternatives, such as the same example in two vocabularies; see the README. */
+:where(.nde-tablist) {
     display: flex;
+    flex-wrap: wrap;
     gap: 0.25em;
     margin-bottom: 0.5em;
     border-bottom: 1px solid var(--example-border);
 }
-.vocab-tablist [role="tab"] {
+:where(.nde-tablist [role="tab"]) {
     margin-bottom: -1px;
     padding: 0.25em 0.75em;
     border: none;
@@ -1557,19 +1558,17 @@ Possible extra rowspan handling
     font: inherit;
     cursor: pointer;
 }
-.vocab-tablist [role="tab"][aria-selected="true"] {
+:where(.nde-tablist [role="tab"][aria-selected="true"]) {
     border-bottom-color: var(--a-normal-text);
     color: var(--a-normal-text);
     font-weight: bold;
 }
-.vocab-tablist [role="tab"]:focus-visible,
-.vocab-tabs > [role="tabpanel"]:focus-visible {
+:where(.nde-tablist [role="tab"]:focus-visible, .nde-tabs > [role="tabpanel"]:focus-visible) {
     outline: 2px solid var(--a-normal-text);
     outline-offset: 2px;
 }
-:root[data-vocab="schema"] .vocab-tabs > [data-vocab="dcat"],
-:root[data-vocab="dcat"] .vocab-tabs > [data-vocab="schema"] {
-    /* Beats Bikeshed’s display: grid on line-numbered code blocks. */
+/* Beats Bikeshed’s display: grid on line-numbered code blocks. */
+.nde-tabs > [data-tab][hidden] {
     display: none !important;
 }
 </style>
@@ -2523,46 +2522,94 @@ By following these requirements, publishers enable users to find and use their d
   </nav>
   <main>
 <script>
-// Turns each .vocab-tabs group into tabs. Picking a vocabulary in one group
-// switches every group on the page, and the choice is remembered.
+// Turns each .nde-tabs group into tabs, one for each child with a data-tab.
+// Groups with the same data-tabs name switch together, and the browser
+// remembers the choice for that name.
 (() => {
-  const vocabularies = { schema: 'Schema.org', dcat: 'DCAT' };
-  const storageKey = 'nde-datasets-vocabulary';
-  const tabs = [];
+  const storagePrefix = 'nde-tabs-';
+  const groupsByName = new Map();
+  const panelGroups = new Map();
+  // Name of a group → data-tab of its remembered tab.
+  const remembered = new Map();
+  try {
+    for (let index = 0; index < localStorage.length; index++) {
+      const key = localStorage.key(index);
+      if (key?.startsWith(storagePrefix)) {
+        remembered.set(key.slice(storagePrefix.length), localStorage.getItem(key));
+      }
+    }
+  } catch {}
 
-  const select = (vocabulary) => {
-    document.documentElement.dataset.vocab = vocabulary;
-    for (const tab of tabs) {
-      const selected = tab.dataset.vocab === vocabulary;
+  // Hide the other panels before the page renders, so a deep link does not land
+  // on content that is about to disappear. A group shows its remembered tab if
+  // it has one, and its first tab otherwise.
+  const rememberedGroups = [];
+  const hiddenPanels = [];
+  for (const [name, key] of remembered) {
+    const group = `.nde-tabs[data-tabs="${CSS.escape(name)}"]:has(> [data-tab="${CSS.escape(key)}"])`;
+    rememberedGroups.push(group);
+    hiddenPanels.push(`${group} > [data-tab]:not([data-tab="${CSS.escape(key)}"])`);
+  }
+  const otherGroups = rememberedGroups.length === 0 ? '.nde-tabs' : `.nde-tabs:not(${rememberedGroups.join(', ')})`;
+  hiddenPanels.push(`${otherGroups} > [data-tab] ~ [data-tab]`);
+  const initialStyle = document.createElement('style');
+  initialStyle.textContent = `${hiddenPanels.join(',\n')} { display: none !important; }`;
+  document.head.append(initialStyle);
+
+  const show = (group, key) => {
+    for (const { tab, panel } of group) {
+      const selected = tab.dataset.tab === key;
       tab.setAttribute('aria-selected', String(selected));
       tab.tabIndex = selected ? 0 : -1;
+      panel.hidden = !selected;
     }
   };
 
-  // Hide the other vocabulary before the page renders, so a deep link
-  // does not land on content that is about to disappear.
-  let stored = null;
-  try {
-    stored = localStorage.getItem(storageKey);
-  } catch {}
-  select(Object.hasOwn(vocabularies, stored ?? '') ? stored : 'schema');
+  const hasTab = (group, key) => group.some(({ tab }) => tab.dataset.tab === key);
+
+  // Shows the tab in its group and in every group of the same name that has it.
+  const select = (group, name, key) => {
+    const linked = name === undefined ? [group] : groupsByName.get(name);
+    for (const linkedGroup of linked) {
+      if (hasTab(linkedGroup, key)) show(linkedGroup, key);
+    }
+  };
+
+  // Shows the tab that holds the target of a link, then scrolls to the target.
+  const showTarget = () => {
+    if (!location.hash) return;
+    let id = location.hash.slice(1);
+    try {
+      id = decodeURIComponent(id);
+    } catch {
+      // A malformed escape such as #100% is not a valid ID either way.
+    }
+    const target = document.getElementById(id);
+    if (!target) return;
+    for (let panel = target.closest('.nde-tabs > [hidden]'); panel; panel = panel.parentElement.closest('.nde-tabs > [hidden]')) {
+      select(panelGroups.get(panel), panel.parentElement.dataset.tabs, panel.dataset.tab);
+    }
+    target.scrollIntoView();
+  };
 
   document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('.vocab-tabs').forEach((group, groupIndex) => {
+    document.querySelectorAll('.nde-tabs').forEach((element, groupIndex) => {
+      const name = element.dataset.tabs;
       const tablist = document.createElement('div');
-      tablist.className = 'vocab-tablist';
+      tablist.className = 'nde-tablist';
       tablist.setAttribute('role', 'tablist');
-      tablist.setAttribute('aria-label', 'Vocabulary');
+      if (element.dataset.label) tablist.setAttribute('aria-label', element.dataset.label);
+      const group = [];
 
-      for (const panel of group.querySelectorAll(':scope > [data-vocab]')) {
-        const vocabulary = panel.dataset.vocab;
+      element.querySelectorAll(':scope > [data-tab]').forEach((panel, panelIndex) => {
+        const key = panel.dataset.tab;
         const tab = document.createElement('button');
         tab.type = 'button';
-        tab.id = `vocab-tab-${groupIndex}-${vocabulary}`;
-        tab.dataset.vocab = vocabulary;
-        tab.textContent = vocabularies[vocabulary];
+        tab.id = `nde-tab-${groupIndex}-${panelIndex}`;
+        tab.dataset.tab = key;
+        tab.textContent = panel.dataset.tabLabel || key;
         tab.setAttribute('role', 'tab');
-        panel.id ||= `vocab-panel-${groupIndex}-${vocabulary}`;
+        panel.id ||= `nde-tabpanel-${groupIndex}-${panelIndex}`;
         panel.tabIndex = 0;
         panel.setAttribute('role', 'tabpanel');
         panel.setAttribute('aria-labelledby', tab.id);
@@ -2571,39 +2618,49 @@ By following these requirements, publishers enable users to find and use their d
         tab.addEventListener('click', () => {
           // Keep the clicked tab in place while groups above it change height.
           const topBefore = tab.getBoundingClientRect().top;
-          select(vocabulary);
+          select(group, name, key);
           window.scrollBy(0, tab.getBoundingClientRect().top - topBefore);
+          if (name === undefined) return;
           try {
-            localStorage.setItem(storageKey, vocabulary);
+            localStorage.setItem(storagePrefix + name, key);
           } catch {}
         });
+        // Arrow keys, Home and End move between tabs, as in the WAI-ARIA tabs pattern.
         tab.addEventListener('keydown', (event) => {
-          if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
-          const siblings = [...tablist.children];
-          const step = event.key === 'ArrowRight' ? 1 : -1;
-          const next = siblings[(siblings.indexOf(tab) + step + siblings.length) % siblings.length];
-          next.click();
-          next.focus();
+          const tabs = [...tablist.children];
+          const index = tabs.indexOf(tab);
+          const nextIndex = {
+            ArrowLeft: (index - 1 + tabs.length) % tabs.length,
+            ArrowRight: (index + 1) % tabs.length,
+            Home: 0,
+            End: tabs.length - 1,
+          }[event.key];
+          if (nextIndex === undefined) return;
+          event.preventDefault();
+          tabs[nextIndex].click();
+          tabs[nextIndex].focus();
         });
 
         tablist.append(tab);
-        tabs.push(tab);
+        group.push({ tab, panel });
+        panelGroups.set(panel, group);
+      });
+      if (group.length === 0) return;
+
+      element.prepend(tablist);
+      if (name !== undefined) {
+        if (!groupsByName.has(name)) groupsByName.set(name, []);
+        groupsByName.get(name).push(group);
       }
-      group.prepend(tablist);
+      const stored = remembered.get(name);
+      show(group, hasTab(group, stored) ? stored : group[0].tab.dataset.tab);
     });
-    select(document.documentElement.dataset.vocab);
+    initialStyle.remove();
 
     // The tab bars added height above a deep link’s target.
-    if (location.hash) {
-      let id = location.hash.slice(1);
-      try {
-        id = decodeURIComponent(id);
-      } catch {
-        // A malformed escape such as #100% is not a valid ID either way.
-      }
-      document.getElementById(id)?.scrollIntoView();
-    }
+    showTarget();
   });
+  window.addEventListener('hashchange', showTarget);
 })();
 </script>
    <h2 class="heading settled" data-level="1" id="introduction"><span class="secno">1. </span><span class="content">Introduction</span><a class="self-link" href="#introduction"></a></h2>
@@ -2900,8 +2957,8 @@ RDF formats include <a data-link-type="biblio" href="#biblio-json-ld" title="JSO
 
 
     <p>So, on your organization’s web page, for instance <a href="https://www.kb.nl">www.kb.nl</a>, include:</p>
-    <div class="vocab-tabs">
-<pre class="highlight" data-vocab="schema"><c- p>&lt;</c-><c- f>html</c-><c- p>></c->
+    <div class="nde-tabs" data-label="Vocabulary" data-tabs="vocabulary">
+<pre class="highlight" data-tab="schema" data-tab-label="Schema.org"><c- p>&lt;</c-><c- f>html</c-><c- p>></c->
   <c- p>&lt;</c-><c- f>head</c-><c- p>></c->
     <c- p>&lt;</c-><c- f>title</c-><c- p>></c->Koninklijke Bibliotheek<c- p>&lt;/</c-><c- f>title</c-><c- p>></c->
     <c- p>&lt;</c-><c- f>script</c-> <c- e>type</c-><c- o>=</c-><c- s>"application/ld+json"</c-><c- p>></c->
@@ -2921,7 +2978,7 @@ RDF formats include <a data-link-type="biblio" href="#biblio-json-ld" title="JSO
   <c- p>&lt;/</c-><c- f>body</c-><c- p>></c->
 <c- p>&lt;/</c-><c- f>html</c-><c- p>></c->
 </pre>
-<pre class="highlight" data-vocab="dcat"><c- p>&lt;</c-><c- f>html</c-><c- p>></c->
+<pre class="highlight" data-tab="dcat" data-tab-label="DCAT"><c- p>&lt;</c-><c- f>html</c-><c- p>></c->
   <c- p>&lt;</c-><c- f>head</c-><c- p>></c->
     <c- p>&lt;</c-><c- f>title</c-><c- p>></c->Koninklijke Bibliotheek<c- p>&lt;/</c-><c- f>title</c-><c- p>></c->
     <c- p>&lt;</c-><c- f>script</c-> <c- e>type</c-><c- o>=</c-><c- s>"application/ld+json"</c-><c- p>></c->
@@ -3002,8 +3059,8 @@ This information answers user questions such as:</p>
     Basic dataset information:
 
     
-    <div class="vocab-tabs">
-<pre class="highlight" data-vocab="schema"><c- p>{</c->
+    <div class="nde-tabs" data-label="Vocabulary" data-tabs="vocabulary">
+<pre class="highlight" data-tab="schema" data-tab-label="Schema.org"><c- p>{</c->
   <c- nd>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org/"</c-><c- p>,</c->
   <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Dataset"</c-><c- p>,</c->
   <c- nd>"@id"</c-><c- p>:</c-> <c- u>"http://data.bibliotheken.nl/doc/dataset/rise-alba"</c-><c- p>,</c->
@@ -3019,7 +3076,7 @@ This information answers user questions such as:</p>
   <c- p>]</c->
 <c- p>}</c->
 </pre>
-<pre class="highlight" data-vocab="dcat"><c- p>{</c->
+<pre class="highlight" data-tab="dcat" data-tab-label="DCAT"><c- p>{</c->
   <c- nd>"@context"</c-><c- p>:</c-> <c- p>{</c->
     <c- f>"dcat"</c-><c- p>:</c-> <c- u>"http://www.w3.org/ns/dcat#"</c-><c- p>,</c->
     <c- f>"dct"</c-><c- p>:</c-> <c- u>"http://purl.org/dc/terms/"</c->
@@ -3051,14 +3108,14 @@ This information answers user questions such as:</p>
     In DCAT-AP-NL 3.0, the license belongs to each distribution rather than to the dataset:
 
     
-    <div class="vocab-tabs">
-<pre class="highlight" data-vocab="schema"><c- p>{</c->
+    <div class="nde-tabs" data-label="Vocabulary" data-tabs="vocabulary">
+<pre class="highlight" data-tab="schema" data-tab-label="Schema.org"><c- p>{</c->
   <c- nd>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org/"</c-><c- p>,</c->
   <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Dataset"</c-><c- p>,</c->
   <c- f>"license"</c-><c- p>:</c-> <c- u>"http://creativecommons.org/publicdomain/zero/1.0/"</c->
 <c- p>}</c->
 </pre>
-<pre class="highlight" data-vocab="dcat"><c- p>{</c->
+<pre class="highlight" data-tab="dcat" data-tab-label="DCAT"><c- p>{</c->
   <c- nd>"@context"</c-><c- p>:</c-> <c- p>{</c->
     <c- f>"dcat"</c-><c- p>:</c-> <c- u>"http://www.w3.org/ns/dcat#"</c-><c- p>,</c->
     <c- f>"dct"</c-><c- p>:</c-> <c- u>"http://purl.org/dc/terms/"</c->
@@ -3119,8 +3176,8 @@ The dates <em>MUST</em> be valid according to <a data-link-type="biblio" href="#
     Specify dataset description dates:
 
     
-    <div class="vocab-tabs">
-<pre class="highlight" data-vocab="schema"><c- p>{</c->
+    <div class="nde-tabs" data-label="Vocabulary" data-tabs="vocabulary">
+<pre class="highlight" data-tab="schema" data-tab-label="Schema.org"><c- p>{</c->
   <c- nd>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org/"</c-><c- p>,</c->
   <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Dataset"</c-><c- p>,</c->
   <c- f>"dateCreated"</c-><c- p>:</c-> <c- u>"2019-04-14"</c-><c- p>,</c->
@@ -3128,7 +3185,7 @@ The dates <em>MUST</em> be valid according to <a data-link-type="biblio" href="#
   <c- f>"dateModified"</c-><c- p>:</c-> <c- u>"2019-08-15"</c->
 <c- p>}</c->
 </pre>
-<pre class="highlight" data-vocab="dcat"><c- p>{</c->
+<pre class="highlight" data-tab="dcat" data-tab-label="DCAT"><c- p>{</c->
   <c- nd>"@context"</c-><c- p>:</c-> <c- p>{</c->
     <c- f>"dcat"</c-><c- p>:</c-> <c- u>"http://www.w3.org/ns/dcat#"</c-><c- p>,</c->
     <c- f>"dct"</c-><c- p>:</c-> <c- u>"http://purl.org/dc/terms/"</c-><c- p>,</c->
@@ -3163,9 +3220,9 @@ but keep historical versions accessible to users.</p>
     More information about the dataset.
 
     
-    <div class="vocab-tabs">
-<pre class="highlight line-numbered" data-vocab="schema"><span class="line-no" data-line="1"></span><span class="line"><c- p>{</c-></span><span class="line-no" data-line="2"></span><span class="line">  <c- nd>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org/"</c-><c- p>,</c-></span><span class="line-no" data-line="3"></span><span class="line">  <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Dataset"</c-><c- p>,</c-></span><span class="line-no" data-line="4"></span><span class="line">  <c- f>"description"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="5"></span><span class="line">    <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Alba amicorum van de Koninklijke Bibliotheek, een dataset gedefinieerd voor het Europeana Rise of Literacy project."</c-><c- p>,</c-></span><span class="line-no" data-line="6"></span><span class="line">    <c- nd>"@language"</c-><c- p>:</c-> <c- u>"nl"</c-></span><span class="line-no" data-line="7"></span><span class="line">  <c- p>},</c-></span><span class="line-no" data-line="8"></span><span class="line">  <c- f>"mainEntityOfPage"</c-><c- p>:</c-> <c- u>"https://www.kb.nl/bronnen-zoekwijzers/kb-collecties/moderne-handschriften-vanaf-ca-1550/alba-amicorum"</c-></span><span class="line-no" data-line="9"></span><span class="line"><c- p>}</c-></span></pre>
-<pre class="highlight line-numbered" data-vocab="dcat"><span class="line-no" data-line="1"></span><span class="line"><c- p>{</c-></span><span class="line-no" data-line="2"></span><span class="line">  <c- nd>"@context"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="3"></span><span class="line">    <c- f>"dcat"</c-><c- p>:</c-> <c- u>"http://www.w3.org/ns/dcat#"</c-><c- p>,</c-></span><span class="line-no" data-line="4"></span><span class="line">    <c- f>"dct"</c-><c- p>:</c-> <c- u>"http://purl.org/dc/terms/"</c-></span><span class="line-no" data-line="5"></span><span class="line">  <c- p>},</c-></span><span class="line-no" data-line="6"></span><span class="line">  <c- nd>"@type"</c-><c- p>:</c-> <c- u>"dcat:Dataset"</c-><c- p>,</c-></span><span class="line-no" data-line="7"></span><span class="line">  <c- f>"dct:description"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="8"></span><span class="line">    <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Alba amicorum van de Koninklijke Bibliotheek, een dataset gedefinieerd voor het Europeana Rise of Literacy project."</c-><c- p>,</c-></span><span class="line-no" data-line="9"></span><span class="line">    <c- nd>"@language"</c-><c- p>:</c-> <c- u>"nl"</c-></span><span class="line-no" data-line="10"></span><span class="line">  <c- p>},</c-></span><span class="line-no" data-line="11"></span><span class="line">  <c- f>"dcat:landingPage"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="12"></span><span class="line">    <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://www.kb.nl/bronnen-zoekwijzers/kb-collecties/moderne-handschriften-vanaf-ca-1550/alba-amicorum"</c-></span><span class="line-no" data-line="13"></span><span class="line">  <c- p>}</c-></span><span class="line-no" data-line="14"></span><span class="line"><c- p>}</c-></span></pre>
+    <div class="nde-tabs" data-label="Vocabulary" data-tabs="vocabulary">
+<pre class="highlight line-numbered" data-tab="schema" data-tab-label="Schema.org"><span class="line-no" data-line="1"></span><span class="line"><c- p>{</c-></span><span class="line-no" data-line="2"></span><span class="line">  <c- nd>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org/"</c-><c- p>,</c-></span><span class="line-no" data-line="3"></span><span class="line">  <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Dataset"</c-><c- p>,</c-></span><span class="line-no" data-line="4"></span><span class="line">  <c- f>"description"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="5"></span><span class="line">    <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Alba amicorum van de Koninklijke Bibliotheek, een dataset gedefinieerd voor het Europeana Rise of Literacy project."</c-><c- p>,</c-></span><span class="line-no" data-line="6"></span><span class="line">    <c- nd>"@language"</c-><c- p>:</c-> <c- u>"nl"</c-></span><span class="line-no" data-line="7"></span><span class="line">  <c- p>},</c-></span><span class="line-no" data-line="8"></span><span class="line">  <c- f>"mainEntityOfPage"</c-><c- p>:</c-> <c- u>"https://www.kb.nl/bronnen-zoekwijzers/kb-collecties/moderne-handschriften-vanaf-ca-1550/alba-amicorum"</c-></span><span class="line-no" data-line="9"></span><span class="line"><c- p>}</c-></span></pre>
+<pre class="highlight line-numbered" data-tab="dcat" data-tab-label="DCAT"><span class="line-no" data-line="1"></span><span class="line"><c- p>{</c-></span><span class="line-no" data-line="2"></span><span class="line">  <c- nd>"@context"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="3"></span><span class="line">    <c- f>"dcat"</c-><c- p>:</c-> <c- u>"http://www.w3.org/ns/dcat#"</c-><c- p>,</c-></span><span class="line-no" data-line="4"></span><span class="line">    <c- f>"dct"</c-><c- p>:</c-> <c- u>"http://purl.org/dc/terms/"</c-></span><span class="line-no" data-line="5"></span><span class="line">  <c- p>},</c-></span><span class="line-no" data-line="6"></span><span class="line">  <c- nd>"@type"</c-><c- p>:</c-> <c- u>"dcat:Dataset"</c-><c- p>,</c-></span><span class="line-no" data-line="7"></span><span class="line">  <c- f>"dct:description"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="8"></span><span class="line">    <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Alba amicorum van de Koninklijke Bibliotheek, een dataset gedefinieerd voor het Europeana Rise of Literacy project."</c-><c- p>,</c-></span><span class="line-no" data-line="9"></span><span class="line">    <c- nd>"@language"</c-><c- p>:</c-> <c- u>"nl"</c-></span><span class="line-no" data-line="10"></span><span class="line">  <c- p>},</c-></span><span class="line-no" data-line="11"></span><span class="line">  <c- f>"dcat:landingPage"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="12"></span><span class="line">    <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://www.kb.nl/bronnen-zoekwijzers/kb-collecties/moderne-handschriften-vanaf-ca-1550/alba-amicorum"</c-></span><span class="line-no" data-line="13"></span><span class="line">  <c- p>}</c-></span><span class="line-no" data-line="14"></span><span class="line"><c- p>}</c-></span></pre>
     </div>
    </div>
    <p>See <a href="#dataset-attributes">§ 5.6.1 Dataset attributes</a> for an overview of attributes.</p>
@@ -3189,8 +3246,8 @@ The organization’s name <em>SHOULD</em> be a language-tagged string.</p>
     An organization description:
 
     
-    <div class="vocab-tabs">
-<pre class="highlight" data-vocab="schema"><c- p>{</c->
+    <div class="nde-tabs" data-label="Vocabulary" data-tabs="vocabulary">
+<pre class="highlight" data-tab="schema" data-tab-label="Schema.org"><c- p>{</c->
   <c- nd>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org/"</c-><c- p>,</c->
   <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Organization"</c-><c- p>,</c->
   <c- nd>"@id"</c-><c- p>:</c-> <c- u>"http://www.wikidata.org/entity/Q1526131"</c-><c- p>,</c->
@@ -3204,7 +3261,7 @@ The organization’s name <em>SHOULD</em> be a language-tagged string.</p>
   <c- p>}</c->
 <c- p>}</c->
 </pre>
-<pre class="highlight" data-vocab="dcat"><c- p>{</c->
+<pre class="highlight" data-tab="dcat" data-tab-label="DCAT"><c- p>{</c->
   <c- nd>"@context"</c-><c- p>:</c-> <c- p>{</c->
     <c- f>"foaf"</c-><c- p>:</c-> <c- u>"http://xmlns.com/foaf/0.1/"</c->
   <c- p>},</c->
@@ -3228,8 +3285,8 @@ The organization’s name <em>SHOULD</em> be a language-tagged string.</p>
     A person description:
 
     
-    <div class="vocab-tabs">
-<pre class="highlight" data-vocab="schema"><c- p>{</c->
+    <div class="nde-tabs" data-label="Vocabulary" data-tabs="vocabulary">
+<pre class="highlight" data-tab="schema" data-tab-label="Schema.org"><c- p>{</c->
   <c- nd>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org/"</c-><c- p>,</c->
   <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Person"</c-><c- p>,</c->
   <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com"</c-><c- p>,</c->
@@ -3239,7 +3296,7 @@ The organization’s name <em>SHOULD</em> be a language-tagged string.</p>
   <c- p>}</c->
 <c- p>}</c->
 </pre>
-<pre class="highlight" data-vocab="dcat"><c- p>{</c->
+<pre class="highlight" data-tab="dcat" data-tab-label="DCAT"><c- p>{</c->
   <c- nd>"@context"</c-><c- p>:</c-> <c- p>{</c->
     <c- f>"foaf"</c-><c- p>:</c-> <c- u>"http://xmlns.com/foaf/0.1/"</c->
   <c- p>},</c->
@@ -3291,15 +3348,15 @@ Publishers <em>MAY</em> link to other identifiers of the organization, such as i
     An organization with an ISIL code:
 
     
-    <div class="vocab-tabs">
-<pre class="highlight" data-vocab="schema"><c- p>{</c->
+    <div class="nde-tabs" data-label="Vocabulary" data-tabs="vocabulary">
+<pre class="highlight" data-tab="schema" data-tab-label="Schema.org"><c- p>{</c->
   <c- nd>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org/"</c-><c- p>,</c->
   <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Organization"</c-><c- p>,</c->
   <c- nd>"@id"</c-><c- p>:</c-> <c- u>"http://www.wikidata.org/entity/Q1526131"</c-><c- p>,</c->
   <c- f>"identifier"</c-><c- p>:</c-> <c- u>"NL-HaKB"</c->
 <c- p>}</c->
 </pre>
-<pre class="highlight" data-vocab="dcat"><c- p>{</c->
+<pre class="highlight" data-tab="dcat" data-tab-label="DCAT"><c- p>{</c->
   <c- nd>"@context"</c-><c- p>:</c-> <c- p>{</c->
     <c- f>"dct"</c-><c- p>:</c-> <c- u>"http://purl.org/dc/terms/"</c-><c- p>,</c->
     <c- f>"foaf"</c-><c- p>:</c-> <c- u>"http://xmlns.com/foaf/0.1/"</c->
@@ -3326,9 +3383,9 @@ and the e-mail address is a <code>mailto:</code> IRI.</p>
     A dataset with contact information.
 
     
-    <div class="vocab-tabs">
-<pre class="highlight line-numbered" data-vocab="schema"><span class="line-no" data-line="1"></span><span class="line"><c- p>{</c-></span><span class="line-no" data-line="2"></span><span class="line">  <c- nd>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org/"</c-><c- p>,</c-></span><span class="line-no" data-line="3"></span><span class="line">  <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Dataset"</c-><c- p>,</c-></span><span class="line-no" data-line="4"></span><span class="line">  <c- f>"publisher"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="5"></span><span class="line">    <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Organization"</c-><c- p>,</c-></span><span class="line-no" data-line="6"></span><span class="line">    <c- nd>"@id"</c-><c- p>:</c-> <c- u>"http://www.wikidata.org/entity/Q1526131"</c-><c- p>,</c-></span><span class="line-no" data-line="7"></span><span class="line">    <c- f>"name"</c-><c- p>:</c-> <c- u>"Koninklijke Bibliotheek"</c-><c- p>,</c-></span><span class="line-no" data-line="8"></span><span class="line">    <c- f>"alternateName"</c-><c- p>:</c-> <c- u>"KB"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="9"></span><span class="highlight-line line">    <c- f>"contactPoint"</c-><c- p>:</c-> <c- p>{</c-></span><span class="highlight-line line-no" data-line="10"></span><span class="highlight-line line">      <c- nd>"@type"</c-><c- p>:</c-> <c- u>"ContactPoint"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="11"></span><span class="highlight-line line">      <c- f>"name"</c-><c- p>:</c-> <c- p>{</c-></span><span class="highlight-line line-no" data-line="12"></span><span class="highlight-line line">        <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Datasets Department"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="13"></span><span class="highlight-line line">        <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c-></span><span class="highlight-line line-no" data-line="14"></span><span class="highlight-line line">      <c- p>},</c-></span><span class="highlight-line line-no" data-line="15"></span><span class="highlight-line line">      <c- f>"email"</c-><c- p>:</c-> <c- u>"datasets@kb.nl"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="16"></span><span class="highlight-line line">      <c- f>"telephone"</c-><c- p>:</c-> <c- u>"+31 6 12345678"</c-></span><span class="highlight-line line-no" data-line="17"></span><span class="highlight-line line">    <c- p>}</c-></span><span class="line-no" data-line="18"></span><span class="line">  <c- p>}</c-></span><span class="line-no" data-line="19"></span><span class="line"><c- p>}</c-></span></pre>
-<pre class="highlight line-numbered" data-vocab="dcat"><span class="line-no" data-line="1"></span><span class="line"><c- p>{</c-></span><span class="line-no" data-line="2"></span><span class="line">  <c- nd>"@context"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="3"></span><span class="line">    <c- f>"dcat"</c-><c- p>:</c-> <c- u>"http://www.w3.org/ns/dcat#"</c-><c- p>,</c-></span><span class="line-no" data-line="4"></span><span class="line">    <c- f>"vcard"</c-><c- p>:</c-> <c- u>"http://www.w3.org/2006/vcard/ns#"</c-></span><span class="line-no" data-line="5"></span><span class="line">  <c- p>},</c-></span><span class="line-no" data-line="6"></span><span class="line">  <c- nd>"@type"</c-><c- p>:</c-> <c- u>"dcat:Dataset"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="7"></span><span class="highlight-line line">  <c- f>"dcat:contactPoint"</c-><c- p>:</c-> <c- p>{</c-></span><span class="highlight-line line-no" data-line="8"></span><span class="highlight-line line">    <c- nd>"@type"</c-><c- p>:</c-> <c- u>"vcard:Kind"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="9"></span><span class="highlight-line line">    <c- f>"vcard:fn"</c-><c- p>:</c-> <c- p>{</c-></span><span class="highlight-line line-no" data-line="10"></span><span class="highlight-line line">      <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Datasets Department"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="11"></span><span class="highlight-line line">      <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c-></span><span class="highlight-line line-no" data-line="12"></span><span class="highlight-line line">    <c- p>},</c-></span><span class="highlight-line line-no" data-line="13"></span><span class="highlight-line line">    <c- f>"vcard:hasEmail"</c-><c- p>:</c-> <c- p>{</c-></span><span class="highlight-line line-no" data-line="14"></span><span class="highlight-line line">      <c- nd>"@id"</c-><c- p>:</c-> <c- u>"mailto:datasets@kb.nl"</c-></span><span class="highlight-line line-no" data-line="15"></span><span class="highlight-line line">    <c- p>}</c-></span><span class="highlight-line line-no" data-line="16"></span><span class="highlight-line line">  <c- p>}</c-></span><span class="line-no" data-line="17"></span><span class="line"><c- p>}</c-></span></pre>
+    <div class="nde-tabs" data-label="Vocabulary" data-tabs="vocabulary">
+<pre class="highlight line-numbered" data-tab="schema" data-tab-label="Schema.org"><span class="line-no" data-line="1"></span><span class="line"><c- p>{</c-></span><span class="line-no" data-line="2"></span><span class="line">  <c- nd>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org/"</c-><c- p>,</c-></span><span class="line-no" data-line="3"></span><span class="line">  <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Dataset"</c-><c- p>,</c-></span><span class="line-no" data-line="4"></span><span class="line">  <c- f>"publisher"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="5"></span><span class="line">    <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Organization"</c-><c- p>,</c-></span><span class="line-no" data-line="6"></span><span class="line">    <c- nd>"@id"</c-><c- p>:</c-> <c- u>"http://www.wikidata.org/entity/Q1526131"</c-><c- p>,</c-></span><span class="line-no" data-line="7"></span><span class="line">    <c- f>"name"</c-><c- p>:</c-> <c- u>"Koninklijke Bibliotheek"</c-><c- p>,</c-></span><span class="line-no" data-line="8"></span><span class="line">    <c- f>"alternateName"</c-><c- p>:</c-> <c- u>"KB"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="9"></span><span class="highlight-line line">    <c- f>"contactPoint"</c-><c- p>:</c-> <c- p>{</c-></span><span class="highlight-line line-no" data-line="10"></span><span class="highlight-line line">      <c- nd>"@type"</c-><c- p>:</c-> <c- u>"ContactPoint"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="11"></span><span class="highlight-line line">      <c- f>"name"</c-><c- p>:</c-> <c- p>{</c-></span><span class="highlight-line line-no" data-line="12"></span><span class="highlight-line line">        <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Datasets Department"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="13"></span><span class="highlight-line line">        <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c-></span><span class="highlight-line line-no" data-line="14"></span><span class="highlight-line line">      <c- p>},</c-></span><span class="highlight-line line-no" data-line="15"></span><span class="highlight-line line">      <c- f>"email"</c-><c- p>:</c-> <c- u>"datasets@kb.nl"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="16"></span><span class="highlight-line line">      <c- f>"telephone"</c-><c- p>:</c-> <c- u>"+31 6 12345678"</c-></span><span class="highlight-line line-no" data-line="17"></span><span class="highlight-line line">    <c- p>}</c-></span><span class="line-no" data-line="18"></span><span class="line">  <c- p>}</c-></span><span class="line-no" data-line="19"></span><span class="line"><c- p>}</c-></span></pre>
+<pre class="highlight line-numbered" data-tab="dcat" data-tab-label="DCAT"><span class="line-no" data-line="1"></span><span class="line"><c- p>{</c-></span><span class="line-no" data-line="2"></span><span class="line">  <c- nd>"@context"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="3"></span><span class="line">    <c- f>"dcat"</c-><c- p>:</c-> <c- u>"http://www.w3.org/ns/dcat#"</c-><c- p>,</c-></span><span class="line-no" data-line="4"></span><span class="line">    <c- f>"vcard"</c-><c- p>:</c-> <c- u>"http://www.w3.org/2006/vcard/ns#"</c-></span><span class="line-no" data-line="5"></span><span class="line">  <c- p>},</c-></span><span class="line-no" data-line="6"></span><span class="line">  <c- nd>"@type"</c-><c- p>:</c-> <c- u>"dcat:Dataset"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="7"></span><span class="highlight-line line">  <c- f>"dcat:contactPoint"</c-><c- p>:</c-> <c- p>{</c-></span><span class="highlight-line line-no" data-line="8"></span><span class="highlight-line line">    <c- nd>"@type"</c-><c- p>:</c-> <c- u>"vcard:Kind"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="9"></span><span class="highlight-line line">    <c- f>"vcard:fn"</c-><c- p>:</c-> <c- p>{</c-></span><span class="highlight-line line-no" data-line="10"></span><span class="highlight-line line">      <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Datasets Department"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="11"></span><span class="highlight-line line">      <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c-></span><span class="highlight-line line-no" data-line="12"></span><span class="highlight-line line">    <c- p>},</c-></span><span class="highlight-line line-no" data-line="13"></span><span class="highlight-line line">    <c- f>"vcard:hasEmail"</c-><c- p>:</c-> <c- p>{</c-></span><span class="highlight-line line-no" data-line="14"></span><span class="highlight-line line">      <c- nd>"@id"</c-><c- p>:</c-> <c- u>"mailto:datasets@kb.nl"</c-></span><span class="highlight-line line-no" data-line="15"></span><span class="highlight-line line">    <c- p>}</c-></span><span class="highlight-line line-no" data-line="16"></span><span class="highlight-line line">  <c- p>}</c-></span><span class="line-no" data-line="17"></span><span class="line"><c- p>}</c-></span></pre>
     </div>
    </div>
    <h4 class="heading settled" data-level="5.3.4" id="dataset-publisher"><span class="secno">5.3.4. </span><span class="content">Dataset publisher</span><a class="self-link" href="#dataset-publisher"></a></h4>
@@ -3338,8 +3395,8 @@ and the e-mail address is a <code>mailto:</code> IRI.</p>
     A dataset with an organization as publisher.
 
     
-    <div class="vocab-tabs">
-<pre class="highlight" data-vocab="schema"><c- p>{</c->
+    <div class="nde-tabs" data-label="Vocabulary" data-tabs="vocabulary">
+<pre class="highlight" data-tab="schema" data-tab-label="Schema.org"><c- p>{</c->
   <c- nd>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org/"</c-><c- p>,</c->
   <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Dataset"</c-><c- p>,</c->
   <c- f>"publisher"</c-><c- p>:</c-> <c- p>{</c->
@@ -3366,7 +3423,7 @@ and the e-mail address is a <code>mailto:</code> IRI.</p>
   <c- p>}</c->
 <c- p>}</c->
 </pre>
-<pre class="highlight" data-vocab="dcat"><c- p>{</c->
+<pre class="highlight" data-tab="dcat" data-tab-label="DCAT"><c- p>{</c->
   <c- nd>"@context"</c-><c- p>:</c-> <c- p>{</c->
     <c- f>"dcat"</c-><c- p>:</c-> <c- u>"http://www.w3.org/ns/dcat#"</c-><c- p>,</c->
     <c- f>"dct"</c-><c- p>:</c-> <c- u>"http://purl.org/dc/terms/"</c-><c- p>,</c->
@@ -3406,8 +3463,8 @@ and the e-mail address is a <code>mailto:</code> IRI.</p>
     A dataset with a person as publisher.
 
     
-    <div class="vocab-tabs">
-<pre class="highlight" data-vocab="schema"><c- p>{</c->
+    <div class="nde-tabs" data-label="Vocabulary" data-tabs="vocabulary">
+<pre class="highlight" data-tab="schema" data-tab-label="Schema.org"><c- p>{</c->
   <c- nd>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org/"</c-><c- p>,</c->
   <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Dataset"</c-><c- p>,</c->
   <c- f>"publisher"</c-><c- p>:</c-> <c- p>{</c->
@@ -3420,7 +3477,7 @@ and the e-mail address is a <code>mailto:</code> IRI.</p>
   <c- p>}</c->
 <c- p>}</c->
 </pre>
-<pre class="highlight" data-vocab="dcat"><c- p>{</c->
+<pre class="highlight" data-tab="dcat" data-tab-label="DCAT"><c- p>{</c->
   <c- nd>"@context"</c-><c- p>:</c-> <c- p>{</c->
     <c- f>"dcat"</c-><c- p>:</c-> <c- u>"http://www.w3.org/ns/dcat#"</c-><c- p>,</c->
     <c- f>"dct"</c-><c- p>:</c-> <c- u>"http://purl.org/dc/terms/"</c-><c- p>,</c->
@@ -3465,15 +3522,15 @@ in DCAT-AP-NL 3.0 with <code>dct:conformsTo</code>, next to a <code>dct:format</
     even if it is a query endpoint.
 
     
-    <div class="vocab-tabs">
-<pre class="highlight" data-vocab="schema"><c- p>{</c->
+    <div class="nde-tabs" data-label="Vocabulary" data-tabs="vocabulary">
+<pre class="highlight" data-tab="schema" data-tab-label="Schema.org"><c- p>{</c->
   <c- nd>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org/"</c-><c- p>,</c->
   <c- nd>"@type"</c-><c- p>:</c-> <c- u>"DataDownload"</c-><c- p>,</c->
   <c- f>"contentUrl"</c-><c- p>:</c-> <c- u>"http://vocab.getty.edu/sparql"</c-><c- p>,</c->
   <c- f>"usageInfo"</c-><c- p>:</c-> <c- u>"https://www.w3.org/TR/sparql11-protocol/"</c->
 <c- p>}</c->
 </pre>
-<pre class="highlight" data-vocab="dcat"><c- p>{</c->
+<pre class="highlight" data-tab="dcat" data-tab-label="DCAT"><c- p>{</c->
   <c- nd>"@context"</c-><c- p>:</c-> <c- p>{</c->
     <c- f>"dcat"</c-><c- p>:</c-> <c- u>"http://www.w3.org/ns/dcat#"</c-><c- p>,</c->
     <c- f>"dct"</c-><c- p>:</c-> <c- u>"http://purl.org/dc/terms/"</c->
@@ -3495,8 +3552,8 @@ in DCAT-AP-NL 3.0 with <code>dct:conformsTo</code>, next to a <code>dct:format</
     from its query UI (<code>schema:documentation</code> or <code>foaf:page</code>).
 
     
-    <div class="vocab-tabs">
-<pre class="highlight" data-vocab="schema"><c- p>{</c->
+    <div class="nde-tabs" data-label="Vocabulary" data-tabs="vocabulary">
+<pre class="highlight" data-tab="schema" data-tab-label="Schema.org"><c- p>{</c->
   <c- nd>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org/"</c-><c- p>,</c->
   <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Dataset"</c-><c- p>,</c->
   <c- f>"distribution"</c-><c- p>:</c-> <c- p>[</c->
@@ -3519,7 +3576,7 @@ in DCAT-AP-NL 3.0 with <code>dct:conformsTo</code>, next to a <code>dct:format</
   <c- p>]</c->
 <c- p>}</c->
 </pre>
-<pre class="highlight" data-vocab="dcat"><c- p>{</c->
+<pre class="highlight" data-tab="dcat" data-tab-label="DCAT"><c- p>{</c->
   <c- nd>"@context"</c-><c- p>:</c-> <c- p>{</c->
     <c- f>"dcat"</c-><c- p>:</c-> <c- u>"http://www.w3.org/ns/dcat#"</c-><c- p>,</c->
     <c- f>"dct"</c-><c- p>:</c-> <c- u>"http://purl.org/dc/terms/"</c-><c- p>,</c->
@@ -3575,15 +3632,15 @@ but simple dates (<code>2019-04-14</code>) are also allowed.</p>
     Specify distribution dates:
 
     
-    <div class="vocab-tabs">
-<pre class="highlight" data-vocab="schema"><c- p>{</c->
+    <div class="nde-tabs" data-label="Vocabulary" data-tabs="vocabulary">
+<pre class="highlight" data-tab="schema" data-tab-label="Schema.org"><c- p>{</c->
   <c- nd>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org/"</c-><c- p>,</c->
   <c- nd>"@type"</c-><c- p>:</c-> <c- u>"DataDownload"</c-><c- p>,</c->
   <c- f>"datePublished"</c-><c- p>:</c-> <c- u>"2019-04-14"</c-><c- p>,</c->
   <c- f>"dateModified"</c-><c- p>:</c-> <c- u>"2019-08-15T08:05:00"</c->
 <c- p>}</c->
 </pre>
-<pre class="highlight" data-vocab="dcat"><c- p>{</c->
+<pre class="highlight" data-tab="dcat" data-tab-label="DCAT"><c- p>{</c->
   <c- nd>"@context"</c-><c- p>:</c-> <c- p>{</c->
     <c- f>"dcat"</c-><c- p>:</c-> <c- u>"http://www.w3.org/ns/dcat#"</c-><c- p>,</c->
     <c- f>"dct"</c-><c- p>:</c-> <c- u>"http://purl.org/dc/terms/"</c-><c- p>,</c->
@@ -3673,8 +3730,8 @@ The Dataset Register uses this IRI to identify the distribution as an API.</p>
     A download distribution that conforms to <a data-link-type="biblio" href="#biblio-schema-ap-nde" title="Schema.org Application Profile for Datasets">[SCHEMA-AP-NDE]</a>:
 
     
-    <div class="vocab-tabs">
-<pre class="highlight" data-vocab="schema"><c- p>{</c->
+    <div class="nde-tabs" data-label="Vocabulary" data-tabs="vocabulary">
+<pre class="highlight" data-tab="schema" data-tab-label="Schema.org"><c- p>{</c->
   <c- nd>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org/"</c-><c- p>,</c->
   <c- nd>"@type"</c-><c- p>:</c-> <c- u>"DataDownload"</c-><c- p>,</c->
   <c- f>"encodingFormat"</c-><c- p>:</c-> <c- u>"application/ld+json"</c-><c- p>,</c->
@@ -3682,7 +3739,7 @@ The Dataset Register uses this IRI to identify the distribution as an API.</p>
   <c- f>"usageInfo"</c-><c- p>:</c-> <c- u>"https://docs.nde.nl/schema-profile/"</c->
 <c- p>}</c->
 </pre>
-<pre class="highlight" data-vocab="dcat"><c- p>{</c->
+<pre class="highlight" data-tab="dcat" data-tab-label="DCAT"><c- p>{</c->
   <c- nd>"@context"</c-><c- p>:</c-> <c- p>{</c->
     <c- f>"dcat"</c-><c- p>:</c-> <c- u>"http://www.w3.org/ns/dcat#"</c-><c- p>,</c->
     <c- f>"dct"</c-><c- p>:</c-> <c- u>"http://purl.org/dc/terms/"</c->
@@ -3701,15 +3758,15 @@ The Dataset Register uses this IRI to identify the distribution as an API.</p>
     A SPARQL distribution that returns RDF conforming to <a data-link-type="biblio" href="#biblio-schema-ap-nde" title="Schema.org Application Profile for Datasets">[SCHEMA-AP-NDE]</a>:
 
     
-    <div class="vocab-tabs">
-<pre class="highlight" data-vocab="schema"><c- p>{</c->
+    <div class="nde-tabs" data-label="Vocabulary" data-tabs="vocabulary">
+<pre class="highlight" data-tab="schema" data-tab-label="Schema.org"><c- p>{</c->
   <c- nd>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org/"</c-><c- p>,</c->
   <c- nd>"@type"</c-><c- p>:</c-> <c- u>"DataDownload"</c-><c- p>,</c->
   <c- f>"contentUrl"</c-><c- p>:</c-> <c- u>"https://example.com/sparql"</c-><c- p>,</c->
   <c- f>"usageInfo"</c-><c- p>:</c-> <c- p>[</c-> <c- u>"https://www.w3.org/TR/sparql11-protocol/"</c-><c- p>,</c-> <c- u>"https://docs.nde.nl/schema-profile/"</c-> <c- p>]</c->
 <c- p>}</c->
 </pre>
-<pre class="highlight" data-vocab="dcat"><c- p>{</c->
+<pre class="highlight" data-tab="dcat" data-tab-label="DCAT"><c- p>{</c->
   <c- nd>"@context"</c-><c- p>:</c-> <c- p>{</c->
     <c- f>"dcat"</c-><c- p>:</c-> <c- u>"http://www.w3.org/ns/dcat#"</c-><c- p>,</c->
     <c- f>"dct"</c-><c- p>:</c-> <c- u>"http://purl.org/dc/terms/"</c->
@@ -3737,8 +3794,8 @@ which improves discoverability.</p>
     A catalog of available datasets:
 
     
-    <div class="vocab-tabs">
-<pre class="highlight" data-vocab="schema"><c- p>{</c->
+    <div class="nde-tabs" data-label="Vocabulary" data-tabs="vocabulary">
+<pre class="highlight" data-tab="schema" data-tab-label="Schema.org"><c- p>{</c->
   <c- nd>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org/"</c-><c- p>,</c->
   <c- nd>"@type"</c-><c- p>:</c-> <c- u>"DataCatalog"</c-><c- p>,</c->
   <c- nd>"@id"</c-><c- p>:</c-> <c- u>"http://data.bibliotheken.nl/id/datacatalog"</c-><c- p>,</c->
@@ -3770,7 +3827,7 @@ which improves discoverability.</p>
   <c- p>]</c->
 <c- p>}</c->
 </pre>
-<pre class="highlight" data-vocab="dcat"><c- p>{</c->
+<pre class="highlight" data-tab="dcat" data-tab-label="DCAT"><c- p>{</c->
   <c- nd>"@context"</c-><c- p>:</c-> <c- p>{</c->
     <c- f>"dcat"</c-><c- p>:</c-> <c- u>"http://www.w3.org/ns/dcat#"</c-><c- p>,</c->
     <c- f>"dct"</c-><c- p>:</c-> <c- u>"http://purl.org/dc/terms/"</c-><c- p>,</c->
@@ -3832,16 +3889,16 @@ even if that resource is the same on all pages.</p>
     A paginated catalog:
 
     
-    <div class="vocab-tabs">
-<pre class="highlight line-numbered" data-vocab="schema"><span class="line-no" data-line="1"></span><span class="line"><c- p>{</c-></span><span class="line-no" data-line="2"></span><span class="line">  <c- nd>"@context"</c-><c- p>:</c-> <c- p>[</c-></span><span class="line-no" data-line="3"></span><span class="line">    <c- u>"https://schema.org/"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="4"></span><span class="highlight-line line">    <c- p>{</c-><c- f>"hydra"</c-><c- p>:</c-> <c- u>"http://www.w3.org/ns/hydra/core#"</c-><c- p>}</c-></span><span class="line-no" data-line="5"></span><span class="line">  <c- p>],</c-></span><span class="highlight-line line-no" data-line="6"></span><span class="highlight-line line">  <c- nd>"@type"</c-><c- p>:</c-> <c- p>[</c-><c- u>"DataCatalog"</c-><c- p>,</c-> <c- u>"hydra:Collection"</c-><c- p>],</c-></span><span class="line-no" data-line="7"></span><span class="line">  <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com/catalog"</c-><c- p>,</c-></span><span class="line-no" data-line="8"></span><span class="line">  <c- f>"name"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="9"></span><span class="line">    <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Paginated catalog of datasets"</c-><c- p>,</c-></span><span class="line-no" data-line="10"></span><span class="line">    <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c-></span><span class="line-no" data-line="11"></span><span class="line">  <c- p>},</c-></span><span class="line-no" data-line="12"></span><span class="line">  <c- f>"description"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="13"></span><span class="line">    <c- nd>"@value"</c-><c- p>:</c-> <c- u>"This catalog is paginated using the Hydra Core Vocabulary."</c-><c- p>,</c-></span><span class="line-no" data-line="14"></span><span class="line">    <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c-></span><span class="line-no" data-line="15"></span><span class="line">  <c- p>},</c-></span><span class="line-no" data-line="16"></span><span class="line">  <c- f>"publisher"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="17"></span><span class="line">    <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Organization"</c-><c- p>,</c-></span><span class="line-no" data-line="18"></span><span class="line">    <c- nd>"@id"</c-><c- p>:</c-> <c- u>"/publisher"</c-><c- p>,</c-></span><span class="line-no" data-line="19"></span><span class="line">    <c- f>"name"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="20"></span><span class="line">      <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Example Publisher"</c-><c- p>,</c-></span><span class="line-no" data-line="21"></span><span class="line">      <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c-></span><span class="line-no" data-line="22"></span><span class="line">    <c- p>}</c-></span><span class="line-no" data-line="23"></span><span class="line">  <c- p>},</c-></span><span class="highlight-line line-no" data-line="24"></span><span class="highlight-line line">  <c- f>"hydra:view"</c-><c- p>:</c-> <c- p>{</c-></span><span class="highlight-line line-no" data-line="25"></span><span class="highlight-line line">    <c- nd>"@id"</c-><c- p>:</c-> <c- u>"/catalog?page=1"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="26"></span><span class="highlight-line line">    <c- nd>"@type"</c-><c- p>:</c-> <c- u>"hydra:PartialCollectionView"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="27"></span><span class="highlight-line line">    <c- f>"hydra:first"</c-><c- p>:</c-> <c- p>{</c-><c- nd>"@id"</c-><c- p>:</c-> <c- u>"/catalog?page=1"</c-><c- p>},</c-></span><span class="highlight-line line-no" data-line="28"></span><span class="highlight-line line">    <c- f>"hydra:next"</c-><c- p>:</c-> <c- p>{</c-><c- nd>"@id"</c-><c- p>:</c-> <c- u>"/catalog?page=2"</c-><c- p>},</c-></span><span class="highlight-line line-no" data-line="29"></span><span class="highlight-line line">    <c- f>"hydra:last"</c-><c- p>:</c-> <c- p>{</c-><c- nd>"@id"</c-><c- p>:</c-> <c- u>"/catalog?page=498"</c-><c- p>}</c-></span><span class="highlight-line line-no" data-line="30"></span><span class="highlight-line line">  <c- p>},</c-></span><span class="line-no" data-line="31"></span><span class="line">  <c- f>"dataset"</c-><c- p>:</c-> <c- p>[</c-></span><span class="line-no" data-line="32"></span><span class="line">    <c- p>{</c-></span><span class="line-no" data-line="33"></span><span class="line">      <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Dataset"</c-><c- p>,</c-></span><span class="line-no" data-line="34"></span><span class="line">      <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com/dataset/1"</c-><c- p>,</c-></span><span class="line-no" data-line="35"></span><span class="line">      ...</span><span class="line-no" data-line="36"></span><span class="line">    <c- p>},</c-></span><span class="line-no" data-line="37"></span><span class="line">    <c- p>{</c-></span><span class="line-no" data-line="38"></span><span class="line">      <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Dataset"</c-><c- p>,</c-></span><span class="line-no" data-line="39"></span><span class="line">      <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com/dataset/2"</c-><c- p>,</c-></span><span class="line-no" data-line="40"></span><span class="line">      ...</span><span class="line-no" data-line="41"></span><span class="line">    <c- p>},</c-></span><span class="line-no" data-line="42"></span><span class="line">    ...</span><span class="line-no" data-line="43"></span><span class="line">  <c- p>]</c-></span><span class="line-no" data-line="44"></span><span class="line"><c- p>}</c-></span></pre>
-<pre class="highlight line-numbered" data-vocab="dcat"><span class="line-no" data-line="1"></span><span class="line"><c- p>{</c-></span><span class="line-no" data-line="2"></span><span class="line">  <c- nd>"@context"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="3"></span><span class="line">    <c- f>"dcat"</c-><c- p>:</c-> <c- u>"http://www.w3.org/ns/dcat#"</c-><c- p>,</c-></span><span class="line-no" data-line="4"></span><span class="line">    <c- f>"dct"</c-><c- p>:</c-> <c- u>"http://purl.org/dc/terms/"</c-><c- p>,</c-></span><span class="line-no" data-line="5"></span><span class="line">    <c- f>"foaf"</c-><c- p>:</c-> <c- u>"http://xmlns.com/foaf/0.1/"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="6"></span><span class="highlight-line line">    <c- f>"hydra"</c-><c- p>:</c-> <c- u>"http://www.w3.org/ns/hydra/core#"</c-></span><span class="line-no" data-line="7"></span><span class="line">  <c- p>},</c-></span><span class="highlight-line line-no" data-line="8"></span><span class="highlight-line line">  <c- nd>"@type"</c-><c- p>:</c-> <c- p>[</c-><c- u>"dcat:Catalog"</c-><c- p>,</c-> <c- u>"hydra:Collection"</c-><c- p>],</c-></span><span class="line-no" data-line="9"></span><span class="line">  <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com/catalog"</c-><c- p>,</c-></span><span class="line-no" data-line="10"></span><span class="line">  <c- f>"dct:title"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="11"></span><span class="line">    <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Paginated catalog of datasets"</c-><c- p>,</c-></span><span class="line-no" data-line="12"></span><span class="line">    <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c-></span><span class="line-no" data-line="13"></span><span class="line">  <c- p>},</c-></span><span class="line-no" data-line="14"></span><span class="line">  <c- f>"dct:description"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="15"></span><span class="line">    <c- nd>"@value"</c-><c- p>:</c-> <c- u>"This catalog is paginated using the Hydra Core Vocabulary."</c-><c- p>,</c-></span><span class="line-no" data-line="16"></span><span class="line">    <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c-></span><span class="line-no" data-line="17"></span><span class="line">  <c- p>},</c-></span><span class="line-no" data-line="18"></span><span class="line">  <c- f>"dct:publisher"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="19"></span><span class="line">    <c- nd>"@type"</c-><c- p>:</c-> <c- u>"foaf:Organization"</c-><c- p>,</c-></span><span class="line-no" data-line="20"></span><span class="line">    <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com/publisher"</c-><c- p>,</c-></span><span class="line-no" data-line="21"></span><span class="line">    <c- f>"foaf:name"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="22"></span><span class="line">      <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Example Publisher"</c-><c- p>,</c-></span><span class="line-no" data-line="23"></span><span class="line">      <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c-></span><span class="line-no" data-line="24"></span><span class="line">    <c- p>}</c-></span><span class="line-no" data-line="25"></span><span class="line">  <c- p>},</c-></span><span class="highlight-line line-no" data-line="26"></span><span class="highlight-line line">  <c- f>"hydra:view"</c-><c- p>:</c-> <c- p>{</c-></span><span class="highlight-line line-no" data-line="27"></span><span class="highlight-line line">    <c- nd>"@id"</c-><c- p>:</c-> <c- u>"/catalog?page=1"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="28"></span><span class="highlight-line line">    <c- nd>"@type"</c-><c- p>:</c-> <c- u>"hydra:PartialCollectionView"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="29"></span><span class="highlight-line line">    <c- f>"hydra:first"</c-><c- p>:</c-> <c- p>{</c-><c- nd>"@id"</c-><c- p>:</c-> <c- u>"/catalog?page=1"</c-><c- p>},</c-></span><span class="highlight-line line-no" data-line="30"></span><span class="highlight-line line">    <c- f>"hydra:next"</c-><c- p>:</c-> <c- p>{</c-><c- nd>"@id"</c-><c- p>:</c-> <c- u>"/catalog?page=2"</c-><c- p>},</c-></span><span class="highlight-line line-no" data-line="31"></span><span class="highlight-line line">    <c- f>"hydra:last"</c-><c- p>:</c-> <c- p>{</c-><c- nd>"@id"</c-><c- p>:</c-> <c- u>"/catalog?page=498"</c-><c- p>}</c-></span><span class="highlight-line line-no" data-line="32"></span><span class="highlight-line line">  <c- p>},</c-></span><span class="line-no" data-line="33"></span><span class="line">  <c- f>"dcat:dataset"</c-><c- p>:</c-> <c- p>[</c-></span><span class="line-no" data-line="34"></span><span class="line">    <c- p>{</c-></span><span class="line-no" data-line="35"></span><span class="line">      <c- nd>"@type"</c-><c- p>:</c-> <c- u>"dcat:Dataset"</c-><c- p>,</c-></span><span class="line-no" data-line="36"></span><span class="line">      <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com/dataset/1"</c-><c- p>,</c-></span><span class="line-no" data-line="37"></span><span class="line">      ...</span><span class="line-no" data-line="38"></span><span class="line">    <c- p>},</c-></span><span class="line-no" data-line="39"></span><span class="line">    <c- p>{</c-></span><span class="line-no" data-line="40"></span><span class="line">      <c- nd>"@type"</c-><c- p>:</c-> <c- u>"dcat:Dataset"</c-><c- p>,</c-></span><span class="line-no" data-line="41"></span><span class="line">      <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com/dataset/2"</c-><c- p>,</c-></span><span class="line-no" data-line="42"></span><span class="line">      ...</span><span class="line-no" data-line="43"></span><span class="line">    <c- p>},</c-></span><span class="line-no" data-line="44"></span><span class="line">    ...</span><span class="line-no" data-line="45"></span><span class="line">  <c- p>]</c-></span><span class="line-no" data-line="46"></span><span class="line"><c- p>}</c-></span></pre>
+    <div class="nde-tabs" data-label="Vocabulary" data-tabs="vocabulary">
+<pre class="highlight line-numbered" data-tab="schema" data-tab-label="Schema.org"><span class="line-no" data-line="1"></span><span class="line"><c- p>{</c-></span><span class="line-no" data-line="2"></span><span class="line">  <c- nd>"@context"</c-><c- p>:</c-> <c- p>[</c-></span><span class="line-no" data-line="3"></span><span class="line">    <c- u>"https://schema.org/"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="4"></span><span class="highlight-line line">    <c- p>{</c-><c- f>"hydra"</c-><c- p>:</c-> <c- u>"http://www.w3.org/ns/hydra/core#"</c-><c- p>}</c-></span><span class="line-no" data-line="5"></span><span class="line">  <c- p>],</c-></span><span class="highlight-line line-no" data-line="6"></span><span class="highlight-line line">  <c- nd>"@type"</c-><c- p>:</c-> <c- p>[</c-><c- u>"DataCatalog"</c-><c- p>,</c-> <c- u>"hydra:Collection"</c-><c- p>],</c-></span><span class="line-no" data-line="7"></span><span class="line">  <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com/catalog"</c-><c- p>,</c-></span><span class="line-no" data-line="8"></span><span class="line">  <c- f>"name"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="9"></span><span class="line">    <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Paginated catalog of datasets"</c-><c- p>,</c-></span><span class="line-no" data-line="10"></span><span class="line">    <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c-></span><span class="line-no" data-line="11"></span><span class="line">  <c- p>},</c-></span><span class="line-no" data-line="12"></span><span class="line">  <c- f>"description"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="13"></span><span class="line">    <c- nd>"@value"</c-><c- p>:</c-> <c- u>"This catalog is paginated using the Hydra Core Vocabulary."</c-><c- p>,</c-></span><span class="line-no" data-line="14"></span><span class="line">    <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c-></span><span class="line-no" data-line="15"></span><span class="line">  <c- p>},</c-></span><span class="line-no" data-line="16"></span><span class="line">  <c- f>"publisher"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="17"></span><span class="line">    <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Organization"</c-><c- p>,</c-></span><span class="line-no" data-line="18"></span><span class="line">    <c- nd>"@id"</c-><c- p>:</c-> <c- u>"/publisher"</c-><c- p>,</c-></span><span class="line-no" data-line="19"></span><span class="line">    <c- f>"name"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="20"></span><span class="line">      <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Example Publisher"</c-><c- p>,</c-></span><span class="line-no" data-line="21"></span><span class="line">      <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c-></span><span class="line-no" data-line="22"></span><span class="line">    <c- p>}</c-></span><span class="line-no" data-line="23"></span><span class="line">  <c- p>},</c-></span><span class="highlight-line line-no" data-line="24"></span><span class="highlight-line line">  <c- f>"hydra:view"</c-><c- p>:</c-> <c- p>{</c-></span><span class="highlight-line line-no" data-line="25"></span><span class="highlight-line line">    <c- nd>"@id"</c-><c- p>:</c-> <c- u>"/catalog?page=1"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="26"></span><span class="highlight-line line">    <c- nd>"@type"</c-><c- p>:</c-> <c- u>"hydra:PartialCollectionView"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="27"></span><span class="highlight-line line">    <c- f>"hydra:first"</c-><c- p>:</c-> <c- p>{</c-><c- nd>"@id"</c-><c- p>:</c-> <c- u>"/catalog?page=1"</c-><c- p>},</c-></span><span class="highlight-line line-no" data-line="28"></span><span class="highlight-line line">    <c- f>"hydra:next"</c-><c- p>:</c-> <c- p>{</c-><c- nd>"@id"</c-><c- p>:</c-> <c- u>"/catalog?page=2"</c-><c- p>},</c-></span><span class="highlight-line line-no" data-line="29"></span><span class="highlight-line line">    <c- f>"hydra:last"</c-><c- p>:</c-> <c- p>{</c-><c- nd>"@id"</c-><c- p>:</c-> <c- u>"/catalog?page=498"</c-><c- p>}</c-></span><span class="highlight-line line-no" data-line="30"></span><span class="highlight-line line">  <c- p>},</c-></span><span class="line-no" data-line="31"></span><span class="line">  <c- f>"dataset"</c-><c- p>:</c-> <c- p>[</c-></span><span class="line-no" data-line="32"></span><span class="line">    <c- p>{</c-></span><span class="line-no" data-line="33"></span><span class="line">      <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Dataset"</c-><c- p>,</c-></span><span class="line-no" data-line="34"></span><span class="line">      <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com/dataset/1"</c-><c- p>,</c-></span><span class="line-no" data-line="35"></span><span class="line">      ...</span><span class="line-no" data-line="36"></span><span class="line">    <c- p>},</c-></span><span class="line-no" data-line="37"></span><span class="line">    <c- p>{</c-></span><span class="line-no" data-line="38"></span><span class="line">      <c- nd>"@type"</c-><c- p>:</c-> <c- u>"Dataset"</c-><c- p>,</c-></span><span class="line-no" data-line="39"></span><span class="line">      <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com/dataset/2"</c-><c- p>,</c-></span><span class="line-no" data-line="40"></span><span class="line">      ...</span><span class="line-no" data-line="41"></span><span class="line">    <c- p>},</c-></span><span class="line-no" data-line="42"></span><span class="line">    ...</span><span class="line-no" data-line="43"></span><span class="line">  <c- p>]</c-></span><span class="line-no" data-line="44"></span><span class="line"><c- p>}</c-></span></pre>
+<pre class="highlight line-numbered" data-tab="dcat" data-tab-label="DCAT"><span class="line-no" data-line="1"></span><span class="line"><c- p>{</c-></span><span class="line-no" data-line="2"></span><span class="line">  <c- nd>"@context"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="3"></span><span class="line">    <c- f>"dcat"</c-><c- p>:</c-> <c- u>"http://www.w3.org/ns/dcat#"</c-><c- p>,</c-></span><span class="line-no" data-line="4"></span><span class="line">    <c- f>"dct"</c-><c- p>:</c-> <c- u>"http://purl.org/dc/terms/"</c-><c- p>,</c-></span><span class="line-no" data-line="5"></span><span class="line">    <c- f>"foaf"</c-><c- p>:</c-> <c- u>"http://xmlns.com/foaf/0.1/"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="6"></span><span class="highlight-line line">    <c- f>"hydra"</c-><c- p>:</c-> <c- u>"http://www.w3.org/ns/hydra/core#"</c-></span><span class="line-no" data-line="7"></span><span class="line">  <c- p>},</c-></span><span class="highlight-line line-no" data-line="8"></span><span class="highlight-line line">  <c- nd>"@type"</c-><c- p>:</c-> <c- p>[</c-><c- u>"dcat:Catalog"</c-><c- p>,</c-> <c- u>"hydra:Collection"</c-><c- p>],</c-></span><span class="line-no" data-line="9"></span><span class="line">  <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com/catalog"</c-><c- p>,</c-></span><span class="line-no" data-line="10"></span><span class="line">  <c- f>"dct:title"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="11"></span><span class="line">    <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Paginated catalog of datasets"</c-><c- p>,</c-></span><span class="line-no" data-line="12"></span><span class="line">    <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c-></span><span class="line-no" data-line="13"></span><span class="line">  <c- p>},</c-></span><span class="line-no" data-line="14"></span><span class="line">  <c- f>"dct:description"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="15"></span><span class="line">    <c- nd>"@value"</c-><c- p>:</c-> <c- u>"This catalog is paginated using the Hydra Core Vocabulary."</c-><c- p>,</c-></span><span class="line-no" data-line="16"></span><span class="line">    <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c-></span><span class="line-no" data-line="17"></span><span class="line">  <c- p>},</c-></span><span class="line-no" data-line="18"></span><span class="line">  <c- f>"dct:publisher"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="19"></span><span class="line">    <c- nd>"@type"</c-><c- p>:</c-> <c- u>"foaf:Organization"</c-><c- p>,</c-></span><span class="line-no" data-line="20"></span><span class="line">    <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com/publisher"</c-><c- p>,</c-></span><span class="line-no" data-line="21"></span><span class="line">    <c- f>"foaf:name"</c-><c- p>:</c-> <c- p>{</c-></span><span class="line-no" data-line="22"></span><span class="line">      <c- nd>"@value"</c-><c- p>:</c-> <c- u>"Example Publisher"</c-><c- p>,</c-></span><span class="line-no" data-line="23"></span><span class="line">      <c- nd>"@language"</c-><c- p>:</c-> <c- u>"en"</c-></span><span class="line-no" data-line="24"></span><span class="line">    <c- p>}</c-></span><span class="line-no" data-line="25"></span><span class="line">  <c- p>},</c-></span><span class="highlight-line line-no" data-line="26"></span><span class="highlight-line line">  <c- f>"hydra:view"</c-><c- p>:</c-> <c- p>{</c-></span><span class="highlight-line line-no" data-line="27"></span><span class="highlight-line line">    <c- nd>"@id"</c-><c- p>:</c-> <c- u>"/catalog?page=1"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="28"></span><span class="highlight-line line">    <c- nd>"@type"</c-><c- p>:</c-> <c- u>"hydra:PartialCollectionView"</c-><c- p>,</c-></span><span class="highlight-line line-no" data-line="29"></span><span class="highlight-line line">    <c- f>"hydra:first"</c-><c- p>:</c-> <c- p>{</c-><c- nd>"@id"</c-><c- p>:</c-> <c- u>"/catalog?page=1"</c-><c- p>},</c-></span><span class="highlight-line line-no" data-line="30"></span><span class="highlight-line line">    <c- f>"hydra:next"</c-><c- p>:</c-> <c- p>{</c-><c- nd>"@id"</c-><c- p>:</c-> <c- u>"/catalog?page=2"</c-><c- p>},</c-></span><span class="highlight-line line-no" data-line="31"></span><span class="highlight-line line">    <c- f>"hydra:last"</c-><c- p>:</c-> <c- p>{</c-><c- nd>"@id"</c-><c- p>:</c-> <c- u>"/catalog?page=498"</c-><c- p>}</c-></span><span class="highlight-line line-no" data-line="32"></span><span class="highlight-line line">  <c- p>},</c-></span><span class="line-no" data-line="33"></span><span class="line">  <c- f>"dcat:dataset"</c-><c- p>:</c-> <c- p>[</c-></span><span class="line-no" data-line="34"></span><span class="line">    <c- p>{</c-></span><span class="line-no" data-line="35"></span><span class="line">      <c- nd>"@type"</c-><c- p>:</c-> <c- u>"dcat:Dataset"</c-><c- p>,</c-></span><span class="line-no" data-line="36"></span><span class="line">      <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com/dataset/1"</c-><c- p>,</c-></span><span class="line-no" data-line="37"></span><span class="line">      ...</span><span class="line-no" data-line="38"></span><span class="line">    <c- p>},</c-></span><span class="line-no" data-line="39"></span><span class="line">    <c- p>{</c-></span><span class="line-no" data-line="40"></span><span class="line">      <c- nd>"@type"</c-><c- p>:</c-> <c- u>"dcat:Dataset"</c-><c- p>,</c-></span><span class="line-no" data-line="41"></span><span class="line">      <c- nd>"@id"</c-><c- p>:</c-> <c- u>"https://example.com/dataset/2"</c-><c- p>,</c-></span><span class="line-no" data-line="42"></span><span class="line">      ...</span><span class="line-no" data-line="43"></span><span class="line">    <c- p>},</c-></span><span class="line-no" data-line="44"></span><span class="line">    ...</span><span class="line-no" data-line="45"></span><span class="line">  <c- p>]</c-></span><span class="line-no" data-line="46"></span><span class="line"><c- p>}</c-></span></pre>
     </div>
    </div>
    <h3 class="heading settled" data-level="5.6" id="overview"><span class="secno">5.6. </span><span class="content">Overview of attributes</span><a class="self-link" href="#overview"></a></h3>
    <p>This is an overview of required and recommended attributes.</p>
    <h4 class="heading settled" data-level="5.6.1" id="dataset-attributes"><span class="secno">5.6.1. </span><span class="content">Dataset attributes</span><a class="self-link" href="#dataset-attributes"></a></h4>
-   <div class="vocab-tabs">
-    <div data-vocab="schema">
+   <div class="nde-tabs" data-label="Vocabulary" data-tabs="vocabulary">
+    <div data-tab="schema" data-tab-label="Schema.org">
      <table>
       <caption><a href="https://schema.org/Dataset">schema:Dataset</a> properties</caption>
       <thead>
@@ -3980,7 +4037,7 @@ even if that resource is the same on all pages.</p>
         <td>Recommended
      </table>
     </div>
-    <div data-vocab="dcat">
+    <div data-tab="dcat" data-tab-label="DCAT">
      <table>
       <caption><a href="http://www.w3.org/ns/dcat#Dataset">dcat:Dataset</a> properties</caption>
       <thead>
@@ -4114,8 +4171,8 @@ even if that resource is the same on all pages.</p>
     </div>
    </div>
    <h4 class="heading settled" data-level="5.6.2" id="organization-attributes"><span class="secno">5.6.2. </span><span class="content">Organization attributes</span><a class="self-link" href="#organization-attributes"></a></h4>
-   <div class="vocab-tabs">
-    <div data-vocab="schema">
+   <div class="nde-tabs" data-label="Vocabulary" data-tabs="vocabulary">
+    <div data-tab="schema" data-tab-label="Schema.org">
      <table>
       <caption><a href="https://schema.org/Organization">schema:Organization</a> properties</caption>
       <thead>
@@ -4157,7 +4214,7 @@ even if that resource is the same on all pages.</p>
         <td>Recommended<br><small><a href="#v2">v2.0</a>: becomes required</small>
      </table>
     </div>
-    <div data-vocab="dcat">
+    <div data-tab="dcat" data-tab-label="DCAT">
      <table>
       <caption><a href="http://xmlns.com/foaf/0.1/Organization">foaf:Organization</a> properties</caption>
       <thead>
@@ -4196,8 +4253,8 @@ even if that resource is the same on all pages.</p>
     </div>
    </div>
    <h4 class="heading settled" data-level="5.6.3" id="contactpoint-attributes"><span class="secno">5.6.3. </span><span class="content">Contact point attributes</span><a class="self-link" href="#contactpoint-attributes"></a></h4>
-   <div class="vocab-tabs">
-    <div data-vocab="schema">
+   <div class="nde-tabs" data-label="Vocabulary" data-tabs="vocabulary">
+    <div data-tab="schema" data-tab-label="Schema.org">
      <table>
       <caption><a href="https://schema.org/ContactPoint">schema:ContactPoint</a> properties</caption>
       <thead>
@@ -4219,7 +4276,7 @@ even if that resource is the same on all pages.</p>
         <td>Required
      </table>
     </div>
-    <div data-vocab="dcat">
+    <div data-tab="dcat" data-tab-label="DCAT">
      <table>
       <caption><a href="http://www.w3.org/2006/vcard/ns#Kind">vcard:Kind</a> properties</caption>
       <thead>
@@ -4243,8 +4300,8 @@ even if that resource is the same on all pages.</p>
     </div>
    </div>
    <h4 class="heading settled" data-level="5.6.4" id="distribution-attributes"><span class="secno">5.6.4. </span><span class="content">Distribution attributes</span><a class="self-link" href="#distribution-attributes"></a></h4>
-   <div class="vocab-tabs">
-    <div data-vocab="schema">
+   <div class="nde-tabs" data-label="Vocabulary" data-tabs="vocabulary">
+    <div data-tab="schema" data-tab-label="Schema.org">
      <table>
       <caption><a href="https://schema.org/DataDownload">schema:DataDownload</a> properties</caption>
       <thead>
@@ -4309,7 +4366,7 @@ even if that resource is the same on all pages.</p>
         <td>Recommended
      </table>
     </div>
-    <div data-vocab="dcat">
+    <div data-tab="dcat" data-tab-label="DCAT">
      <table>
       <caption><a href="http://www.w3.org/ns/dcat#Distribution">dcat:Distribution</a> properties</caption>
       <thead>
@@ -4394,8 +4451,8 @@ even if that resource is the same on all pages.</p>
     </div>
    </div>
    <h4 class="heading settled" data-level="5.6.5" id="datacatalog-attributes"><span class="secno">5.6.5. </span><span class="content">DataCatalog attributes</span><a class="self-link" href="#datacatalog-attributes"></a></h4>
-   <div class="vocab-tabs">
-    <div data-vocab="schema">
+   <div class="nde-tabs" data-label="Vocabulary" data-tabs="vocabulary">
+    <div data-tab="schema" data-tab-label="Schema.org">
      <table>
       <caption><a href="https://schema.org/DataCatalog">schema:DataCatalog</a> properties</caption>
       <thead>
@@ -4436,7 +4493,7 @@ even if that resource is the same on all pages.</p>
         <td>Required
      </table>
     </div>
-    <div data-vocab="dcat">
+    <div data-tab="dcat" data-tab-label="DCAT">
      <table>
       <caption><a href="http://www.w3.org/ns/dcat#Catalog">dcat:Catalog</a> properties</caption>
       <thead>
@@ -4487,8 +4544,8 @@ even if that resource is the same on all pages.</p>
     A full <a data-link-type="dfn" href="#dataset-description" id="ref-for-dataset-description①③">dataset description</a> that includes <a href="#dataset-attributes">required and recommended attributes</a>.
 
     
-    <div class="vocab-tabs">
-     <div data-vocab="schema">
+    <div class="nde-tabs" data-label="Vocabulary" data-tabs="vocabulary">
+     <div data-tab="schema" data-tab-label="Schema.org">
 <pre class="highlight include-code"><c- p>{</c->
   <c- nd>"@context"</c-><c- p>:</c-> <c- u>"https://schema.org"</c-><c- p>,</c->
   <c- nd>"@graph"</c-><c- p>:</c-> <c- p>[</c->
@@ -4594,7 +4651,7 @@ even if that resource is the same on all pages.</p>
 <c- p>}</c->
 </pre>
      </div>
-     <div data-vocab="dcat">
+     <div data-tab="dcat" data-tab-label="DCAT">
 <pre class="highlight include-code"><c- p>{</c->
   <c- nd>"@context"</c-><c- p>:</c-> <c- p>{</c->
     <c- f>"dcat"</c-><c- p>:</c-> <c- u>"http://www.w3.org/ns/dcat#"</c-><c- p>,</c->
