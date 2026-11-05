@@ -48,7 +48,7 @@ How a candidate scores:
 * The name and each property weigh equally. A property the source states nothing about counts half, so that candidate ranks below one that matches and above one that contradicts. Candidates are ranked, never left out.
 * Each candidate’s `features` give the separate scores, from 0 to 1. When the first candidate’s name and every property match, and no other candidate’s do, it is marked `match`, so OpenRefine can match the cell automatically.
 
-With properties, the service asks the source for 1,000 instead of 100 results, so that the right person is among the candidates it ranks.
+With properties, the service asks a source of persons for 1,000 instead of 100 results, so that the right person is among the candidates it ranks. Any other source still returns 100.
 
 ## Adding columns from reconciled terms
 
