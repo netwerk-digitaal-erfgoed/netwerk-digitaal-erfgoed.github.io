@@ -73,11 +73,15 @@ Once a column is reconciled, choose **Edit column → Add columns from reconcile
 | `birthPlaces`, `deathPlaces`, `genders`, `nationalities`, `occupations` | Names, or IRIs where the source names nothing |
 | `givenNames`, `familyNames` | Parts of a person’s name, in whatever language the source states them if not in the selected one |
 | `parents`, `children`, `spouses`, `siblings` | Family members in the same source, as reconciled entities named by their preferred label or name; IRIs where the source gives no name |
+| `placeNames` | Names of a place, in the selected language |
+| `latitudes`, `longitudes` | Coordinates of a place, as numbers |
+| `countries` | The country a place is in, as an ISO 3166-1 code such as `NL` |
+| `placeTypes` | What kind of place it is, in the source’s own vocabulary: names, or IRIs where the source names nothing, such as GeoNames feature codes |
 | `broaderTerms`, `narrowerTerms`, `relatedTerms` | Terms in the same source, as reconciled entities named by their preferred label; IRIs where the source gives no label |
 | `exactMatches` | IRIs of the same term in other sources, such as ULAN, VIAF or Wikidata |
 | `seeAlso` | IRIs of web pages about the term, such as the records a person was reconstructed from |
 
-For a column reconciled against Person, the dialog leaves out `broaderTerms` and `narrowerTerms`, which sources seldom state for a person; reconcile against Concept to get them. The family member columns are reconciled against Person themselves, so you can add their properties in turn: the birth dates of a person’s parents, for example. For a column reconciled against Place or Organization, the dialog leaves out the properties of a person.
+For a column reconciled against Person, the dialog leaves out `broaderTerms` and `narrowerTerms`, which sources seldom state for a person; reconcile against Concept to get them. The family member columns are reconciled against Person themselves, so you can add their properties in turn: the birth dates of a person’s parents, for example. For a column reconciled against Person, Place or Organization, the dialog leaves out the properties of the other two.
 
 ## Language selection
 
