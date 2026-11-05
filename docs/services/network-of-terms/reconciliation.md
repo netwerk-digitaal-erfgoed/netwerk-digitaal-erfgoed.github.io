@@ -29,7 +29,7 @@ In the reconciliation dialog, choose the type to reconcile against:
 | Type | Matches |
 | --- | --- |
 | **Concept** (`http://www.w3.org/2004/02/skos/core#Concept`) | Every term |
-| **Person** (`https://schema.org/Person`, or `http://schema.org/Person`) | Only terms that the source describes as persons |
+| **Person** (`https://schema.org/Person`) | Only terms that the source describes as persons |
 | **Reconcile against no particular type** | Every term, like Concept |
 
 OpenRefine suggests a type based on the candidates it finds for the first cells, so for a source of persons it suggests Person. Choose Person to leave out concepts and places that have the same name as a person.
