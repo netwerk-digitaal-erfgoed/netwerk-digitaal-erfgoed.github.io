@@ -24,7 +24,17 @@ endpoints themselves.
 
 In OpenRefine, open the column you want to reconcile and choose **Reconcile → Start reconciling…**. The first time you use a Network of Terms endpoint, click **Add standard service…** and paste the endpoint URL for the source (for example `https://termennetwerk-api.netwerkdigitaalerfgoed.nl/reconcile/https://data.cultureelerfgoed.nl/term/id/cht`). OpenRefine remembers the service for subsequent projects.
 
-In the reconciliation dialog, select **Reconcile against no particular type**. Network of Terms endpoints don’t advertise a default type for their candidates, and leaving the default option (“Reconcile against the suggested type”) selected makes OpenRefine match every cell against an empty type set, so no candidates come back. Picking “no particular type” lets the source’s own search query decide what counts as a match.
+In the reconciliation dialog, choose the type to reconcile against:
+
+| Type | Matches |
+| --- | --- |
+| **Concept** (`http://www.w3.org/2004/02/skos/core#Concept`) | Every term |
+| **Person** (`https://schema.org/Person`) | Only terms that the source describes as persons |
+| **Reconcile against no particular type** | Every term, like Concept |
+
+OpenRefine suggests a type based on the candidates it finds for the first cells, so for a source of persons it suggests Person. Choose Person to leave out concepts and places that have the same name as a person.
+
+Hover over a candidate to see its preview. A person’s preview shows what tells namesakes apart: birth and death, occupation, gender, nationality and family members. Other terms show their broader, narrower and related terms.
 
 ## Matching persons on more than their name
 
@@ -64,6 +74,8 @@ Once a column is reconciled, choose **Edit column → Add columns from reconcile
 | `broaderTerms`, `narrowerTerms`, `relatedTerms` | Terms in the same source, as reconciled entities named by their preferred label; IRIs where the source gives no label |
 | `exactMatches` | IRIs of the same term in other sources, such as ULAN, VIAF or Wikidata |
 | `seeAlso` | IRIs of web pages about the term, such as the records a person was reconstructed from |
+
+For a column reconciled against Person, the dialog leaves out `broaderTerms` and `narrowerTerms`, which a person never has. The family member columns are reconciled against Person themselves, so you can add their properties in turn: the birth dates of a person’s parents, for example.
 
 ## Language selection
 
