@@ -26,6 +26,30 @@ In OpenRefine, open the column you want to reconcile and choose **Reconcile → 
 
 In the reconciliation dialog, select **Reconcile against no particular type**. Network of Terms endpoints don’t advertise a default type for their candidates, and leaving the default option (“Reconcile against the suggested type”) selected makes OpenRefine match every cell against an empty type set, so no candidates come back. Picking “no particular type” lets the source’s own search query decide what counts as a match.
 
+## Matching persons on more than their name
+
+A common name such as ‘Jan Jansen’ has many namesakes. If your data holds more about each person, such as a birth date or birthplace, send it along: in OpenRefine’s reconciliation dialog, under **Also use relevant details from other columns**, pick the column and the property it holds. The service then ranks the candidates whose details match first.
+
+| Property | Value |
+| --- | --- |
+| `givenName`, `familyName` | A name |
+| `birthDate`, `deathDate` | A date of any precision, such as `1851`, `1851-03-02` or the [EDTF](https://www.loc.gov/standards/datetime/) interval `1606-07-15/1607` |
+| `birthPlace`, `deathPlace`, `nationality` | A name, or a reconciled place with its IRI |
+| `gender` | `male` or `female`, in English or Dutch, or `https://schema.org/Male` or `https://schema.org/Female` |
+| `hasOccupation` | The name of an occupation or role, or a reconciled occupation |
+| `parent`, `children`, `spouse`, `sibling` | A name, or a reconciled person |
+
+The property IDs are those of the GraphQL `Person`; OpenRefine also offers them by their translated names, such as ‘Geboortedatum’.
+
+How a candidate scores:
+
+* **Dates** match when they can mean the same day, whatever their precision: `1851` matches `1851-03-02`. A date within a year of the other counts half, as a source may give a baptism date for a birth date.
+* **Places, occupations and relatives** match by IRI if you reconciled them first. Otherwise their names are compared, ignoring a qualifier such as ‘Leiden (stad)’.
+* The name and each property weigh equally. A property the source states nothing about counts half, so that candidate ranks below one that matches and above one that contradicts. Candidates are ranked, never left out.
+* Each candidate’s `features` give the separate scores, from 0 to 1. When the first candidate’s name and every property match, and no other candidate’s do, it is marked `match`, so OpenRefine can match the cell automatically.
+
+With properties, the service asks the source for 1,000 instead of 100 results, so that the right person is among the candidates it ranks.
+
 ## Adding columns from reconciled terms
 
 Once a column is reconciled, choose **Edit column → Add columns from reconciled values…** to fetch more of what the source states about each term. The data-extension endpoint offers these properties and returns the ones you select, each empty where the source states nothing:
