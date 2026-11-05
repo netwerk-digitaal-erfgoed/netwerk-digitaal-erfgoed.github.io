@@ -34,9 +34,12 @@ Once a column is reconciled, choose **Edit column → Add columns from reconcile
 | --- | --- |
 | `prefLabels`, `altLabels`, `scopeNotes` | Labels and notes, in the selected language |
 | `birthDates`, `deathDates` | Dates of a person, as EDTF strings |
-| `birthPlaces`, `deathPlaces`, `genders` | Names, or IRIs where the source names nothing |
+| `birthPlaces`, `deathPlaces`, `genders`, `nationalities`, `occupations` | Names, or IRIs where the source names nothing |
+| `givenNames`, `familyNames` | Parts of a person’s name |
+| `parents`, `children`, `spouses`, `siblings` | Family members in the same source, as reconciled entities named by their preferred label; IRIs where the source gives no label |
 | `broaderTerms`, `narrowerTerms`, `relatedTerms` | Terms in the same source, as reconciled entities named by their preferred label; IRIs where the source gives no label |
 | `exactMatches` | IRIs of the same term in other sources, such as ULAN, VIAF or Wikidata |
+| `seeAlso` | IRIs of web pages about the term, such as the records a person was reconstructed from |
 
 ## Language selection
 
