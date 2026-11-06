@@ -80,7 +80,7 @@ Example of the response body of the integration layer:
   "type": "HeritageObject",
   "name": "The Night Watch",
   // And then, depending on the resource, other properties, such as:
-  "additionalTypes": [
+  "additionalType": [
     {
       "id": "https://example.org/v1/entities/5678",
       "type": "Concept",
@@ -93,7 +93,7 @@ Example of the response body of the integration layer:
 
 The response indicates that this resource has identifier `https://example.org/v1/entities/1234`, is a `HeritageObject` and has name 'The Night Watch'.
 
-Note the `additionalTypes` list: every item in this list is also a resource and has the same top-level properties: `id`, `type` and `name`.
+Note the `additionalType` list: every item in this list is also a resource and has the same top-level properties: `id`, `type` and `name`.
 
 ## Collection
 

@@ -172,7 +172,7 @@ The response body depends on the data model of the entity. An example:
   "id": "https://example.org/v1/entities/1234",
   "type": "HeritageObject",
   "name": "The Night Watch",
-  "additionalTypes": [
+  "additionalType": [
     {
       "id": "https://example.org/v1/entities/1122",
       "type": "Concept",
@@ -181,14 +181,14 @@ The response body depends on the data model of the entity. An example:
   ],
   "description": "Rembrandt’s largest, most famous canvas was made for the Arquebusiers guild hall...",
   "dateCreated": "1642",
-  "creators": [
+  "creator": [
     {
       "id": "https://example.org/v1/entities/5678",
       "type": "Person",
       "name": "Rembrandt"
     }
   ],
-  "locationsCreated": [
+  "locationCreated": [
     {
       "id": "https://example.org/v1/entities/9012",
       "type": "Place",
