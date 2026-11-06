@@ -1,6 +1,6 @@
 ---
 slug: /integration-layer-api/rest/facets
-sidebar_position: 7
+sidebar_position: 8
 ---
 
 # Facets
@@ -188,10 +188,10 @@ The endpoint retrieves all facet collections of a collection. The integration la
 
 ### Path parameters
 
-| Name             | Data type | Cardinality | Description                                                                                                                                    |
-| ---------------- | --------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `version`        | string    | 1           | The version of the API. Example: `v1`.                                                                                                         |
-| `...collections` | string    | 1 or more   | The path identifier(s) of the context collection, including the collections it is part of or that it contains. Example: `collections/objects`. |
+| Name             | Data type | Cardinality | Description                                                                       |
+| ---------------- | --------- | ----------- | --------------------------------------------------------------------------------- |
+| `version`        | string    | 1           | The version of the API. Example: `v1`.                                            |
+| `...collections` | string    | 1 or more   | The path identifier(s) of the context collection. Example: `collections/objects`. |
 
 ### Query parameters
 
@@ -285,17 +285,17 @@ The endpoint retrieves a facet collection. The integration layer _MUST_ implemen
 
 ### Path parameters
 
-| Name             | Data type | Cardinality | Description                                                                                                                                    |
-| ---------------- | --------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `version`        | string    | 1           | The version of the API. Example: `v1`.                                                                                                         |
-| `...collections` | string    | 1 or more   | The path identifier(s) of the context collection, including the collections it is part of or that it contains. Example: `collections/objects`. |
-| `facet`          | string    | 1           | The path identifier of the facet collection. Example: `creators`, `centuries`.                                                                 |
+| Name             | Data type | Cardinality | Description                                                                       |
+| ---------------- | --------- | ----------- | --------------------------------------------------------------------------------- |
+| `version`        | string    | 1           | The version of the API. Example: `v1`.                                            |
+| `...collections` | string    | 1 or more   | The path identifier(s) of the context collection. Example: `collections/objects`. |
+| `facet`          | string    | 1           | The path identifier of the facet collection. Example: `creators`, `centuries`.    |
 
 ### Query parameters
 
 | Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                                            |
 | --------- | --------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `q`       | string    | 0 or 1      | A keyword query for filtering the facet items. Minimum length: defined by the integration layer (e.g. 3 characters). Maximum length: defined by the integration layer (e.g. 25 characters).                                                                            |
+| `q`       | string    | 0 or 1      | A keyword query for filtering the facet items. The integration layer defines the minimum and maximum length and how the query is matched.                                                                                                                              |
 | `size`    | number    | 0 or 1      | The maximum number of facet items to retrieve. Minimum: 1. Default: 10. Maximum: defined by the integration layer (e.g. 100).                                                                                                                                          |
 | `orderBy` | string    | 0 or 1      | The sorting order of the facet items. One of `count`, `value`. Default: `count:desc` (most frequent item first). The integration layer defines which property of the value it sorts by (e.g. the `name`). For a range value, the integration layer sorts by its `min`. |
 | `filter`  | string    | 0 or more   | The rules for filtering the facet items. See [Filters](resources.md#filters).                                                                                                                                                                                          |
@@ -582,27 +582,21 @@ The endpoint retrieves a page in a facet collection. The integration layer _MUST
 
 ### Path parameters
 
-| Name             | Data type | Cardinality | Description                                                                                                                                    |
-| ---------------- | --------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `version`        | string    | 1           | The version of the API. Example: `v1`.                                                                                                         |
-| `...collections` | string    | 1 or more   | The path identifier(s) of the context collection, including the collections it is part of or that it contains. Example: `collections/objects`. |
-| `facet`          | string    | 1           | The path identifier of the facet collection. Example: `creators`, `centuries`.                                                                 |
+| Name             | Data type | Cardinality | Description                                                                       |
+| ---------------- | --------- | ----------- | --------------------------------------------------------------------------------- |
+| `version`        | string    | 1           | The version of the API. Example: `v1`.                                            |
+| `...collections` | string    | 1 or more   | The path identifier(s) of the context collection. Example: `collections/objects`. |
+| `facet`          | string    | 1           | The path identifier of the facet collection. Example: `creators`, `centuries`.    |
 
 ### Query parameters
 
 | Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                                            |
 | --------- | --------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `page`    | string    | 1           | The identifier of the page: a page number or cursor, depending on the [pagination strategy](resources.md#page-navigation-and-cursor-navigation) of the integration layer.                                                                                              |
-| `q`       | string    | 0 or 1      | A keyword query for filtering the facet items. Minimum length: defined by the integration layer (e.g. 3 characters). Maximum length: defined by the integration layer (e.g. 25 characters).                                                                            |
+| `q`       | string    | 0 or 1      | A keyword query for filtering the facet items. The integration layer defines the minimum and maximum length and how the query is matched.                                                                                                                              |
 | `size`    | number    | 0 or 1      | The maximum number of facet items to retrieve. Minimum: 1. Default: 10. Maximum: defined by the integration layer (e.g. 100).                                                                                                                                          |
 | `orderBy` | string    | 0 or 1      | The sorting order of the facet items. One of `count`, `value`. Default: `count:desc` (most frequent item first). The integration layer defines which property of the value it sorts by (e.g. the `name`). For a range value, the integration layer sorts by its `min`. |
-| `filter`  | string    | 0 or more   | The rules for filtering the facet items. See [Filters](resources.md#filters).                                                                                                                                                                                          |
-
-:::note To do
-
-Add the query parameters that carry the "search context" of the context collection, so that the facet items reflect the same search as the page in that collection (`q` and `filter` of endpoint [Retrieve a page in a collection](collections.md#endpoint-retrieve-a-page-in-a-collection)).
-
-:::
+| `search`  | string    | 0 or 1      | An identifier for an [advanced search](search.md#endpoint-advanced-search), representing the search context.                                                                                                                                                           |
 
 ### Request body
 

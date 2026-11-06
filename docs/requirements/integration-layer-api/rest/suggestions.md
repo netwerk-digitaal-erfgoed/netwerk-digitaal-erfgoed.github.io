@@ -1,6 +1,6 @@
 ---
 slug: /integration-layer-api/rest/suggestions
-sidebar_position: 8
+sidebar_position: 9
 ---
 
 # Suggestions
@@ -123,10 +123,10 @@ The endpoint retrieves all suggestion collections of a collection. The integrati
 
 ### Path parameters
 
-| Name             | Data type | Cardinality | Description                                                                                                                                    |
-| ---------------- | --------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `version`        | string    | 1           | The version of the API. Example: `v1`.                                                                                                         |
-| `...collections` | string    | 1 or more   | The path identifier(s) of the context collection, including the collections it is part of or that it contains. Example: `collections/objects`. |
+| Name             | Data type | Cardinality | Description                                                                       |
+| ---------------- | --------- | ----------- | --------------------------------------------------------------------------------- |
+| `version`        | string    | 1           | The version of the API. Example: `v1`.                                            |
+| `...collections` | string    | 1 or more   | The path identifier(s) of the context collection. Example: `collections/objects`. |
 
 ### Query parameters
 
@@ -222,20 +222,19 @@ The endpoint retrieves the suggestion items of a suggestion collection that matc
 
 ### Path parameters
 
-| Name             | Data type | Cardinality | Description                                                                                                                                    |
-| ---------------- | --------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `version`        | string    | 1           | The version of the API. Example: `v1`.                                                                                                         |
-| `...collections` | string    | 1 or more   | The path identifier(s) of the context collection, including the collections it is part of or that it contains. Example: `collections/objects`. |
-| `suggestion`     | string    | 1           | The path identifier of the suggestion collection. Example: `keywords`.                                                                         |
+| Name             | Data type | Cardinality | Description                                                                       |
+| ---------------- | --------- | ----------- | --------------------------------------------------------------------------------- |
+| `version`        | string    | 1           | The version of the API. Example: `v1`.                                            |
+| `...collections` | string    | 1 or more   | The path identifier(s) of the context collection. Example: `collections/objects`. |
+| `suggestion`     | string    | 1           | The path identifier of the suggestion collection. Example: `keywords`.            |
 
 ### Query parameters
 
-| Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                                                            |
-| --------- | --------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `q`       | string    | 1           | A query for filtering the suggestion items. Minimum length: defined by the integration layer (e.g. 3 characters). Maximum length: defined by the integration layer (e.g. 25 characters). The integration layer defines how the query is matched, e.g. by using prefix or infix search. |
-| `size`    | number    | 0 or 1      | The maximum number of suggestion items to retrieve. Minimum: 1. Default: 10. Maximum: defined by the integration layer (e.g. 25).                                                                                                                                                      |
-| `orderBy` | string    | 0 or 1      | The sorting order of the suggestion items. It _MUST_ be one of `relevance`, `value`. Default: `relevance:desc` (most relevant suggestion first). The integration layer defines which property of the value it sorts by, such as the `name`.                                            |
-| `filter`  | string    | 0 or more   | The rules for filtering the suggestion items. See [Filters](resources.md#filters).                                                                                                                                                                                                     |
+| Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                 |
+| --------- | --------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `q`       | string    | 1           | A keyword query for filtering the suggestion items. The integration layer defines the minimum and maximum length and how the query is matched, e.g. by using prefix or infix search.                                                        |
+| `size`    | number    | 0 or 1      | The maximum number of suggestion items to retrieve. The minimum is 1. The integration layer defines the maximum.                                                                                                                            |
+| `orderBy` | string    | 0 or 1      | The sorting order of the suggestion items. It _MUST_ be one of `relevance`, `value`. Default: `relevance:desc` (most relevant suggestion first). The integration layer defines which property of the value it sorts by, such as the `name`. |
 
 ### Request body
 

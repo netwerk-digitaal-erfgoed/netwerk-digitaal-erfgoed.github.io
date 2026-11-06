@@ -1,0 +1,327 @@
+---
+slug: /integration-layer-api/rest/search
+sidebar_position: 7
+---
+
+# Search
+
+## Introduction
+
+Search is crucial to help the users of presentation layers find information. A search is tied to a particular collection — the context collection — ensuring that results remain within the context of that collection. A presentation layer can search the items of that collection in two ways: with a **simple search** or with an **advanced search**.
+
+## Endpoint: simple search
+
+A simple search lets a user find items in a collection with a keyword query and a sort order. It is meant for quick, straightforward filtering.
+
+A collection that supports a simple search advertises the `https://specs.nde.nl/rest/v1/simple-search` capability.
+
+A simple search is not a separate endpoint. This section shows how the search parameters are used on the endpoint that retrieves a collection or a page. The example below uses a [curated collection](collections.md); the same parameters apply to the endpoints of other collection types.
+
+### HTTP request
+
+`GET /{version}/{...collections}?q={q}&orderBy={orderBy}&size={size}&page={page}`
+
+### Path parameters
+
+| Name             | Data type | Cardinality | Description                                                                       |
+| ---------------- | --------- | ----------- | --------------------------------------------------------------------------------- |
+| `version`        | string    | 1           | The version of the API. Example: `v1`.                                            |
+| `...collections` | string    | 1 or more   | The path identifier(s) of the context collection. Example: `collections/objects`. |
+
+### Query parameters
+
+| Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                    |
+| --------- | --------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `q`       | string    | 0 or 1      | A keyword query for filtering the items. The integration layer defines the minimum and maximum length and how the query is matched.                                                                                                            |
+| `orderBy` | string    | 0 or 1      | The sorting order of the items. One of `relevance`, `value`, optionally followed by `:asc` or `:desc`. The default is `relevance:desc`. The integration layer defines which property `value` sorts on, for example on the `name` of an entity. |
+| `size`    | number    | 0 or 1      | The maximum number of items to retrieve. The minimum is 1. The integration layer defines the maximum.                                                                                                                                          |
+| `page`    | string    | 0 or 1      | The page to retrieve: a page number or a cursor, depending on the [pagination strategy](resources.md#page-navigation-and-cursor-navigation). Required when retrieving a page.                                                                  |
+
+### Request body
+
+None.
+
+### Response body
+
+The response is a `Page` if the collection is divided into pages; otherwise it is a `Collection` with its items inline.
+
+### Example
+
+An example request from a presentation layer:
+
+```http
+GET /v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc
+Host: example.org
+```
+
+This tells the integration layer that the presentation layer is searching for resources in the 'Masterpieces' collection that match the keyword 'rembrandt' and that matching resources must be ordered by relevance.
+
+An example of the response of the integration layer:
+
+```json
+{
+  "@context": "https://example.org/v1/context.json",
+  "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc&page=1",
+  "type": "Page",
+  "name": "Masterpieces: page 1",
+  "items": [
+    {
+      "id": "https://example.org/v1/entities/1234",
+      "type": "HeritageObject",
+      "name": "The Night Watch"
+    }
+  ],
+  "next": {
+    "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc&page=2",
+    "type": "Page"
+  },
+  "partOf": {
+    "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc",
+    "type": "CuratedCollection",
+    "name": "Masterpieces",
+    "totalItems": 42,
+    "first": {
+      "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc&page=1",
+      "type": "Page"
+    },
+    "last": {
+      "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc&page=3",
+      "type": "Page"
+    }
+  }
+}
+```
+
+The response indicates that the simple search has 42 results, that this is the first page, and that the next page is page 2.
+
+## Endpoint: advanced search
+
+An advanced search lets a user narrow down the items of a collection with complex conditions, such as filters with 'and' and 'or', date ranges, geolocation and facet values. It can combine these conditions with a keyword query, a sort order and a page size.
+
+A collection that supports an advanced search advertises the `https://specs.nde.nl/rest/v1/advanced-search` capability.
+
+### HTTP request
+
+`POST /{version}/{...collections}/search`
+
+An advanced search uses the `POST` method because a query string is not a good fit for complex filter conditions: it has a limited length, and conditions with 'and' and 'or' are hard to read and to parse.
+
+### Path parameters
+
+| Name             | Data type | Cardinality | Description                                                                       |
+| ---------------- | --------- | ----------- | --------------------------------------------------------------------------------- |
+| `version`        | string    | 1           | The version of the API. Example: `v1`.                                            |
+| `...collections` | string    | 1 or more   | The path identifier(s) of the context collection. Example: `collections/objects`. |
+
+### Query parameters
+
+None.
+
+### Request body
+
+The request body _MUST_ contain a JSON-formatted [search object](#the-search-object).
+
+### Response body
+
+The response is a `Page` if the collection is divided into pages; otherwise it is a `Collection` with its items inline. The response URIs contain the [`search` parameter](#the-search-parameter).
+
+### The search object
+
+A search object is a JSON object. It contains the conditions of an advanced search:
+
+| Name      | Data type | Cardinality | Description                                                                                                                                                                                                       |
+| --------- | --------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `q`       | string    | 0 or 1      | A keyword query. It has the same meaning as the `q` query parameter of a simple search; see [Endpoint: simple search](#endpoint-simple-search).                                                                   |
+| `orderBy` | string    | 0 or 1      | The sorting order of the items. It has the same meaning as the `orderBy` query parameter of a simple search; see [Endpoint: simple search](#endpoint-simple-search). The collection _MUST_ support this property. |
+| `size`    | number    | 0 or 1      | The maximum number of items to retrieve. It has the same meaning as the `size` query parameter of a simple search; see [Endpoint: simple search](#endpoint-simple-search).                                        |
+| `filter`  | object    | 0 or 1      | The filter conditions. See [Filters](#filters).                                                                                                                                                                   |
+| `facets`  | array     | 0 or 1      | The facet collections whose results the integration layer must return. See [Facets](facets.md).                                                                                                                   |
+
+All properties are optional. An empty object returns the items of the collection in their default order.
+
+An example of a search object:
+
+```json
+{
+  "q": "rembrandt",
+  "orderBy": "relevance:desc",
+  "size": 20,
+  "filter": {
+    "and": [
+      {
+        "field": "dateCreated",
+        "operator": "between",
+        "value": ["1900", "1950"]
+      },
+      {
+        "field": "creator",
+        "operator": "in",
+        "value": [
+          "https://example.org/v1/entities/7890",
+          "https://example.org/v1/entities/9012"
+        ]
+      }
+    ]
+  }
+}
+```
+
+The example searches the collection for items that match the keyword query `rembrandt`, were created between 1900 and 1950, and have one of two creators. It returns 20 items per page, sorted by relevance.
+
+Another example:
+
+```json
+{
+  "filter": {
+    "or": [
+      {
+        "and": [
+          {
+            "field": "dateCreated",
+            "operator": "between",
+            "value": ["1900", "1950"]
+          },
+          {
+            "field": "creator",
+            "operator": "in",
+            "value": [
+              "https://example.org/v1/entities/7890",
+              "https://example.org/v1/entities/9012"
+            ]
+          }
+        ]
+      },
+      {
+        "field": "locationCreated",
+        "operator": "eq",
+        "value": "https://example.org/v1/entities/3456"
+      }
+    ]
+  }
+}
+```
+
+The example searches the collection for items that were created between 1900 and 1950 and have one of two creators, or searches the collection for items that were created in a certain location.
+
+If the search object is invalid, or contains a filter that the collection does not support, the integration layer _MUST_ respond with a `400` status code.
+
+:::note To do
+
+Define the exact structure of the `filter` object. It must be able to express all sorts of filter types, including (nested) `and` and `or` conditions and exclusions (`not`). The examples are a starting point.
+
+:::
+
+:::note To do
+
+Think of a way to express the ID of a `facet` in a search object. A facet ID like `creators` is a shorthand for its full URI but currently does not have a designated property in a [facet collection](facets.md#endpoint-retrieve-a-facet-collection). Full URIs — such as `https://example.org/v1/collections/masterpieces/facets/creators` — are rather verbose.
+
+:::
+
+### Filters
+
+A presentation layer can narrow down the items of a collection with filters. Filters are part of a [search object](#the-search-object). A presentation layer sends filters in the `filter` property of a search object to the [advanced search endpoint](#endpoint-advanced-search).
+
+The filters a collection supports depend on the resources it holds. A [curated collection](collections.md) of entities with geographical data may support a geolocation filter. A [facet collection](facets.md) does not, because its items are facet items rather than entities with a location.
+
+This specification describes the following filter types:
+
+1. **Keyword filter**: filtering on text, with wildcards and phrases (e.g. `Rem`, `Rem*`, `'Rembrandt van Rijn'`).
+1. **Date filter**: filtering by comparing dates (e.g. 'Date of creation is between 1900 and 1950').
+1. **Numeric filter**: filtering by comparing numbers (e.g. 'Number of pages is at least 300').
+1. **Geolocation filter**: filtering on coordinates and a radius (e.g. 'Location of creation is within 25 km of a geopoint').
+1. **Facet filter**: filtering by the values of one of the collection's facets (e.g. 'Creator is "Rembrandt" or "Vincent van Gogh" and Type is "Painting"').
+
+The list is not fixed. An integration layer _MAY_ add filter types of its own for specific use cases. It advertises every filter type it supports for a collection as a capability; see [Capability discovery](resources.md#capability-discovery).
+
+A presentation layer _MUST_ only send filters that the collection supports. If it sends another filter, the integration layer _MUST_ respond with a `400` status code. Ignoring an unsupported filter would silently give the presentation layer more items than it asked for.
+
+### Example
+
+An example request from a presentation layer:
+
+```http
+POST /v1/collections/masterpieces/search
+Host: example.org
+Content-Type: application/json
+
+{
+  "q": "rembrandt",
+  "orderBy": "relevance:asc"
+}
+```
+
+This tells the integration layer that the presentation layer is searching for resources in the 'Masterpieces' collection that match the keyword 'rembrandt' and that matching resources must be ordered by relevance.
+
+An example of the response of the integration layer:
+
+```json
+{
+  "@context": "https://example.org/v1/context.json",
+  "id": "https://example.org/v1/collections/masterpieces?search=abc&page=1",
+  "type": "Page",
+  "name": "Masterpieces: page 1",
+  "items": [
+    {
+      "id": "https://example.org/v1/entities/1234",
+      "type": "HeritageObject",
+      "name": "The Night Watch"
+    }
+  ],
+  "next": {
+    "id": "https://example.org/v1/collections/masterpieces?search=abc&page=2",
+    "type": "Page"
+  },
+  "partOf": {
+    "id": "https://example.org/v1/collections/masterpieces?search=abc",
+    "type": "CuratedCollection",
+    "name": "Masterpieces",
+    "totalItems": 42,
+    "first": {
+      "id": "https://example.org/v1/collections/masterpieces?search=abc&page=1",
+      "type": "Page"
+    },
+    "last": {
+      "id": "https://example.org/v1/collections/masterpieces?search=abc&page=3",
+      "type": "Page"
+    }
+  }
+}
+```
+
+The response indicates that the advanced search has 42 results, that this is the first page, and that the next page is page 2. The `search` parameter in the URIs of properties `id`, `next.id`, `partOf.id`, `partOf.first.id` and `partOf.last.id` is an identifier for a search object.
+
+### The `search` parameter
+
+The `search` parameter is an opaque identifier for a search object. A presentation layer _MUST NOT_ try to interpret it, build it or change it. It _MUST_ pass the value back unchanged in every subsequent request.
+
+The integration layer connects the `search` parameter to the search object. It can do that in two ways:
+
+- **Stateless**: the integration layer encodes the search object in the parameter itself. It _MAY_ compress, sign or encrypt the value. It _MAY_ also use a plain encoding, such as Base64URL, as long as it validates the decoded search object before using it.
+- **Stateful**: the integration layer stores the search object on its server and gives the parameter a value that refers to it. It manages the lifecycle of the stored object itself, for example its expiry date.
+
+Both implementations look the same to a presentation layer. The specification does not prescribe which one an integration layer uses.
+
+The `search` parameter is bound to the collection and to the search object. A presentation layer _MUST NOT_ use it with another collection or with another advanced search. If it does, the integration layer _MUST_ respond with a `400` status code.
+
+The integration layer _MUST_ return the `search` parameter in every URI that navigates the search results: the `id` of the page, `prev.id`, `next.id`, `partOf.id`, `partOf.first.id` and `partOf.last.id`. It _MUST_ also return it in the `first.id` and `last.id` of the filtered collection.
+
+The `search` parameter and the simple search parameters (`q`, `orderBy`, `size`) are mutually exclusive. A presentation layer _MUST NOT_ combine them in one request. If it does, the integration layer _MUST_ respond with a `400` status code.
+
+:::note To be discussed
+
+A filtered collection is a view with its own `id`, `totalItems` and pages. Is it part of the collection tree, or a separate, temporary resource? And how long must its `search` parameter remain valid? A URI that contains a `search` parameter is only dereferenceable while the integration layer knows the search object. Should the specification define a minimum lifetime, and what should the integration layer return after that (e.g. `410 Gone`)?
+
+:::
+
+## Simple search and advanced search compared
+
+| Aspect       | Simple search                        | Advanced search                           |
+| ------------ | ------------------------------------ | ----------------------------------------- |
+| How          | `GET` with `q`, `orderBy` and `size` | `POST` with a search object               |
+| Capability   | `simple-search`                      | `advanced-search`                         |
+| Filters      | No                                   | Yes                                       |
+| Pagination   | `GET` with the same query parameters | `GET` with the `search` parameter         |
+| Cacheable    | Yes                                  | Depends on the implementation of `search` |
+| Bookmarkable | Yes                                  | Depends on the implementation of `search` |
+
+A collection _MAY_ support a simple search, an advanced search, or both. A collection that supports both _MUST_ return the same results for the same `q`, `orderBy` and `size`. A presentation layer _SHOULD_ use a simple search when it only needs a keyword query and a sort order, and an advanced search when it needs filters or facets.
