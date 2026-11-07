@@ -88,7 +88,7 @@ Explain data modelling requirements, e.g.:
 - An entity must have a publisher (e.g. `publisher`)
 - An entity must refer to the entity IRI of the data provider (e.g. `isBasedOn`)
 - An entity must have a licence (e.g. `license`)
-- An entity must have an ID that a presentation layer can use, e.g. for bookmarking by users (e.g. `identifier`)
+- An entity must have an ID that a presentation layer can use, e.g. for building SEO-friendly URLs or for bookmarking by users (e.g. `identifier`)
 - An entity must expose the [collections](collections.md) it is a member of. A presentation layer can then offer a 'more like this' or 'more from this collection' functionality.
 
 :::

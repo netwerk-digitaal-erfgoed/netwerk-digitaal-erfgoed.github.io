@@ -234,7 +234,7 @@ The endpoint retrieves the suggestion items of a suggestion collection that matc
 | --------- | --------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `q`       | string    | 1           | A keyword query for filtering the suggestion items. The integration layer defines the minimum and maximum length and how the query is matched, e.g. by using prefix or infix search.                                                        |
 | `size`    | number    | 0 or 1      | The maximum number of suggestion items to retrieve. The minimum is 1. The integration layer defines the maximum.                                                                                                                            |
-| `orderBy` | string    | 0 or 1      | The sorting order of the suggestion items. It _MUST_ be one of `relevance`, `value`. Default: `relevance:desc` (most relevant suggestion first). The integration layer defines which property of the value it sorts by, such as the `name`. |
+| `orderBy` | string    | 0 or 1      | The sorting order of the suggestion items: a comma-separated list of sort criteria, in priority order. Each criterion is `property` or `property:order`, where `property` is `relevance` or `value` and `order` is `asc` or `desc`. Default: `relevance:desc` (most relevant suggestion first). The integration layer defines which property of the value it sorts by, such as the `name`. |
 
 ### Request body
 

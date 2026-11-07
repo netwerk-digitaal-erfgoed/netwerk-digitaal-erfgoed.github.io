@@ -32,12 +32,12 @@ A simple search is not a separate endpoint. This section shows how the search pa
 
 ### Query parameters
 
-| Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                    |
-| --------- | --------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `q`       | string    | 0 or 1      | A keyword query for filtering the items. The integration layer defines the minimum and maximum length and how the query is matched.                                                                                                            |
-| `orderBy` | string    | 0 or 1      | The sorting order of the items. One of `relevance`, `value`, optionally followed by `:asc` or `:desc`. The default is `relevance:desc`. The integration layer defines which property `value` sorts on, for example on the `name` of an entity. |
-| `size`    | number    | 0 or 1      | The maximum number of items to retrieve. The minimum is 1. The integration layer defines the maximum.                                                                                                                                          |
-| `page`    | string    | 0 or 1      | The page to retrieve: a page number or a cursor, depending on the [pagination strategy](resources.md#page-navigation-and-cursor-navigation). Required when retrieving a page.                                                                  |
+| Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| --------- | --------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `q`       | string    | 0 or 1      | A keyword query for filtering the items. The integration layer defines the minimum and maximum length and how the query is matched.                                                                                                                                                                                                                                                                                                                                                            |
+| `orderBy` | string    | 0 or 1      | The sorting order of the items: a comma-separated list of sort criteria, in priority order. Each criterion is `property` or `property:order`, where `property` is `relevance` or `value` and `order` is `asc` or `desc`. Example: `relevance:desc,value:asc`. The integration layer defines the default order and which property `value` sorts on (e.g. the `name` of an entity). `relevance` requires a keyword query (`q`), because relevance expresses how well an item matches that query. |
+| `size`    | number    | 0 or 1      | The maximum number of items to retrieve. The minimum is 1. The integration layer defines the maximum.                                                                                                                                                                                                                                                                                                                                                                                          |
+| `page`    | string    | 0 or 1      | The page to retrieve: a page number or a cursor, depending on the [pagination strategy](resources.md#page-navigation-and-cursor-navigation). Required when retrieving a page.                                                                                                                                                                                                                                                                                                                  |
 
 ### Request body
 
@@ -52,18 +52,18 @@ The response is a `Page` if the collection is divided into pages; otherwise it i
 An example request from a presentation layer:
 
 ```http
-GET /v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc
+GET /v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc
 Host: example.org
 ```
 
-This tells the integration layer that the presentation layer is searching for resources in the 'Masterpieces' collection that match the keyword 'rembrandt' and that matching resources must be ordered by relevance.
+This tells the integration layer that the presentation layer is searching for resources in the 'Masterpieces' collection that match the keyword 'rembrandt' and that matching resources must be ordered by relevance, descending, and then by value, ascending.
 
 An example of the response of the integration layer:
 
 ```json
 {
   "@context": "https://example.org/v1/context.json",
-  "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc&page=1",
+  "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc&page=1",
   "type": "Page",
   "name": "Masterpieces: page 1",
   "items": [
@@ -75,20 +75,20 @@ An example of the response of the integration layer:
     // Other items...
   ],
   "next": {
-    "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc&page=2",
+    "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc&page=2",
     "type": "Page"
   },
   "partOf": {
-    "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc",
+    "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc",
     "type": "CuratedCollection",
     "name": "Masterpieces",
     "totalItems": 42,
     "first": {
-      "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc&page=1",
+      "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc&page=1",
       "type": "Page"
     },
     "last": {
-      "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc&page=3",
+      "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc&page=3",
       "type": "Page"
     }
   }
@@ -132,13 +132,16 @@ The response is a `Page` if the collection is divided into pages; otherwise it i
 
 A search object is a JSON object. It contains the conditions of an advanced search:
 
-| Name      | Data type | Cardinality | Description                                                                                                                                   |
-| --------- | --------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `q`       | string    | 0 or 1      | A keyword query. It has the same meaning as the `q` query parameter of a [simple search](#endpoint-simple-search).                            |
-| `orderBy` | string    | 0 or 1      | The sorting order of the items. It has the same meaning as the `orderBy` query parameter of a [simple search](#endpoint-simple-search).       |
-| `size`    | number    | 0 or 1      | The maximum number of items to retrieve. It has the same meaning as the `size` query parameter of a [simple search](#endpoint-simple-search). |
-| `filter`  | object    | 0 or 1      | The filter conditions. See [Filters](#filters).                                                                                               |
-| `facets`  | array     | 0 or 1      | The facet collections whose results the integration layer must return. See [Facets](facets.md).                                               |
+| Name                  | Data type | Cardinality | Description                                                                                                                                                                                                                               |
+| --------------------- | --------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `q`                   | string    | 0 or 1      | A keyword query. It has the same meaning as the `q` query parameter of a [simple search](#endpoint-simple-search).                                                                                                                        |
+| `orderBy`             | array     | 0 or 1      | An ordered list of sort criteria. The criteria apply in array order. If absent, the integration layer defines the order.                                                                                                                  |
+| `orderBy[*]`          | object    | 1           | A sort criterion.                                                                                                                                                                                                                         |
+| `orderBy[*].property` | string    | 1           | The property to sort on. It _MUST_ be `relevance` or `value`. The integration layer defines which property `value` sorts on. `relevance` requires a keyword query (`q`), because relevance expresses how well an item matches that query. |
+| `orderBy[*].order`    | string    | 1           | The direction of the sort. It _MUST_ be `asc` or `desc`.                                                                                                                                                                                  |
+| `size`                | number    | 0 or 1      | The maximum number of items to retrieve. It has the same meaning as the `size` query parameter of a [simple search](#endpoint-simple-search).                                                                                             |
+| `filter`              | object    | 0 or 1      | The filter conditions. See [Filters](#filters).                                                                                                                                                                                           |
+| `facets`              | array     | 0 or 1      | The facet collections whose results the integration layer must return. See [Facets](facets.md).                                                                                                                                           |
 
 All properties are optional. An empty object returns the items of the collection in their default order.
 
@@ -147,17 +150,26 @@ An example of a search object:
 ```json
 {
   "q": "rembrandt",
-  "orderBy": "relevance:desc",
+  "orderBy": [
+    {
+      "property": "relevance",
+      "order": "desc"
+    },
+    {
+      "property": "value",
+      "order": "asc"
+    }
+  ],
   "size": 20,
   "filter": {
     "and": [
       {
-        "field": "dateCreated",
+        "property": "dateCreated",
         "operator": "between",
         "value": ["1900", "1950"]
       },
       {
-        "field": "creator",
+        "property": "creator",
         "operator": "in",
         "value": [
           "https://example.org/v1/entities/7890",
@@ -169,7 +181,7 @@ An example of a search object:
 }
 ```
 
-The example searches the collection for items that match the keyword query `rembrandt`, were created between 1900 and 1950, and have one of two creators. It returns 20 items per page, sorted by relevance.
+The example searches the collection for items that match the keyword query `rembrandt`, were created between 1900 and 1950, and have one of two creators. It returns 20 items per page, sorted by relevance, descending, and then by value, ascending.
 
 Another example:
 
@@ -180,12 +192,12 @@ Another example:
       {
         "and": [
           {
-            "field": "dateCreated",
+            "property": "dateCreated",
             "operator": "between",
             "value": ["1900", "1950"]
           },
           {
-            "field": "creator",
+            "property": "creator",
             "operator": "in",
             "value": [
               "https://example.org/v1/entities/7890",
@@ -195,7 +207,7 @@ Another example:
         ]
       },
       {
-        "field": "locationCreated",
+        "property": "locationCreated",
         "operator": "eq",
         "value": "https://example.org/v1/entities/3456"
       }
@@ -246,8 +258,8 @@ An identifier is opaque. A presentation layer _MUST NOT_ try to interpret it, bu
 
 The integration layer connects the identifier to the search object. It can do that in two ways:
 
-- **Stateless**: the integration layer encodes the search object in the identifier itself. It _MAY_ compress, sign or encrypt the value. It _MAY_ also use a plain encoding, such as Base64URL, as long as it validates the decoded search object before using it.
-- **Stateful**: the integration layer stores the search object on its server and gives the identifier a value that refers to it. It manages the lifecycle of the stored object itself, for example its expiry date.
+- **Stateless**: the integration layer encodes the search object in the identifier itself. It _MAY_ compress, sign or encrypt the value. It _MAY_ also use a plain encoding, such as Base64URL, as long as it validates the decoded search object before using it. For example, the identifier may be the JSON search object compressed and then encoded with Base64URL.
+- **Stateful**: the integration layer stores the search object on its server and gives the identifier a value that refers to it. It manages the lifecycle of the stored object itself, such as its expiry date. For example, the identifier may be a random UUID that the integration layer uses as the key of the stored search object in a database.
 
 Both implementations look the same to a presentation layer. The specification does not prescribe which one an integration layer uses.
 
@@ -274,11 +286,16 @@ Content-Type: application/json
 
 {
   "q": "rembrandt",
-  "orderBy": "relevance:asc"
+  "orderBy": [
+    {
+      "property": "relevance",
+      "order": "asc"
+    }
+  ]
 }
 ```
 
-This tells the integration layer that the presentation layer is searching for resources in the 'Masterpieces' collection that match the keyword 'rembrandt' and that matching resources must be ordered by relevance.
+This tells the integration layer that the presentation layer is searching for resources in the 'Masterpieces' collection that match the keyword 'rembrandt' and that matching resources must be ordered by relevance, ascending.
 
 An example of the response of the integration layer:
 
@@ -370,5 +387,5 @@ sequenceDiagram
 | Capability       | `https://specs.nde.nl/rest/v1/simple-search`          | `https://specs.nde.nl/rest/v1/advanced-search`         |
 | Supports filters | No                                                    | Yes                                                    |
 | Pagination       | `GET` with the same query parameters                  | `GET` with the `search` parameter                      |
-| Cacheable        | Yes                                                   | Depends on the implementation of `search`              |
-| Bookmarkable     | Yes                                                   | Depends on the implementation of `search`              |
+| Cacheable        | Yes                                                   | Depends: a stateless identifier is reusable; a stateful one may expire, so responses cannot be cached indefinitely. |
+| Bookmarkable     | Yes                                                   | Depends: a stateless identifier keeps working; a stateful one may expire, so a bookmark can stop working. |
