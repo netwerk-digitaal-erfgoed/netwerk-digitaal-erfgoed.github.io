@@ -107,7 +107,7 @@ A collection that supports an advanced search advertises the `https://specs.nde.
 
 `POST /{version}/{...collections}/search`
 
-An advanced search uses the `POST` method because a query string is not a good fit for complex filter conditions: it has a limited length, and conditions with 'and' and 'or' are hard to read and to parse.
+An advanced search uses the `POST` method because the `GET` method with a query string is not a good fit for complex filter conditions: it has a limited length, and conditions with 'and' and 'or' are hard to read and to parse.
 
 ### Path parameters
 
@@ -126,7 +126,7 @@ The request body _MUST_ contain a JSON-formatted [search object](#search-object)
 
 ### Response body
 
-The response is a `Page` if the collection is divided into pages; otherwise it is a `Collection` with its items inline. The response URIs contain the [`search` parameter](#search-parameter).
+The response is a `Page` if the collection is divided into pages; otherwise it is a `Collection` with its items inline. The response URIs contain the [search identifier](#search-identifier).
 
 ### Search object
 
@@ -234,30 +234,32 @@ This specification describes the following filter types:
 1. **Geolocation filter**: filtering on coordinates and a radius (e.g. 'Location of creation is within 25 km of a geopoint').
 1. **Facet filter**: filtering by the values of one of the collection's facets (e.g. 'Creator is "Rembrandt" or "Vincent van Gogh" and Type is "Painting"').
 
-The list is not fixed. An integration layer _MAY_ add filter types of its own for specific use cases. It advertises every filter type it supports for a collection as a capability; see [Capability discovery](resources.md#capability-discovery).
-
 A presentation layer _MUST_ only send filters that the collection supports. If it sends another filter, the integration layer _MUST_ respond with a `400` status code. Ignoring an unsupported filter would silently give the presentation layer more items than it asked for.
 
-### `search` parameter
+### Search identifier
 
-The `search` parameter is an opaque identifier for a search object. A presentation layer _MUST NOT_ try to interpret it, build it or change it. It _MUST_ pass the value back unchanged in every subsequent request.
+An advanced search needs an identifier, because a presentation layer cannot repeat the search conditions in later requests. It sends the conditions in the body of the `POST` request that starts the search, but it retrieves pages and facets with `GET` requests, which have no request body. The identifier lets the presentation layer refer to the same search in those requests.
 
-The integration layer connects the `search` parameter to the search object. It can do that in two ways:
+The integration layer returns the identifier in the response URIs of the advanced search. In those URIs, it appears as the `search` query string parameter: that parameter is the protocol implementation of the identifier.
 
-- **Stateless**: the integration layer encodes the search object in the parameter itself. It _MAY_ compress, sign or encrypt the value. It _MAY_ also use a plain encoding, such as Base64URL, as long as it validates the decoded search object before using it.
-- **Stateful**: the integration layer stores the search object on its server and gives the parameter a value that refers to it. It manages the lifecycle of the stored object itself, for example its expiry date.
+An identifier is opaque. A presentation layer _MUST NOT_ try to interpret it, build it or change it. It _MUST_ pass the value back unchanged in every subsequent request.
+
+The integration layer connects the identifier to the search object. It can do that in two ways:
+
+- **Stateless**: the integration layer encodes the search object in the identifier itself. It _MAY_ compress, sign or encrypt the value. It _MAY_ also use a plain encoding, such as Base64URL, as long as it validates the decoded search object before using it.
+- **Stateful**: the integration layer stores the search object on its server and gives the identifier a value that refers to it. It manages the lifecycle of the stored object itself, for example its expiry date.
 
 Both implementations look the same to a presentation layer. The specification does not prescribe which one an integration layer uses.
 
-The `search` parameter is bound to the collection and to the search object. A presentation layer _MUST NOT_ use it with another collection or with another advanced search. If it does, the integration layer _MUST_ respond with a `400` status code.
+An identifier is bound to the collection and to the search object. A presentation layer _MUST NOT_ use it with another collection or with another advanced search. If it does, the integration layer _MUST_ respond with a `400` status code.
 
-The integration layer _MUST_ return the `search` parameter in every URI that navigates the search results: the `id` of the page, `prev.id`, `next.id`, `partOf.id`, `partOf.first.id` and `partOf.last.id`. It _MUST_ also return it in the `first.id` and `last.id` of the filtered collection.
+The identifier _MUST_ appear in every URI that navigates the search results: the `id` of the page, `prev.id`, `next.id`, `partOf.id`, `partOf.first.id` and `partOf.last.id`. It _MUST_ also appear in the `first.id` and `last.id` of the filtered collection.
 
 The `search` parameter and the simple search parameters (`q`, `orderBy`, `size`) are mutually exclusive. A presentation layer _MUST NOT_ combine them in one request. If it does, the integration layer _MUST_ respond with a `400` status code.
 
 :::note To be discussed
 
-A filtered collection is a view with its own `id`, `totalItems` and pages. Is it part of the collection tree, or a separate, temporary resource? And how long must its `search` parameter remain valid? A URI that contains a `search` parameter is only dereferenceable while the integration layer knows the search object. Should the specification define a minimum lifetime, and what should the integration layer return after that (e.g. `410 Gone`)?
+A filtered collection is a view with its own `id`, `totalItems` and pages. Is it part of the collection tree, or a separate, temporary resource? And how long must the identifier remain valid? A URI that contains an identifier is only dereferenceable while the integration layer knows the search object. Should the specification define a minimum lifetime, and what should the integration layer return after that (e.g. `410 Gone`)?
 
 :::
 
@@ -317,6 +319,49 @@ An example of the response of the integration layer:
 
 The response indicates that the advanced search has 42 results, that this is the first page, and that the next page is page 2. The `search` parameter in the URIs of properties `id`, `next.id`, `partOf.id`, `partOf.first.id` and `partOf.last.id` is an identifier for a search object.
 
+### Anatomy of an advanced search
+
+An advanced search takes several requests. A presentation layer starts the search with one request and then uses the search identifier that the response contains to retrieve further results.
+
+The steps below use a collection that is divided into pages as an example. If the integration layer returns the full collection instead, some steps differ: there are no page URIs to follow, but the identifier still appears in the URIs of the collection.
+
+1. **Check that the collection supports an advanced search.** The collection advertises the `https://specs.nde.nl/rest/v1/advanced-search` capability.
+2. **Submit the search.** A presentation layer sends a `POST` request with a [search object](#search-object) to the search endpoint of the collection. The integration layer runs the search and returns the first results as a `Page`, or as a `Collection` if it does not divide the collection into pages. It gives the search an identifier and includes it as the `search` parameter in every URI that refers to the search.
+3. **Retrieve further results.** If the collection is divided into pages, a presentation layer follows a page URI from the response, such as `next.id`, or adds the `page` query parameter to the `partOf.id` URI. It passes the `search` parameter unchanged. It does not send the search object again: the identifier already refers to it.
+4. **Retrieve facets (optional).** A presentation layer requests a [facet collection](facets.md) with the `search` parameter. The facet items and their counts then cover only the items that match the search.
+5. **Start another search.** A new search is a new `POST` request with a new search object. It gets its own identifier. An identifier is bound to its collection and its search object; it cannot be used for another collection or another search.
+
+The integration layer may keep the search object on its server or encode it in the identifier. The presentation layer does not need to know which; it only passes the identifier back.
+
+The following sequence diagram shows the requests for this paginated example:
+
+```mermaid
+sequenceDiagram
+    participant PL as Presentation layer
+    participant IL as Integration layer
+
+    Note over PL,IL: 1. Check the capability
+    PL->>IL: GET /v1/collections/objects
+    IL-->>PL: Collection with `advanced-search` capability
+
+    Note over PL,IL: 2. Submit the search
+    PL->>IL: POST /v1/collections/objects/search<br/>Search object
+    Note over IL: Run the search and give it an identifier
+    IL-->>PL: Page with `search=abc` in its URIs
+
+    Note over PL,IL: 3. Retrieve further results
+    PL->>IL: GET /v1/collections/objects?search=abc&page=2
+    IL-->>PL: Page 2 with `search=abc` in its URIs
+
+    Note over PL,IL: 4. Retrieve facets
+    PL->>IL: GET /v1/collections/objects/facets/creators?search=abc
+    IL-->>PL: Facet collection for the search results
+
+    Note over PL,IL: 5. Start another search
+    PL->>IL: POST /v1/collections/objects/search<br/>A new search object
+    IL-->>PL: Page with `search=def` in its URIs
+```
+
 ## Simple search and advanced search compared
 
 | Aspect           | Simple search                                         | Advanced search                                        |
@@ -327,5 +372,3 @@ The response indicates that the advanced search has 42 results, that this is the
 | Pagination       | `GET` with the same query parameters                  | `GET` with the `search` parameter                      |
 | Cacheable        | Yes                                                   | Depends on the implementation of `search`              |
 | Bookmarkable     | Yes                                                   | Depends on the implementation of `search`              |
-
-A collection _MAY_ support a simple search, an advanced search, or both. A collection that supports both _MUST_ return the same results for the same `q`, `orderBy` and `size`. A presentation layer _SHOULD_ use a simple search when it only needs a keyword query and a sort order, and an advanced search when it needs filters or facets.
