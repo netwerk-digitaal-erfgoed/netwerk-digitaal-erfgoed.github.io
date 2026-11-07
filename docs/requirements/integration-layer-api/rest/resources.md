@@ -132,7 +132,7 @@ A Collection contains at least the following properties:
 | `suggestions.name`    | string     | 1           | The name of the collection.                                                                                                                                                                                                                                        |
 | `capabilities`        | array      | 0 or 1      | The URIs of the capabilities the integration layer implements for this collection. _MUST_ be omitted if the collection supports no capabilities. See [Capability discovery](#capability-discovery).                                                                |
 
-### The collection tree
+### Collection tree
 
 Collections form a tree: the `items` of a collection can contain further collections. There is no separate type for a 'collection of collections': a collection that groups other collections is a collection like any other. This keeps the structure a presentation layer has to learn down to one collection type.
 

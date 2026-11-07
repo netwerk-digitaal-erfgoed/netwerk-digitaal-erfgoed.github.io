@@ -11,7 +11,7 @@ A suggestion is a value displayed as a user types, such as a keyword, a name, or
 
 Suggestions are tied to a particular collection — the context collection — ensuring that results remain within the context of that collection. An integration layer _MAY_ offer suggestions for any collection, except for a suggestion collection itself.
 
-Suggestions are optional. An integration layer _MAY_ implement them, depending on its requirements. An integration layer advertises the suggestion collections it supports for a collection in the generic [`suggestions` property](resources.md#collection) of that collection. The property points to the list of suggestion collections, which a presentation layer retrieves with endpoint [Retrieve the suggestion collections of a collection](#endpoint-retrieve-the-suggestion-collections-of-a-collection).
+Suggestions are optional. An integration layer _MAY_ implement them, depending on its requirements. An integration layer advertises the suggestion collections it supports for a collection in the [`suggestions` property](resources.md#collection) of that collection. The property points to the list of suggestion collections, which a presentation layer retrieves with endpoint [Retrieve the suggestion collections of a collection](#endpoint-retrieve-the-suggestion-collections-of-a-collection).
 
 ## Data model
 

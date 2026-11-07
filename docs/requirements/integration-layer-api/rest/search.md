@@ -9,7 +9,9 @@ sidebar_position: 7
 
 Search is crucial to help the users of presentation layers find information. A search is tied to a particular collection — the context collection — ensuring that results remain within the context of that collection. A presentation layer can search the items of that collection in two ways: with a **simple search** or with an **advanced search**.
 
-## Endpoint: simple search
+Both forms of search are optional. An integration layer _MAY_ implement simple search, advanced search, or both, depending on its requirements.
+
+## Endpoint: Simple search
 
 A simple search lets a user find items in a collection with a keyword query and a sort order. It is meant for quick, straightforward filtering.
 
@@ -70,6 +72,7 @@ An example of the response of the integration layer:
       "type": "HeritageObject",
       "name": "The Night Watch"
     }
+    // Other items...
   ],
   "next": {
     "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc&page=2",
@@ -94,7 +97,7 @@ An example of the response of the integration layer:
 
 The response indicates that the simple search has 42 results, that this is the first page, and that the next page is page 2.
 
-## Endpoint: advanced search
+## Endpoint: Advanced search
 
 An advanced search lets a user narrow down the items of a collection with complex conditions, such as filters with 'and' and 'or', date ranges, geolocation and facet values. It can combine these conditions with a keyword query, a sort order and a page size.
 
@@ -119,23 +122,23 @@ None.
 
 ### Request body
 
-The request body _MUST_ contain a JSON-formatted [search object](#the-search-object).
+The request body _MUST_ contain a JSON-formatted [search object](#search-object).
 
 ### Response body
 
-The response is a `Page` if the collection is divided into pages; otherwise it is a `Collection` with its items inline. The response URIs contain the [`search` parameter](#the-search-parameter).
+The response is a `Page` if the collection is divided into pages; otherwise it is a `Collection` with its items inline. The response URIs contain the [`search` parameter](#search-parameter).
 
-### The search object
+### Search object
 
 A search object is a JSON object. It contains the conditions of an advanced search:
 
-| Name      | Data type | Cardinality | Description                                                                                                                                                                                                       |
-| --------- | --------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `q`       | string    | 0 or 1      | A keyword query. It has the same meaning as the `q` query parameter of a simple search; see [Endpoint: simple search](#endpoint-simple-search).                                                                   |
-| `orderBy` | string    | 0 or 1      | The sorting order of the items. It has the same meaning as the `orderBy` query parameter of a simple search; see [Endpoint: simple search](#endpoint-simple-search). The collection _MUST_ support this property. |
-| `size`    | number    | 0 or 1      | The maximum number of items to retrieve. It has the same meaning as the `size` query parameter of a simple search; see [Endpoint: simple search](#endpoint-simple-search).                                        |
-| `filter`  | object    | 0 or 1      | The filter conditions. See [Filters](#filters).                                                                                                                                                                   |
-| `facets`  | array     | 0 or 1      | The facet collections whose results the integration layer must return. See [Facets](facets.md).                                                                                                                   |
+| Name      | Data type | Cardinality | Description                                                                                                                                   |
+| --------- | --------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `q`       | string    | 0 or 1      | A keyword query. It has the same meaning as the `q` query parameter of a [simple search](#endpoint-simple-search).                            |
+| `orderBy` | string    | 0 or 1      | The sorting order of the items. It has the same meaning as the `orderBy` query parameter of a [simple search](#endpoint-simple-search).       |
+| `size`    | number    | 0 or 1      | The maximum number of items to retrieve. It has the same meaning as the `size` query parameter of a [simple search](#endpoint-simple-search). |
+| `filter`  | object    | 0 or 1      | The filter conditions. See [Filters](#filters).                                                                                               |
+| `facets`  | array     | 0 or 1      | The facet collections whose results the integration layer must return. See [Facets](facets.md).                                               |
 
 All properties are optional. An empty object returns the items of the collection in their default order.
 
@@ -219,7 +222,7 @@ Think of a way to express the ID of a `facet` in a search object. A facet ID lik
 
 ### Filters
 
-A presentation layer can narrow down the items of a collection with filters. Filters are part of a [search object](#the-search-object). A presentation layer sends filters in the `filter` property of a search object to the [advanced search endpoint](#endpoint-advanced-search).
+A presentation layer can narrow down the items of a collection with filters. Filters are part of a [search object](#search-object). A presentation layer sends filters in the `filter` property of a search object to the advanced search endpoint.
 
 The filters a collection supports depend on the resources it holds. A [curated collection](collections.md) of entities with geographical data may support a geolocation filter. A [facet collection](facets.md) does not, because its items are facet items rather than entities with a location.
 
@@ -234,6 +237,29 @@ This specification describes the following filter types:
 The list is not fixed. An integration layer _MAY_ add filter types of its own for specific use cases. It advertises every filter type it supports for a collection as a capability; see [Capability discovery](resources.md#capability-discovery).
 
 A presentation layer _MUST_ only send filters that the collection supports. If it sends another filter, the integration layer _MUST_ respond with a `400` status code. Ignoring an unsupported filter would silently give the presentation layer more items than it asked for.
+
+### `search` parameter
+
+The `search` parameter is an opaque identifier for a search object. A presentation layer _MUST NOT_ try to interpret it, build it or change it. It _MUST_ pass the value back unchanged in every subsequent request.
+
+The integration layer connects the `search` parameter to the search object. It can do that in two ways:
+
+- **Stateless**: the integration layer encodes the search object in the parameter itself. It _MAY_ compress, sign or encrypt the value. It _MAY_ also use a plain encoding, such as Base64URL, as long as it validates the decoded search object before using it.
+- **Stateful**: the integration layer stores the search object on its server and gives the parameter a value that refers to it. It manages the lifecycle of the stored object itself, for example its expiry date.
+
+Both implementations look the same to a presentation layer. The specification does not prescribe which one an integration layer uses.
+
+The `search` parameter is bound to the collection and to the search object. A presentation layer _MUST NOT_ use it with another collection or with another advanced search. If it does, the integration layer _MUST_ respond with a `400` status code.
+
+The integration layer _MUST_ return the `search` parameter in every URI that navigates the search results: the `id` of the page, `prev.id`, `next.id`, `partOf.id`, `partOf.first.id` and `partOf.last.id`. It _MUST_ also return it in the `first.id` and `last.id` of the filtered collection.
+
+The `search` parameter and the simple search parameters (`q`, `orderBy`, `size`) are mutually exclusive. A presentation layer _MUST NOT_ combine them in one request. If it does, the integration layer _MUST_ respond with a `400` status code.
+
+:::note To be discussed
+
+A filtered collection is a view with its own `id`, `totalItems` and pages. Is it part of the collection tree, or a separate, temporary resource? And how long must its `search` parameter remain valid? A URI that contains a `search` parameter is only dereferenceable while the integration layer knows the search object. Should the specification define a minimum lifetime, and what should the integration layer return after that (e.g. `410 Gone`)?
+
+:::
 
 ### Example
 
@@ -266,6 +292,7 @@ An example of the response of the integration layer:
       "type": "HeritageObject",
       "name": "The Night Watch"
     }
+    // Other items...
   ],
   "next": {
     "id": "https://example.org/v1/collections/masterpieces?search=abc&page=2",
@@ -290,38 +317,15 @@ An example of the response of the integration layer:
 
 The response indicates that the advanced search has 42 results, that this is the first page, and that the next page is page 2. The `search` parameter in the URIs of properties `id`, `next.id`, `partOf.id`, `partOf.first.id` and `partOf.last.id` is an identifier for a search object.
 
-### The `search` parameter
-
-The `search` parameter is an opaque identifier for a search object. A presentation layer _MUST NOT_ try to interpret it, build it or change it. It _MUST_ pass the value back unchanged in every subsequent request.
-
-The integration layer connects the `search` parameter to the search object. It can do that in two ways:
-
-- **Stateless**: the integration layer encodes the search object in the parameter itself. It _MAY_ compress, sign or encrypt the value. It _MAY_ also use a plain encoding, such as Base64URL, as long as it validates the decoded search object before using it.
-- **Stateful**: the integration layer stores the search object on its server and gives the parameter a value that refers to it. It manages the lifecycle of the stored object itself, for example its expiry date.
-
-Both implementations look the same to a presentation layer. The specification does not prescribe which one an integration layer uses.
-
-The `search` parameter is bound to the collection and to the search object. A presentation layer _MUST NOT_ use it with another collection or with another advanced search. If it does, the integration layer _MUST_ respond with a `400` status code.
-
-The integration layer _MUST_ return the `search` parameter in every URI that navigates the search results: the `id` of the page, `prev.id`, `next.id`, `partOf.id`, `partOf.first.id` and `partOf.last.id`. It _MUST_ also return it in the `first.id` and `last.id` of the filtered collection.
-
-The `search` parameter and the simple search parameters (`q`, `orderBy`, `size`) are mutually exclusive. A presentation layer _MUST NOT_ combine them in one request. If it does, the integration layer _MUST_ respond with a `400` status code.
-
-:::note To be discussed
-
-A filtered collection is a view with its own `id`, `totalItems` and pages. Is it part of the collection tree, or a separate, temporary resource? And how long must its `search` parameter remain valid? A URI that contains a `search` parameter is only dereferenceable while the integration layer knows the search object. Should the specification define a minimum lifetime, and what should the integration layer return after that (e.g. `410 Gone`)?
-
-:::
-
 ## Simple search and advanced search compared
 
-| Aspect       | Simple search                        | Advanced search                           |
-| ------------ | ------------------------------------ | ----------------------------------------- |
-| How          | `GET` with `q`, `orderBy` and `size` | `POST` with a search object               |
-| Capability   | `simple-search`                      | `advanced-search`                         |
-| Filters      | No                                   | Yes                                       |
-| Pagination   | `GET` with the same query parameters | `GET` with the `search` parameter         |
-| Cacheable    | Yes                                  | Depends on the implementation of `search` |
-| Bookmarkable | Yes                                  | Depends on the implementation of `search` |
+| Aspect           | Simple search                                         | Advanced search                                        |
+| ---------------- | ----------------------------------------------------- | ------------------------------------------------------ |
+| How              | `GET` with `q`, `orderBy` and `size` query parameters | `POST` with a [search object](search.md#search-object) |
+| Capability       | `https://specs.nde.nl/rest/v1/simple-search`          | `https://specs.nde.nl/rest/v1/advanced-search`         |
+| Supports filters | No                                                    | Yes                                                    |
+| Pagination       | `GET` with the same query parameters                  | `GET` with the `search` parameter                      |
+| Cacheable        | Yes                                                   | Depends on the implementation of `search`              |
+| Bookmarkable     | Yes                                                   | Depends on the implementation of `search`              |
 
 A collection _MAY_ support a simple search, an advanced search, or both. A collection that supports both _MUST_ return the same results for the same `q`, `orderBy` and `size`. A presentation layer _SHOULD_ use a simple search when it only needs a keyword query and a sort order, and an advanced search when it needs filters or facets.
