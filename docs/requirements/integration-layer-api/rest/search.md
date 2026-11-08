@@ -7,132 +7,25 @@ sidebar_position: 7
 
 ## Introduction
 
-Search is crucial to help the users of presentation layers find information. A search is tied to a particular collection — the context collection — ensuring that results remain within the context of that collection. A presentation layer can search the items of that collection in two ways: with a **simple search** or with an **advanced search**.
+Search is crucial to help the users of presentation layers find information. A search is tied to a particular collection — the context collection — ensuring that results remain within the context of that collection. A presentation layer can search the items of that collection in two ways: with a **simple search** or with an **advanced search**. The presentation layer decides which form to use. A simple search is enough for a keyword query with a sort order. An advanced search is needed when the search includes filters, date ranges, geolocation or other complex conditions.
 
 Both forms of search are optional. An integration layer _MAY_ implement simple search, advanced search, or both, depending on its requirements.
 
-## Endpoint: Simple search
+## Simple search
 
 A simple search lets a user find items in a collection with a keyword query and a sort order. It is meant for quick, straightforward filtering.
 
 A collection that supports a simple search advertises the `https://specs.nde.nl/rest/v1/simple-search` capability.
 
-A simple search is not a separate endpoint. This section shows how the search parameters are used on the endpoint that retrieves a collection or a page. The example below uses a [curated collection](collections.md); the same parameters apply to the endpoints of other collection types.
+A simple search is not a separate endpoint. It uses the endpoint that retrieves a collection or a page: the `q`, `orderBy`, `size` and `page` query parameters are added to that endpoint. See [Endpoint: Simple search](#endpoint-simple-search) for the parameters and an example. The example uses a [curated collection](collections.md); the same parameters apply to the endpoints of other collection types.
 
-### HTTP request
-
-`GET /{version}/{...collections}?q={q}&orderBy={orderBy}&size={size}&page={page}`
-
-### Path parameters
-
-| Name             | Data type | Cardinality | Description                                                                       |
-| ---------------- | --------- | ----------- | --------------------------------------------------------------------------------- |
-| `version`        | string    | 1           | The version of the API. Example: `v1`.                                            |
-| `...collections` | string    | 1 or more   | The path identifier(s) of the context collection. Example: `collections/objects`. |
-
-### Query parameters
-
-| Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| --------- | --------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `q`       | string    | 0 or 1      | A keyword query for filtering the items. The integration layer defines the minimum and maximum length and how the query is matched.                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| `orderBy` | string    | 0 or 1      | The sorting order of the items: a comma-separated list of sort criteria, in priority order. Each criterion is `property` or `property:order`, where `property` is `relevance` or `value` and `order` is `asc` or `desc`. Example: `relevance:desc,value:asc`. The integration layer defines the default order and which property `value` sorts on (e.g. the `name` of an entity). `relevance` typically expresses how well an item matches the keyword query (`q`). An integration layer _MAY_ also apply its own relevance rules when `q` is missing. |
-| `size`    | number    | 0 or 1      | The maximum number of items to retrieve. The minimum is 1. The integration layer defines the maximum.                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| `page`    | string    | 0 or 1      | The page to retrieve: a page number or a cursor, depending on the [pagination strategy](resources.md#page-navigation-and-cursor-navigation). Required when retrieving a page.                                                                                                                                                                                                                                                                                                                                                                          |
-
-### Request body
-
-None.
-
-### Response body
-
-The response is a `Page` if the collection is divided into pages; otherwise it is a `Collection` with its items inline.
-
-### Example
-
-An example request from a presentation layer:
-
-```http
-GET /v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc
-Host: example.org
-```
-
-This tells the integration layer that the presentation layer is searching for resources in the 'Masterpieces' collection that match the keyword 'rembrandt' and that matching resources must be ordered by relevance, descending, and then by value, ascending.
-
-An example of the response of the integration layer:
-
-```json
-{
-  "@context": "https://example.org/v1/context.json",
-  "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc&page=1",
-  "type": "Page",
-  "name": "Masterpieces: page 1",
-  "items": [
-    {
-      "id": "https://example.org/v1/entities/1234",
-      "type": "HeritageObject",
-      "name": "The Night Watch"
-    }
-    // Other items...
-  ],
-  "next": {
-    "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc&page=2",
-    "type": "Page"
-  },
-  "partOf": {
-    "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc",
-    "type": "CuratedCollection",
-    "name": "Masterpieces",
-    "totalItems": 42,
-    "first": {
-      "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc&page=1",
-      "type": "Page"
-    },
-    "last": {
-      "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc&page=3",
-      "type": "Page"
-    }
-  }
-}
-```
-
-The response indicates that the simple search has 42 results, that this is the first page, and that the next page is page 2.
-
-## Endpoint: Advanced search
+## Advanced search
 
 An advanced search lets a user narrow down the items of a collection with complex conditions, such as filters with 'and' and 'or', date ranges, geolocation and facet values. It can combine these conditions with a keyword query, a sort order and a page size.
 
 A collection that supports an advanced search advertises the `https://specs.nde.nl/rest/v1/advanced-search` capability.
 
-### HTTP request
-
-`POST /{version}/{...collections}/search`
-
-An advanced search uses the `POST` method because the `GET` method with a query string is not a good fit for complex filter conditions: it has a limited length, and conditions with 'and' and 'or' are hard to read and to parse.
-
-:::note
-
-The `search` path segment is a verb rather than a noun. This is an explicit exception, allowed by the [REST API Design Rules](https://logius-standaarden.github.io/API-Design-Rules/#/core/resource-operations).
-
-:::
-
-### Path parameters
-
-| Name             | Data type | Cardinality | Description                                                                       |
-| ---------------- | --------- | ----------- | --------------------------------------------------------------------------------- |
-| `version`        | string    | 1           | The version of the API. Example: `v1`.                                            |
-| `...collections` | string    | 1 or more   | The path identifier(s) of the context collection. Example: `collections/objects`. |
-
-### Query parameters
-
-None.
-
-### Request body
-
-The request body _MUST_ contain a JSON-formatted [search object](#search-object).
-
-### Response body
-
-The response is a `Page` if the collection is divided into pages; otherwise it is a `Collection` with its items inline. The response URIs contain the [search identifier](#search-identifier).
+An advanced search uses the `POST` method. The `GET` method with a query string is not a good fit for complex filter conditions: it has a limited length, and conditions with 'and' and 'or' are hard to read and to parse.
 
 ### Search object
 
@@ -141,9 +34,9 @@ A search object is a JSON object. It contains the conditions of an advanced sear
 | Name                  | Data type | Cardinality | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | --------------------- | --------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `q`                   | string    | 0 or 1      | A keyword query. It has the same meaning as the `q` query parameter of a [simple search](#endpoint-simple-search).                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| `orderBy`             | array     | 0 or 1      | An ordered list of sort criteria. The criteria apply in array order. If absent, the integration layer defines the order. It has the same meaning as the `orderBy` query parameter of a [simple search](#endpoint-simple-search).                                                                                                                                                                                                                                                                                                         |
+| `orderBy`             | array     | 0 or 1      | An ordered list of sort criteria. The criteria apply in array order. If absent, the integration layer defines the order. See [Sorting](#sorting). It has the same meaning as the `orderBy` query parameter of a [simple search](#endpoint-simple-search).                                                                                                                                                                                                                                                                                |
 | `orderBy[*]`          | object    | 1           | A sort criterion.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| `orderBy[*].property` | string    | 1           | The property to sort on. It _MUST_ be `relevance` or `value`. The integration layer defines which property `value` sorts on. `relevance` typically expresses how well an item matches the keyword query (`q`). An integration layer _MAY_ also apply its own relevance rules when `q` is missing.                                                                                                                                                                                                                                        |
+| `orderBy[*].property` | string    | 1           | The property to sort on. It _MUST_ be one of the properties that the collection supports for sorting. Which properties a collection supports, and what they mean, is documented with that collection. See [Sorting](#sorting).                                                                                                                                                                                                                                                                                                           |
 | `orderBy[*].order`    | string    | 1           | The direction of the sort. It _MUST_ be `asc` or `desc`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | `size`                | number    | 0 or 1      | The maximum number of items to retrieve. It has the same meaning as the `size` query parameter of a [simple search](#endpoint-simple-search).                                                                                                                                                                                                                                                                                                                                                                                            |
 | `filter`              | object    | 0 or 1      | The filter conditions. See [Filters](#filters).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
@@ -284,6 +177,138 @@ A filtered collection is a view with its own `id`, `totalItems` and pages. Is it
 
 :::
 
+## Sorting
+
+A search result has an order. Sorting determines that order by arranging the matching items according to one or more criteria, in priority order. The first criterion determines the main order. Each following criterion decides the order of items that the previous criteria consider equal.
+
+A sort criterion has two parts: what to sort on, and the direction, ascending or descending. What to sort on can be how relevant an item is to the search, a value of the item itself, or another property that the collection defines.
+
+Sorting changes only the order of the results. It does not change which items match the search.
+
+If no order is specified, the integration layer defines a default order. Which properties a collection supports for sorting, and what they mean, is documented with that collection.
+
+## Simple search and advanced search compared
+
+| Aspect           | Simple search                                         | Advanced search                                                                                                     |
+| ---------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| How              | `GET` with `q`, `orderBy` and `size` query parameters | `POST` with a [search object](search.md#search-object)                                                              |
+| Capability       | `https://specs.nde.nl/rest/v1/simple-search`          | `https://specs.nde.nl/rest/v1/advanced-search`                                                                      |
+| Supports filters | No                                                    | Yes                                                                                                                 |
+| Pagination       | `GET` with the same query parameters                  | `GET` with the `search` parameter                                                                                   |
+| Cacheable        | Yes                                                   | Depends: a stateless identifier is reusable; a stateful one may expire, so responses cannot be cached indefinitely. |
+| Bookmarkable     | Yes                                                   | Depends: a stateless identifier keeps working; a stateful one may expire, so a bookmark can stop working.           |
+
+## Endpoint: Simple search
+
+### HTTP request
+
+`GET /{version}/{...collections}?q={q}&orderBy={orderBy}&size={size}&page={page}`
+
+### Path parameters
+
+| Name             | Data type | Cardinality | Description                                                                       |
+| ---------------- | --------- | ----------- | --------------------------------------------------------------------------------- |
+| `version`        | string    | 1           | The version of the API. Example: `v1`.                                            |
+| `...collections` | string    | 1 or more   | The path identifier(s) of the context collection. Example: `collections/objects`. |
+
+### Query parameters
+
+| Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| --------- | --------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `q`       | string    | 0 or 1      | A keyword query for filtering the items. The integration layer defines the minimum and maximum length and how the query is matched.                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| `orderBy` | string    | 0 or 1      | The sorting order of the items: a comma-separated list of sort criteria, in priority order. Each criterion is `property` or `property:order`, where `property` is `relevance` or `value` and `order` is `asc` or `desc`. Example: `relevance:desc,value:asc`. `relevance` typically expresses how well an item matches the keyword query (`q`). An integration layer _MAY_ also apply its own relevance rules when `q` is missing. The integration layer defines which property `value` sorts on (e.g. the `name` of an entity). See [Sorting](#sorting). |
+| `size`    | number    | 0 or 1      | The maximum number of items to retrieve. The minimum is 1. The integration layer defines the maximum.                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| `page`    | string    | 0 or 1      | The page to retrieve: a page number or a cursor, depending on the [pagination strategy](resources.md#page-navigation-and-cursor-navigation). Required when retrieving a page.                                                                                                                                                                                                                                                                                                                                                                             |
+
+### Request body
+
+None.
+
+### Response body
+
+The response is a `Page` if the collection is divided into pages; otherwise it is a `Collection` with its items inline.
+
+### Example
+
+An example request from a presentation layer:
+
+```http
+GET /v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc
+Host: example.org
+```
+
+This tells the integration layer that the presentation layer is searching for resources in the 'Masterpieces' collection that match the keyword 'rembrandt' and that matching resources must be ordered by relevance, descending, and then by value, ascending.
+
+An example of the response of the integration layer:
+
+```json
+{
+  "@context": "https://example.org/v1/context.json",
+  "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc&page=1",
+  "type": "Page",
+  "name": "Masterpieces: page 1",
+  "items": [
+    {
+      "id": "https://example.org/v1/entities/1234",
+      "type": "HeritageObject",
+      "name": "The Night Watch"
+    }
+    // Other items...
+  ],
+  "next": {
+    "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc&page=2",
+    "type": "Page"
+  },
+  "partOf": {
+    "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc",
+    "type": "CuratedCollection",
+    "name": "Masterpieces",
+    "totalItems": 42,
+    "first": {
+      "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc&page=1",
+      "type": "Page"
+    },
+    "last": {
+      "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc&page=3",
+      "type": "Page"
+    }
+  }
+}
+```
+
+The response indicates that the simple search has 42 results, that this is the first page, and that the next page is page 2.
+
+## Endpoint: Advanced search
+
+### HTTP request
+
+`POST /{version}/{...collections}/search`
+
+:::note
+
+The `search` path segment is a verb rather than a noun. This is an explicit exception, allowed by the [REST API Design Rules](https://logius-standaarden.github.io/API-Design-Rules/#/core/resource-operations).
+
+:::
+
+### Path parameters
+
+| Name             | Data type | Cardinality | Description                                                                       |
+| ---------------- | --------- | ----------- | --------------------------------------------------------------------------------- |
+| `version`        | string    | 1           | The version of the API. Example: `v1`.                                            |
+| `...collections` | string    | 1 or more   | The path identifier(s) of the context collection. Example: `collections/objects`. |
+
+### Query parameters
+
+None.
+
+### Request body
+
+The request body _MUST_ contain a JSON-formatted [search object](#search-object).
+
+### Response body
+
+The response is a `Page` if the collection is divided into pages; otherwise it is a `Collection` with its items inline. The response URIs contain the [search identifier](#search-identifier).
+
 ### Example
 
 An example request from a presentation layer:
@@ -345,7 +370,7 @@ An example of the response of the integration layer:
 
 The response indicates that the advanced search has 42 results, that this is the first page, and that the next page is page 2. The `search` parameter in the URIs of properties `id`, `next.id`, `partOf.id`, `partOf.first.id` and `partOf.last.id` is an identifier for a search object.
 
-### Anatomy of an advanced search
+## Anatomy of an advanced search
 
 An advanced search takes several requests. A presentation layer starts the search with one request and then uses the search identifier that the response contains to retrieve further results.
 
@@ -387,14 +412,3 @@ sequenceDiagram
     PL->>IL: POST /v1/collections/objects/search<br/>A new search object
     IL-->>PL: Page with `search=def` in its URIs
 ```
-
-## Simple search and advanced search compared
-
-| Aspect           | Simple search                                         | Advanced search                                                                                                     |
-| ---------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| How              | `GET` with `q`, `orderBy` and `size` query parameters | `POST` with a [search object](search.md#search-object)                                                              |
-| Capability       | `https://specs.nde.nl/rest/v1/simple-search`          | `https://specs.nde.nl/rest/v1/advanced-search`                                                                      |
-| Supports filters | No                                                    | Yes                                                                                                                 |
-| Pagination       | `GET` with the same query parameters                  | `GET` with the `search` parameter                                                                                   |
-| Cacheable        | Yes                                                   | Depends: a stateless identifier is reusable; a stateful one may expire, so responses cannot be cached indefinitely. |
-| Bookmarkable     | Yes                                                   | Depends: a stateless identifier keeps working; a stateful one may expire, so a bookmark can stop working.           |
