@@ -461,7 +461,7 @@ An example of a response body in which the presentation layer requested two face
   ],
   "facets": [
     {
-      "id": "https://example.org/v1/collections/masterpieces/facets/centuries?orderBy=count:desc&context=...",
+      "id": "https://example.org/v1/collections/masterpieces/facets/centuries?orderBy=count:desc&context=abc",
       "type": "FacetCollection",
       "name": "Made in century",
       "totalItems": 4,
@@ -510,7 +510,7 @@ An example of a response body in which the presentation layer requested two face
       }
     },
     {
-      "id": "https://example.org/v1/collections/masterpieces/facets/subjects?orderBy=count:desc&context=...",
+      "id": "https://example.org/v1/collections/masterpieces/facets/subjects?orderBy=count:desc&context=abc",
       "type": "FacetCollection",
       "name": "Subject",
       "totalItems": 3,
@@ -592,7 +592,7 @@ An entry is the complete response body of a `FacetPage`, the same body that the 
   ],
   "facets": [
     {
-      "id": "https://example.org/v1/collections/objects/facets/creators?page=1&size=3&orderBy=count:desc&context=...",
+      "id": "https://example.org/v1/collections/objects/facets/creators?page=1&size=3&orderBy=count:desc&context=abc",
       "type": "FacetPage",
       "name": "Creator: page 1",
       "items": [
@@ -625,7 +625,7 @@ An entry is the complete response body of a `FacetPage`, the same body that the 
         }
       ],
       "next": {
-        "id": "https://example.org/v1/collections/objects/facets/creators?page=2&size=3&orderBy=count:desc&context=...",
+        "id": "https://example.org/v1/collections/objects/facets/creators?page=2&size=3&orderBy=count:desc&context=abc",
         "type": "FacetPage"
       },
       "partOf": {
@@ -634,17 +634,17 @@ An entry is the complete response body of a `FacetPage`, the same body that the 
         "name": "Creator",
         "totalItems": 195,
         "first": {
-          "id": "https://example.org/v1/collections/objects/facets/creators?page=1&size=3&orderBy=count:desc&context=...",
+          "id": "https://example.org/v1/collections/objects/facets/creators?page=1&size=3&orderBy=count:desc&context=abc",
           "type": "FacetPage"
         },
         "last": {
-          "id": "https://example.org/v1/collections/objects/facets/creators?page=65&size=3&orderBy=count:desc&context=...",
+          "id": "https://example.org/v1/collections/objects/facets/creators?page=65&size=3&orderBy=count:desc&context=abc",
           "type": "FacetPage"
         }
       }
     },
     {
-      "id": "https://example.org/v1/collections/objects/facets/places?page=1&size=3&orderBy=count:desc&context=...",
+      "id": "https://example.org/v1/collections/objects/facets/places?page=1&size=3&orderBy=count:desc&context=abc",
       "type": "FacetPage",
       "name": "Made in place: page 1",
       "items": [
@@ -677,7 +677,7 @@ An entry is the complete response body of a `FacetPage`, the same body that the 
         }
       ],
       "next": {
-        "id": "https://example.org/v1/collections/objects/facets/places?page=2&size=3&orderBy=count:desc&context=...",
+        "id": "https://example.org/v1/collections/objects/facets/places?page=2&size=3&orderBy=count:desc&context=abc",
         "type": "FacetPage"
       },
       "partOf": {
@@ -686,11 +686,11 @@ An entry is the complete response body of a `FacetPage`, the same body that the 
         "name": "Made in place",
         "totalItems": 42,
         "first": {
-          "id": "https://example.org/v1/collections/objects/facets/places?page=1&size=3&orderBy=count:desc&context=...",
+          "id": "https://example.org/v1/collections/objects/facets/places?page=1&size=3&orderBy=count:desc&context=abc",
           "type": "FacetPage"
         },
         "last": {
-          "id": "https://example.org/v1/collections/objects/facets/places?page=14&size=3&orderBy=count:desc&context=...",
+          "id": "https://example.org/v1/collections/objects/facets/places?page=14&size=3&orderBy=count:desc&context=abc",
           "type": "FacetPage"
         }
       }
