@@ -130,7 +130,7 @@ A Collection contains at least the following properties:
 | `suggestions.id`      | string     | 1           | The identifier of the collection.                                                                                                                                                                                                                                  |
 | `suggestions.type`    | string     | 1           | The type of the collection. It _MUST_ be `Collection` or a specialisation.                                                                                                                                                                                         |
 | `suggestions.name`    | string     | 1           | The name of the collection.                                                                                                                                                                                                                                        |
-| `capabilities`        | array      | 0 or 1      | The URIs of the capabilities the integration layer implements for this collection. _MUST_ be omitted if the collection supports no capabilities. See [Capability discovery](#capability-discovery).                                                                |
+| `capabilities`        | array      | 0 or 1      | The URIs of the capabilities the integration layer implements for this collection. It _MUST_ be omitted if the collection supports no capabilities. See [Capability discovery](#capability-discovery).                                                             |
 
 ### Collection tree
 
@@ -142,11 +142,11 @@ An integration layer _MAY_ offer more than one collection tree. The [facet colle
 
 A presentation layer walks a tree from its root. It requests the root, and for every item in a collection it recurses if the item's `type` is `Collection` or a specialisation of it, and renders the item as a resource otherwise. It does not need to know in advance whether a collection holds further collections or resources, or whether the collections it encounters are divided into pages. Every collection, including one that groups other collections, can be divided into pages, so a tree with many branches can be traversed a page at a time.
 
-### Collection paths
+### Paths
 
 Every collection has a path: the URI a presentation layer uses to request it.
 
-This specification defines the path of some collections itself:
+This specification defines the paths of some collections and the endpoints that belong to them:
 
 | Path                                                   | Resource                                      |
 | ------------------------------------------------------ | --------------------------------------------- |
@@ -430,13 +430,11 @@ This specification defines the following capabilities:
 | `https://specs.nde.nl/rest/v1/page-pagination`    | The collection supports pagination by [page numbers](#page-navigation-and-cursor-navigation).              |
 | `https://specs.nde.nl/rest/v1/cursor-pagination`  | The collection supports pagination by [a cursor](#page-navigation-and-cursor-navigation).                  |
 
-A collection that supports one or more filter types _MUST_ also support `advanced-search`. A collection that supports `advanced-search` does not have to support `simple-search`; the two are independent.
-
 Capabilities are a property of a single collection. A presentation layer _MUST NOT_ infer the capabilities of a collection from the capabilities of its ancestors in the collection tree.
 
 The `capabilities` property tells a presentation layer that a collection supports something. It does not tell it how to use it: the endpoints and query parameters of the collection do that.
 
-Two capabilities come with a property that point to a collection. The `facets` property of a collection points to its list of facet collections; see [Facets](facets.md). The `suggestions` property of a collection points to its list of suggestion collections; see [Suggestions](suggestions.md). The other capabilities have no such property. The common query parameters are defined in [Query parameters](#query-parameters).
+Two capabilities come with a property that point to a collection. The `facets` property of a collection points to its list of facet collections; see [Facets](facets.md). The `suggestions` property of a collection points to its list of suggestion collections; see [Suggestions](suggestions.md). The other capabilities have no such property.
 
 ## Resource identifiers
 
@@ -447,5 +445,11 @@ A resource is identified by a URI. The requirements below apply to those URIs. T
 1. A URI _MUST NOT_ end with a trailing slash. For example: `https://example.org/v1/collections/works-of-art`, not `https://example.org/v1/collections/works-of-art/`.
 1. A path segment _MUST_ contain only lowercase letters, digits and hyphens. For example: `https://example.org/v1/collections/works-of-art`, not `https://example.org/v1/collections/Works-of-Art` or `https://example.org/v1/collections/works_of_art`.
 1. A query key _MUST_ use camel case. For example: `https://example.org/v1/collections/works-of-art?orderBy=dateCreated`, not `https://example.org/v1/collections/works-of-art?order-by=date-created`.
+
+:::note
+
+The `search` path segment of an [advanced search](search.md#endpoint-advanced-search) is a verb. This is an explicit exception, allowed by the [REST API Design Rules](https://logius-standaarden.github.io/API-Design-Rules/#/core/resource-operations).
+
+:::
 
 Regardless of these requirements, a URI _MUST_ still be treated as an opaque string by a presentation layer. A presentation layer _MUST NOT_ rely on the pattern of a URI. The patterns help developers understand the API, not software to interact with it.
