@@ -446,10 +446,4 @@ A resource is identified by a URI. The requirements below apply to those URIs. T
 1. A path segment _MUST_ contain only lowercase letters, digits and hyphens. For example: `https://example.org/v1/collections/works-of-art`, not `https://example.org/v1/collections/Works-of-Art` or `https://example.org/v1/collections/works_of_art`.
 1. A query key _MUST_ use camel case. For example: `https://example.org/v1/collections/works-of-art?orderBy=dateCreated`, not `https://example.org/v1/collections/works-of-art?order-by=date-created`.
 
-:::note
-
-The `search` path segment of an [advanced search](search.md#endpoint-advanced-search) is a verb. This is an explicit exception, allowed by the [REST API Design Rules](https://logius-standaarden.github.io/API-Design-Rules/#/core/resource-operations).
-
-:::
-
 Regardless of these requirements, a URI _MUST_ still be treated as an opaque string by a presentation layer. A presentation layer _MUST NOT_ rely on the pattern of a URI. The patterns help developers understand the API, not software to interact with it.

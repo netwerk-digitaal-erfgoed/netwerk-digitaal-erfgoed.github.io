@@ -192,6 +192,8 @@ The user can also search within the facet collection itself, for example to find
 
 The two searches are independent: the search context selects the items on which the facet items are based, and the search in the facet collection selects which facet items are shown. Without a search context, the facet items cover all items of the context collection. Without a search in the facet collection, no facet items are filtered out.
 
+An advanced search of a facet collection can itself serve as the context of a [suggestion collection](suggestions.md#search-context) on that facet collection.
+
 ## Endpoint: Retrieve the facet collections of a collection
 
 The endpoint retrieves all facet collections of a collection. The integration layer _MUST_ implement this endpoint if it supports facets.

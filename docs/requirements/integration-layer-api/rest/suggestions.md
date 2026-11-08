@@ -104,7 +104,7 @@ An integration layer decides which suggestion collections it supports. An integr
 1. **Entities**. The `value` of a suggestion item is an entity that matches the query, such as a heritage object named 'A Watermill'. A presentation layer can take the user straight to a suggested entity, by [retrieving it](entities.md#endpoint-retrieve-an-entity). The `valueTypes` are `["Entity"]`.
 1. **Combinations of keywords and entities**. The `value` of a suggestion item is a keyword or an entity. A presentation layer shows both to a user. The `valueTypes` are `["KeywordValue", "Entity"]`.
 
-An integration layer may offer a single suggestion collection instead of all three. It may also offer others, such as a collection of [facet values](facets.md) in the context of a facet collection.
+An integration layer may offer a single suggestion collection instead of all three. It may also offer others, such as a collection of [facet values](facets.md) in the context of a facet collection. Such a suggestion collection can be narrowed by the [search context](#search-context) of the facet collection.
 
 ## Search strategies
 
@@ -112,6 +112,29 @@ Suggestions can be found by using different search strategies. The integration l
 
 1. **Prefix search**. Prefix search restricts results to strings that start with the user's input. For example, the query `mil` will return `mill`, but not `windmill`. This strategy is optimised for speed and predictability; it is best suited for scenarios where users are searching for specific resources by their primary name or when the integration layer wants to encourage an 'autocomplete-as-you-type' experience starting from the first letter.
 1. **Infix search**. Infix search is a more flexible matching that looks for a query anywhere within a string. For example, the query `mil` will return `mill` and `windmill`. This is the recommended strategy when the integration layer wants users to discover resources using parts of a name, even if they do not know exactly how the name begins. Be aware that infix search can be more computationally expensive than prefix search.
+
+## Search context
+
+A suggestion collection belongs to a context collection: the collection whose items the suggestions are based on. By default, the suggestion items are based on all items of that context collection.
+
+The user's search in the context collection can narrow that set. For example, a suggestion collection can belong to a [facet collection](facets.md). The facet collection already contains only the facet items that match the search context of its parent collection. The suggestions must then be based on those same facet items, not on all values in the facet collection's default view. This is the **search context** of the suggestion collection.
+
+Only an [advanced search](search.md#endpoint-advanced-search) can serve as the search context, because an advanced search produces an identifier that the suggestion collection can refer to. A presentation layer that uses a [simple search](search.md#endpoint-simple-search) in the context collection must therefore turn it into an advanced search with the same conditions.
+
+The presentation layer passes the identifier of that advanced search in the `context` query parameter when it retrieves the suggestion collection. The integration layer _MUST_ validate that the identifier identifies an advanced search of the context collection. If it does not, the integration layer _MUST_ respond with a `400` status code.
+
+The user's query in the suggestion collection is the `q` query parameter. It filters the suggestion items, not the items of the context collection. The two searches are independent: the search context selects the items on which the suggestions are based, and `q` selects which suggestion items are returned. Without a search context, the suggestions cover all items of the context collection.
+
+A suggestion collection on a collection that is not a facet collection can use a search context in the same way, for example to suggest only values that occur in the current search results.
+
+An example request for suggestions on a facet collection within a search context:
+
+```http
+GET /v1/collections/objects/facets/creators/suggestions/values?q=rem&context=<facet-search-id>
+Host: example.org
+```
+
+The `context` identifier is an advanced search of the facet collection. It is the same identifier that appears as the `search` parameter in the URIs of that advanced search. That advanced search may itself contain a `context` for the facet collection's parent collection. See the [search context of a facet collection](facets.md#search-context).
 
 ## Endpoint: Retrieve the suggestion collections of a collection
 
@@ -123,10 +146,10 @@ The endpoint retrieves all suggestion collections of a collection. The integrati
 
 ### Path parameters
 
-| Name             | Data type | Cardinality | Description                                                                       |
-| ---------------- | --------- | ----------- | --------------------------------------------------------------------------------- |
-| `version`        | string    | 1           | The version of the API. Example: `v1`.                                            |
-| `...collections` | string    | 1 or more   | The path identifier(s) of the context collection. Example: `collections/objects`. |
+| Name             | Data type | Cardinality | Description                                                                                                                |
+| ---------------- | --------- | ----------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `version`        | string    | 1           | The version of the API. Example: `v1`.                                                                                     |
+| `...collections` | string    | 1 or more   | The path identifier(s) of the context collection. Example: `collections/objects` or `collections/objects/facets/creators`. |
 
 ### Query parameters
 
@@ -222,19 +245,20 @@ The endpoint retrieves the suggestion items of a suggestion collection that matc
 
 ### Path parameters
 
-| Name             | Data type | Cardinality | Description                                                                       |
-| ---------------- | --------- | ----------- | --------------------------------------------------------------------------------- |
-| `version`        | string    | 1           | The version of the API. Example: `v1`.                                            |
-| `...collections` | string    | 1 or more   | The path identifier(s) of the context collection. Example: `collections/objects`. |
-| `suggestion`     | string    | 1           | The path identifier of the suggestion collection. Example: `keywords`.            |
+| Name             | Data type | Cardinality | Description                                                                                                                |
+| ---------------- | --------- | ----------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `version`        | string    | 1           | The version of the API. Example: `v1`.                                                                                     |
+| `...collections` | string    | 1 or more   | The path identifier(s) of the context collection. Example: `collections/objects` or `collections/objects/facets/creators`. |
+| `suggestion`     | string    | 1           | The path identifier of the suggestion collection. Example: `keywords`.                                                     |
 
 ### Query parameters
 
-| Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                 |
-| --------- | --------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `q`       | string    | 1           | A keyword query for filtering the suggestion items. The integration layer defines the minimum and maximum length and how the query is matched, e.g. by using prefix or infix search.                                                        |
-| `size`    | number    | 0 or 1      | The maximum number of suggestion items to retrieve. The minimum is 1. The integration layer defines the maximum.                                                                                                                            |
+| Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                                                                                                                                                                |
+| --------- | --------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `q`       | string    | 1           | A keyword query for filtering the suggestion items. The integration layer defines the minimum and maximum length and how the query is matched, e.g. by using prefix or infix search.                                                                                                                                                                                                       |
+| `size`    | number    | 0 or 1      | The maximum number of suggestion items to retrieve. The minimum is 1. The integration layer defines the maximum.                                                                                                                                                                                                                                                                           |
 | `orderBy` | string    | 0 or 1      | The sorting order of the suggestion items: a comma-separated list of sort criteria, in priority order. Each criterion is `property` or `property:order`, where `property` is `relevance` or `value` and `order` is `asc` or `desc`. Default: `relevance:desc` (most relevant suggestion first). The integration layer defines which property of the value it sorts by, such as the `name`. |
+| `context` | string    | 0 or 1      | An identifier for an [advanced search](search.md#endpoint-advanced-search) of the context collection. It selects the items on which the suggestion items are based. See the [search context](#search-context).                                                                                                                                                                             |
 
 ### Request body
 
