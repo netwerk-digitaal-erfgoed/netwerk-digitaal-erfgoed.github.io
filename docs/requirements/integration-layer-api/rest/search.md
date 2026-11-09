@@ -31,7 +31,7 @@ A collection that supports an advanced search advertises the `https://specs.nde.
 
 A search object is a JSON object. It contains the search criteria of an advanced search.
 
-The search object is an abstraction over query notations that developers may already know, such as Elasticsearch's query language or SQL. The abstraction is essential: an integration layer chooses its own backing store — this specification cannot prescribe the notation of one search engine or database. No suitable standard notation exists that the specification can adopt, so the search object defines a custom one. The notation is designed for a straightforward mapping to the native notation of a backing store.
+The search object is an abstraction over query notations that developers may already know, such as Elasticsearch's query language or SQL. The abstraction is essential: an integration layer chooses its own backing store — this specification cannot prescribe the notation of one search engine or database. For filters, the search object uses the standard [Common Query Language (CQL2)](https://docs.ogc.org/is/21-065r2/21-065r2.html); the other search criteria are defined by this specification. The notation is designed for a straightforward mapping to the native notation of a backing store.
 
 A search object has the following properties:
 
@@ -43,8 +43,7 @@ A search object has the following properties:
 | `orderBy[*].property` | string    | 1           | The property to sort on. It _MUST_ be one of the properties that the collection supports for sorting. Which properties a collection supports, and what they mean, is documented with that collection.                                                                                                                                                                        |
 | `orderBy[*].order`    | string    | 1           | The direction of the sort. It _MUST_ be `asc` or `desc`.                                                                                                                                                                                                                                                                                                                     |
 | `size`                | number    | 0 or 1      | The maximum number of items to retrieve. It has the same meaning as the `size` query parameter of a [simple search](#endpoint-simple-search).                                                                                                                                                                                                                                |
-| `filter`              | object    | 0 or 1      | A condition that filters the items. See [Filters](#filters).                                                                                                                                                                                                                                                                                                                 |
-| `facets`              | array     | 0 or 1      | The facet collections whose results the integration layer must return. See [Facets](facets.md).                                                                                                                                                                                                                                                                              |
+| `filter`              | object    | 0 or 1      | A CQL2 filter expression. See [Filters](#filters).                                                                                                                                                                                                                                                                                                                           |
 | `context`             | string    | 0 or 1      | An identifier for an [advanced search](#endpoint-advanced-search) of the context collection. It is used only by facet collections and suggestion collections, to select the items on which their own items are based. The identifier _MUST_ identify an advanced search of that context collection; otherwise the integration layer _MUST_ respond with a `400` status code. |
 
 An example of a search object:
@@ -76,218 +75,246 @@ Think of a way to express the ID of a `facet` in a search object. A facet ID lik
 
 A presentation layer can narrow down the items of a collection with filters. Filters are part of a [search object](#search-object). A presentation layer sends filters in the `filter` property of a search object to the advanced search endpoint.
 
+This specification uses the [Common Query Language (CQL2)](https://docs.ogc.org/is/21-065r2/21-065r2.html) for filters, in its JSON encoding. It has a [JSON Schema](https://schemas.opengis.net/cql2/1.0/cql2.json) which integration layers and presentation layers can use to validate a filter before executing or sending it. It also has an ecosystem of programming libraries for building, parsing and validating filters. An integration layer translates a CQL2 filter to the native query language of its backing store.
+
 The filters a collection supports depend on the resources it holds. A [curated collection](collections.md) of entities with geographical data may support a geolocation filter. A [facet collection](facets.md) does not, because its items are facet items rather than entities with a location.
 
 This specification describes the following filter types:
 
-1. **Keyword filter**: matching text with `eq`, `startsWith`, `contains` or `similarTo` (e.g. 'Name starts with "Rem"').
-1. **Date filter**: comparing dates with `eq`, `between`, `gt`, `gte`, `lt` or `lte` (e.g. 'Date of creation is between 1900 and 1950').
-1. **Numeric filter**: comparing numbers with `eq`, `between`, `gt`, `gte`, `lt` or `lte` (e.g. 'Number of pages is at least 300').
-1. **Geolocation filter**: matching a location with `withinRadius`, `withinBoundingBox` or `withinPolygon` (e.g. 'Location of creation is within 25 km of a point').
-1. **Facet filter**: matching the values of one of the collection's facets with `eq`, `in`, `all` or `none` (e.g. 'Creator is "Rembrandt" or "Vincent van Gogh" and Type is "Painting"').
-1. **Set filter**: matching all or none of a set of values with `all` or `none` (e.g. 'Creator includes both "Rembrandt" and "Vincent van Gogh"').
-1. **Existence filter**: checking whether a property has a value with `exists` (e.g. 'Has a date of creation').
+1. **Keyword filter**: matching text with `=`, `in` or `like` (e.g. 'Name starts with "Rem"').
+1. **Date filter**: comparing dates with `=`, `in`, `>`, `>=`, `<` or `<=` (e.g. 'Date of creation is between 1900 and 1950').
+1. **Numeric filter**: comparing numbers with `=`, `in`, `>`, `>=`, `<`, `<=` or `between` (e.g. 'Number of pages is at least 300').
+1. **Geolocation filter**: matching a location with `s_within` and a bounding box or polygon (e.g. 'Location of creation is inside a bounding box around Delft').
+1. **Facet filter**: matching the values of one of the collection's facets with `=`, `in`, `a_contains` or `not a_overlaps` (e.g. 'Creator is "Rembrandt" or "Vincent van Gogh" and Type is "Painting"').
+1. **Set filter**: matching all or none of a set of values with `a_contains` or `not a_overlaps` (e.g. 'Creator includes both "Rembrandt" and "Vincent van Gogh"').
 
-All filter types use the same syntax. They differ only in the operators that apply and in the type of the `value` that those operators expect.
+All filter types use the same CQL2 notation. They differ only in the operators that apply and in the type of the operands that those operators expect.
 
 A presentation layer _MUST_ only send filters that the collection supports. If it sends another filter, the integration layer _MUST_ respond with a `400` status code. Ignoring an unsupported filter would silently give the presentation layer more items than it asked for.
 
-#### Conditions
+#### Filter expressions
 
-The `filter` property holds a **condition**. A condition is one of two kinds:
+The `filter` property holds one CQL2 expression. CQL2 defines the expression shapes and their meaning; see the [CQL2 specification](https://docs.ogc.org/is/21-065r2/21-065r2.html) and its [JSON Schema](https://schemas.opengis.net/cql2/1.0/cql2.json).
 
-- A **boolean condition** combines other conditions with `and`, `or` or `not`.
-- A **property condition** compares a property of an item with a value.
-
-Every comparison is an object with `property`, `operator` and `value`. This shape is straightforward to validate and to translate to the notation of the backing store.
-
-A condition _MUST_ contain exactly one of `and`, `or`, `not` or `property`.
-
-A boolean condition has one of these forms:
-
-| Name  | Data type | Cardinality | Description                                                       |
-| ----- | --------- | ----------- | ----------------------------------------------------------------- |
-| `and` | array     | 1           | Matches an item when every condition in the array matches.        |
-| `or`  | array     | 1           | Matches an item when at least one condition in the array matches. |
-| `not` | object    | 1           | Matches an item when the condition does not match.                |
-
-The value of `and` or `or` _MUST_ be an array with at least one condition. The value of `not` _MUST_ be exactly one condition. Conditions can be nested. The integration layer _MAY_ limit the nesting depth.
-
-A property condition contains three members:
-
-| Property   | Data type | Cardinality | Description                                                                                              |
-| ---------- | --------- | ----------- | -------------------------------------------------------------------------------------------------------- |
-| `property` | string    | 1           | The property to compare. It _MUST_ be one of the properties that the collection documents as filterable. |
-| `operator` | string    | 1           | How to compare the property with the value. See [Operators](#operators).                                 |
-| `value`    | any       | 1           | The value to compare with. Its type depends on the operator and on the property.                         |
-
-If the property holds multiple values, a property condition matches an item when at least one of the values matches. This applies to properties such as `creator`, which can hold several entities. The operators `all` and `none` are the exception: they compare the complete set of values, as described in [Operators](#operators).
-
-A property condition on its own looks like this:
+A filter expression is a JSON object. For example:
 
 ```json
 {
-  "property": "creator",
-  "operator": "eq",
-  "value": "https://example.org/v1/entities/1234"
+  "op": "=",
+  "args": [
+    {
+      "property": "creator"
+    },
+    "https://example.org/v1/entities/1234"
+  ]
 }
 ```
 
-Put in the `filter` property of a search object, it matches items that have that creator.
+Put in the `filter` property of a search object, it matches items that have the creator with ID `https://example.org/v1/entities/1234`.
+
+The integration layer _MUST_ validate the expression against the CQL2 JSON Schema and against the operators that the collection supports. If the expression is invalid or contains an unsupported operator, the integration layer _MUST_ respond with a `400` status code.
 
 #### Operators
 
-An operator defines how a [property condition](#conditions) compares the property with the value, such as 'equals', 'is greater than' or 'starts with'.
+The [CQL2 specification](https://docs.ogc.org/is/21-065r2/21-065r2.html) defines the complete language. This specification uses the following subset. The table shows what each operator does in this API and which data types it applies to.
 
-This specification defines common operators. The operator names and their value shapes are extensible: an integration layer _MAY_ support more operators, and later versions of this specification _MAY_ add them.
+| CQL2 operator or function | Applies to                           | Meaning                                                                                 |
+| ------------------------- | ------------------------------------ | --------------------------------------------------------------------------------------- |
+| `and`, `or`, `not`        | any                                  | Combine or negate filter expressions.                                                   |
+| `=`                       | string, number, date, boolean, facet | Equals the value.                                                                       |
+| `in`                      | string, number, date, boolean, facet | Equals one of the values.                                                               |
+| `like`                    | string                               | Matches a pattern. `%` matches any sequence of characters; `_` matches one character.   |
+| `between`                 | number                               | Is equal to or greater than the first value and equal to or less than the second value. |
+| `>`, `>=`, `<`, `<=`      | number, date                         | Compares with the value.                                                                |
+| `a_contains`              | multi-valued property                | Contains every one of the values.                                                       |
+| `a_overlaps`              | multi-valued property                | Shares at least one value. Use `not a_overlaps` for 'contains none'.                    |
+| `s_within`                | location                             | Is inside a bounding box or polygon.                                                    |
+| `casei`, `accenti`        | string                               | Compares ignoring case or accents.                                                      |
 
-An integration layer _MUST_ document the operators that a collection supports. A filter capability, such as `https://specs.nde.nl/rest/v1/geolocation-filter`, means that the collection supports at least one operator of that filter type, not that it supports all of them. A presentation layer _MUST NOT_ use an operator that the collection does not document. If it does, the integration layer _MUST_ respond with a `400` status code.
-
-| Operator            | Value                                           | Matches when the property                                                                                                                                                                                                   |
-| ------------------- | ----------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `eq`                | string, number or boolean                       | equals the value                                                                                                                                                                                                            |
-| `in`                | non-empty array of strings, numbers or booleans | equals one of the values. The values _MUST_ all be of the same type.                                                                                                                                                        |
-| `all`               | non-empty array of strings, numbers or booleans | contains every one of the values. The values _MUST_ all be of the same type. For a property with a single value, `all` with one value is the same as `in`.                                                                  |
-| `none`              | non-empty array of strings, numbers or booleans | contains none of the values. The values _MUST_ all be of the same type. For a property with a single value, `none` is the same as the negation of `in`.                                                                     |
-| `exists`            | boolean                                         | has a value when the value is `true`, and no value when the value is `false`. A property has a value when the item contains it and its value is not `null`. For a multi-valued property, an empty array counts as no value. |
-| `startsWith`        | string                                          | starts with the value                                                                                                                                                                                                       |
-| `contains`          | string                                          | contains the value                                                                                                                                                                                                          |
-| `similarTo`         | string                                          | is similar to the value. The integration layer defines how similar, e.g. by ignoring case and minor spelling differences.                                                                                                   |
-| `gt`                | number or date                                  | is greater than the value                                                                                                                                                                                                   |
-| `gte`               | number or date                                  | is greater than or equal to the value                                                                                                                                                                                       |
-| `lt`                | number or date                                  | is less than the value                                                                                                                                                                                                      |
-| `lte`               | number or date                                  | is less than or equal to the value                                                                                                                                                                                          |
-| `between`           | array of two numbers or two dates               | is equal to or greater than the first value and equal to or less than the second value. The first value _MUST_ be less than or equal to the second value.                                                                   |
-| `withinRadius`      | object                                          | is a location within a distance of a point. See [Geolocation](#geolocation).                                                                                                                                                |
-| `withinBoundingBox` | object                                          | is a location inside a bounding box. See [Geolocation](#geolocation).                                                                                                                                                       |
-| `withinPolygon`     | object                                          | is a location inside a polygon. See [Geolocation](#geolocation).                                                                                                                                                            |
-
-The sections below describe how the operators apply to each data type. The `exists` operator applies to a property of any data type; the other operators apply to the data types listed in the Value column.
+CQL2 defines further operators. A collection _MAY_ support them, but this specification does not require them. A collection _MUST_ document which CQL2 operators and which properties it supports. A filter capability, such as `https://specs.nde.nl/rest/v1/geolocation-filter`, means that the collection supports at least one operator of that filter type, not that it supports all of them. A presentation layer _MUST NOT_ use an operator that the collection does not document. If it does, the integration layer _MUST_ respond with a `400` status code.
 
 #### Strings
 
-A keyword filter compares a string property. String properties support `eq`, `in`, `all`, `none`, `startsWith`, `contains` and `similarTo`. The value is a string, or an array of strings for `in`, `all` and `none`.
-
-Whether a string comparison is case-sensitive is defined by the integration layer, depending on its requirements. `startsWith` looks for the value at the start of the property. `contains` looks for it anywhere in the property. For `similarTo`, the integration layer also defines how similar two values must be, for example by ignoring case and minor spelling differences.
+A keyword filter compares a string property. In CQL2, string properties are compared with `=`, `in` and `like`. The `like` operator uses `%` as a wildcard for any sequence of characters and `_` for exactly one character. A pattern such as `Rem%` matches values that start with 'Rem'; `%Rem%` matches values that contain 'Rem'. For example:
 
 ```json
 {
-  "property": "name",
-  "operator": "startsWith",
-  "value": "Rem"
+  "op": "like",
+  "args": [
+    {
+      "property": "name"
+    },
+    "Rem%"
+  ]
 }
 ```
+
+This filter matches items whose name starts with 'Rem'.
+
+Whether a string comparison is case-sensitive is defined by the integration layer. CQL2 also defines `casei` and `accenti` for case- and accent-insensitive comparison; a collection _MAY_ support them.
 
 For a facet filter, each value is the `id` of the facet item when it has one, and its `name` otherwise. See [Facet items](facets.md#facet-items).
 
 #### Numbers
 
-A numeric filter compares a number property. Numeric properties support `eq`, `in`, `all`, `none`, `gt`, `gte`, `lt`, `lte` and `between`. The value is a number, or an array of numbers for `in`, `all`, `none` and `between`.
-
-`gt`, `gte`, `lt` and `lte` compare the property with one boundary. `between` compares it with two boundaries and includes both: an item that equals either boundary matches.
+A numeric filter compares a number property. CQL2's `=`, `in`, `>`, `>=`, `<`, `<=` and `between` apply. `between` includes both boundaries: an item that equals either boundary matches. For example:
 
 ```json
 {
-  "property": "numberOfPages",
-  "operator": "between",
-  "value": [200, 300]
+  "op": "between",
+  "args": [
+    {
+      "property": "numberOfPages"
+    },
+    200,
+    300
+  ]
 }
 ```
+
+This filter matches items that have 200 to 300 pages.
 
 #### Dates
 
-A date filter compares a date property. Date properties support the same operators as number properties: `eq`, `in`, `all`, `none`, `gt`, `gte`, `lt`, `lte` and `between`. A date value is a string in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format, such as `1900`, `1900-01` or `1900-01-01`, and can therefore name a year, a month or a day.
+A date filter compares a date property. In CQL2, a date value is a full date in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) `YYYY-MM-DD` format, written as `{ "date": "1900-01-01" }`.
 
-As with numbers, `between` includes both boundaries.
+CQL2's `=`, `in`, `>`, `>=`, `<` and `<=` apply to dates. A single date is compared with `=`. For example:
 
 ```json
 {
-  "property": "dateCreated",
-  "operator": "between",
-  "value": ["1900", "1950"]
+  "op": "=",
+  "args": [
+    {
+      "property": "dateCreated"
+    },
+    {
+      "date": "1900-01-01"
+    }
+  ]
 }
 ```
+
+This filter matches items that were created on 1 January 1900.
+
+A date range uses two comparisons, one for each boundary:
+
+```json
+{
+  "op": "and",
+  "args": [
+    {
+      "op": ">=",
+      "args": [
+        {
+          "property": "dateCreated"
+        },
+        {
+          "date": "1900-01-01"
+        }
+      ]
+    },
+    {
+      "op": "<=",
+      "args": [
+        {
+          "property": "dateCreated"
+        },
+        {
+          "date": "1950-12-31"
+        }
+      ]
+    }
+  ]
+}
+```
+
+This filter matches items that were created between 1 January 1900 and 31 December 1950.
 
 #### Booleans
 
-A boolean property supports `eq` and `in`. The value is `true` or `false`.
+A boolean property is compared with `=` or `in`. For example:
 
 ```json
 {
-  "property": "isAccessibleForFree",
-  "operator": "eq",
-  "value": true
+  "op": "=",
+  "args": [
+    {
+      "property": "hasImage"
+    },
+    true
+  ]
 }
 ```
+
+This filter matches items that have an image.
 
 #### Geolocation
 
-A geolocation filter uses a property that the collection documents as a location, such as the place where an item was created or a set of coordinates. Location properties support `withinRadius`, `withinBoundingBox` and `withinPolygon`. Latitude and longitude are in decimal degrees. The integration layer resolves that property to coordinates.
+A geolocation filter uses a property that the collection documents as a location, such as the place where an item was created or a set of coordinates. CQL2 uses GeoJSON geometries. Coordinates are in decimal degrees, longitude first, latitude second. A polygon ring _MUST_ be closed: the first point is repeated at the end. The integration layer resolves the property to coordinates and defines whether a location on the boundary counts as inside.
 
-`withinRadius` takes a point, a distance and a unit:
-
-```json
-{
-  "property": "locationCreated",
-  "operator": "withinRadius",
-  "value": {
-    "latitude": 52.0148856,
-    "longitude": 4.3475369,
-    "distance": 25,
-    "unit": "km"
-  }
-}
-```
-
-The `distance` _MUST_ be greater than 0. The `unit` _MUST_ be `km` (kilometres) or `m` (metres).
-
-`withinBoundingBox` takes the south-west and north-east corners of a box. This example uses a box around the city centre of Delft, the Netherlands:
+A bounding box is a CQL2 `bbox` literal, in west, south, east, north order. This example uses a box around the city centre of Delft, the Netherlands:
 
 ```json
 {
-  "property": "locationCreated",
-  "operator": "withinBoundingBox",
-  "value": {
-    "southWest": {
-      "latitude": 52.005,
-      "longitude": 4.35
+  "op": "s_within",
+  "args": [
+    {
+      "property": "locationCreated"
     },
-    "northEast": {
-      "latitude": 52.018,
-      "longitude": 4.368
+    {
+      "bbox": [4.35, 52.005, 4.368, 52.018]
     }
-  }
+  ]
 }
 ```
 
-Each corner has a `latitude` and a `longitude`. The latitude of the south-west corner _MUST_ be less than or equal to the latitude of the north-east corner, and its longitude _MUST_ be less than or equal to the longitude of the north-east corner.
+This filter matches items that were created inside the box around the city centre of Delft.
 
-`withinPolygon` takes a polygon. The value is an object with a `points` array of at least three points, each with a `latitude` and a `longitude`:
+A polygon is a GeoJSON `Polygon`:
 
 ```json
 {
-  "property": "locationCreated",
-  "operator": "withinPolygon",
-  "value": {
-    "points": [
-      {
-        "latitude": 52.005,
-        "longitude": 4.35
-      },
-      {
-        "latitude": 52.018,
-        "longitude": 4.35
-      },
-      {
-        "latitude": 52.0115,
-        "longitude": 4.368
-      }
-    ]
-  }
+  "op": "s_within",
+  "args": [
+    {
+      "property": "locationCreated"
+    },
+    {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [4.35, 52.005],
+          [4.35, 52.018],
+          [4.368, 52.0115],
+          [4.35, 52.005]
+        ]
+      ]
+    }
+  ]
 }
 ```
 
-The polygon is closed automatically: the first point does not have to be repeated at the end. The integration layer defines whether a location on the boundary counts as inside.
+This filter matches items that were created inside the polygon.
+
+To approximate a radius search, a presentation layer can use a bounding box around a point. This example uses a box in the Agnetapark in Delft, the Netherlands:
+
+```json
+{
+  "op": "s_within",
+  "args": [
+    {
+      "property": "locationCreated"
+    },
+    {
+      "bbox": [4.345768, 52.016417, 4.346991, 52.017136]
+    }
+  ]
+}
+```
+
+This filter matches items that were created inside the box in the Agnetapark.
+
+CQL2 has no standard radius search operator. Developers may know one from a search engine, but such operators are not portable: they differ in the unit of distance (for example metres, feet or degrees) and in the distance metric (straight-line distance in a projected coordinate system or distance over the Earth's surface). A bounding box or polygon is a portable approximation.
 
 #### Examples of filters
 
@@ -296,26 +323,60 @@ A filter with nested `and` and `not` conditions:
 ```json
 {
   "filter": {
-    "and": [
+    "op": "and",
+    "args": [
       {
-        "property": "dateCreated",
-        "operator": "between",
-        "value": ["1600", "1700"]
-      },
-      {
-        "property": "creator",
-        "operator": "in",
-        "value": [
-          "https://example.org/v1/entities/7890",
-          "https://example.org/v1/entities/9012"
+        "op": "and",
+        "args": [
+          {
+            "op": ">=",
+            "args": [
+              {
+                "property": "dateCreated"
+              },
+              {
+                "date": "1600-01-01"
+              }
+            ]
+          },
+          {
+            "op": "<=",
+            "args": [
+              {
+                "property": "dateCreated"
+              },
+              {
+                "date": "1700-12-31"
+              }
+            ]
+          }
         ]
       },
       {
-        "not": {
-          "property": "additionalType",
-          "operator": "eq",
-          "value": "https://example.org/v1/entities/1122"
-        }
+        "op": "in",
+        "args": [
+          {
+            "property": "creator"
+          },
+          [
+            "https://example.org/v1/entities/7890",
+            "https://example.org/v1/entities/9012"
+          ]
+        ]
+      },
+      {
+        "op": "not",
+        "args": [
+          {
+            "op": "=",
+            "args": [
+              {
+                "property": "additionalType"
+              },
+              "https://example.org/v1/entities/1122"
+            ]
+          }
+        ]
       }
     ]
   }
@@ -329,46 +390,64 @@ Another example, with geolocation filters:
 ```json
 {
   "filter": {
-    "or": [
+    "op": "or",
+    "args": [
       {
-        "and": [
+        "op": "and",
+        "args": [
           {
-            "property": "locationCreated",
-            "operator": "withinRadius",
-            "value": {
-              "latitude": 52.3676,
-              "longitude": 4.9041,
-              "distance": 25,
-              "unit": "km"
-            }
+            "op": "s_within",
+            "args": [
+              {
+                "property": "locationCreated"
+              },
+              {
+                "type": "Polygon",
+                "coordinates": [
+                  [
+                    [4.75, 52.25],
+                    [5.05, 52.25],
+                    [5.05, 52.45],
+                    [4.75, 52.45],
+                    [4.75, 52.25]
+                  ]
+                ]
+              }
+            ]
           },
           {
-            "property": "name",
-            "operator": "startsWith",
-            "value": "De"
+            "op": "like",
+            "args": [
+              {
+                "property": "name"
+              },
+              "De%"
+            ]
           }
         ]
       },
       {
-        "and": [
+        "op": "and",
+        "args": [
           {
-            "property": "locationCreated",
-            "operator": "withinBoundingBox",
-            "value": {
-              "southWest": {
-                "latitude": 52.005,
-                "longitude": 4.35
+            "op": "s_within",
+            "args": [
+              {
+                "property": "locationCreated"
               },
-              "northEast": {
-                "latitude": 52.018,
-                "longitude": 4.368
+              {
+                "bbox": [4.35, 52.005, 4.368, 52.018]
               }
-            }
+            ]
           },
           {
-            "property": "numberOfPages",
-            "operator": "gte",
-            "value": 300
+            "op": ">=",
+            "args": [
+              {
+                "property": "numberOfPages"
+              },
+              300
+            ]
           }
         ]
       }
@@ -377,28 +456,41 @@ Another example, with geolocation filters:
 }
 ```
 
-The filter matches items that are either within 25 km of a point and have a name that starts with 'De', or lie inside a bounding box around Delft and have at least 300 pages.
+The filter matches items that are either inside a polygon around Amsterdam and have a name that starts with 'De', or lie inside a bounding box around Delft and have at least 300 pages.
 
 A filter can combine string conditions in the same way:
 
 ```json
 {
   "filter": {
-    "or": [
+    "op": "or",
+    "args": [
       {
-        "property": "name",
-        "operator": "eq",
-        "value": "The Night Watch"
+        "op": "=",
+        "args": [
+          {
+            "property": "name"
+          },
+          "The Night Watch"
+        ]
       },
       {
-        "property": "description",
-        "operator": "contains",
-        "value": "Rembrandt"
+        "op": "like",
+        "args": [
+          {
+            "property": "description"
+          },
+          "%Rembrandt%"
+        ]
       },
       {
-        "property": "name",
-        "operator": "similarTo",
-        "value": "Nite Watch"
+        "op": "like",
+        "args": [
+          {
+            "property": "name"
+          },
+          "The Night%"
+        ]
       }
     ]
   }
@@ -409,28 +501,27 @@ The filter matches items whose name or description matches one of several string
 
 #### Translating filters
 
-The syntax is designed to translate directly to the native query language of a backing store. The table shows the closest equivalent of each condition. It is illustrative, not prescriptive: stores differ between versions, and an integration layer can preprocess data or evaluate a condition in application code when there is no native equivalent.
+CQL2 is independent of the backing store. The table shows the closest equivalent of each CQL2 operator. It is illustrative, not prescriptive: stores differ between versions, and an integration layer can preprocess data or evaluate an expression in application code when there is no native equivalent.
 
-| Condition                | Elasticsearch                                | Typesense `filter_by`                                                        | PostgreSQL                         |
-| ------------------------ | -------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------- |
-| `and`                    | `bool.must`                                  | `&&`                                                                         | `AND`                              |
-| `or`                     | `bool.should` with `minimum_should_match: 1` | `\|\|`                                                                       | `OR`                               |
-| `not`                    | `bool.must_not`                              | `property:!=value`; otherwise negate the condition                           | `NOT`                              |
-| `eq`                     | `term` or `match`                            | `property:=value`                                                            | `property = value`                 |
-| `in`                     | `terms`                                      | `property:=[a, b]`                                                           | `property IN (a, b)`               |
-| `all`                    | `bool.must` with one `term` per value        | `property:=a && property:=b`                                                 | `property @> ARRAY[a, b]`          |
-| `none`                   | `bool.must_not` with `terms`                 | `property:!=[a, b]`                                                          | `NOT (property @> ARRAY[a, b])`    |
-| `exists`                 | `exists`                                     | not native; index a boolean flag                                             | `property IS NOT NULL`             |
-| `between`                | `range` with `gte` and `lte`                 | `property:[a..b]`                                                            | `property BETWEEN a AND b`         |
-| `gt`, `gte`, `lt`, `lte` | `range` with the same name                   | `property:>value`, `property:>=value`, `property:<value`, `property:<=value` | `>`, `>=`, `<`, `<=`               |
-| `startsWith`             | `prefix`                                     | `property:value*`                                                            | `property LIKE 'value%'`           |
-| `contains`               | `wildcard` with `*value*`                    | `property:*value*` (requires an infix index)                                 | `property LIKE '%value%'`          |
-| `similarTo`              | `match` with `fuzziness`                     | not native; use the query's typo tolerance                                   | `similarity()` from `pg_trgm`      |
-| `withinRadius`           | `geo_distance`                               | `property:(lat, lon, distance unit)`                                         | `ST_DWithin` from PostGIS          |
-| `withinBoundingBox`      | `geo_bounding_box`                           | `property:(...)` polygon with the four corners                               | `ST_Within` with `ST_MakeEnvelope` |
-| `withinPolygon`          | `geo_shape` with a polygon                   | `property:(...)` polygon with the corners                                    | `ST_Within` with `ST_GeomFromText` |
+| CQL2                      | Elasticsearch                                | Typesense `filter_by`                                                        | PostgreSQL                            |
+| ------------------------- | -------------------------------------------- | ---------------------------------------------------------------------------- | ------------------------------------- |
+| `and`                     | `bool.must`                                  | `&&`                                                                         | `AND`                                 |
+| `or`                      | `bool.should` with `minimum_should_match: 1` | `\|\|`                                                                       | `OR`                                  |
+| `not`                     | `bool.must_not`                              | negate the condition                                                         | `NOT`                                 |
+| `=`                       | `term` or `match`                            | `property:=value`                                                            | `property = value`                    |
+| `in`                      | `terms`                                      | `property:=[a, b]`                                                           | `property IN (a, b)`                  |
+| `a_contains`              | `bool.must` with one `term` per value        | `property:=a && property:=b`                                                 | `property @> ARRAY[a, b]`             |
+| `a_overlaps`              | `bool.should` with one `term` per value      | `property:=[a, b]`                                                           | `property && ARRAY[a, b]`             |
+| `not a_overlaps`          | `bool.must_not` with `terms`                 | `property:!=[a, b]`                                                          | `NOT (property && ARRAY[a, b])`       |
+| `between`                 | `range` with `gte` and `lte`                 | `property:[a..b]`                                                            | `property BETWEEN a AND b`            |
+| `<`, `<=`, `>`, `>=`      | `range` with the same name                   | `property:<value`, `property:<=value`, `property:>value`, `property:>=value` | `<`, `<=`, `>`, `>=`                  |
+| `like` with `v%`          | `prefix`                                     | `property:value*`                                                            | `property LIKE 'v%'`                  |
+| `like` with `%v%`         | `wildcard` with `*v*`                        | `property:*value*` (requires an infix index)                                 | `property LIKE '%v%'`                 |
+| `s_within` with `bbox`    | `geo_bounding_box`                           | `property:(...)` polygon with the four corners                               | `ST_Within` with `ST_MakeEnvelope`    |
+| `s_within` with `Polygon` | `geo_shape` with a polygon                   | `property:(...)` polygon with the corners                                    | `ST_Within` with `ST_GeomFromGeoJSON` |
+| `casei`, `accenti`        | depends on the analyzer or normalizer        | case-insensitive by default                                                  | `ILIKE` or `lower()`                  |
 
-The choice between `term` and `match` in Elasticsearch depends on how the property is indexed: `term` for an exact value such as a keyword or an identifier, `match` for analysed text. PostgreSQL's `LIKE` is case-sensitive; an integration layer that needs case-insensitive matching can use `ILIKE`. The `pg_trgm` extension provides `similarTo`, and PostGIS provides the geolocation filters.
+The choice between `term` and `match` in Elasticsearch depends on how the property is indexed: `term` for an exact value such as a keyword or an identifier, `match` for analysed text. PostgreSQL's `LIKE` is case-sensitive; an integration layer that needs case-insensitive matching can use `ILIKE`. PostGIS provides the geolocation filters.
 
 ### Search identifier
 
@@ -499,12 +590,12 @@ A simple search is not a separate endpoint. It uses the endpoint that retrieves 
 
 ### Query parameters
 
-| Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| --------- | --------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `q`       | string    | 0 or 1      | A keyword query for filtering the items. The integration layer defines the minimum and maximum length and how the query is matched.                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| `orderBy` | string    | 0 or 1      | The sorting order of the items: a comma-separated list of sort criteria, in priority order. Each criterion is `property` or `property:order`, where `property` is `relevance` or `value` and `order` is `asc` or `desc`. Example: `relevance:desc,value:asc`. `relevance` typically expresses how well an item matches the keyword query (`q`). An integration layer _MAY_ also apply its own relevance rules when `q` is missing. The integration layer defines which property `value` sorts on (e.g. the `name` of an entity). See [Sorting](#sorting). |
-| `size`    | number    | 0 or 1      | The maximum number of items to retrieve. The minimum is 1. The integration layer defines the maximum.                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| `page`    | string    | 0 or 1      | The page to retrieve: a page number or a cursor, depending on the [pagination strategy](resources.md#page-navigation-and-cursor-navigation). Required when retrieving a page.                                                                                                                                                                                                                                                                                                                                                                             |
+| Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| --------- | --------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `q`       | string    | 0 or 1      | A keyword query for filtering the items. The integration layer defines the minimum and maximum length and how the query is matched.                                                                                                                                                                                                                                                                                                                                                                                              |
+| `orderBy` | string    | 0 or 1      | The sorting order of the items: a comma-separated list of sort criteria, in priority order. Each criterion is `property` or `property:order`, where `property` is `relevance` or `value` and `order` is `asc` or `desc`. Example: `relevance:desc,value:asc`. `relevance` typically expresses how well an item matches the keyword query (`q`). An integration layer _MAY_ also apply its own relevance rules when `q` is missing. The integration layer defines which property `value` sorts on (e.g. the `name` of an entity). |
+| `size`    | number    | 0 or 1      | The maximum number of items to retrieve. The minimum is 1. The integration layer defines the maximum.                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| `page`    | string    | 0 or 1      | The page to retrieve: a page number or a cursor, depending on the [pagination strategy](resources.md#page-navigation-and-cursor-navigation). Required when retrieving a page.                                                                                                                                                                                                                                                                                                                                                    |
 
 ### Request body
 
@@ -572,7 +663,7 @@ The response indicates that the simple search has 42 results, that this is the f
 
 :::note
 
-The `search` path segment is a verb rather than a noun. This is an explicit exception, allowed by the [REST API Design Rules](https://logius-standaarden.github.io/API-Design-Rules/#/core/resource-operations).
+The `search` path segment is a verb rather than a noun. This is an explicit exception to the resource identifiers, allowed by the [REST API Design Rules](https://logius-standaarden.github.io/API-Design-Rules/#/core/resource-operations).
 
 :::
 
