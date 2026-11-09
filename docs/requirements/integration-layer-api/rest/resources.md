@@ -416,19 +416,21 @@ A collection can do more than return a list of items. It can support a simple se
 
 This specification defines the following capabilities:
 
-| Capability URI                                    | Description                                                                                                |
-| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| `https://specs.nde.nl/rest/v1/simple-search`      | The collection supports a [simple search](search.md#endpoint-simple-search).                               |
-| `https://specs.nde.nl/rest/v1/advanced-search`    | The collection supports an [advanced search](search.md#endpoint-advanced-search).                          |
-| `https://specs.nde.nl/rest/v1/keyword-filter`     | The collection supports keyword filters in an [advanced search](search.md#endpoint-advanced-search).       |
-| `https://specs.nde.nl/rest/v1/date-filter`        | The collection supports date filters in an [advanced search](search.md#endpoint-advanced-search).          |
-| `https://specs.nde.nl/rest/v1/numeric-filter`     | The collection supports numeric filters in an [advanced search](search.md#endpoint-advanced-search).       |
-| `https://specs.nde.nl/rest/v1/geolocation-filter` | The collection supports geolocation filters in an [advanced search](search.md#endpoint-advanced-search).   |
-| `https://specs.nde.nl/rest/v1/facet-filter`       | The collection supports filters on its facets in an [advanced search](search.md#endpoint-advanced-search). |
-| `https://specs.nde.nl/rest/v1/facets`             | The collection supports [facets](facets.md).                                                               |
-| `https://specs.nde.nl/rest/v1/suggestions`        | The collection supports [suggestions](suggestions.md).                                                     |
-| `https://specs.nde.nl/rest/v1/page-pagination`    | The collection supports pagination by [page numbers](#page-navigation-and-cursor-navigation).              |
-| `https://specs.nde.nl/rest/v1/cursor-pagination`  | The collection supports pagination by [a cursor](#page-navigation-and-cursor-navigation).                  |
+| Capability URI                                    | Description                                                                                           |
+| ------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `https://specs.nde.nl/rest/v1/simple-search`      | The collection supports a [simple search](search.md#endpoint-simple-search).                          |
+| `https://specs.nde.nl/rest/v1/advanced-search`    | The collection supports an [advanced search](search.md#endpoint-advanced-search).                     |
+| `https://specs.nde.nl/rest/v1/keyword-filter`     | Supports at least one keyword filter operator in an [advanced search](search.md#advanced-search).     |
+| `https://specs.nde.nl/rest/v1/date-filter`        | Supports at least one date filter operator in an [advanced search](search.md#advanced-search).        |
+| `https://specs.nde.nl/rest/v1/numeric-filter`     | Supports at least one numeric filter operator in an [advanced search](search.md#advanced-search).     |
+| `https://specs.nde.nl/rest/v1/geolocation-filter` | Supports at least one geolocation filter operator in an [advanced search](search.md#advanced-search). |
+| `https://specs.nde.nl/rest/v1/facet-filter`       | Supports at least one facet filter operator in an [advanced search](search.md#advanced-search).       |
+| `https://specs.nde.nl/rest/v1/facets`             | The collection supports [facets](facets.md).                                                          |
+| `https://specs.nde.nl/rest/v1/suggestions`        | The collection supports [suggestions](suggestions.md).                                                |
+| `https://specs.nde.nl/rest/v1/page-pagination`    | The collection supports pagination by [page numbers](#page-navigation-and-cursor-navigation).         |
+| `https://specs.nde.nl/rest/v1/cursor-pagination`  | The collection supports pagination by [a cursor](#page-navigation-and-cursor-navigation).             |
+
+The five filter capabilities are coarse. A `keyword-filter`, `date-filter`, `numeric-filter`, `geolocation-filter` or `facet-filter` capability means that the collection supports at least one operator of that filter type. It does not mean that it supports every operator: a collection with the `geolocation-filter` capability may support `withinRadius` but not `withinBoundingBox` or `withinPolygon`. An integration layer _MUST_ document which operators and which properties each collection supports; see [Filters](search.md#filters) and [Operators](search.md#operators). A presentation layer _MUST_ consult that documentation before it sends a filter.
 
 Capabilities are a property of a single collection. A presentation layer _MUST NOT_ infer the capabilities of a collection from the capabilities of its ancestors in the collection tree.
 
