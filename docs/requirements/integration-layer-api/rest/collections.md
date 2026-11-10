@@ -101,6 +101,7 @@ The response body _MUST_ contain at least the following properties:
 | `estimatedTotalItems` | number                    | 0 or 1      | An estimate of the total number of items in the collection. It can be higher or lower than the real total. Not set if there is no estimate. Mutually exclusive with `totalItems`.                                                                                                        |
 | `items`               | array                     | 0 or 1      | A list of the items in the collection. Not set if the items are parts of [pages](#endpoint-retrieve-a-page-in-a-collection).                                                                                                                                                             |
 | `items[*]`            | CuratedCollection, Entity | 1           | A `CuratedCollection` or a specialisation, or a specialisation of `Entity`. Not set if the items are parts of [pages](#endpoint-retrieve-a-page-in-a-collection).                                                                                                                        |
+| `pageUriTemplate`     | string                    | 0 or 1      | A [URI template](https://www.rfc-editor.org/rfc/rfc6570.html) for the pages of the collection. It contains the `page` variable. Set only if the collection is divided into pages that can be addressed by number. See [Pagination](resources.md#pagination).                             |
 | `first`               | Page                      | 0 or 1      | The first page in the collection. Not set if the collection is empty or if it is not divided into [pages](#endpoint-retrieve-a-page-in-a-collection).                                                                                                                                    |
 | `first.id`            | string                    | 1           | The identifier of the first page in the collection.                                                                                                                                                                                                                                      |
 | `first.type`          | string                    | 1           | The type of the first page in the collection. It _MUST_ be `Page` or a specialisation.                                                                                                                                                                                                   |
@@ -116,6 +117,9 @@ The response body _MUST_ contain at least the following properties:
 | `suggestions.id`      | string                    | 1           | The identifier of the list.                                                                                                                                                                                                                                                              |
 | `suggestions.type`    | string                    | 1           | The type of the list. It _MUST_ be `Collection` or a specialisation.                                                                                                                                                                                                                     |
 | `suggestions.name`    | string                    | 1           | The name of the list.                                                                                                                                                                                                                                                                    |
+| `queryables`          | Queryables                | 0 or 1      | The Queryables resource of this collection. It lists the properties that can be used in a filter. A collection that advertises the `advanced-search` capability _MUST_ set it. See [Queryables](search.md#queryables).                                                                   |
+| `queryables.id`       | string                    | 1           | The identifier of the Queryables resource.                                                                                                                                                                                                                                               |
+| `queryables.type`     | string                    | 1           | The type of the resource. It _MUST_ be `Queryables`.                                                                                                                                                                                                                                     |
 
 Note: the response body carries no `partOf` property — the root collection is not a part of another collection.
 
@@ -226,6 +230,7 @@ The response body _MUST_ contain at least the following properties:
 | `estimatedTotalItems` | number                    | 0 or 1      | An estimate of the total number of items in the collection. It can be higher or lower than the real total. Not set if there is no estimate. Mutually exclusive with `totalItems`.                                                                                                        |
 | `items`               | array                     | 0 or 1      | A list of the items in the collection. Not set if the items are parts of [pages](#endpoint-retrieve-a-page-in-a-collection).                                                                                                                                                             |
 | `items[*]`            | CuratedCollection, Entity | 1           | A `CuratedCollection` or a specialisation, or a specialisation of `Entity`. Not set if the items are parts of [pages](#endpoint-retrieve-a-page-in-a-collection).                                                                                                                        |
+| `pageUriTemplate`     | string                    | 0 or 1      | A [URI template](https://www.rfc-editor.org/rfc/rfc6570.html) for the pages of the collection. It contains the `page` variable. Set only if the collection is divided into pages that can be addressed by number. See [Pagination](resources.md#pagination).                             |
 | `first`               | Page                      | 0 or 1      | The first page in the collection. Not set if the collection is empty or if it is not divided into [pages](#endpoint-retrieve-a-page-in-a-collection).                                                                                                                                    |
 | `first.id`            | string                    | 1           | The identifier of the first page in the collection.                                                                                                                                                                                                                                      |
 | `first.type`          | string                    | 1           | The type of the first page in the collection. It _MUST_ be `Page` or a specialisation.                                                                                                                                                                                                   |
@@ -245,6 +250,9 @@ The response body _MUST_ contain at least the following properties:
 | `suggestions.id`      | string                    | 1           | The identifier of the list.                                                                                                                                                                                                                                                              |
 | `suggestions.type`    | string                    | 1           | The type of the list. It _MUST_ be `Collection` or a specialisation.                                                                                                                                                                                                                     |
 | `suggestions.name`    | string                    | 1           | The name of the list.                                                                                                                                                                                                                                                                    |
+| `queryables`          | Queryables                | 0 or 1      | The Queryables resource of this collection. It lists the properties that can be used in a filter. A collection that advertises the `advanced-search` capability _MUST_ set it. See [Queryables](search.md#queryables).                                                                   |
+| `queryables.id`       | string                    | 1           | The identifier of the Queryables resource.                                                                                                                                                                                                                                               |
+| `queryables.type`     | string                    | 1           | The type of the resource. It _MUST_ be `Queryables`.                                                                                                                                                                                                                                     |
 
 ### Example
 
@@ -270,11 +278,11 @@ An example of the response body of a collection:
     "type": "CuratedCollection",
     "name": "Collections"
   },
-  "capabilities": ["https://specs.nde.nl/rest/v1/page-pagination"]
+  "pageUriTemplate": "https://example.org/v1/collections/objects{?page}"
 }
 ```
 
-The response indicates that this collection contains 195 entities, spread over 20 pages, and that it supports page pagination for it.
+The response indicates that this collection contains 195 entities, spread over 20 pages, and that its pages can be addressed by number.
 
 Another example of the response body of a collection, with extended capabilities:
 
@@ -285,6 +293,7 @@ Another example of the response body of a collection, with extended capabilities
   "type": "CuratedCollection",
   "name": "Masterpieces",
   "totalItems": 195,
+  "pageUriTemplate": "https://example.org/v1/collections/masterpieces{?page}",
   "first": {
     "id": "https://example.org/v1/collections/masterpieces?page=1",
     "type": "Page"
@@ -299,8 +308,8 @@ Another example of the response body of a collection, with extended capabilities
     "name": "Collections"
   },
   "capabilities": [
-    "https://specs.nde.nl/rest/v1/page-pagination",
     "https://specs.nde.nl/rest/v1/simple-search",
+    "https://specs.nde.nl/rest/v1/advanced-search",
     "https://specs.nde.nl/rest/v1/facets",
     "https://specs.nde.nl/rest/v1/suggestions"
   ],
@@ -313,11 +322,15 @@ Another example of the response body of a collection, with extended capabilities
     "id": "https://example.org/v1/collections/masterpieces/suggestions",
     "type": "Collection",
     "name": "Suggestions"
+  },
+  "queryables": {
+    "id": "https://example.org/v1/collections/masterpieces/queryables",
+    "type": "Queryables"
   }
 }
 ```
 
-The response indicates that this collection supports page pagination, simple search, facets and suggestions.
+The response indicates that this collection supports simple search, advanced search, facets and suggestions, and that its pages can be addressed by number.
 
 ## Endpoint: Retrieve a page in a collection
 
@@ -339,7 +352,7 @@ The endpoint retrieves a page in a curated collection. The integration layer _MU
 
 | Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | --------- | --------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `page`    | string    | 1           | The identifier of the page: a page number or cursor, depending on the [pagination strategy](resources.md#page-navigation-and-cursor-navigation) of the integration layer.                                                                                                                                                                                                                                                                                                                                                                          |
+| `page`    | string    | 1           | The page to retrieve. If the collection has a [`pageUriTemplate`](resources.md#collection), the value is a page number. Otherwise it is a cursor that the integration layer returned in a page URI. See [Pagination](resources.md#page-navigation-and-cursor-navigation).                                                                                                                                                                                                                                                                          |
 | `q`       | string    | 0 or 1      | A keyword query for filtering the items. The integration layer defines the minimum and maximum length and how the query is matched. Mutually exclusive with `search`.                                                                                                                                                                                                                                                                                                                                                                              |
 | `size`    | number    | 0 or 1      | The maximum number of items to retrieve. The minimum is 1. The integration layer defines the maximum. Mutually exclusive with `search`.                                                                                                                                                                                                                                                                                                                                                                                                            |
 | `orderBy` | string    | 0 or 1      | The sorting order of the items: a comma-separated list of sort criteria, in priority order. Each criterion is `property` or `property:order`, where `property` is `relevance` or `value` and `order` is `asc` or `desc`. The integration layer defines the default order and which property `value` sorts on (e.g. the `name` of the item). `relevance` typically expresses how well an item matches the keyword query (`q`). An integration layer _MAY_ also apply its own relevance rules when `q` is missing. Mutually exclusive with `search`. |
@@ -375,6 +388,7 @@ The response body _MUST_ contain at least the following properties:
 | `partOf.name`                | string                     | 1           | The name of the collection.                                                                                                                                                                                                                                                                                                                                                                      |
 | `partOf.totalItems`          | number                     | 0 or 1      | The exact total number of items in the collection, being its further collections, its resources, or both. Not set if the exact total is too costly to calculate. Mutually exclusive with `partOf.estimatedTotalItems`.                                                                                                                                                                           |
 | `partOf.estimatedTotalItems` | number                     | 0 or 1      | An estimate of the total number of items in the collection. It can be higher or lower than the real total. Not set if there is no estimate. Mutually exclusive with `partOf.totalItems`.                                                                                                                                                                                                         |
+| `partOf.pageUriTemplate`     | string                     | 0 or 1      | A [URI template](https://www.rfc-editor.org/rfc/rfc6570.html) for the pages of the collection. It contains the `page` variable. Set only if the pages can be addressed by number. See [Pagination](resources.md#pagination).                                                                                                                                                                     |
 | `partOf.first`               | Page                       | 1           | The first page in the collection.                                                                                                                                                                                                                                                                                                                                                                |
 | `partOf.first.id`            | string                     | 1           | The identifier of the first page in the collection.                                                                                                                                                                                                                                                                                                                                              |
 | `partOf.first.type`          | string                     | 1           | The type of the first page in the collection. It _MUST_ be `Page` or a specialisation.                                                                                                                                                                                                                                                                                                           |
@@ -420,6 +434,7 @@ An example of the response body:
     "type": "CuratedCollection",
     "name": "Masterpieces",
     "totalItems": 195,
+    "pageUriTemplate": "https://example.org/v1/collections/masterpieces{?page}",
     "first": {
       "id": "https://example.org/v1/collections/masterpieces?page=1",
       "type": "Page"
@@ -433,6 +448,12 @@ An example of the response body:
 ```
 
 ### Facets on a page
+
+:::note To do
+
+Refactor: facets will not be returned in a collection or page response anymore, only via a separate endpoint
+
+:::
 
 A page can carry the results of the facets that the presentation layer requested in a dedicated `facets` property.
 
@@ -563,6 +584,7 @@ An example of a response body in which the presentation layer requested two face
     "type": "CuratedCollection",
     "name": "Masterpieces",
     "totalItems": 195,
+    "pageUriTemplate": "https://example.org/v1/collections/masterpieces{?page}",
     "first": {
       "id": "https://example.org/v1/collections/masterpieces?page=1",
       "type": "Page"
