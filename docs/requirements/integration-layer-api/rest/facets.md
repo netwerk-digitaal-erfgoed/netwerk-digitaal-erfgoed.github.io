@@ -1,6 +1,6 @@
 ---
 slug: /integration-layer-api/rest/facets
-sidebar_position: 7
+sidebar_position: 8
 ---
 
 # Facets
@@ -15,7 +15,7 @@ A presentation layer can browse the facet items in a facet collection, filter th
 
 Facets are tied to a particular collection — the context collection — ensuring that results remain within the context of that collection. An integration layer _MAY_ offer facets for any collection, except for a facet collection itself.
 
-Facets are optional. An integration layer _MAY_ implement them, depending on its requirements. An integration layer advertises the facet collections it supports for a collection in the generic [`facets` property](resources.md#collection) of that collection. The property points to the list of facet collections, which a presentation layer retrieves with the endpoint [Retrieve the facet collections of a collection](#endpoint-retrieve-the-facet-collections-of-a-collection).
+Facets are optional. An integration layer _MAY_ implement them, depending on its requirements. An integration layer advertises the facet collections it supports for a collection in the [`facets` property](resources.md#collection) of that collection. The property points to the list of facet collections, which a presentation layer retrieves with the endpoint [Retrieve the facet collections of a collection](#endpoint-retrieve-the-facet-collections-of-a-collection).
 
 ## Data model
 
@@ -178,6 +178,22 @@ A facet collection _MUST NOT_ mix range values of different types, for example `
 
 The `name` is the label of the value. The integration layer may use any text in it, such as '1900–1950', 'between 1900 and 1950', or '1900 to 1950'. A presentation layer _MUST NOT_ read the bounds out of the `name` — it must use the `min` and `max` properties. A presentation layer can use the bounds to place every facet value on a scale. It can draw a histogram, with one bar per value from its lower bound to its upper bound. It can draw a timeline, with one band per value that shows how long the range lasts.
 
+## Search context
+
+A facet collection belongs to a context collection: the collection whose items the facet values categorise. By default, the facet items are based on all items of that context collection.
+
+The user's search in the context collection narrows that set. For example, if the user searched the context collection for `rembrandt`, the facet collection contains only facet items that occur in the items matching `rembrandt`, and the counts apply to those items only. This is the **search context** of the facet collection.
+
+Only an [advanced search](search.md#endpoint-advanced-search) can serve as the search context, because an advanced search produces an identifier that the facet collection can refer to. A presentation layer that uses a [simple search](search.md#endpoint-simple-search) in the context collection must therefore turn it into an advanced search with the same conditions.
+
+The presentation layer passes the identifier of that advanced search in the `context` query parameter when it retrieves the facet collection or a page in it. It can also put the identifier in the `context` property of a [search object](search.md#search-object) when it uses an [advanced search](search.md#endpoint-advanced-search) of the facet collection itself. The integration layer _MUST_ validate that the identifier identifies an advanced search of the context collection. If it does not, the integration layer _MUST_ respond with a `400` status code.
+
+The user can also search within the facet collection itself, for example to find one creator in a long list of creators. That search filters the facet items, not the items of the context collection. The `q`, `size` and `orderBy` query parameters provide a simple search of the facet items. The `search` query parameter and the facet collection's own advanced search endpoint provide an advanced search of them.
+
+The two searches are independent: the search context selects the items on which the facet items are based, and the search in the facet collection selects which facet items are shown. Without a search context, the facet items cover all items of the context collection. Without a search in the facet collection, no facet items are filtered out.
+
+An advanced search of a facet collection can itself serve as the context of a [suggestion collection](suggestions.md#search-context) on that facet collection.
+
 ## Endpoint: Retrieve the facet collections of a collection
 
 The endpoint retrieves all facet collections of a collection. The integration layer _MUST_ implement this endpoint if it supports facets.
@@ -188,10 +204,10 @@ The endpoint retrieves all facet collections of a collection. The integration la
 
 ### Path parameters
 
-| Name             | Data type | Cardinality | Description                                                                                                                                    |
-| ---------------- | --------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `version`        | string    | 1           | The version of the API. Example: `v1`.                                                                                                         |
-| `...collections` | string    | 1 or more   | The path identifier(s) of the context collection, including the collections it is part of or that it contains. Example: `collections/objects`. |
+| Name             | Data type | Cardinality | Description                                                                       |
+| ---------------- | --------- | ----------- | --------------------------------------------------------------------------------- |
+| `version`        | string    | 1           | The version of the API. Example: `v1`.                                            |
+| `...collections` | string    | 1 or more   | The path identifier(s) of the context collection. Example: `collections/objects`. |
 
 ### Query parameters
 
@@ -285,26 +301,21 @@ The endpoint retrieves a facet collection. The integration layer _MUST_ implemen
 
 ### Path parameters
 
-| Name             | Data type | Cardinality | Description                                                                                                                                    |
-| ---------------- | --------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `version`        | string    | 1           | The version of the API. Example: `v1`.                                                                                                         |
-| `...collections` | string    | 1 or more   | The path identifier(s) of the context collection, including the collections it is part of or that it contains. Example: `collections/objects`. |
-| `facet`          | string    | 1           | The path identifier of the facet collection. Example: `creators`, `centuries`.                                                                 |
+| Name             | Data type | Cardinality | Description                                                                       |
+| ---------------- | --------- | ----------- | --------------------------------------------------------------------------------- |
+| `version`        | string    | 1           | The version of the API. Example: `v1`.                                            |
+| `...collections` | string    | 1 or more   | The path identifier(s) of the context collection. Example: `collections/objects`. |
+| `facet`          | string    | 1           | The path identifier of the facet collection. Example: `creators`, `centuries`.    |
 
 ### Query parameters
 
-| Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                                            |
-| --------- | --------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `q`       | string    | 0 or 1      | A keyword query for filtering the facet items. Minimum length: defined by the integration layer (e.g. 3 characters). Maximum length: defined by the integration layer (e.g. 25 characters).                                                                            |
-| `size`    | number    | 0 or 1      | The maximum number of facet items to retrieve. Minimum: 1. Default: 10. Maximum: defined by the integration layer (e.g. 100).                                                                                                                                          |
-| `orderBy` | string    | 0 or 1      | The sorting order of the facet items. One of `count`, `value`. Default: `count:desc` (most frequent item first). The integration layer defines which property of the value it sorts by (e.g. the `name`). For a range value, the integration layer sorts by its `min`. |
-| `filter`  | string    | 0 or more   | The rules for filtering the facet items. See [Filters](resources.md#filters).                                                                                                                                                                                          |
-
-:::note To do
-
-Add the query parameters that carry the "search context" of the context collection, so that the facet items reflect the same search as the page in that collection (`q` and `filter` of endpoint [Retrieve a page in a collection](collections.md#endpoint-retrieve-a-page-in-a-collection)).
-
-:::
+| Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| --------- | --------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `q`       | string    | 0 or 1      | A keyword query for filtering the facet items by their value. The integration layer defines the minimum and maximum length and how the query is matched.                                                                                                                                                                                                                                                                           |
+| `size`    | number    | 0 or 1      | The maximum number of facet items to retrieve. Minimum: 1. Default: 10. Maximum: defined by the integration layer (e.g. 100).                                                                                                                                                                                                                                                                                                      |
+| `orderBy` | string    | 0 or 1      | The sorting order of the facet items: a comma-separated list of sort criteria, in priority order. Each criterion is `property` or `property:order`, where `property` is `count` or `value` and `order` is `asc` or `desc`. Default: `count:desc` (most frequent item first). The integration layer defines which property of the value it sorts by (e.g. the `name`). For a range value, the integration layer sorts by its `min`. |
+| `search`  | string    | 0 or 1      | An identifier for an [advanced search](search.md#endpoint-advanced-search) of this facet collection. It filters and sorts the facet items. Mutually exclusive with `q`, `size` and `orderBy`.                                                                                                                                                                                                                                      |
+| `context` | string    | 0 or 1      | An identifier for an [advanced search](search.md#endpoint-advanced-search) of the context collection. It selects the items on which the facet items are based. See the [search context](#search-context).                                                                                                                                                                                                                          |
 
 ### Request body
 
@@ -346,7 +357,7 @@ The response body _MUST_ contain at least the following properties:
 | `suggestions.id`      | string     | 1           | The identifier of the list.                                                                                                                                                                                                                                      |
 | `suggestions.type`    | string     | 1           | The type of the list. It _MUST_ be `Collection` or a specialisation.                                                                                                                                                                                             |
 | `suggestions.name`    | string     | 1           | The name of the list.                                                                                                                                                                                                                                            |
-| `capabilities`        | array      | 0 or 1      | The URIs of the capabilities the integration layer implements for this collection. _MUST_ be omitted if the collection supports no capabilities. See [Capability discovery](resources.md#capability-discovery).                                                  |
+| `capabilities`        | array      | 0 or 1      | The URIs of the capabilities the integration layer implements for this collection. It _MUST_ be omitted if the collection supports no capabilities. See [Capability discovery](resources.md#capability-discovery).                                               |
 
 ### Example
 
@@ -582,27 +593,22 @@ The endpoint retrieves a page in a facet collection. The integration layer _MUST
 
 ### Path parameters
 
-| Name             | Data type | Cardinality | Description                                                                                                                                    |
-| ---------------- | --------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `version`        | string    | 1           | The version of the API. Example: `v1`.                                                                                                         |
-| `...collections` | string    | 1 or more   | The path identifier(s) of the context collection, including the collections it is part of or that it contains. Example: `collections/objects`. |
-| `facet`          | string    | 1           | The path identifier of the facet collection. Example: `creators`, `centuries`.                                                                 |
+| Name             | Data type | Cardinality | Description                                                                       |
+| ---------------- | --------- | ----------- | --------------------------------------------------------------------------------- |
+| `version`        | string    | 1           | The version of the API. Example: `v1`.                                            |
+| `...collections` | string    | 1 or more   | The path identifier(s) of the context collection. Example: `collections/objects`. |
+| `facet`          | string    | 1           | The path identifier of the facet collection. Example: `creators`, `centuries`.    |
 
 ### Query parameters
 
-| Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                                            |
-| --------- | --------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `page`    | string    | 1           | The identifier of the page: a page number or cursor, depending on the [pagination strategy](resources.md#page-navigation-and-cursor-navigation) of the integration layer.                                                                                              |
-| `q`       | string    | 0 or 1      | A keyword query for filtering the facet items. Minimum length: defined by the integration layer (e.g. 3 characters). Maximum length: defined by the integration layer (e.g. 25 characters).                                                                            |
-| `size`    | number    | 0 or 1      | The maximum number of facet items to retrieve. Minimum: 1. Default: 10. Maximum: defined by the integration layer (e.g. 100).                                                                                                                                          |
-| `orderBy` | string    | 0 or 1      | The sorting order of the facet items. One of `count`, `value`. Default: `count:desc` (most frequent item first). The integration layer defines which property of the value it sorts by (e.g. the `name`). For a range value, the integration layer sorts by its `min`. |
-| `filter`  | string    | 0 or more   | The rules for filtering the facet items. See [Filters](resources.md#filters).                                                                                                                                                                                          |
-
-:::note To do
-
-Add the query parameters that carry the "search context" of the context collection, so that the facet items reflect the same search as the page in that collection (`q` and `filter` of endpoint [Retrieve a page in a collection](collections.md#endpoint-retrieve-a-page-in-a-collection)).
-
-:::
+| Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| --------- | --------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `page`    | string    | 1           | The identifier of the page: a page number or cursor, depending on the [pagination strategy](resources.md#page-navigation-and-cursor-navigation) of the integration layer.                                                                                                                                                                                                                                                          |
+| `q`       | string    | 0 or 1      | A keyword query for filtering the facet items by their value. The integration layer defines the minimum and maximum length and how the query is matched.                                                                                                                                                                                                                                                                           |
+| `size`    | number    | 0 or 1      | The maximum number of facet items to retrieve. Minimum: 1. Default: 10. Maximum: defined by the integration layer (e.g. 100).                                                                                                                                                                                                                                                                                                      |
+| `orderBy` | string    | 0 or 1      | The sorting order of the facet items: a comma-separated list of sort criteria, in priority order. Each criterion is `property` or `property:order`, where `property` is `count` or `value` and `order` is `asc` or `desc`. Default: `count:desc` (most frequent item first). The integration layer defines which property of the value it sorts by (e.g. the `name`). For a range value, the integration layer sorts by its `min`. |
+| `search`  | string    | 0 or 1      | An identifier for an [advanced search](search.md#endpoint-advanced-search) of this facet collection. It filters and sorts the facet items. Mutually exclusive with `q`, `size` and `orderBy`.                                                                                                                                                                                                                                      |
+| `context` | string    | 0 or 1      | An identifier for an [advanced search](search.md#endpoint-advanced-search) of the context collection. It selects the items on which the facet items are based. See the [search context](#search-context).                                                                                                                                                                                                                          |
 
 ### Request body
 

@@ -11,7 +11,7 @@ This specification defines how integration layers and presentation layers exchan
 
 ## Version
 
-This is **version 0.0.3** of the specification.
+This is **version 0.4.0** of the specification.
 
 It is the **initial development** version, version zero. Breaking changes are introduced within the same major version, following [semantic versioning for version zero](https://semver.org/#spec-item-4).
 
@@ -29,7 +29,7 @@ The specification follows these considerations:
 :::note To do
 
 - Explain that the API specification uses discovery patterns; it makes API implementations dynamic and self-documenting. This is essential for a generic, extensible specification that can be used by all sorts of integration layers.
-- Specify the root endpoint of the API, e.g. `/v1`. This endpoint allows presentation layers to discover the entry points and capabilities of the API (e.g. `/v1/entities`, `/v1/collections`).
+- Specify the root endpoint of the API, e.g. `/v1`. This endpoint allows presentation layers to discover the entry points and capabilities of the API (e.g. `/v1/entities`, `/v1/collections`). Draw inspiration from [OGC API](https://docs.ogc.org/is/19-072/19-072.html#_65d42b57-7d32-4f4e-963b-ba0d4f190f27)?
 - Specify how an integration layer can extend the capabilities of its API using the patterns in the specification, e.g. with custom functionality or resources. Add examples.
 
 :::

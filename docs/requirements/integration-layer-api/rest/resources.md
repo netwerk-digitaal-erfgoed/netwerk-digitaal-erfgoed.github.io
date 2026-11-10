@@ -80,7 +80,7 @@ Example of the response body of the integration layer:
   "type": "HeritageObject",
   "name": "The Night Watch",
   // And then, depending on the resource, other properties, such as:
-  "additionalTypes": [
+  "additionalType": [
     {
       "id": "https://example.org/v1/entities/5678",
       "type": "Concept",
@@ -93,7 +93,7 @@ Example of the response body of the integration layer:
 
 The response indicates that this resource has identifier `https://example.org/v1/entities/1234`, is a `HeritageObject` and has name 'The Night Watch'.
 
-Note the `additionalTypes` list: every item in this list is also a resource and has the same top-level properties: `id`, `type` and `name`.
+Note the `additionalType` list: every item in this list is also a resource and has the same top-level properties: `id`, `type` and `name`.
 
 ## Collection
 
@@ -130,9 +130,12 @@ A Collection contains at least the following properties:
 | `suggestions.id`      | string     | 1           | The identifier of the collection.                                                                                                                                                                                                                                  |
 | `suggestions.type`    | string     | 1           | The type of the collection. It _MUST_ be `Collection` or a specialisation.                                                                                                                                                                                         |
 | `suggestions.name`    | string     | 1           | The name of the collection.                                                                                                                                                                                                                                        |
-| `capabilities`        | array      | 0 or 1      | The URIs of the capabilities the integration layer implements for this collection. _MUST_ be omitted if the collection supports no capabilities. See [Capability discovery](#capability-discovery).                                                                |
+| `queryables`          | Queryables | 0 or 1      | The Queryables resource of this collection. It lists the properties that can be used in a filter. A collection that advertises the `advanced-search` capability _MUST_ set it. See [Queryables](search.md#queryables).                                             |
+| `queryables.id`       | string     | 1           | The identifier of the Queryables resource.                                                                                                                                                                                                                         |
+| `queryables.type`     | string     | 1           | The type of the resource. It _MUST_ be `Queryables`.                                                                                                                                                                                                               |
+| `capabilities`        | array      | 0 or 1      | The URIs of the capabilities the integration layer implements for this collection. It _MUST_ be omitted if the collection supports no capabilities. See [Capability discovery](#capability-discovery).                                                             |
 
-### The collection tree
+### Collection tree
 
 Collections form a tree: the `items` of a collection can contain further collections. There is no separate type for a 'collection of collections': a collection that groups other collections is a collection like any other. This keeps the structure a presentation layer has to learn down to one collection type.
 
@@ -142,24 +145,26 @@ An integration layer _MAY_ offer more than one collection tree. The [facet colle
 
 A presentation layer walks a tree from its root. It requests the root, and for every item in a collection it recurses if the item's `type` is `Collection` or a specialisation of it, and renders the item as a resource otherwise. It does not need to know in advance whether a collection holds further collections or resources, or whether the collections it encounters are divided into pages. Every collection, including one that groups other collections, can be divided into pages, so a tree with many branches can be traversed a page at a time.
 
-### Collection paths
+### Paths
 
 Every collection has a path: the URI a presentation layer uses to request it.
 
-This specification defines the path of some collections itself:
+This specification defines the paths of some collections and the endpoints that belong to them:
 
-| Path                                                     | Collection                                  |
-| -------------------------------------------------------- | ------------------------------------------- |
-| `/{version}/collections`                                 | The root of the curated collection tree.    |
-| `/{version}/collections(/{...collections})/{collection}` | A curated collection.                       |
-| `/{version}/{...collections}/facets`                     | The facet collections of a collection.      |
-| `/{version}/{...collections}/facets/{facet}`             | One facet collection.                       |
-| `/{version}/{...collections}/suggestions`                | The suggestion collections of a collection. |
-| `/{version}/{...collections}/suggestions/{suggestion}`   | One suggestion collection.                  |
+| Path                                                   | Resource                                      |
+| ------------------------------------------------------ | --------------------------------------------- |
+| `/{version}/collections`                               | The root of the curated collection tree.      |
+| `/{version}/collections/{...collections}/{collection}` | A curated collection.                         |
+| `/{version}/{...collections}/search`                   | The advanced search endpoint of a collection. |
+| `/{version}/{...collections}/queryables`               | The Queryables resource of a collection.      |
+| `/{version}/{...collections}/facets`                   | The facet collections of a collection.        |
+| `/{version}/{...collections}/facets/{facet}`           | One facet collection.                         |
+| `/{version}/{...collections}/suggestions`              | The suggestion collections of a collection.   |
+| `/{version}/{...collections}/suggestions/{suggestion}` | One suggestion collection.                    |
 
-The words `collections`, `facets` and `suggestions` are reserved: a path identifier _MUST NOT_ be one of them. A path like `/{version}/collections/facets/facets` would otherwise match two of the paths above at once: a curated collection 'facets' inside a curated collection 'facets', and the facet collections of a curated collection 'facets'. Neither the integration layer nor a presentation layer can then say which one a URI means.
+The words `collections`, `facets`, `queryables`, `suggestions` and `search` are reserved: a path identifier _MUST NOT_ be one of them. A path like `/{version}/collections/facets/facets` would otherwise match two of the paths above at once: a curated collection 'facets' inside a curated collection 'facets', and the facet collections of a curated collection 'facets'. Neither the integration layer nor a presentation layer can then say which one a URI means. A collection named `search` would in the same way be indistinguishable from the advanced search endpoint of the collection it is a part of.
 
-A presentation layer does not have to build these paths. It finds the facet collections and the suggestion collections of a collection in the `facets` and `suggestions` properties, which hold the full URI of each list. The fixed paths tell an integration layer where to put those lists, and give a presentation layer a URI it can link to.
+A presentation layer does not have to build these paths. It finds the facet collections, the suggestion collections and the Queryables resource of a collection in the `facets`, `suggestions` and `queryables` properties, which hold the full URI of each resource. The fixed paths tell an integration layer where to put them, and give a presentation layer a URI it can link to.
 
 The path identifiers themselves are a choice of the integration layer: it names each of its collections, facet collections and suggestion collections itself. See [resource identifiers](#resource-identifiers). An integration layer _MAY_ expose the same collection at more than one path.
 
@@ -214,80 +219,6 @@ Example of the response body when the collection is divided into pages:
 ```
 
 The response indicates that this collection consists of 195 items, accessible via the `first` page.
-
-### Capability discovery
-
-A collection can do more than return a list of items. It can support a keyword search, filters, facets, suggestions or pagination. Each of these is a _capability_: something that a collection supports. Every collection advertises its own capabilities, so that a presentation layer can discover what a collection supports and adapt its user interface to it.
-
-This specification defines the following capabilities:
-
-| Capability URI                                    | Description                                                                                   |
-| ------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| `https://specs.nde.nl/rest/v1/keyword-search`     | The collection supports keyword search.                                                       |
-| `https://specs.nde.nl/rest/v1/keyword-filter`     | The collection supports keyword filters.                                                      |
-| `https://specs.nde.nl/rest/v1/date-filter`        | The collection supports date filters.                                                         |
-| `https://specs.nde.nl/rest/v1/numeric-filter`     | The collection supports numeric filters.                                                      |
-| `https://specs.nde.nl/rest/v1/geolocation-filter` | The collection supports geolocation filters.                                                  |
-| `https://specs.nde.nl/rest/v1/facet-filter`       | The collection supports filters on its facets.                                                |
-| `https://specs.nde.nl/rest/v1/facets`             | The collection supports [facets](facets.md).                                                  |
-| `https://specs.nde.nl/rest/v1/suggestions`        | The collection supports [suggestions](suggestions.md).                                        |
-| `https://specs.nde.nl/rest/v1/highlighting`       | The collection supports text highlighting in string properties matching a keyword query.      |
-| `https://specs.nde.nl/rest/v1/page-pagination`    | The collection supports pagination by [page numbers](#page-navigation-and-cursor-navigation). |
-| `https://specs.nde.nl/rest/v1/cursor-pagination`  | The collection supports pagination by [a cursor](#page-navigation-and-cursor-navigation).     |
-
-Capabilities are a property of a single collection. A presentation layer _MUST NOT_ infer the capabilities of a collection from the capabilities of its ancestors in the collection tree.
-
-The `capabilities` property tells a presentation layer that a collection supports something. It does not tell it how to use it: the endpoints and query parameters of the collection do that.
-
-Two capabilities come with a property that point to a collection. The `facets` property of a collection points to its list of facet collections; see [Facets](facets.md). The `suggestions` property of a collection points to its list of suggestion collections; see [Suggestions](suggestions.md). The other capabilities have no such property. A presentation layer finds them in this specification: `q` for a keyword search, `filter` for a filter of any type, and `page` for a page.
-
-### Filters
-
-A presentation layer can narrow down the items of a collection with filters, using the `filter` query parameter. An integration layer _MAY_ offer filters for any collection. Which filters a collection supports is a choice of the integration layer.
-
-The filters a collection supports depend on the resources it holds. A [curated collection](collections.md) of entities with geographical data may support a geolocation filter. A [facet collection](facets.md) does not, because its items are facet items rather than entities with a location.
-
-This specification describes the following filter types:
-
-1. **Keyword filter**: filtering on text, with wildcards and phrases (e.g. `Rem`, `Rem*`, `'Rembrandt van Rijn'`).
-1. **Date filter**: filtering by comparing dates (e.g. 'Date of creation is between 1900 and 1950').
-1. **Numeric filter**: filtering by comparing numbers (e.g. 'Number of pages is at least 300').
-1. **Geolocation filter**: filtering on coordinates and a radius (e.g. 'Location of creation is within 25 km of a geopoint').
-1. **Facet filter**: filtering by the values of one of the collection's facets (e.g. 'Creator is "Rembrandt" or "Vincent van Gogh" and Type is "Painting"').
-
-The list is not fixed. An integration layer may add filter types of its own for specific use cases. It advertises every filter type it supports for a collection as a capability; see [Capability discovery](#capability-discovery).
-
-A presentation layer _MUST_ only send filters that the collection supports. If it sends another filter, the integration layer _MUST_ respond with a `400` status code. Ignoring an unsupported filter would silently give the presentation layer more items than it asked for.
-
-:::note To be discussed
-
-Is there a standard or common notation to express filter and facet parameters via a query string?
-
-Options could be [Feed Item Query Language](https://datatracker.ietf.org/doc/html/draft-nottingham-atompub-fiql-00) (FIQL), [RSQL](https://github.com/jirutka/rsql-parser) or [OData](https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part1-protocol.html#_Toc31358947). These can be heavy-weight, though, or be unable to express all parameters (e.g. facets that should be retrieved). Alternatively, use a custom notation using a convention, e.g. the [LHS bracket syntax](https://docs.strapi.io/cms/api/rest/filters), that can be mapped to JSON for processing by the integration layer? For example:
-
-1. Filter by range: date of creation is between 1900 and 1950
-
-`GET /v1/collections/masterpieces?page=1&filter[dateCreated][gte]=1900&filter[dateCreated][lte]=1950`
-
-2. Filter by geolocation: location of creation is within 25 km of geopoint 52.0752021, 5.1135515
-
-`GET /v1/collections/masterpieces?page=1&filter[locationCreated][lat]=52.0752021&filter[locationCreated][distance][lon]=5.1135515&filter[locationCreated][distance][radius]=25km`
-
-3. Filter by facet: creator ID is 'https://example.org/v1/entities/7890' or 'https://example.org/v1/entities/9012'
-
-`GET /v1/collections/masterpieces?page=1&filter[creators][in]=https://example.org/v1/entities/7890&filter[creators][in]=https://example.org/v1/entities/9012`
-
-4. Instruct the integration layer to return a maximum of 5 facet values of facet 'Creator', and that these values must be ordered by count and then by name
-
-`GET /v1/collections/masterpieces?page=1&facet[creators][orderBy][count]=desc&facet[creators][orderBy][name]=asc&facet[creators][size]=5`
-
-:::
-
-:::note To do
-
-Think of a way to express the ID of a `facet` in the query string. A facet ID like `creators` is a shorthand for its full URI but currently does not have a designated property in a [facet collection](facets.md#endpoint-retrieve-a-facet-collection). Full URIs — such as `https://example.org/v1/collections/masterpieces/facets/creators` — are rather verbose.
-
-:::
 
 ## Page
 
@@ -385,8 +316,6 @@ An integration layer _MUST_ make its pagination strategy explicit. A collection 
 
 Counting all items of a collection costs time. Page navigation usually needs that number to know which page comes last, and cursor navigation usually does not. An integration layer that uses page navigation _MAY_ return an exact `totalItems`, and an integration layer that uses cursor navigation _MAY_ return an `estimatedTotalItems`. An integration layer _MAY_ return either property with either strategy.
 
-When it uses page navigation, an integration layer _MUST_ number the first page `1`, not `0`.
-
 Page navigation is easy to use. A presentation layer can send a user straight to page 7, and the user sees 'page 7 of 20'. The cost is that the integration layer has to count or skip over items, which becomes slow on a large collection. It also becomes less reliable over time: if items are added or removed while a user is browsing, the numbers move, and the user can see an item twice or miss it.
 
 With cursor navigation, the integration layer does not have to count. It remembers where the previous response ended and continues from there. This is fast on a large collection, and it does not shift when items are added or removed. The cost is that a presentation layer cannot jump to an arbitrary page, because it has no number to jump to. For that reason a collection that uses cursor navigation usually has no `last` page: the integration layer does not know which page is last. An integration layer that does know _MAY_ set `last`. A presentation layer can then follow `last` and walk back through the collection with `prev`.
@@ -482,6 +411,27 @@ Example of the response body with cursor navigation:
 ```
 
 This response has the same properties as the previous one, with two differences. The page is identified by a cursor instead of a number. The `partOf` property has no `last`, because the integration layer does not know which page is last. A presentation layer can walk through the collection with `next`, but it cannot jump to the end.
+
+## Capability discovery
+
+A collection can do more than return a list of items. It can support a simple search, an advanced search, facets, suggestions or pagination. Each of these is a _capability_: a feature that a collection supports. Every collection advertises its own capabilities, so that a presentation layer can discover which features a collection offers.
+
+This specification defines the following capabilities:
+
+| Capability URI                                   | Description                                                                                   |
+| ------------------------------------------------ | --------------------------------------------------------------------------------------------- |
+| `https://specs.nde.nl/rest/v1/simple-search`     | The collection supports a [simple search](search.md#endpoint-simple-search).                  |
+| `https://specs.nde.nl/rest/v1/advanced-search`   | The collection supports an [advanced search](search.md#endpoint-advanced-search).             |
+| `https://specs.nde.nl/rest/v1/facets`            | The collection supports [facets](facets.md).                                                  |
+| `https://specs.nde.nl/rest/v1/suggestions`       | The collection supports [suggestions](suggestions.md).                                        |
+| `https://specs.nde.nl/rest/v1/page-pagination`   | The collection supports pagination by [page numbers](#page-navigation-and-cursor-navigation). |
+| `https://specs.nde.nl/rest/v1/cursor-pagination` | The collection supports pagination by [a cursor](#page-navigation-and-cursor-navigation).     |
+
+Capabilities are a property of a single collection. A presentation layer _MUST NOT_ infer the capabilities of a collection from the capabilities of its ancestors in the collection tree.
+
+The `capabilities` property tells a presentation layer that a collection supports a feature. It does not tell it how to use that feature; the endpoints and query parameters of the collection do.
+
+Some capabilities come with a property that points to another resource. The `facets` property of a collection points to its list of facet collections; see [Facets](facets.md). The `suggestions` property points to its list of suggestion collections; see [Suggestions](suggestions.md). The `queryables` property points to its Queryables resource; see [Queryables](search.md#queryables).
 
 ## Resource identifiers
 

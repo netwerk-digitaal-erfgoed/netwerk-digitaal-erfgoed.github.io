@@ -107,7 +107,7 @@ The response body _MUST_ contain at least the following properties:
 | `last`                | Page                      | 0 or 1      | The last page in the collection. Not set if the collection is empty, if the collection is not divided into [pages](#endpoint-retrieve-a-page-in-a-collection), or if the last page is unknown (e.g. in case of [cursor navigation](resources.md#page-navigation-and-cursor-navigation)). |
 | `last.id`             | string                    | 1           | The identifier of the last page in the collection.                                                                                                                                                                                                                                       |
 | `last.type`           | string                    | 1           | The type of the last page in the collection. It _MUST_ be `Page` or a specialisation.                                                                                                                                                                                                    |
-| `capabilities`        | array                     | 0 or 1      | The URIs of the capabilities the integration layer implements for this collection. _MUST_ be omitted if the collection supports no capabilities. See [Capability discovery](resources.md#capability-discovery).                                                                          |
+| `capabilities`        | array                     | 0 or 1      | The URIs of the capabilities the integration layer implements for this collection. It _MUST_ be omitted if the collection supports no capabilities. See [Capability discovery](resources.md#capability-discovery).                                                                       |
 | `facets`              | Collection                | 0 or 1      | The list of this collection's facet collections. _MUST_ be omitted if the collection has no facet collections. See [Facets](facets.md).                                                                                                                                                  |
 | `facets.id`           | string                    | 1           | The identifier of the list.                                                                                                                                                                                                                                                              |
 | `facets.type`         | string                    | 1           | The type of the list. It _MUST_ be `Collection` or a specialisation.                                                                                                                                                                                                                     |
@@ -201,12 +201,12 @@ The endpoint retrieves a curated collection. The integration layer _MAY_ impleme
 
 ### Query parameters
 
-| Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                                                                 |
-| --------- | --------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `q`       | string    | 0 or 1      | A keyword query for filtering the items. Minimum length: defined by the integration layer (e.g. 1 character). Maximum length: defined by the integration layer (e.g. 100 characters).                                                                                                       |
-| `size`    | number    | 0 or 1      | The maximum number of items to retrieve. Minimum: 1. Default: 10. Maximum: defined by the integration layer (e.g. 100).                                                                                                                                                                     |
-| `orderBy` | string    | 0 or 1      | The sorting order of the items. One of `relevance`, `value`. Default: `relevance:desc` (most relevant entity first) if `q` is set; otherwise the order defined by the integration layer. The integration layer defines which property it sorts by `value` on (e.g. the `name` of the item). |
-| `filter`  | string    | 0 or more   | The rules for filtering the items. See [Filters](resources.md#filters).                                                                                                                                                                                                                     |
+| Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| --------- | --------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `q`       | string    | 0 or 1      | A keyword query for filtering the items. The integration layer defines the minimum and maximum length and how the query is matched. Mutually exclusive with `search`.                                                                                                                                                                                                                                                                                                                                                                              |
+| `size`    | number    | 0 or 1      | The maximum number of items to retrieve. The minimum is 1. The integration layer defines the maximum. Mutually exclusive with `search`.                                                                                                                                                                                                                                                                                                                                                                                                            |
+| `orderBy` | string    | 0 or 1      | The sorting order of the items: a comma-separated list of sort criteria, in priority order. Each criterion is `property` or `property:order`, where `property` is `relevance` or `value` and `order` is `asc` or `desc`. The integration layer defines the default order and which property `value` sorts on (e.g. the `name` of the item). `relevance` typically expresses how well an item matches the keyword query (`q`). An integration layer _MAY_ also apply its own relevance rules when `q` is missing. Mutually exclusive with `search`. |
+| `search`  | string    | 0 or 1      | An identifier for an [advanced search](search.md#endpoint-advanced-search). Mutually exclusive with `q`, `size` and `orderBy`.                                                                                                                                                                                                                                                                                                                                                                                                                     |
 
 ### Request body
 
@@ -236,7 +236,7 @@ The response body _MUST_ contain at least the following properties:
 | `partOf.id`           | string                    | 1           | The identifier of the collection.                                                                                                                                                                                                                                                        |
 | `partOf.type`         | string                    | 1           | The type of the collection. It _MUST_ be `CuratedCollection` or a specialisation.                                                                                                                                                                                                        |
 | `partOf.name`         | string                    | 1           | The name of the collection.                                                                                                                                                                                                                                                              |
-| `capabilities`        | array                     | 0 or 1      | The URIs of the capabilities the integration layer implements for this collection. _MUST_ be omitted if the collection supports no capabilities. See [Capability discovery](resources.md#capability-discovery).                                                                          |
+| `capabilities`        | array                     | 0 or 1      | The URIs of the capabilities the integration layer implements for this collection. It _MUST_ be omitted if the collection supports no capabilities. See [Capability discovery](resources.md#capability-discovery).                                                                       |
 | `facets`              | Collection                | 0 or 1      | The list of this collection's facet collections. _MUST_ be omitted if the collection has no facet collections. See [Facets](facets.md).                                                                                                                                                  |
 | `facets.id`           | string                    | 1           | The identifier of the list.                                                                                                                                                                                                                                                              |
 | `facets.type`         | string                    | 1           | The type of the list. It _MUST_ be `Collection` or a specialisation.                                                                                                                                                                                                                     |
@@ -270,14 +270,11 @@ An example of the response body of a collection:
     "type": "CuratedCollection",
     "name": "Collections"
   },
-  "capabilities": [
-    "https://specs.nde.nl/rest/v1/page-pagination",
-    "https://specs.nde.nl/rest/v1/keyword-search"
-  ]
+  "capabilities": ["https://specs.nde.nl/rest/v1/page-pagination"]
 }
 ```
 
-The response indicates that this collection contains 195 entities, spread over 20 pages, and that it supports keyword search for it.
+The response indicates that this collection contains 195 entities, spread over 20 pages, and that it supports page pagination for it.
 
 Another example of the response body of a collection, with extended capabilities:
 
@@ -303,7 +300,7 @@ Another example of the response body of a collection, with extended capabilities
   },
   "capabilities": [
     "https://specs.nde.nl/rest/v1/page-pagination",
-    "https://specs.nde.nl/rest/v1/keyword-search",
+    "https://specs.nde.nl/rest/v1/simple-search",
     "https://specs.nde.nl/rest/v1/facets",
     "https://specs.nde.nl/rest/v1/suggestions"
   ],
@@ -320,7 +317,7 @@ Another example of the response body of a collection, with extended capabilities
 }
 ```
 
-The response indicates that this collection supports keyword search, facets and suggestions.
+The response indicates that this collection supports page pagination, simple search, facets and suggestions.
 
 ## Endpoint: Retrieve a page in a collection
 
@@ -340,14 +337,13 @@ The endpoint retrieves a page in a curated collection. The integration layer _MU
 
 ### Query parameters
 
-| Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                                                                 |
-| --------- | --------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `page`    | string    | 1           | The identifier of the page: a page number or cursor, depending on the [pagination strategy](resources.md#page-navigation-and-cursor-navigation) of the integration layer.                                                                                                                   |
-| `q`       | string    | 0 or 1      | A keyword query for filtering the items. Minimum length: defined by the integration layer (e.g. 1 character). Maximum length: defined by the integration layer (e.g. 100 characters).                                                                                                       |
-| `size`    | number    | 0 or 1      | The maximum number of items to retrieve. Minimum: 1. Default: 10. Maximum: defined by the integration layer (e.g. 100).                                                                                                                                                                     |
-| `orderBy` | string    | 0 or 1      | The sorting order of the items. One of `relevance`, `value`. Default: `relevance:desc` (most relevant entity first) if `q` is set; otherwise the order defined by the integration layer. The integration layer defines which property it sorts by `value` on (e.g. the `name` of the item). |
-| `filter`  | string    | 0 or more   | The rules for filtering the items. See [Filters](resources.md#filters).                                                                                                                                                                                                                     |
-| `facet`   | string    | 0 or more   | The facets that must be retrieved. _MUST_ be ignored by the integration layer if it does not support facets. See [facets](facets.md).                                                                                                                                                       |
+| Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| --------- | --------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `page`    | string    | 1           | The identifier of the page: a page number or cursor, depending on the [pagination strategy](resources.md#page-navigation-and-cursor-navigation) of the integration layer.                                                                                                                                                                                                                                                                                                                                                                          |
+| `q`       | string    | 0 or 1      | A keyword query for filtering the items. The integration layer defines the minimum and maximum length and how the query is matched. Mutually exclusive with `search`.                                                                                                                                                                                                                                                                                                                                                                              |
+| `size`    | number    | 0 or 1      | The maximum number of items to retrieve. The minimum is 1. The integration layer defines the maximum. Mutually exclusive with `search`.                                                                                                                                                                                                                                                                                                                                                                                                            |
+| `orderBy` | string    | 0 or 1      | The sorting order of the items: a comma-separated list of sort criteria, in priority order. Each criterion is `property` or `property:order`, where `property` is `relevance` or `value` and `order` is `asc` or `desc`. The integration layer defines the default order and which property `value` sorts on (e.g. the `name` of the item). `relevance` typically expresses how well an item matches the keyword query (`q`). An integration layer _MAY_ also apply its own relevance rules when `q` is missing. Mutually exclusive with `search`. |
+| `search`  | string    | 0 or 1      | An identifier for an [advanced search](search.md#endpoint-advanced-search). Mutually exclusive with `q`, `size` and `orderBy`.                                                                                                                                                                                                                                                                                                                                                                                                                     |
 
 ### Request body
 
@@ -465,7 +461,7 @@ An example of a response body in which the presentation layer requested two face
   ],
   "facets": [
     {
-      "id": "https://example.org/v1/collections/masterpieces/facets/centuries?orderBy=count:desc&context=...",
+      "id": "https://example.org/v1/collections/masterpieces/facets/centuries?orderBy=count:desc&context=abc",
       "type": "FacetCollection",
       "name": "Made in century",
       "totalItems": 4,
@@ -514,7 +510,7 @@ An example of a response body in which the presentation layer requested two face
       }
     },
     {
-      "id": "https://example.org/v1/collections/masterpieces/facets/subjects?orderBy=count:desc&context=...",
+      "id": "https://example.org/v1/collections/masterpieces/facets/subjects?orderBy=count:desc&context=abc",
       "type": "FacetCollection",
       "name": "Subject",
       "totalItems": 3,
@@ -596,7 +592,7 @@ An entry is the complete response body of a `FacetPage`, the same body that the 
   ],
   "facets": [
     {
-      "id": "https://example.org/v1/collections/objects/facets/creators?page=1&size=3&orderBy=count:desc&context=...",
+      "id": "https://example.org/v1/collections/objects/facets/creators?page=1&size=3&orderBy=count:desc&context=abc",
       "type": "FacetPage",
       "name": "Creator: page 1",
       "items": [
@@ -629,7 +625,7 @@ An entry is the complete response body of a `FacetPage`, the same body that the 
         }
       ],
       "next": {
-        "id": "https://example.org/v1/collections/objects/facets/creators?page=2&size=3&orderBy=count:desc&context=...",
+        "id": "https://example.org/v1/collections/objects/facets/creators?page=2&size=3&orderBy=count:desc&context=abc",
         "type": "FacetPage"
       },
       "partOf": {
@@ -638,17 +634,17 @@ An entry is the complete response body of a `FacetPage`, the same body that the 
         "name": "Creator",
         "totalItems": 195,
         "first": {
-          "id": "https://example.org/v1/collections/objects/facets/creators?page=1&size=3&orderBy=count:desc&context=...",
+          "id": "https://example.org/v1/collections/objects/facets/creators?page=1&size=3&orderBy=count:desc&context=abc",
           "type": "FacetPage"
         },
         "last": {
-          "id": "https://example.org/v1/collections/objects/facets/creators?page=65&size=3&orderBy=count:desc&context=...",
+          "id": "https://example.org/v1/collections/objects/facets/creators?page=65&size=3&orderBy=count:desc&context=abc",
           "type": "FacetPage"
         }
       }
     },
     {
-      "id": "https://example.org/v1/collections/objects/facets/places?page=1&size=3&orderBy=count:desc&context=...",
+      "id": "https://example.org/v1/collections/objects/facets/places?page=1&size=3&orderBy=count:desc&context=abc",
       "type": "FacetPage",
       "name": "Made in place: page 1",
       "items": [
@@ -681,7 +677,7 @@ An entry is the complete response body of a `FacetPage`, the same body that the 
         }
       ],
       "next": {
-        "id": "https://example.org/v1/collections/objects/facets/places?page=2&size=3&orderBy=count:desc&context=...",
+        "id": "https://example.org/v1/collections/objects/facets/places?page=2&size=3&orderBy=count:desc&context=abc",
         "type": "FacetPage"
       },
       "partOf": {
@@ -690,11 +686,11 @@ An entry is the complete response body of a `FacetPage`, the same body that the 
         "name": "Made in place",
         "totalItems": 42,
         "first": {
-          "id": "https://example.org/v1/collections/objects/facets/places?page=1&size=3&orderBy=count:desc&context=...",
+          "id": "https://example.org/v1/collections/objects/facets/places?page=1&size=3&orderBy=count:desc&context=abc",
           "type": "FacetPage"
         },
         "last": {
-          "id": "https://example.org/v1/collections/objects/facets/places?page=14&size=3&orderBy=count:desc&context=...",
+          "id": "https://example.org/v1/collections/objects/facets/places?page=14&size=3&orderBy=count:desc&context=abc",
           "type": "FacetPage"
         }
       }

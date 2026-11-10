@@ -281,7 +281,9 @@ Cross-Origin Resource Sharing (CORS) is a mechanism that allows browser-based pr
 1. The integration layer _MUST_ send the `Access-Control-Allow-Headers` header to specify which HTTP headers are permitted for cross-origin requests.
 1. The integration layer _MUST_ support the HTTP `OPTIONS` method and send the headers above in response to an `OPTIONS` request (the [preflight request pattern](https://fetch.spec.whatwg.org/#cors-preflight-request)).
 
-### Example
+### Example: retrieve an entity
+
+The [retrieve an entity endpoint](entities.md#endpoint-retrieve-an-entity) accepts a `GET` request. A browser sends a `GET` request directly. If the presentation layer adds headers such as `If-None-Match` or `If-Modified-Since`, the browser sends a preflight request first. The examples below show both cases.
 
 An example of a preflight request from a presentation layer:
 
@@ -310,6 +312,51 @@ An example of a regular, non-preflight request from a presentation layer:
 GET /v1/entities/1234
 Host: example.org
 Origin: https://mywebsite.nl
+```
+
+An example of the regular, non-preflight response headers of the integration layer:
+
+```http
+HTTP/2 200 OK
+Access-Control-Allow-Origin: *
+```
+
+### Example: advanced search
+
+The [advanced search endpoint](search.md#endpoint-advanced-search) accepts a `POST` request with a JSON body. Such a request makes the browser send a preflight request before the actual search. The preflight must allow the `POST` method and the `Content-Type` header.
+
+An example of a preflight request from a presentation layer:
+
+```http
+OPTIONS /v1/collections/masterpieces/search
+Host: example.org
+Origin: https://mywebsite.nl
+Access-Control-Request-Method: POST
+Access-Control-Request-Headers: Accept, Content-Type, Origin
+```
+
+An example of the preflight response headers of the integration layer:
+
+```http
+HTTP/2 200 OK
+Content-Length: 0
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: GET, POST, OPTIONS
+Access-Control-Allow-Headers: Accept, Content-Type, Accept-Language, If-None-Match, If-Modified-Since, Origin
+Access-Control-Max-Age: 7200
+```
+
+An example of a regular, non-preflight request from a presentation layer:
+
+```http
+POST /v1/collections/masterpieces/search
+Host: example.org
+Origin: https://mywebsite.nl
+Content-Type: application/json
+
+{
+  "q": "rembrandt"
+}
 ```
 
 An example of the regular, non-preflight response headers of the integration layer:

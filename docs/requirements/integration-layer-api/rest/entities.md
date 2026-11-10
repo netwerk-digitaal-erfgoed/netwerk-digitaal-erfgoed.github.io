@@ -88,7 +88,7 @@ Explain data modelling requirements, e.g.:
 - An entity must have a publisher (e.g. `publisher`)
 - An entity must refer to the entity IRI of the data provider (e.g. `isBasedOn`)
 - An entity must have a licence (e.g. `license`)
-- An entity must have an ID that a presentation layer can use, e.g. for bookmarking by users (e.g. `identifier`)
+- An entity must have an ID that a presentation layer can use, e.g. for building SEO-friendly URLs or for bookmarking by users (e.g. `identifier`)
 - An entity must expose the [collections](collections.md) it is a member of. A presentation layer can then offer a 'more like this' or 'more from this collection' functionality.
 
 :::
@@ -172,7 +172,7 @@ The response body depends on the data model of the entity. An example:
   "id": "https://example.org/v1/entities/1234",
   "type": "HeritageObject",
   "name": "The Night Watch",
-  "additionalTypes": [
+  "additionalType": [
     {
       "id": "https://example.org/v1/entities/1122",
       "type": "Concept",
@@ -181,14 +181,14 @@ The response body depends on the data model of the entity. An example:
   ],
   "description": "Rembrandt’s largest, most famous canvas was made for the Arquebusiers guild hall...",
   "dateCreated": "1642",
-  "creators": [
+  "creator": [
     {
       "id": "https://example.org/v1/entities/5678",
       "type": "Person",
       "name": "Rembrandt"
     }
   ],
-  "locationsCreated": [
+  "locationCreated": [
     {
       "id": "https://example.org/v1/entities/9012",
       "type": "Place",
