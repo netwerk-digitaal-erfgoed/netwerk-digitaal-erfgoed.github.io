@@ -117,9 +117,8 @@ The response body _MUST_ contain at least the following properties:
 | `suggestions.id`      | string                    | 1           | The identifier of the list.                                                                                                                                                                                                                                                              |
 | `suggestions.type`    | string                    | 1           | The type of the list. It _MUST_ be `Collection` or a specialisation.                                                                                                                                                                                                                     |
 | `suggestions.name`    | string                    | 1           | The name of the list.                                                                                                                                                                                                                                                                    |
-| `queryables`          | Queryables                | 0 or 1      | The Queryables resource of this collection. It lists the properties that can be used in a filter. A collection that advertises the `advanced-search` capability _MUST_ set it. See [Queryables](search.md#queryables).                                                                   |
+| `queryables`          | object                    | 0 or 1      | The Queryables resource of this collection. It lists the properties that can be used in a filter. A collection that advertises the `advanced-search` capability _MUST_ set it. See [Queryables](search.md#queryables).                                                                   |
 | `queryables.id`       | string                    | 1           | The identifier of the Queryables resource.                                                                                                                                                                                                                                               |
-| `queryables.type`     | string                    | 1           | The type of the resource. It _MUST_ be `Queryables`.                                                                                                                                                                                                                                     |
 
 Note: the response body carries no `partOf` property — the root collection is not a part of another collection.
 
@@ -250,9 +249,8 @@ The response body _MUST_ contain at least the following properties:
 | `suggestions.id`      | string                    | 1           | The identifier of the list.                                                                                                                                                                                                                                                              |
 | `suggestions.type`    | string                    | 1           | The type of the list. It _MUST_ be `Collection` or a specialisation.                                                                                                                                                                                                                     |
 | `suggestions.name`    | string                    | 1           | The name of the list.                                                                                                                                                                                                                                                                    |
-| `queryables`          | Queryables                | 0 or 1      | The Queryables resource of this collection. It lists the properties that can be used in a filter. A collection that advertises the `advanced-search` capability _MUST_ set it. See [Queryables](search.md#queryables).                                                                   |
+| `queryables`          | object                    | 0 or 1      | The Queryables resource of this collection. It lists the properties that can be used in a filter. A collection that advertises the `advanced-search` capability _MUST_ set it. See [Queryables](search.md#queryables).                                                                   |
 | `queryables.id`       | string                    | 1           | The identifier of the Queryables resource.                                                                                                                                                                                                                                               |
-| `queryables.type`     | string                    | 1           | The type of the resource. It _MUST_ be `Queryables`.                                                                                                                                                                                                                                     |
 
 ### Example
 
@@ -324,8 +322,7 @@ Another example of the response body of a collection, with extended capabilities
     "name": "Suggestions"
   },
   "queryables": {
-    "id": "https://example.org/v1/collections/masterpieces/queryables",
-    "type": "Queryables"
+    "id": "https://example.org/v1/collections/masterpieces/queryables"
   }
 }
 ```

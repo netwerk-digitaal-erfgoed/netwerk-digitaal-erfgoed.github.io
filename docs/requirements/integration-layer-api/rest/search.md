@@ -541,7 +541,7 @@ CQL2 is independent of the backing store. The table shows the closest equivalent
 
 A Queryables resource describes the properties of a collection that a [filter](#filters) may refer to. It is a machine-readable list of property names and their data types. With it, a presentation layer can build a filter without guessing which properties exist.
 
-A Queryables resource is a JSON Schema document. A collection refers to it with a `queryables` property that holds the identifier of the resource and the type `Queryables`.
+A Queryables resource is a JSON Schema document, not a resource of the data model. A collection refers to it with a `queryables` property that holds its identifier.
 
 The resource follows the [Queryables requirements class](https://docs.ogc.org/is/19-079r2/19-079r2.html). That standard defines the resource, its media type and the shape of its response.
 

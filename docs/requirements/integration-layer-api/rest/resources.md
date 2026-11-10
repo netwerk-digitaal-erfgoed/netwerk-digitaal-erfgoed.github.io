@@ -67,7 +67,9 @@ A Resource, regardless of type, contains at least the following properties:
 | `id`   | string    | 0 or 1      | The identifier of the resource. It _MUST_ be a dereferenceable [HTTP URI](https://httpwg.org/specs/rfc9110.html#uri.schemes). Optional for volatile, non-persistent resources, such as [Keyword Values](suggestions.md) or [Facet Values](facets.md). |
 | `name` | string    | 0 or 1      | The name of the resource, if known.                                                                                                                                                                                                                   |
 
-The integration layer _MUST_ include `type` in the response body of every resource it returns, and `id` and `name` when they are known. The combination of these three properties allow a presentation layer to identify a resource.
+The integration layer _MUST_ include `type` in the response body of every resource of the data model it returns, and `id` and `name` when they are known. The combination of these three properties allow a presentation layer to identify a resource.
+
+Not every document that the API returns is a resource of the data model. A [Queryables](search.md#queryables) resource is a JSON Schema document, and an [error](general-rules.md#error-handling) is a Problem Details document. Those documents follow their own standard, which defines their properties and their media type.
 
 ### Example
 
@@ -131,9 +133,8 @@ A Collection contains at least the following properties:
 | `suggestions.id`      | string     | 1           | The identifier of the collection.                                                                                                                                                                                                                                  |
 | `suggestions.type`    | string     | 1           | The type of the collection. It _MUST_ be `Collection` or a specialisation.                                                                                                                                                                                         |
 | `suggestions.name`    | string     | 1           | The name of the collection.                                                                                                                                                                                                                                        |
-| `queryables`          | Queryables | 0 or 1      | The Queryables resource of this collection. It lists the properties that can be used in a filter. A collection that advertises the `advanced-search` capability _MUST_ set it. See [Queryables](search.md#queryables).                                             |
+| `queryables`          | object     | 0 or 1      | The Queryables resource of this collection. It lists the properties that can be used in a filter. A collection that advertises the `advanced-search` capability _MUST_ set it. See [Queryables](search.md#queryables).                                             |
 | `queryables.id`       | string     | 1           | The identifier of the Queryables resource.                                                                                                                                                                                                                         |
-| `queryables.type`     | string     | 1           | The type of the resource. It _MUST_ be `Queryables`.                                                                                                                                                                                                               |
 | `capabilities`        | array      | 0 or 1      | The URIs of the capabilities the integration layer implements for this collection. It _MUST_ be omitted if the collection supports no capabilities. See [Capability discovery](#capability-discovery).                                                             |
 
 ### Collection tree
@@ -305,16 +306,26 @@ Page3 --> Collection : partOf
 
 #### Page navigation and cursor navigation
 
-Pagination means that a collection is split into pages. Navigation is how a presentation layer moves through those pages. An integration layer uses one of two pagination strategies: page navigation and cursor navigation.
-
-A presentation layer asks for a page with the `page` query parameter. The value of `page` is either a number or a cursor:
+An integration layer uses one of two pagination strategies: page navigation and cursor navigation. A presentation layer asks for a page with the `page` query parameter. The value of `page` is either a number or a cursor:
 
 - **Page navigation**: the value is a number that says which page the presentation layer wants, such as `?page=3`.
 - **Cursor navigation**: the value is a token that the integration layer has given itself, such as `?page=eyJpZCI6MTIzfQ`. The token points to a place in the collection.
 
 Both are allowed. An integration layer _MAY_ use page navigation, _MAY_ use cursor navigation, and _MAY_ use both across its collections. For predictable navigation, it is _RECOMMENDED_ that an integration layer uses the same strategy for all of its collections, so that a presentation layer can handle every collection in one way.
 
-With page navigation, a presentation layer can build the URI of any page itself. The collection tells it how with its [`pageUriTemplate`](#collection) property. The property is a [URI template](https://www.rfc-editor.org/rfc/rfc6570.html), an IETF standard for describing URIs with variables. The template contains the `page` variable. A presentation layer can replace it with a number. For example:
+Page navigation is easy to use. A presentation layer can send a user straight to page 7, and the user sees 'page 7 of 20'. The cost is that the integration layer has to count or skip over items, which becomes slow on a large collection. It also becomes less reliable over time: if items are added or removed while a user is browsing, the numbers move, and the user can see an item twice or miss it.
+
+With cursor navigation, the integration layer does not have to count. It remembers where the previous response ended and continues from there. This is fast on a large collection, and it does not shift when items are added or removed. The cost is that a presentation layer cannot jump to an arbitrary page, because it has no number to jump to. For that reason a collection that uses cursor navigation usually has no `last` page: the integration layer does not know which page is last.
+
+A cursor is a token that only the integration layer understands. A presentation layer _MUST_ pass a cursor back unchanged, and _MUST NOT_ try to read it or build one. A cursor _MUST_ only be used with the collection and the query it came from. A presentation layer _MUST NOT_ reuse a cursor for another collection or another query.
+
+Counting all items of a collection costs time. Page navigation usually needs that number to know which page comes last, and cursor navigation usually does not. An integration layer that uses page navigation _MAY_ return an exact `totalItems`, and an integration layer that uses cursor navigation _MAY_ return an `estimatedTotalItems`. An integration layer _MAY_ return either property with either strategy.
+
+An integration layer _MUST_ respond with a `400` status code if `page` has a value of the wrong kind for the strategy that the collection uses: a number where the collection expects a cursor, or a cursor where it expects a number. It _MUST NOT_ treat a `page` value it does not understand as page 1, because a presentation layer would then be shown the wrong page without knowing it.
+
+#### Page URI template
+
+With page navigation, a presentation layer can build the URI of any page itself. The collection tells it how with its [`pageUriTemplate`](#collection) property. The property is a [URI template](https://www.rfc-editor.org/rfc/rfc6570.html). The template contains the `page` variable. A presentation layer can replace it with a number. For example:
 
 ```
 https://example.org/v1/collections/objects{?page}
@@ -328,21 +339,11 @@ https://example.org/v1/collections/objects?q=rembrandt{&page}
 
 Expanding this template with `3` gives `https://example.org/v1/collections/objects?q=rembrandt&page=3`. Because the integration layer builds the template, it contains every parameter that selects the result set, such as `q`, `orderBy`, `size`, `search` and `context`. A presentation layer _MUST NOT_ add or change any other parameter: it only fills in the page number. That way it cannot lose a filter or a sort order while navigating.
 
-The value of the `page` variable is the number of the page, starting at `1`. A presentation layer expands the template when it wants a specific page whose number it already knows, such as the page that a user selected or the page it calculated from an item offset. Only when it starts from a page URI that it did not build itself, such as a bookmark or an external link, does it read the `page` query parameter of that URI to learn the number.
+The value of the `page` variable is the number of the page. A presentation layer expands the template when it wants a specific page whose number it already knows, such as the page that a user selected or the page it calculated from an item offset. Only when it starts from a page URI that it did not build itself, such as a bookmark or an external link, does it read the `page` query parameter of that URI to learn the number.
 
 A collection that is divided into pages and uses page navigation _MUST_ set `pageUriTemplate`. The template _MUST_ be a valid URI template and _MUST_ contain the `page` variable. Expanding it with a number _MUST_ return that page of the same collection and the same result set. The first page _MUST_ be page `1`.
 
 A collection that uses cursor navigation _MUST NOT_ set `pageUriTemplate`. A cursor is a token that only the integration layer can make, so a presentation layer cannot construct one; it can only follow the page URIs that the integration layer returns. A collection that is not divided into pages _MUST NOT_ set the property either. A presentation layer therefore knows that a collection which is divided into pages but has no `pageUriTemplate` uses cursor navigation.
-
-Counting all items of a collection costs time. Page navigation usually needs that number to know which page comes last, and cursor navigation usually does not. An integration layer that uses page navigation _MAY_ return an exact `totalItems`, and an integration layer that uses cursor navigation _MAY_ return an `estimatedTotalItems`. An integration layer _MAY_ return either property with either strategy.
-
-Page navigation is easy to use. A presentation layer can send a user straight to page 7, and the user sees 'page 7 of 20'. The cost is that the integration layer has to count or skip over items, which becomes slow on a large collection. It also becomes less reliable over time: if items are added or removed while a user is browsing, the numbers move, and the user can see an item twice or miss it.
-
-With cursor navigation, the integration layer does not have to count. It remembers where the previous response ended and continues from there. This is fast on a large collection, and it does not shift when items are added or removed. The cost is that a presentation layer cannot jump to an arbitrary page, because it has no number to jump to. For that reason a collection that uses cursor navigation usually has no `last` page: the integration layer does not know which page is last. An integration layer that does know _MAY_ set `last`. A presentation layer can then follow `last` and walk back through the collection with `prev`.
-
-A cursor is a token that only the integration layer understands. A presentation layer _MUST_ pass a cursor back unchanged, and _MUST NOT_ try to read it or build one. A cursor _MUST_ only be used with the collection and the query it came from. A presentation layer _MUST NOT_ reuse a cursor for another collection or another query.
-
-An integration layer _MUST_ respond with a `400` status code if `page` has a value of the wrong kind for the strategy that the collection uses: a number where the collection expects a cursor, or a cursor where it expects a number. It _MUST NOT_ treat a `page` value it does not understand as page 1, because a presentation layer would then be shown the wrong page without knowing it.
 
 ### Example
 
