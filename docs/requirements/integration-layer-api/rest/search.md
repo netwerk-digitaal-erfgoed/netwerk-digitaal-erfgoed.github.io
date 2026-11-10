@@ -7,7 +7,7 @@ sidebar_position: 7
 
 ## Introduction
 
-Search is crucial to help the users of presentation layers find information. A search is tied to a particular collection — the context collection — ensuring that results remain within the context of that collection. A presentation layer can search the items of that collection in two ways: with a **simple search** or with an **advanced search**. The presentation layer decides which form to use. A simple search works well for a keyword query with a sort order. An advanced search is needed when the search includes filters, such as date ranges, geolocation or facet values.
+Search is crucial to help the users of presentation layers find information. A search is tied to a particular collection — the context collection — ensuring that results remain within the context of that collection. A presentation layer can search the items of that collection in two ways: with a **simple search** or with an **advanced search**. A simple search works well for a keyword query with a sort order. An advanced search is needed when the search includes filters, such as date ranges, geolocation or facet values.
 
 Both forms of search are optional. An integration layer _MAY_ implement simple search, advanced search, or both, depending on its requirements.
 
@@ -23,21 +23,21 @@ A collection that supports a simple search advertises the `https://specs.nde.nl/
 
 An advanced search lets a user narrow down the items of a collection with filters, such as date ranges, geolocation and facet values, combined with 'and' and 'or'. It can combine these filters with a keyword query, a sort order and a page size.
 
-An advanced search uses the `POST` method. The presentation layer sends its search criteria in a JSON body, the **search object**. The `GET` method with a query string is not a good fit for complex criteria: it has a limited length, and conditions with 'and' and 'or' are hard to read and to parse.
+An advanced search uses the `POST` method. The presentation layer sends its search criteria in a JSON body, the **search object**. It does not use the `GET` method: a query string is a poor fit for complex criteria: it has a limited length, and it must be URL-encoded, which makes the criteria hard to read and easy to get wrong.
 
-A collection that supports an advanced search advertises the `https://specs.nde.nl/rest/v1/advanced-search` capability.
+A collection that supports an advanced search advertises the `https://specs.nde.nl/rest/v1/advanced-search` capability. It also exposes a [Queryables resource](#queryables), which lists the properties that a filter may use.
 
 ### Search object
 
 A search object is a JSON object. It contains the search criteria of an advanced search.
 
-The search object is an abstraction over query notations that developers may already know, such as Elasticsearch's query language or SQL. The abstraction is essential: an integration layer chooses its own backing store — this specification cannot prescribe the notation of one search engine or database. For filters, the search object uses the standard [Common Query Language (CQL2)](https://docs.ogc.org/is/21-065r2/21-065r2.html); the other search criteria are defined by this specification. The notation is designed for a straightforward mapping to the native notation of a backing store.
+The search object is an abstraction over query languages that developers may already know, such as Elasticsearch's query language or SQL. The abstraction is essential: an integration layer chooses its own backing store, and this specification cannot prescribe the query language of one search engine or database. For filters, the search object uses the standard [Common Query Language (CQL2)](https://docs.ogc.org/is/21-065r2/21-065r2.html); the other search criteria are defined by this specification. The search object is designed for a straightforward mapping to the native query language of a backing store.
 
 A search object has the following properties:
 
 | Name                  | Data type | Cardinality | Description                                                                                                                                                                                                                                                                                                                                                                  |
 | --------------------- | --------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `q`                   | string    | 0 or 1      | A keyword query. It has the same meaning as the `q` query parameter of a [simple search](#endpoint-simple-search).                                                                                                                                                                                                                                                           |
+| `q`                   | string    | 0 or 1      | A keyword query. It has the same meaning as the `q` query parameter of a [simple search](#endpoint-simple-search). When the search object also has a `filter`, an item _MUST_ match both.                                                                                                                                                                                    |
 | `orderBy`             | array     | 0 or 1      | An ordered list of sort criteria. The criteria apply in array order. If absent, the integration layer defines the order. It has the same meaning as the `orderBy` query parameter of a [simple search](#endpoint-simple-search).                                                                                                                                             |
 | `orderBy[*]`          | object    | 1           | A sort criterion.                                                                                                                                                                                                                                                                                                                                                            |
 | `orderBy[*].property` | string    | 1           | The property to sort on. It _MUST_ be one of the properties that the collection supports for sorting. Which properties a collection supports, and what they mean, is documented with that collection.                                                                                                                                                                        |
@@ -45,6 +45,8 @@ A search object has the following properties:
 | `size`                | number    | 0 or 1      | The maximum number of items to retrieve. It has the same meaning as the `size` query parameter of a [simple search](#endpoint-simple-search).                                                                                                                                                                                                                                |
 | `filter`              | object    | 0 or 1      | A CQL2 filter expression. See [Filters](#filters).                                                                                                                                                                                                                                                                                                                           |
 | `context`             | string    | 0 or 1      | An identifier for an [advanced search](#endpoint-advanced-search) of the context collection. It is used only by facet collections and suggestion collections, to select the items on which their own items are based. The identifier _MUST_ identify an advanced search of that context collection; otherwise the integration layer _MUST_ respond with a `400` status code. |
+
+`q` and `filter` are complementary. `q` is a keyword query: it matches text across a set of properties that the integration layer defines, and it produces the relevance score that an `orderBy` criterion can use. `filter` is a boolean condition over the properties that the Queryables resource declares; it selects items but does not affect their relevance. An integration layer _MUST_ combine them with a logical AND: an item is included only if it matches the keyword query and satisfies the filter. A text filter is not a substitute for `q`, because it targets one property and does not rank.
 
 An example of a search object:
 
@@ -63,7 +65,7 @@ An example of a search object:
 
 The example searches the collection for items that match the keyword query `rembrandt`, returns 20 items per page, and sorts them by relevance, descending.
 
-If the search object is invalid, or contains a filter that the collection does not support, the integration layer _MUST_ respond with a `400` status code.
+If the search object is invalid, or contains a filter with an operator or property that the API does not support, the integration layer _MUST_ respond with a `400` status code.
 
 :::note To do
 
@@ -77,26 +79,41 @@ A presentation layer can narrow down the items of a collection with filters. Fil
 
 This specification uses the [Common Query Language (CQL2)](https://docs.ogc.org/is/21-065r2/21-065r2.html) for filters, in its JSON encoding. It has a [JSON Schema](https://schemas.opengis.net/cql2/1.0/cql2.json) which integration layers and presentation layers can use to validate a filter before executing or sending it. It also has an ecosystem of programming libraries for building, parsing and validating filters. An integration layer translates a CQL2 filter to the native query language of its backing store.
 
-The filters a collection supports depend on the resources it holds. A [curated collection](collections.md) of entities with geographical data may support a geolocation filter. A [facet collection](facets.md) does not, because its items are facet items rather than entities with a location.
+Which filters a collection supports is described in two places. The [conformance declaration](#conformance) of the API lists the CQL2 operators that the API supports. The [Queryables resource](#queryables) of the collection lists the properties that a filter may use. Together they determine what a presentation layer can filter on. For example, a geolocation filter needs an operator such as `s_within` and a property with a geometry.
 
 This specification describes the following filter types:
 
-1. **Keyword filter**: matching text with `=`, `in` or `like` (e.g. 'Name starts with "Rem"').
+1. **Text filter**: matching text with `=`, `in` or `like` (e.g. 'Name starts with "Rem"').
 1. **Date filter**: comparing dates with `=`, `in`, `>`, `>=`, `<` or `<=` (e.g. 'Date of creation is between 1900 and 1950').
 1. **Numeric filter**: comparing numbers with `=`, `in`, `>`, `>=`, `<`, `<=` or `between` (e.g. 'Number of pages is at least 300').
 1. **Geolocation filter**: matching a location with `s_within` and a bounding box or polygon (e.g. 'Location of creation is inside a bounding box around Delft').
 1. **Facet filter**: matching the values of one of the collection's facets with `=`, `in`, `a_contains` or `not a_overlaps` (e.g. 'Creator is "Rembrandt" or "Vincent van Gogh" and Type is "Painting"').
 1. **Set filter**: matching all or none of a set of values with `a_contains` or `not a_overlaps` (e.g. 'Creator includes both "Rembrandt" and "Vincent van Gogh"').
 
-All filter types use the same CQL2 notation. They differ only in the operators that apply and in the type of the operands that those operators expect.
+All filter types use the same CQL2 syntax. They differ only in the operators that apply and in the type of the operands that those operators expect.
 
-A presentation layer _MUST_ only send filters that the collection supports. If it sends another filter, the integration layer _MUST_ respond with a `400` status code. Ignoring an unsupported filter would silently give the presentation layer more items than it asked for.
+A presentation layer _MUST_ only use operators that the API's [conformance declaration](#conformance) covers and properties that the collection's [Queryables resource](#queryables) declares. If it uses another operator or property, the integration layer _MUST_ respond with a `400` status code. Ignoring an unsupported filter would silently give the presentation layer more items than it asked for.
+
+#### Conformance
+
+Which CQL2 operators the integration layer supports is declared in its conformance declaration. An integration layer that supports filters _MUST_ publish such a declaration. It lists the [CQL2 conformance classes](https://docs.ogc.org/is/21-065r2/21-065r2.html#_conformance) that apply.
+
+The conformance declaration _MUST_ include `http://www.opengis.net/spec/cql2/1.0/conf/cql2-json`, because this specification uses the JSON encoding of CQL2. It _MUST_ also include the class for every operator family that the API supports:
+
+| Conformance class             | URI                                                                       | Adds                                                             |
+| ----------------------------- | ------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| Basic CQL2                    | `http://www.opengis.net/spec/cql2/1.0/conf/basic-cql2`                    | `and`, `or`, `not`, `=`, `<>`, `<`, `<=`, `>`, `>=` and `isNull` |
+| Advanced Comparison Operators | `http://www.opengis.net/spec/cql2/1.0/conf/advanced-comparison-operators` | `like`, `between` and `in`                                       |
+| Case-insensitive Comparison   | `http://www.opengis.net/spec/cql2/1.0/conf/case-insensitive-comparison`   | `casei`                                                          |
+| Accent-insensitive Comparison | `http://www.opengis.net/spec/cql2/1.0/conf/accent-insensitive-comparison` | `accenti`                                                        |
+| Spatial Functions             | `http://www.opengis.net/spec/cql2/1.0/conf/spatial-functions`             | `s_within` and the other spatial predicates                      |
+| Temporal Functions            | `http://www.opengis.net/spec/cql2/1.0/conf/temporal-functions`            | `t_after`, `t_before` and the other temporal predicates          |
+| Array Functions               | `http://www.opengis.net/spec/cql2/1.0/conf/array-functions`               | `a_contains`, `a_overlaps` and the other array predicates        |
+| Functions                     | `http://www.opengis.net/spec/cql2/1.0/conf/functions`                     | Custom functions                                                 |
 
 #### Filter expressions
 
-The `filter` property holds one CQL2 expression. CQL2 defines the expression shapes and their meaning; see the [CQL2 specification](https://docs.ogc.org/is/21-065r2/21-065r2.html) and its [JSON Schema](https://schemas.opengis.net/cql2/1.0/cql2.json).
-
-A filter expression is a JSON object. For example:
+The `filter` property holds one CQL2 expression. An expression is a JSON object. For example:
 
 ```json
 {
@@ -112,11 +129,11 @@ A filter expression is a JSON object. For example:
 
 Put in the `filter` property of a search object, it matches items that have the creator with ID `https://example.org/v1/entities/1234`.
 
-The integration layer _MUST_ validate the expression against the CQL2 JSON Schema and against the operators that the collection supports. If the expression is invalid or contains an unsupported operator, the integration layer _MUST_ respond with a `400` status code.
+The integration layer _MUST_ validate the expression against the CQL2 JSON Schema, against the operators in the API's [conformance declaration](#conformance), and against the properties in the collection's [Queryables resource](#queryables). If the expression is invalid or contains an unsupported operator or property, the integration layer _MUST_ respond with a `400` status code.
 
 #### Operators
 
-The [CQL2 specification](https://docs.ogc.org/is/21-065r2/21-065r2.html) defines the complete language. This specification uses the following subset. The table shows what each operator does in this API and which data types it applies to.
+CQL2 supports various operators. The table underneath lists examples of operators that an integration layer may support. It shows what each operator does in this API and which data types it applies to. The list is not exhaustive: an integration layer may also support other CQL2 operators and declare them in its [conformance declaration](#conformance).
 
 | CQL2 operator or function | Applies to                           | Meaning                                                                                 |
 | ------------------------- | ------------------------------------ | --------------------------------------------------------------------------------------- |
@@ -129,13 +146,12 @@ The [CQL2 specification](https://docs.ogc.org/is/21-065r2/21-065r2.html) defines
 | `a_contains`              | multi-valued property                | Contains every one of the values.                                                       |
 | `a_overlaps`              | multi-valued property                | Shares at least one value. Use `not a_overlaps` for 'contains none'.                    |
 | `s_within`                | location                             | Is inside a bounding box or polygon.                                                    |
-| `casei`, `accenti`        | string                               | Compares ignoring case or accents.                                                      |
 
-CQL2 defines further operators. A collection _MAY_ support them, but this specification does not require them. A collection _MUST_ document which CQL2 operators and which properties it supports. A filter capability, such as `https://specs.nde.nl/rest/v1/geolocation-filter`, means that the collection supports at least one operator of that filter type, not that it supports all of them. A presentation layer _MUST NOT_ use an operator that the collection does not document. If it does, the integration layer _MUST_ respond with a `400` status code.
+Operator support is the same for every collection: it follows from the conformance declaration, not from a capability of a collection. Property support differs per collection and is described by the collection's [Queryables resource](#queryables). A presentation layer _MUST NOT_ use an operator that the API does not declare, or a property that the collection's Queryables resource does not declare. If it does, the integration layer _MUST_ respond with a `400` status code.
 
 #### Strings
 
-A keyword filter compares a string property. In CQL2, string properties are compared with `=`, `in` and `like`. The `like` operator uses `%` as a wildcard for any sequence of characters and `_` for exactly one character. A pattern such as `Rem%` matches values that start with 'Rem'; `%Rem%` matches values that contain 'Rem'. For example:
+A text filter compares a string property. In CQL2, string properties are compared with `=`, `in` and `like`. The `like` operator uses `%` as a wildcard for any sequence of characters and `_` for exactly one character. A pattern such as `Rem%` matches values that start with 'Rem'; `%Rem%` matches values that contain 'Rem'. For example:
 
 ```json
 {
@@ -151,7 +167,7 @@ A keyword filter compares a string property. In CQL2, string properties are comp
 
 This filter matches items whose name starts with 'Rem'.
 
-Whether a string comparison is case-sensitive is defined by the integration layer. CQL2 also defines `casei` and `accenti` for case- and accent-insensitive comparison; a collection _MAY_ support them.
+Whether a string comparison is case-sensitive is defined by the integration layer. CQL2 also defines `casei` and `accenti` for case- and accent-insensitive comparison.
 
 For a facet filter, each value is the `id` of the facet item when it has one, and its `name` otherwise. See [Facet items](facets.md#facet-items).
 
@@ -250,9 +266,9 @@ This filter matches items that have an image.
 
 #### Geolocation
 
-A geolocation filter uses a property that the collection documents as a location, such as the place where an item was created or a set of coordinates. CQL2 uses GeoJSON geometries. Coordinates are in decimal degrees, longitude first, latitude second. A polygon ring _MUST_ be closed: the first point is repeated at the end. The integration layer resolves the property to coordinates and defines whether a location on the boundary counts as inside.
+A geolocation filter uses a property that the collection documents as a location, such as the place where an item was created. CQL2 uses GeoJSON geometries. Coordinates are in decimal degrees, longitude first, latitude second.
 
-A bounding box is a CQL2 `bbox` literal, in west, south, east, north order. This example uses a box around the city centre of Delft, the Netherlands:
+A bounding box is a CQL2 `bbox` literal, in west, south, east, north order. For example:
 
 ```json
 {
@@ -268,9 +284,9 @@ A bounding box is a CQL2 `bbox` literal, in west, south, east, north order. This
 }
 ```
 
-This filter matches items that were created inside the box around the city centre of Delft.
+This filter matches items that were created inside the box around the city centre of Delft, the Netherlands.
 
-A polygon is a GeoJSON `Polygon`:
+A polygon is a GeoJSON `Polygon`. For example:
 
 ```json
 {
@@ -296,7 +312,7 @@ A polygon is a GeoJSON `Polygon`:
 
 This filter matches items that were created inside the polygon.
 
-To approximate a radius search, a presentation layer can use a bounding box around a point. This example uses a box in the Agnetapark in Delft, the Netherlands:
+To approximate a radius search, a presentation layer can use a bounding box around a point. For example:
 
 ```json
 {
@@ -312,7 +328,7 @@ To approximate a radius search, a presentation layer can use a bounding box arou
 }
 ```
 
-This filter matches items that were created inside the box in the Agnetapark.
+This filter matches items that were created inside the box in the Agnetapark in Delft, the Netherlands.
 
 CQL2 has no standard radius search operator. Developers may know one from a search engine, but such operators are not portable: they differ in the unit of distance (for example metres, feet or degrees) and in the distance metric (straight-line distance in a projected coordinate system or distance over the Earth's surface). A bounding box or polygon is a portable approximation.
 
@@ -521,7 +537,15 @@ CQL2 is independent of the backing store. The table shows the closest equivalent
 | `s_within` with `Polygon` | `geo_shape` with a polygon                   | `property:(...)` polygon with the corners                                    | `ST_Within` with `ST_GeomFromGeoJSON` |
 | `casei`, `accenti`        | depends on the analyzer or normalizer        | case-insensitive by default                                                  | `ILIKE` or `lower()`                  |
 
-The choice between `term` and `match` in Elasticsearch depends on how the property is indexed: `term` for an exact value such as a keyword or an identifier, `match` for analysed text. PostgreSQL's `LIKE` is case-sensitive; an integration layer that needs case-insensitive matching can use `ILIKE`. PostGIS provides the geolocation filters.
+### Queryables
+
+A Queryables resource describes the properties of a collection that a [filter](#filters) may refer to. It is a machine-readable list of property names and their data types. With it, a presentation layer can build a filter without guessing which properties exist.
+
+A Queryables resource is a JSON Schema document. A collection refers to it with a `queryables` property that holds the identifier of the resource and the type `Queryables`.
+
+The resource follows the [Queryables requirements class](https://docs.ogc.org/is/19-079r2/19-079r2.html). That standard defines the resource, its media type and the shape of its response.
+
+A Queryables resource describes properties, not operators. Which CQL2 operators the API supports is declared once, in the API's [conformance declaration](#conformance). A collection that advertises the [advanced search](#endpoint-advanced-search) capability _MUST_ expose its Queryables resource.
 
 ### Search identifier
 
@@ -747,19 +771,112 @@ An example of the response of the integration layer:
 
 The response indicates that the advanced search has 42 results, that this is the first page, and that the next page is page 2. The `search` parameter in the URIs of properties `id`, `next.id`, `partOf.id`, `partOf.first.id` and `partOf.last.id` is an identifier for a search object.
 
+## Endpoint: Queryables
+
+The endpoint returns the [Queryables resource](#queryables) of a collection: a JSON Schema document that lists the properties a filter may use, with their data types. A presentation layer requests it before it builds a filter.
+
+### HTTP request
+
+`GET /{version}/{...collections}/queryables`
+
+### Path parameters
+
+| Name             | Data type | Cardinality | Description                                                               |
+| ---------------- | --------- | ----------- | ------------------------------------------------------------------------- |
+| `version`        | string    | 1           | The version of the API. Example: `v1`.                                    |
+| `...collections` | string    | 1 or more   | The path identifier(s) of the collection. Example: `collections/objects`. |
+
+### Query parameters
+
+None.
+
+### Request body
+
+None.
+
+### Response headers
+
+| Name           | Value                     |
+| -------------- | ------------------------- |
+| `Content-Type` | `application/schema+json` |
+
+### Response body
+
+The body _MUST_ be a [JSON Schema](https://json-schema.org/draft/2020-12) document. It describes one object: the collection's properties. The following requirements apply:
+
+- `$schema` _MUST_ be `https://json-schema.org/draft/2020-12/schema`.
+- `$id` _MUST_ be the URI of the Queryables resource, without query parameters.
+- `type` _MUST_ be `object`.
+- `properties` _MUST_ contain one entry for every property that a filter may use. The key of an entry is the property name that a presentation layer puts in a CQL2 `property` reference.
+- `title` and `description` _SHOULD_ describe the resource and each property, in plain language.
+- A property _MUST_ have a `type`, such as `string`, `number`, `integer`, `boolean` or `array`, with `items` for an array. A property _MAY_ add constraints, such as `enum`, `minimum` or `maximum`.
+- A date or date-time property _MUST_ have `type` `string` and `format` `date` or `date-time`.
+- A geolocation property _MUST NOT_ have a `type` or `$ref`. It _MUST_ have a `format` that starts with `geometry-`, such as `geometry-point` or `geometry-polygon`.
+- `additionalProperties` determines what happens with a property that is not declared. If it is `false`, the integration layer _MUST_ respond with a `400` status code when a filter uses another property. If it is `true` or omitted, another property is allowed and evaluates to `null` when the item has no such value.
+
+A property name is an opaque reference. The integration layer decides how it maps to its data model. That matters for nested data: CQL2 has no syntax for a path into a nested object, which means every filterable value needs its own name. For example, an item with a nested `creator.name` can expose a queryable `creatorName` next to its top-level `name`.
+
+### Example
+
+Example of the response body of the Queryables resource of a collection of heritage objects:
+
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/v1/collections/objects/queryables",
+  "type": "object",
+  "title": "Heritage objects",
+  "description": "The properties of heritage objects that can be used in a filter",
+  "properties": {
+    "name": {
+      "title": "Name",
+      "description": "The name of the heritage object",
+      "type": "string"
+    },
+    "dateCreated": {
+      "title": "Date of creation",
+      "description": "The date on which the object was created",
+      "type": "string",
+      "format": "date"
+    },
+    "hasImage": {
+      "title": "Has image",
+      "description": "Whether the object has an image",
+      "type": "boolean"
+    },
+    "creator": {
+      "title": "Creator",
+      "description": "The identifiers of the creators of the object",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "locationCreated": {
+      "title": "Location of creation",
+      "description": "The place where the object was created",
+      "format": "geometry-point"
+    }
+  }
+}
+```
+
+The response indicates that a filter on this collection may use five properties. `name` is a string, `dateCreated` is a date, `hasImage` is a boolean, `creator` is an array of identifiers and `locationCreated` is a point geometry.
+
 ## Anatomy of an advanced search
 
 An advanced search takes several requests. A presentation layer starts the search with one request and then uses the search identifier that the response contains to retrieve further results.
 
 The steps below use a collection that is divided into pages as an example. If the integration layer returns the full collection instead, some steps differ: there are no page URIs to follow, but the identifier still appears in the URIs of the collection.
 
-1. **Check that the collection supports an advanced search.** The collection advertises the `https://specs.nde.nl/rest/v1/advanced-search` capability.
-2. **Submit the search.** A presentation layer sends a `POST` request with a [search object](#search-object) to the search endpoint of the collection. The integration layer runs the search and returns the first results as a `Page`, or as a `Collection` if it does not divide the collection into pages. It gives the search an identifier and includes it as the `search` parameter in every URI that refers to the search.
-3. **Retrieve further results.** If the collection is divided into pages, a presentation layer follows a page URI from the response, such as `next.id`, or adds the `page` query parameter to the `partOf.id` URI. It passes the `search` parameter unchanged. It does not send the search object again: the identifier already refers to it.
-4. **Retrieve facets (optional).** A presentation layer requests a [facet collection](facets.md) with the `context` parameter set to the identifier of the advanced search of the collection. The facet items and their counts then cover only the items that match the search. The `search` parameter of the facet collection refers to an advanced search of the facet collection itself, not to the context collection.
-5. **Start another search.** A new search is a new `POST` request with a new search object. It gets its own identifier. An identifier is bound to its collection and its search object; it cannot be used for another collection or another search.
+1. **Check the capability.** The collection advertises the `https://specs.nde.nl/rest/v1/advanced-search` capability.
+2. **Retrieve the Queryables.** The presentation layer requests the collection's [Queryables resource](#queryables) to learn which properties a filter may use.
+3. **Submit the search.** A presentation layer sends a `POST` request with a [search object](#search-object) to the search endpoint of the collection, using the properties that the Queryables resource declares and the operators that the API's [conformance declaration](#conformance) lists. The integration layer runs the search and returns the first results as a `Page`, or as a `Collection` if it does not divide the collection into pages. It gives the search an identifier and includes it as the `search` parameter in every URI that refers to the search.
+4. **Retrieve further results.** If the collection is divided into pages, a presentation layer follows a page URI from the response, such as `next.id`, or adds the `page` query parameter to the `partOf.id` URI. It passes the `search` parameter unchanged. It does not send the search object again: the identifier already refers to it.
+5. **Retrieve facets (optional).** A presentation layer requests a [facet collection](facets.md) with the `context` parameter set to the identifier of the advanced search of the collection. The facet items and their counts then cover only the items that match the search. The `search` parameter of the facet collection refers to an advanced search of the facet collection itself, not to the context collection.
+6. **Start another search.** A new search is a new `POST` request with a new search object. It gets its own identifier. An identifier is bound to its collection and its search object; it cannot be used for another collection or another search.
 
-The integration layer may keep the search object on its server or encode it in the identifier. The presentation layer does not need to know which; it only passes the identifier back.
+Steps 1 and 2 are discovery, not part of the search itself. Their results change only when the collection changes. A presentation layer can retrieve them once, cache them and reuse them for later searches; the [caching](general-rules.md#caching) headers of the responses determine for how long.
 
 The following sequence diagram shows the requests for this paginated example:
 
@@ -772,20 +889,24 @@ sequenceDiagram
     PL->>IL: GET /v1/collections/objects
     IL-->>PL: Collection with `advanced-search` capability
 
-    Note over PL,IL: 2. Submit the search
+    Note over PL,IL: 2. Retrieve the Queryables
+    PL->>IL: GET /v1/collections/objects/queryables
+    IL-->>PL: JSON Schema with the filterable properties
+
+    Note over PL,IL: 3. Submit the search
     PL->>IL: POST /v1/collections/objects/search<br/>Search object
     Note over IL: Run the search and give it an identifier
     IL-->>PL: Page with `search=abc` in its URIs
 
-    Note over PL,IL: 3. Retrieve further results
+    Note over PL,IL: 4. Retrieve further results
     PL->>IL: GET /v1/collections/objects?search=abc&page=2
     IL-->>PL: Page 2 with `search=abc` in its URIs
 
-    Note over PL,IL: 4. Retrieve facets
+    Note over PL,IL: 5. Retrieve facets
     PL->>IL: GET /v1/collections/objects/facets/creators?context=abc
     IL-->>PL: Facet collection for the search results
 
-    Note over PL,IL: 5. Start another search
+    Note over PL,IL: 6. Start another search
     PL->>IL: POST /v1/collections/objects/search<br/>A new search object
     IL-->>PL: Page with `search=def` in its URIs
 ```
