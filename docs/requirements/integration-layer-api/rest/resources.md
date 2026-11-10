@@ -108,6 +108,7 @@ A Collection contains at least the following properties:
 | `estimatedTotalItems` | number     | 0 or 1      | An estimate of the total number of items in the collection. It can be higher or lower than the real total. The property _MAY_ be omitted by the integration layer if it has no estimate. Mutually exclusive with `totalItems`.                                     |
 | `items`               | array      | 0 or 1      | A list of the items in the collection. Not set if the Collection is divided into [pages](#page).                                                                                                                                                                   |
 | `items[*]`            | Resource   | 1           | A [resource](resources.md#resource). A resource can be of [any type](#data-model), including `Collection` or a specialisation.                                                                                                                                     |
+| `pageUriTemplate`     | string     | 0 or 1      | A [URI template](https://www.rfc-editor.org/rfc/rfc6570.html) for the pages of the collection. It contains the `page` variable. Set only if the collection is divided into pages that can be addressed by number. See [Pagination](#pagination).                   |
 | `first`               | Page       | 0 or 1      | The first page in the collection. Not set if the collection is empty or if it is not divided into [pages](#page).                                                                                                                                                  |
 | `first.id`            | string     | 1           | The identifier of the first page in the collection.                                                                                                                                                                                                                |
 | `first.type`          | string     | 1           | The type of the first page in the collection. It _MUST_ be `Page` or a specialisation.                                                                                                                                                                             |
@@ -214,7 +215,7 @@ Example of the response body when the collection is divided into pages:
     "type": "Collection",
     "name": "Collections"
   },
-  "capabilities": ["https://specs.nde.nl/rest/v1/page-pagination"]
+  "pageUriTemplate": "https://example.org/v1/collections/objects{?page}"
 }
 ```
 
@@ -243,6 +244,7 @@ A Page contains at least the following properties:
 | `partOf.name`                | string     | 1           | The name of the collection.                                                                                                                                                                                                                                           |
 | `partOf.totalItems`          | number     | 0 or 1      | The exact total number of items in the collection, being its further collections, its resources, or both. The property _MAY_ be omitted by the integration layer if the exact total is too costly to calculate. Mutually exclusive with `partOf.estimatedTotalItems`. |
 | `partOf.estimatedTotalItems` | number     | 0 or 1      | An estimate of the total number of items in the collection. It can be higher or lower than the real total. The property _MAY_ be omitted by the integration layer if it has no estimate. Mutually exclusive with `partOf.totalItems`.                                 |
+| `partOf.pageUriTemplate`     | string     | 0 or 1      | A [URI template](https://www.rfc-editor.org/rfc/rfc6570.html) for the pages of the collection. It contains the `page` variable. Set only if the pages can be addressed by number. See [Pagination](#pagination).                                                      |
 | `partOf.first`               | Page       | 1           | The first page in the collection.                                                                                                                                                                                                                                     |
 | `partOf.first.id`            | string     | 1           | The identifier of the first page in the collection.                                                                                                                                                                                                                   |
 | `partOf.first.type`          | string     | 1           | The type of the first page in the collection. It _MUST_ be `Page` or a specialisation.                                                                                                                                                                                |
@@ -312,7 +314,25 @@ A presentation layer asks for a page with the `page` query parameter. The value 
 
 Both are allowed. An integration layer _MAY_ use page navigation, _MAY_ use cursor navigation, and _MAY_ use both across its collections. For predictable navigation, it is _RECOMMENDED_ that an integration layer uses the same strategy for all of its collections, so that a presentation layer can handle every collection in one way.
 
-An integration layer _MUST_ make its pagination strategy explicit. A collection that is divided into pages _MUST_ advertise exactly one of `https://specs.nde.nl/rest/v1/page-pagination` and `https://specs.nde.nl/rest/v1/cursor-pagination` in its [`capabilities`](#capability-discovery) property, and _MUST NOT_ advertise both. A collection that is not divided into pages _MUST NOT_ advertise either of them. There is no default: a presentation layer _MUST NOT_ assume a pagination strategy for a collection that advertises neither.
+With page navigation, a presentation layer can build the URI of any page itself. The collection tells it how with its [`pageUriTemplate`](#collection) property. The property is a [URI template](https://www.rfc-editor.org/rfc/rfc6570.html), an IETF standard for describing URIs with variables. The template contains the `page` variable. A presentation layer can replace it with a number. For example:
+
+```
+https://example.org/v1/collections/objects{?page}
+```
+
+Expanding the template with `3` gives `https://example.org/v1/collections/objects?page=3`. If the collection has a query, the template contains that query too and appends the page with `{&page}`:
+
+```
+https://example.org/v1/collections/objects?q=rembrandt{&page}
+```
+
+Expanding this template with `3` gives `https://example.org/v1/collections/objects?q=rembrandt&page=3`. Because the integration layer builds the template, it contains every parameter that selects the result set, such as `q`, `orderBy`, `size`, `search` and `context`. A presentation layer _MUST NOT_ add or change any other parameter: it only fills in the page number. That way it cannot lose a filter or a sort order while navigating.
+
+The value of the `page` variable is the number of the page, starting at `1`. A presentation layer expands the template when it wants a specific page whose number it already knows, such as the page that a user selected or the page it calculated from an item offset. Only when it starts from a page URI that it did not build itself, such as a bookmark or an external link, does it read the `page` query parameter of that URI to learn the number.
+
+A collection that is divided into pages and uses page navigation _MUST_ set `pageUriTemplate`. The template _MUST_ be a valid URI template and _MUST_ contain the `page` variable. Expanding it with a number _MUST_ return that page of the same collection and the same result set. The first page _MUST_ be page `1`.
+
+A collection that uses cursor navigation _MUST NOT_ set `pageUriTemplate`. A cursor is a token that only the integration layer can make, so a presentation layer cannot construct one; it can only follow the page URIs that the integration layer returns. A collection that is not divided into pages _MUST NOT_ set the property either. A presentation layer therefore knows that a collection which is divided into pages but has no `pageUriTemplate` uses cursor navigation.
 
 Counting all items of a collection costs time. Page navigation usually needs that number to know which page comes last, and cursor navigation usually does not. An integration layer that uses page navigation _MAY_ return an exact `totalItems`, and an integration layer that uses cursor navigation _MAY_ return an `estimatedTotalItems`. An integration layer _MAY_ return either property with either strategy.
 
@@ -358,6 +378,7 @@ Example of the response body with page navigation:
     "type": "Collection",
     "name": "Heritage objects",
     "totalItems": 195,
+    "pageUriTemplate": "https://example.org/v1/collections/objects{?page}",
     "first": {
       "id": "https://example.org/v1/collections/objects?page=1",
       "type": "Page"
@@ -410,22 +431,20 @@ Example of the response body with cursor navigation:
 }
 ```
 
-This response has the same properties as the previous one, with two differences. The page is identified by a cursor instead of a number. The `partOf` property has no `last`, because the integration layer does not know which page is last. A presentation layer can walk through the collection with `next`, but it cannot jump to the end.
+This response has the same properties as the previous one, with three differences. The page is identified by a cursor instead of a number. The `partOf` property has no `pageUriTemplate`, because a presentation layer cannot build a cursor itself. It also has no `last`, because the integration layer does not know which page is last. A presentation layer can walk through the collection with `next`, but it cannot jump to the end.
 
 ## Capability discovery
 
-A collection can do more than return a list of items. It can support a simple search, an advanced search, facets, suggestions or pagination. Each of these is a _capability_: a feature that a collection supports. Every collection advertises its own capabilities, so that a presentation layer can discover which features a collection offers.
+A collection can do more than return a list of items. It can support a simple search, an advanced search, facets or suggestions. Each of these is a **capability**: a feature that a collection supports. Every collection advertises its own capabilities, so that a presentation layer can discover which features a collection offers.
 
 This specification defines the following capabilities:
 
-| Capability URI                                   | Description                                                                                   |
-| ------------------------------------------------ | --------------------------------------------------------------------------------------------- |
-| `https://specs.nde.nl/rest/v1/simple-search`     | The collection supports a [simple search](search.md#endpoint-simple-search).                  |
-| `https://specs.nde.nl/rest/v1/advanced-search`   | The collection supports an [advanced search](search.md#endpoint-advanced-search).             |
-| `https://specs.nde.nl/rest/v1/facets`            | The collection supports [facets](facets.md).                                                  |
-| `https://specs.nde.nl/rest/v1/suggestions`       | The collection supports [suggestions](suggestions.md).                                        |
-| `https://specs.nde.nl/rest/v1/page-pagination`   | The collection supports pagination by [page numbers](#page-navigation-and-cursor-navigation). |
-| `https://specs.nde.nl/rest/v1/cursor-pagination` | The collection supports pagination by [a cursor](#page-navigation-and-cursor-navigation).     |
+| Capability URI                                 | Description                                                                       |
+| ---------------------------------------------- | --------------------------------------------------------------------------------- |
+| `https://specs.nde.nl/rest/v1/simple-search`   | The collection supports a [simple search](search.md#endpoint-simple-search).      |
+| `https://specs.nde.nl/rest/v1/advanced-search` | The collection supports an [advanced search](search.md#endpoint-advanced-search). |
+| `https://specs.nde.nl/rest/v1/facets`          | The collection supports [facets](facets.md).                                      |
+| `https://specs.nde.nl/rest/v1/suggestions`     | The collection supports [suggestions](suggestions.md).                            |
 
 Capabilities are a property of a single collection. A presentation layer _MUST NOT_ infer the capabilities of a collection from the capabilities of its ancestors in the collection tree.
 

@@ -564,7 +564,7 @@ Both implementations look the same to a presentation layer. The specification do
 
 An identifier is bound to the collection and to the search object. A presentation layer _MUST NOT_ use it with another collection or with another advanced search. If it does, the integration layer _MUST_ respond with a `400` status code.
 
-The identifier _MUST_ appear in every URI that navigates the search results: the `id` of the page, `prev.id`, `next.id`, `partOf.id`, `partOf.first.id` and `partOf.last.id`. It _MUST_ also appear in the `first.id` and `last.id` of the filtered collection.
+The identifier _MUST_ appear in every URI that navigates the search results: the `id` of the page, `prev.id`, `next.id`, `partOf.id`, `partOf.pageUriTemplate`, `partOf.first.id` and `partOf.last.id`. It _MUST_ also appear in the `first.id`, `last.id` and `pageUriTemplate` of the filtered collection.
 
 The `search` parameter and the simple search parameters (`q`, `orderBy`, `size`) are mutually exclusive. A presentation layer _MUST NOT_ combine them in one request. If it does, the integration layer _MUST_ respond with a `400` status code.
 
@@ -619,7 +619,7 @@ A simple search is not a separate endpoint. It uses the endpoint that retrieves 
 | `q`       | string    | 0 or 1      | A keyword query for filtering the items. The integration layer defines the minimum and maximum length and how the query is matched.                                                                                                                                                                                                                                                                                                                                                                                              |
 | `orderBy` | string    | 0 or 1      | The sorting order of the items: a comma-separated list of sort criteria, in priority order. Each criterion is `property` or `property:order`, where `property` is `relevance` or `value` and `order` is `asc` or `desc`. Example: `relevance:desc,value:asc`. `relevance` typically expresses how well an item matches the keyword query (`q`). An integration layer _MAY_ also apply its own relevance rules when `q` is missing. The integration layer defines which property `value` sorts on (e.g. the `name` of an entity). |
 | `size`    | number    | 0 or 1      | The maximum number of items to retrieve. The minimum is 1. The integration layer defines the maximum.                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| `page`    | string    | 0 or 1      | The page to retrieve: a page number or a cursor, depending on the [pagination strategy](resources.md#page-navigation-and-cursor-navigation). Required when retrieving a page.                                                                                                                                                                                                                                                                                                                                                    |
+| `page`    | string    | 0 or 1      | The page to retrieve. If the collection has a [`pageUriTemplate`](resources.md#collection), the value is a page number. Otherwise it is a cursor that the integration layer returned in a page URI. Required when retrieving a page. See [Pagination](resources.md#page-navigation-and-cursor-navigation).                                                                                                                                                                                                                       |
 
 ### Request body
 
@@ -665,6 +665,7 @@ An example of the response of the integration layer:
     "type": "CuratedCollection",
     "name": "Masterpieces",
     "totalItems": 42,
+    "pageUriTemplate": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc{&page}",
     "first": {
       "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc&page=1",
       "type": "Page"
@@ -757,6 +758,7 @@ An example of the response of the integration layer:
     "type": "CuratedCollection",
     "name": "Masterpieces",
     "totalItems": 42,
+    "pageUriTemplate": "https://example.org/v1/collections/masterpieces?search=abc{&page}",
     "first": {
       "id": "https://example.org/v1/collections/masterpieces?search=abc&page=1",
       "type": "Page"
@@ -872,7 +874,7 @@ The steps below use a collection that is divided into pages as an example. If th
 1. **Check the capability.** The collection advertises the `https://specs.nde.nl/rest/v1/advanced-search` capability.
 2. **Retrieve the Queryables.** The presentation layer requests the collection's [Queryables resource](#queryables) to learn which properties a filter may use.
 3. **Submit the search.** A presentation layer sends a `POST` request with a [search object](#search-object) to the search endpoint of the collection, using the properties that the Queryables resource declares and the operators that the API's [conformance declaration](#conformance) lists. The integration layer runs the search and returns the first results as a `Page`, or as a `Collection` if it does not divide the collection into pages. It gives the search an identifier and includes it as the `search` parameter in every URI that refers to the search.
-4. **Retrieve further results.** If the collection is divided into pages, a presentation layer follows a page URI from the response, such as `next.id`, or adds the `page` query parameter to the `partOf.id` URI. It passes the `search` parameter unchanged. It does not send the search object again: the identifier already refers to it.
+4. **Retrieve further results.** If the collection is divided into pages, a presentation layer follows a page URI from the response, such as `next.id`. If the collection has a [`pageUriTemplate`](resources.md#collection), it can also expand that template with a page number to go straight to a page. It passes the `search` parameter unchanged. It does not send the search object again: the identifier already refers to it.
 5. **Retrieve facets (optional).** A presentation layer requests a [facet collection](facets.md) with the `context` parameter set to the identifier of the advanced search of the collection. The facet items and their counts then cover only the items that match the search. The `search` parameter of the facet collection refers to an advanced search of the facet collection itself, not to the context collection.
 6. **Start another search.** A new search is a new `POST` request with a new search object. It gets its own identifier. An identifier is bound to its collection and its search object; it cannot be used for another collection or another search.
 
