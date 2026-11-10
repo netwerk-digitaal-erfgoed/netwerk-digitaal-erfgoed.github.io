@@ -38,7 +38,7 @@ This tells the integration layer that the presentation layer is requesting a res
 An example of the response headers of the integration layer:
 
 ```http
-HTTP/2 200 OK
+HTTP/1.1 200 OK
 API-Version: 1.2.3
 ```
 
@@ -76,10 +76,12 @@ The integration layer must use media types to enable open and extensible content
 
 ## JSON-LD
 
-The API uses JSON by default: JSON is easy to parse and is supported natively in most programming languages. The integration layer serialises this JSON as [JSON-LD 1.1](https://www.w3.org/TR/json-ld11/), a format for linked data. JSON-LD is the default media type of the API. Because JSON-LD is JSON, a presentation layer that only knows JSON can parse a JSON-LD response like any other JSON document.
+The API uses JSON by default: JSON is easy to parse and is supported natively in most programming languages.
+
+The integration layer serialises the resources of its data model, such as collections, pages and entities, as [JSON-LD 1.1](https://www.w3.org/TR/json-ld11/), a format for linked data. JSON-LD is the default media type of those resources. Because JSON-LD is JSON, a presentation layer that only knows JSON can parse a JSON-LD response like any other JSON document. Other responses use the media type of their content. For example, errors use `application/problem+json`. The requirements below apply to the resources that are serialised as JSON-LD.
 
 1. The integration layer _MUST_ support `application/ld+json` and `application/json` in the `Accept` header: a presentation layer _MAY_ request either.
-1. If a presentation layer does not send the `Accept` header, or sends a media range that accepts `application/ld+json` (such as `*/*` or `application/*`), the integration layer _MUST_ serve JSON-LD.
+1. If a presentation layer does not send the `Accept` header, or sends a media range that accepts `application/ld+json` (such as `*/*` or `application/*`), the integration layer _MUST_ serve those resources as JSON-LD.
 1. The integration layer _MUST_ send `Content-Type: application/ld+json` when it serves JSON-LD, and `Content-Type: application/json` when the presentation layer requests `application/json` only.
 
 ### Example
@@ -97,7 +99,7 @@ This tells the integration layer that the presentation layer prefers the respons
 An example of the response headers of the integration layer:
 
 ```http
-HTTP/2 200 OK
+HTTP/1.1 200 OK
 Content-Type: application/ld+json
 Vary: Accept
 ```
@@ -115,7 +117,7 @@ Accept: application/json
 An example of the response headers of the integration layer:
 
 ```http
-HTTP/2 200 OK
+HTTP/1.1 200 OK
 Content-Type: application/json
 Vary: Accept
 ```
@@ -154,7 +156,7 @@ This tells the integration layer that the presentation layer prefers the content
 An example of the response headers of the integration layer:
 
 ```http
-HTTP/2 200 OK
+HTTP/1.1 200 OK
 Content-Language: nl
 Vary: Accept-Language
 ```
@@ -174,7 +176,7 @@ This tells the integration layer that the presentation layer prefers the content
 An example of the response headers of the integration layer:
 
 ```http
-HTTP/2 200 OK
+HTTP/1.1 200 OK
 Content-Language: nl
 Vary: Accept-Language
 ```
@@ -209,7 +211,7 @@ This tells the integration layer that the presentation layer can handle the comp
 An example of the response headers of the integration layer:
 
 ```http
-HTTP/2 200 OK
+HTTP/1.1 200 OK
 Content-Encoding: br
 Vary: Accept-Encoding
 ```
@@ -232,7 +234,7 @@ Caching is a mechanism where presentation layers store responses from the integr
 An example of the response headers of the integration layer:
 
 ```http
-HTTP/2 200 OK
+HTTP/1.1 200 OK
 Cache-Control: max-age=3600
 ETag: "xyz"
 Last-Modified: Fri, 28 Aug 2026 04:58:08 GMT
@@ -254,7 +256,7 @@ Rate limiting is a traffic control mechanism that caps the number of requests a 
 An example of the response headers of the integration layer:
 
 ```http
-HTTP/2 200 OK
+HTTP/1.1 200 OK
 RateLimit-Policy: "default";q=100;w=60
 RateLimit: "default";r=50;t=30
 ```
@@ -264,7 +266,7 @@ The `RateLimit-Policy` indicates that a presentation layer may send up to 100 re
 An example of the response headers of the integration layer when a rate limit has been reached:
 
 ```http
-HTTP/2 429 Too Many Requests
+HTTP/1.1 429 Too Many Requests
 Retry-After: 120
 ```
 
@@ -298,7 +300,7 @@ Access-Control-Request-Headers: Accept, Accept-Language, If-None-Match, If-Modif
 An example of the preflight response headers of the integration layer:
 
 ```http
-HTTP/2 200 OK
+HTTP/1.1 200 OK
 Content-Length: 0
 Access-Control-Allow-Origin: *
 Access-Control-Allow-Methods: GET, OPTIONS
@@ -317,7 +319,7 @@ Origin: https://mywebsite.nl
 An example of the regular, non-preflight response headers of the integration layer:
 
 ```http
-HTTP/2 200 OK
+HTTP/1.1 200 OK
 Access-Control-Allow-Origin: *
 ```
 
@@ -338,7 +340,7 @@ Access-Control-Request-Headers: Accept, Content-Type, Origin
 An example of the preflight response headers of the integration layer:
 
 ```http
-HTTP/2 200 OK
+HTTP/1.1 200 OK
 Content-Length: 0
 Access-Control-Allow-Origin: *
 Access-Control-Allow-Methods: GET, POST, OPTIONS
@@ -362,7 +364,7 @@ Content-Type: application/json
 An example of the regular, non-preflight response headers of the integration layer:
 
 ```http
-HTTP/2 200 OK
+HTTP/1.1 200 OK
 Access-Control-Allow-Origin: *
 ```
 
@@ -390,7 +392,7 @@ Add support for the [type property](https://www.rfc-editor.org/info/rfc9457/#nam
 An example of the response headers of the integration layer:
 
 ```http
-HTTP/2 404 Not Found
+HTTP/1.1 404 Not Found
 Content-Type: application/problem+json
 Content-Language: en
 ```
