@@ -13,7 +13,7 @@ In this specification, the word _facet_ always means a **facet collection**: a l
 
 A presentation layer can browse the facet items in a facet collection, filter them, and ask for suggestions for them — just like any other collection. What makes a facet collection special is what its items hold: each item points to a value a user can use to narrow a search.
 
-Facets are tied to a particular collection — the context collection — ensuring that results remain within the context of that collection. An integration layer _MAY_ offer facets for any collection, except for a facet collection itself.
+Facets are tied to a particular collection — the context collection — ensuring that results remain within the context of that collection. An integration layer _MAY_ offer facets for any collection, except for a facet collection itself. Facet results are not part of the response of the context collection or of one of its pages. A presentation layer requests each facet collection separately from its [own endpoint](facets.md#endpoint-retrieve-a-facet-collection).
 
 Facets are optional. An integration layer _MAY_ implement them, depending on its requirements. An integration layer advertises the facet collections it supports for a collection in the [`facets` property](resources.md#collection) of that collection. The property points to the list of facet collections, which a presentation layer retrieves with the endpoint [Retrieve the facet collections of a collection](#endpoint-retrieve-the-facet-collections-of-a-collection).
 
@@ -758,3 +758,48 @@ An example of the response body of the integration layer:
 ```
 
 The response indicates that this page contains facet items (`items`), is related to a previous page (`prev`) and a next page (`next`) and its items are part of a facet collection (`partOf`). The `partOf` refers to the first page of the facet collection and, because the integration layer knows it, to the last page.
+
+## Anatomy of retrieving facets
+
+Retrieving facets takes several requests. A presentation layer first discovers which facet collections the context collection offers, then retrieves each facet collection that it wants to show.
+
+1. **Check the capability.** The context collection advertises the `https://specs.nde.nl/rest/v1/facets` capability.
+2. **Retrieve the facet collections.** A presentation layer requests the context collection's list of [facet collections](#endpoint-retrieve-the-facet-collections-of-a-collection). The [`facets` property](resources.md#collection) of the context collection points to this list.
+3. **Retrieve the facet collections to show.** A presentation layer requests each facet collection that it wants to display from its own endpoint, such as `creators` and `centuries`. It passes the search identifier in `context` if the facets must cover a search, and it can set `size` and `orderBy` per request. The requests are independent, which means the presentation layer can send them in parallel.
+4. **Retrieve further facet items (optional).** If a facet collection is divided into pages, its response includes the first page in `first`. A presentation layer follows a page URI such as `first.next.id`, or expands the [`pageUriTemplate`](resources.md#collection), to retrieve more facet items.
+5. **Search within a facet collection (optional).** The `q`, `size` and `orderBy` parameters filter and order the facet items themselves, independent of the search context.
+
+Steps 1 and 2 are discovery, not part of the retrieval itself. Their results change only when the collection changes. A presentation layer can retrieve them once, cache them and reuse them; the [caching](general-rules.md#caching) headers of the responses determine for how long.
+
+The following sequence diagram shows the requests for this example:
+
+```mermaid
+sequenceDiagram
+    participant PL as Presentation layer
+    participant IL as Integration layer
+
+    Note over PL,IL: 1. Check the capability
+    PL->>IL: GET /v1/collections/objects
+    IL-->>PL: Collection with the `facets` capability
+
+    Note over PL,IL: 2. Retrieve the facet collections
+    PL->>IL: GET /v1/collections/objects/facets
+    IL-->>PL: List of facet collections
+
+    Note over PL,IL: 3. Retrieve the facets to show, in parallel
+    par
+        PL->>IL: GET /v1/collections/objects/facets/creators?context=abc&size=10
+        IL-->>PL: `Creator` facet with its first page
+    and
+        PL->>IL: GET /v1/collections/objects/facets/centuries?context=abc&size=5
+        IL-->>PL: `Made in century` facet with its first page
+    end
+
+    Note over PL,IL: 4. Retrieve further facet items (optional)
+    PL->>IL: GET /v1/collections/objects/facets/creators?context=abc&page=2
+    IL-->>PL: Page 2 of the `Creator` facet
+
+    Note over PL,IL: 5. Search within a facet collection (optional)
+    PL->>IL: GET /v1/collections/objects/facets/creators?context=abc&q=rembrandt
+    IL-->>PL: `Creator` facet filtered by the keyword
+```
