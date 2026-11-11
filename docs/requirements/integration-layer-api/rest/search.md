@@ -564,7 +564,7 @@ Both implementations look the same to a presentation layer. The specification do
 
 An identifier is bound to the collection and to the search object. A presentation layer _MUST NOT_ use it with another collection or with another advanced search. If it does, the integration layer _MUST_ respond with a `400` status code.
 
-The identifier _MUST_ appear in every URI that navigates the search results: the `id` of the page, `prev.id`, `next.id`, `partOf.id`, `partOf.pageUriTemplate`, `partOf.first.id` and `partOf.last.id`. It _MUST_ also appear in the `first.id`, `last.id` and `pageUriTemplate` of the filtered collection.
+The identifier _MUST_ appear in every URI that navigates the search results: the `id` of the page, `prev.id`, `next.id`, `partOf.id`, `partOf.pageUriTemplate`, `partOf.first.id` and `partOf.last.id`. It _MUST_ also appear in the `first.id`, `first.next.id`, `last.id` and `pageUriTemplate` of the filtered collection.
 
 The `search` parameter and the simple search parameters (`q`, `orderBy`, `size`) are mutually exclusive. A presentation layer _MUST NOT_ combine them in one request. If it does, the integration layer _MUST_ respond with a `400` status code.
 
@@ -627,7 +627,7 @@ None.
 
 ### Response body
 
-The response is a `Page` if the collection is divided into pages; otherwise it is a `Collection` with its items inline.
+The response depends on the endpoint that the request addresses. A request to a collection returns a `Collection`. If that collection is divided into pages, it includes the first page in `first`, with the items of the first page. A request to a page returns that `Page`.
 
 ### Example
 
@@ -645,19 +645,73 @@ An example of the response of the integration layer:
 ```json
 {
   "@context": "https://example.org/v1/context.json",
-  "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc&page=1",
+  "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc",
+  "type": "CuratedCollection",
+  "name": "Masterpieces",
+  "totalItems": 42,
+  "pageUriTemplate": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc{&page}",
+  "first": {
+    "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc&page=1",
+    "type": "Page",
+    "name": "Masterpieces: page 1",
+    "items": [
+      {
+        "id": "https://example.org/v1/entities/1234",
+        "type": "HeritageObject",
+        "name": "The Night Watch"
+      }
+      // Other items...
+    ],
+    "next": {
+      "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc&page=2",
+      "type": "Page"
+    }
+  },
+  "last": {
+    "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc&page=3",
+    "type": "Page"
+  },
+  "partOf": {
+    "id": "https://example.org/v1/collections",
+    "type": "CuratedCollection",
+    "name": "Collections"
+  }
+}
+```
+
+The response indicates that the simple search has 42 results, that the collection includes its first page in `first`, and that the next page is page 2.
+
+An example request from a presentation layer for a page in the same search:
+
+```http
+GET /v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc&page=2
+Host: example.org
+```
+
+This tells the integration layer that the presentation layer is requesting page 2.
+
+An example of the response of the integration layer:
+
+```json
+{
+  "@context": "https://example.org/v1/context.json",
+  "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc&page=2",
   "type": "Page",
-  "name": "Masterpieces: page 1",
+  "name": "Masterpieces: page 2",
   "items": [
     {
-      "id": "https://example.org/v1/entities/1234",
+      "id": "https://example.org/v1/entities/5678",
       "type": "HeritageObject",
-      "name": "The Night Watch"
+      "name": "The Milkmaid"
     }
     // Other items...
   ],
+  "prev": {
+    "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc&page=1",
+    "type": "Page"
+  },
   "next": {
-    "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc&page=2",
+    "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc&page=3",
     "type": "Page"
   },
   "partOf": {
@@ -678,7 +732,7 @@ An example of the response of the integration layer:
 }
 ```
 
-The response indicates that the simple search has 42 results, that this is the first page, and that the next page is page 2.
+The response indicates that this is page 2 of the simple search, with a previous page and a next page. Its `partOf` is the filtered collection.
 
 ## Endpoint: Advanced search
 
