@@ -385,7 +385,6 @@ Example of the response body with page navigation:
       "id": "https://example.org/v1/entities/1234",
       "type": "HeritageObject",
       "name": "The Night Watch"
-      // Other properties...
     }
     // Other items...
   ],
@@ -415,7 +414,7 @@ Example of the response body with page navigation:
 }
 ```
 
-The response indicates that this page contains items (`items`), is related to a previous page (`prev`) and a next page (`next`) and its items are part of a collection (`partOf`). Because the integration layer knows which page is last, `partOf` points to it.
+The response indicates that this page contains items (`items`), is related to a previous page (`prev`) and a next page (`next`) and its items are part of a collection (`partOf`). The `partOf` refers to the first page of the collection and, because the integration layer knows it, to the last page.
 
 Example of the response body with cursor navigation:
 
@@ -430,7 +429,6 @@ Example of the response body with cursor navigation:
       "id": "https://example.org/v1/entities/1234",
       "type": "HeritageObject",
       "name": "The Night Watch"
-      // Other properties...
     }
     // Other items...
   ],
