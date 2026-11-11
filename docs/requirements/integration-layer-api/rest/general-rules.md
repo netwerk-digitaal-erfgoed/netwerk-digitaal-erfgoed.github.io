@@ -76,9 +76,9 @@ The integration layer must use media types to enable open and extensible content
 
 ## JSON-LD
 
-The API uses JSON by default: JSON is easy to parse and is supported natively in most programming languages.
+The integration layer uses JSON by default: JSON is easy to parse and is supported natively in most programming languages.
 
-The integration layer serialises the resources of its data model, such as collections, pages and entities, as [JSON-LD 1.1](https://www.w3.org/TR/json-ld11/), a format for linked data. JSON-LD is the default media type of those resources. Because JSON-LD is JSON, a presentation layer that only knows JSON can parse a JSON-LD response like any other JSON document. Other responses use the media type of their content. For example, errors use `application/problem+json`. The requirements below apply to the resources that are serialised as JSON-LD.
+The integration layer serialises the [resources of its data model](resources.md), such as collections, pages and entities, as [JSON-LD 1.1](https://www.w3.org/TR/json-ld11/), a format for linked data. JSON-LD is the default media type of those resources. Because JSON-LD is JSON, a presentation layer that only knows JSON can parse a JSON-LD response like any other JSON document.
 
 1. The integration layer _MUST_ support `application/ld+json` and `application/json` in the `Accept` header: a presentation layer _MAY_ request either.
 1. If a presentation layer does not send the `Accept` header, or sends a media range that accepts `application/ld+json` (such as `*/*` or `application/*`), the integration layer _MUST_ serve those resources as JSON-LD.

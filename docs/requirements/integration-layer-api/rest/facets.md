@@ -333,7 +333,7 @@ The response body _MUST_ contain at least the following properties:
 | `name`                | string     | 1           | The name of the collection.                                                                                                                                                                                                                                      |
 | `totalItems`          | number     | 0 or 1      | The exact total number of facet items in the collection. Not set if the exact total is too costly to calculate. Mutually exclusive with `estimatedTotalItems`.                                                                                                   |
 | `estimatedTotalItems` | number     | 0 or 1      | An estimate of the total number of facet items in the collection. It can be higher or lower than the real total. Not set if there is no estimate. Mutually exclusive with `totalItems`.                                                                          |
-| `items`               | array      | 0 or 1      | A list of the facet items in the collection. Not set if the collection is divided into [pages](resources.md#page).                                                                                                                                               |
+| `items`               | array      | 0 or 1      | A list of the facet items in the collection. Not set if the collection is divided into [pages](resources.md#page); the items of the first page are in `first`.                                                                                                   |
 | `items[*]`            | FacetItem  | 1           | A facet item.                                                                                                                                                                                                                                                    |
 | `items[*].type`       | string     | 1           | The type of the facet item. It _MUST_ be `FacetItem`.                                                                                                                                                                                                            |
 | `items[*].count`      | number     | 1           | The number of occurrences of the value. If the value is a `FacetValue`, the count covers all resources that the integration layer grouped into it.                                                                                                               |
@@ -344,9 +344,15 @@ The response body _MUST_ contain at least the following properties:
 | `items[*].value.min`  | string     | 0 or 1      | The lower bound of the range. Not set if the range has no lower bound, such as in a facet value 'before 1500'.                                                                                                                                                   |
 | `items[*].value.max`  | string     | 0 or 1      | The upper bound of the range. Not set if the range has no upper bound, such as in a facet value 'after 1900'.                                                                                                                                                    |
 | `pageUriTemplate`     | string     | 0 or 1      | A [URI template](https://www.rfc-editor.org/rfc/rfc6570.html) for the pages of the collection. It contains the `page` variable. Set only if the collection is divided into pages that can be addressed by number. See [Pagination](resources.md#pagination).     |
-| `first`               | FacetPage  | 0 or 1      | The first page in the collection. Not set if the collection is empty or if it is not divided into [pages](resources.md#page).                                                                                                                                    |
+| `first`               | FacetPage  | 0 or 1      | The first page in the collection, including its items and links. It has the properties of a [FacetPage](#endpoint-retrieve-a-page-in-a-facet-collection), except `partOf`. Not set if the collection is empty or if it is not divided into pages.                |
 | `first.id`            | string     | 1           | The identifier of the first page in the collection.                                                                                                                                                                                                              |
 | `first.type`          | string     | 1           | The type of the first page in the collection. It _MUST_ be `FacetPage` or a specialisation.                                                                                                                                                                      |
+| `first.name`          | string     | 1           | The name of the first page.                                                                                                                                                                                                                                      |
+| `first.items`         | array      | 1           | The items of the first page. A first page always has at least one item.                                                                                                                                                                                          |
+| `first.items[*]`      | FacetItem  | 1           | A facet item. It has the same properties as `items[*]` of a [FacetPage](#endpoint-retrieve-a-page-in-a-facet-collection).                                                                                                                                        |
+| `first.next`          | FacetPage  | 0 or 1      | The page after the first page. Not set if there is no next page.                                                                                                                                                                                                 |
+| `first.next.id`       | string     | 1           | The identifier of the next page.                                                                                                                                                                                                                                 |
+| `first.next.type`     | string     | 1           | The type of the next page. It _MUST_ be `FacetPage` or a specialisation.                                                                                                                                                                                         |
 | `last`                | FacetPage  | 0 or 1      | The last page in the collection. Not set if the collection is empty, if the collection is not divided into [pages](resources.md#page), or if the last page is unknown (e.g. in case of [cursor navigation](resources.md#page-navigation-and-cursor-navigation)). |
 | `last.id`             | string     | 1           | The identifier of the last page in the collection.                                                                                                                                                                                                               |
 | `last.type`           | string     | 1           | The type of the last page in the collection. It _MUST_ be `FacetPage` or a specialisation.                                                                                                                                                                       |
@@ -512,7 +518,61 @@ An example of the response body of the integration layer for the request above, 
 }
 ```
 
-An example request from a presentation layer:
+An example of the response body of the integration layer for the request above, if the facet collection is divided into pages:
+
+```json
+{
+  "@context": "https://example.org/v1/context.json",
+  "id": "https://example.org/v1/collections/objects/facets/creators",
+  "type": "FacetCollection",
+  "name": "Creator",
+  "totalItems": 195,
+  "pageUriTemplate": "https://example.org/v1/collections/objects/facets/creators{?page}",
+  "first": {
+    "id": "https://example.org/v1/collections/objects/facets/creators?page=1",
+    "type": "FacetPage",
+    "name": "Creator: page 1",
+    "items": [
+      {
+        "type": "FacetItem",
+        "count": 12,
+        "value": {
+          "id": "https://example.org/v1/entities/1234",
+          "type": "Person",
+          "name": "Arno Haag"
+        }
+      },
+      {
+        "type": "FacetItem",
+        "count": 10,
+        "value": {
+          "id": "https://example.org/v1/entities/5678",
+          "type": "Person",
+          "name": "Arno Haag"
+        }
+      }
+      // Other items...
+    ],
+    "next": {
+      "id": "https://example.org/v1/collections/objects/facets/creators?page=2",
+      "type": "FacetPage"
+    }
+  },
+  "last": {
+    "id": "https://example.org/v1/collections/objects/facets/creators?page=20",
+    "type": "FacetPage"
+  },
+  "partOf": {
+    "id": "https://example.org/v1/collections/objects/facets",
+    "type": "Collection",
+    "name": "Facets"
+  }
+}
+```
+
+The response indicates that this facet collection has 195 facet items, spread over 20 pages, and that its pages can be addressed by number. It includes the first page in `first`, with a its items and a link to the next page.
+
+Another example request from a presentation layer:
 
 ```http
 GET /v1/collections/objects/facets/collections
@@ -559,32 +619,6 @@ An example of the response body of the integration layer if the facet collection
 ```
 
 The response indicates that a user can narrow the search down to the resources in one of the collections.
-
-An example of the response body of the integration layer for the request above, if the facet collection is divided into pages:
-
-```json
-{
-  "@context": "https://example.org/v1/context.json",
-  "id": "https://example.org/v1/collections/objects/facets/creators",
-  "type": "FacetCollection",
-  "name": "Creator",
-  "totalItems": 195,
-  "first": {
-    "id": "https://example.org/v1/collections/objects/facets/creators?page=1",
-    "type": "FacetPage"
-  },
-  "last": {
-    "id": "https://example.org/v1/collections/objects/facets/creators?page=20",
-    "type": "FacetPage"
-  },
-  "partOf": {
-    "id": "https://example.org/v1/collections/objects/facets",
-    "type": "Collection",
-    "name": "Facets"
-  },
-  "pageUriTemplate": "https://example.org/v1/collections/objects/facets/creators{?page}"
-}
-```
 
 ## Endpoint: Retrieve a page in a facet collection
 
@@ -643,7 +677,7 @@ The response body _MUST_ contain at least the following properties:
 | `next`                       | FacetPage       | 0 or 1      | The next page in the collection. Not set if there is no next page.                                                                                                                                                           |
 | `next.id`                    | string          | 1           | The identifier of the next page in the collection.                                                                                                                                                                           |
 | `next.type`                  | string          | 1           | The type of the next page in the collection. It _MUST_ be `FacetPage` or a specialisation.                                                                                                                                   |
-| `partOf`                     | FacetCollection | 1           | The collection to which the items contained by the page belong. See the response body of endpoint [Retrieve a facet collection](#endpoint-retrieve-a-facet-collection).                                                      |
+| `partOf`                     | FacetCollection | 0 or 1      | The collection to which the items contained by the page belong. It _MUST_ be set unless the page is embedded in the `first` property of its collection: the collection that contains it is the collection it belongs to.     |
 | `partOf.id`                  | string          | 1           | The identifier of the facet collection.                                                                                                                                                                                      |
 | `partOf.type`                | string          | 1           | The type of the facet collection. It _MUST_ be `FacetCollection` or a specialisation.                                                                                                                                        |
 | `partOf.name`                | string          | 1           | The name of the facet collection.                                                                                                                                                                                            |
@@ -684,7 +718,6 @@ An example of the response body of the integration layer:
         "id": "https://example.org/v1/entities/1234",
         "type": "Person",
         "name": "Arno Haag"
-        // Optionally: other properties...
       }
     },
     {
@@ -694,7 +727,6 @@ An example of the response body of the integration layer:
         "id": "https://example.org/v1/entities/9012",
         "type": "Person",
         "name": "Hans de Haan"
-        // Optionally: other properties...
       }
     }
     // Other items...
@@ -724,3 +756,5 @@ An example of the response body of the integration layer:
   }
 }
 ```
+
+The response indicates that this page contains facet items (`items`), is related to a previous page (`prev`) and a next page (`next`) and its items are part of a facet collection (`partOf`). The `partOf` refers to the first page of the facet collection and, because the integration layer knows it, to the last page.

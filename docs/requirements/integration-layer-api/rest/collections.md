@@ -99,12 +99,18 @@ The response body _MUST_ contain at least the following properties:
 | `name`                | string                    | 1           | The name of the collection.                                                                                                                                                                                                                                                              |
 | `totalItems`          | number                    | 0 or 1      | The exact total number of items in the collection, being its further collections, its entities, or both. Not set if the exact total is too costly to calculate. Mutually exclusive with `estimatedTotalItems`.                                                                           |
 | `estimatedTotalItems` | number                    | 0 or 1      | An estimate of the total number of items in the collection. It can be higher or lower than the real total. Not set if there is no estimate. Mutually exclusive with `totalItems`.                                                                                                        |
-| `items`               | array                     | 0 or 1      | A list of the items in the collection. Not set if the items are parts of [pages](#endpoint-retrieve-a-page-in-a-collection).                                                                                                                                                             |
-| `items[*]`            | CuratedCollection, Entity | 1           | A `CuratedCollection` or a specialisation, or a specialisation of `Entity`. Not set if the items are parts of [pages](#endpoint-retrieve-a-page-in-a-collection).                                                                                                                        |
+| `items`               | array                     | 0 or 1      | A list of the items in the collection. Not set if the collection is divided into [pages](#endpoint-retrieve-a-page-in-a-collection); the items of the first page are in `first`.                                                                                                         |
+| `items[*]`            | CuratedCollection, Entity | 1           | A `CuratedCollection` or a specialisation, or a specialisation of `Entity`.                                                                                                                                                                                                              |
 | `pageUriTemplate`     | string                    | 0 or 1      | A [URI template](https://www.rfc-editor.org/rfc/rfc6570.html) for the pages of the collection. It contains the `page` variable. Set only if the collection is divided into pages that can be addressed by number. See [Pagination](resources.md#pagination).                             |
-| `first`               | Page                      | 0 or 1      | The first page in the collection. Not set if the collection is empty or if it is not divided into [pages](#endpoint-retrieve-a-page-in-a-collection).                                                                                                                                    |
+| `first`               | Page                      | 0 or 1      | The first page in the collection, including its items and links. It has the properties of a [Page](#endpoint-retrieve-a-page-in-a-collection), except `partOf`. Not set if the collection is empty or if it is not divided into pages.                                                   |
 | `first.id`            | string                    | 1           | The identifier of the first page in the collection.                                                                                                                                                                                                                                      |
 | `first.type`          | string                    | 1           | The type of the first page in the collection. It _MUST_ be `Page` or a specialisation.                                                                                                                                                                                                   |
+| `first.name`          | string                    | 1           | The name of the first page.                                                                                                                                                                                                                                                              |
+| `first.items`         | array                     | 1           | The items of the first page. A first page always has at least one item.                                                                                                                                                                                                                  |
+| `first.items[*]`      | CuratedCollection, Entity | 1           | A `CuratedCollection` or a specialisation, or a specialisation of `Entity`.                                                                                                                                                                                                              |
+| `first.next`          | Page                      | 0 or 1      | The page after the first page. Not set if there is no next page.                                                                                                                                                                                                                         |
+| `first.next.id`       | string                    | 1           | The identifier of the next page.                                                                                                                                                                                                                                                         |
+| `first.next.type`     | string                    | 1           | The type of the next page. It _MUST_ be `Page` or a specialisation.                                                                                                                                                                                                                      |
 | `last`                | Page                      | 0 or 1      | The last page in the collection. Not set if the collection is empty, if the collection is not divided into [pages](#endpoint-retrieve-a-page-in-a-collection), or if the last page is unknown (e.g. in case of [cursor navigation](resources.md#page-navigation-and-cursor-navigation)). |
 | `last.id`             | string                    | 1           | The identifier of the last page in the collection.                                                                                                                                                                                                                                       |
 | `last.type`           | string                    | 1           | The type of the last page in the collection. It _MUST_ be `Page` or a specialisation.                                                                                                                                                                                                    |
@@ -153,38 +159,7 @@ An example of the response body of the integration layer:
 }
 ```
 
-The response indicates that the integration layer has three collections that are a part of the root collection. The root collection groups collections, not entities — it supports no capabilities and omits the `capabilities` property.
-
-A collection can hold further collections. Example response for the 'Persons' collection:
-
-```json
-{
-  "@context": "https://example.org/v1/context.json",
-  "id": "https://example.org/v1/collections/persons",
-  "type": "CuratedCollection",
-  "name": "Persons",
-  "totalItems": 2,
-  "items": [
-    {
-      "id": "https://example.org/v1/collections/persons/painters",
-      "type": "CuratedCollection",
-      "name": "Painters"
-    },
-    {
-      "id": "https://example.org/v1/collections/persons/writers",
-      "type": "CuratedCollection",
-      "name": "Writers"
-    }
-  ],
-  "partOf": {
-    "id": "https://example.org/v1/collections",
-    "type": "CuratedCollection",
-    "name": "Collections"
-  }
-}
-```
-
-The response indicates that the 'Persons' collection groups two collections: one for 'Painters' and one for 'Writers'. The collection itself is a part of a parent collection, 'Collections'. The collection groups collections rather than entities — it supports no capabilities and omits the `capabilities` property.
+The response indicates that the integration layer has three collections that are a part of the root collection.
 
 ## Endpoint: Retrieve a collection
 
@@ -227,12 +202,18 @@ The response body _MUST_ contain at least the following properties:
 | `name`                | string                    | 1           | The name of the collection.                                                                                                                                                                                                                                                              |
 | `totalItems`          | number                    | 0 or 1      | The exact total number of items in the collection, being its further collections, its entities, or both. Not set if the exact total is too costly to calculate. Mutually exclusive with `estimatedTotalItems`.                                                                           |
 | `estimatedTotalItems` | number                    | 0 or 1      | An estimate of the total number of items in the collection. It can be higher or lower than the real total. Not set if there is no estimate. Mutually exclusive with `totalItems`.                                                                                                        |
-| `items`               | array                     | 0 or 1      | A list of the items in the collection. Not set if the items are parts of [pages](#endpoint-retrieve-a-page-in-a-collection).                                                                                                                                                             |
-| `items[*]`            | CuratedCollection, Entity | 1           | A `CuratedCollection` or a specialisation, or a specialisation of `Entity`. Not set if the items are parts of [pages](#endpoint-retrieve-a-page-in-a-collection).                                                                                                                        |
+| `items`               | array                     | 0 or 1      | A list of the items in the collection. Not set if the collection is divided into [pages](#endpoint-retrieve-a-page-in-a-collection); the items of the first page are in `first`.                                                                                                         |
+| `items[*]`            | CuratedCollection, Entity | 1           | A `CuratedCollection` or a specialisation, or a specialisation of `Entity`.                                                                                                                                                                                                              |
 | `pageUriTemplate`     | string                    | 0 or 1      | A [URI template](https://www.rfc-editor.org/rfc/rfc6570.html) for the pages of the collection. It contains the `page` variable. Set only if the collection is divided into pages that can be addressed by number. See [Pagination](resources.md#pagination).                             |
-| `first`               | Page                      | 0 or 1      | The first page in the collection. Not set if the collection is empty or if it is not divided into [pages](#endpoint-retrieve-a-page-in-a-collection).                                                                                                                                    |
+| `first`               | Page                      | 0 or 1      | The first page in the collection, including its items and links. It has the properties of a [Page](#endpoint-retrieve-a-page-in-a-collection), except `partOf`. Not set if the collection is empty or if it is not divided into pages.                                                   |
 | `first.id`            | string                    | 1           | The identifier of the first page in the collection.                                                                                                                                                                                                                                      |
 | `first.type`          | string                    | 1           | The type of the first page in the collection. It _MUST_ be `Page` or a specialisation.                                                                                                                                                                                                   |
+| `first.name`          | string                    | 1           | The name of the first page.                                                                                                                                                                                                                                                              |
+| `first.items`         | array                     | 1           | The items of the first page. A first page always has at least one item.                                                                                                                                                                                                                  |
+| `first.items[*]`      | CuratedCollection, Entity | 1           | A `CuratedCollection` or a specialisation, or a specialisation of `Entity`.                                                                                                                                                                                                              |
+| `first.next`          | Page                      | 0 or 1      | The page after the first page. Not set if there is no next page.                                                                                                                                                                                                                         |
+| `first.next.id`       | string                    | 1           | The identifier of the next page.                                                                                                                                                                                                                                                         |
+| `first.next.type`     | string                    | 1           | The type of the next page. It _MUST_ be `Page` or a specialisation.                                                                                                                                                                                                                      |
 | `last`                | Page                      | 0 or 1      | The last page in the collection. Not set if the collection is empty, if the collection is not divided into [pages](#endpoint-retrieve-a-page-in-a-collection), or if the last page is unknown (e.g. in case of [cursor navigation](resources.md#page-navigation-and-cursor-navigation)). |
 | `last.id`             | string                    | 1           | The identifier of the last page in the collection.                                                                                                                                                                                                                                       |
 | `last.type`           | string                    | 1           | The type of the last page in the collection. It _MUST_ be `Page` or a specialisation.                                                                                                                                                                                                    |
@@ -254,7 +235,38 @@ The response body _MUST_ contain at least the following properties:
 
 ### Example
 
-An example of the response body of a collection:
+An example of the response body of a collection that holds further collections:
+
+```json
+{
+  "@context": "https://example.org/v1/context.json",
+  "id": "https://example.org/v1/collections/persons",
+  "type": "CuratedCollection",
+  "name": "Persons",
+  "totalItems": 2,
+  "items": [
+    {
+      "id": "https://example.org/v1/collections/persons/painters",
+      "type": "CuratedCollection",
+      "name": "Painters"
+    },
+    {
+      "id": "https://example.org/v1/collections/persons/writers",
+      "type": "CuratedCollection",
+      "name": "Writers"
+    }
+  ],
+  "partOf": {
+    "id": "https://example.org/v1/collections",
+    "type": "CuratedCollection",
+    "name": "Collections"
+  }
+}
+```
+
+The response indicates that the 'Persons' collection groups two collections: one for 'Painters' and one for 'Writers'. The collection itself is a part of a parent collection, 'Collections'.
+
+An example of the response body of a collection that is divided into pages:
 
 ```json
 {
@@ -263,9 +275,23 @@ An example of the response body of a collection:
   "type": "CuratedCollection",
   "name": "Heritage objects",
   "totalItems": 195,
+  "pageUriTemplate": "https://example.org/v1/collections/objects{?page}",
   "first": {
     "id": "https://example.org/v1/collections/objects?page=1",
-    "type": "Page"
+    "type": "Page",
+    "name": "Heritage objects: page 1",
+    "items": [
+      {
+        "id": "https://example.org/v1/entities/1234",
+        "type": "HeritageObject",
+        "name": "The Night Watch"
+      }
+      // Other items...
+    ],
+    "next": {
+      "id": "https://example.org/v1/collections/objects?page=2",
+      "type": "Page"
+    }
   },
   "last": {
     "id": "https://example.org/v1/collections/objects?page=20",
@@ -275,14 +301,13 @@ An example of the response body of a collection:
     "id": "https://example.org/v1/collections",
     "type": "CuratedCollection",
     "name": "Collections"
-  },
-  "pageUriTemplate": "https://example.org/v1/collections/objects{?page}"
+  }
 }
 ```
 
-The response indicates that this collection contains 195 entities, spread over 20 pages, and that its pages can be addressed by number.
+The response indicates that this collection contains 195 entities, spread over 20 pages, and that its pages can be addressed by number. It includes the first page in `first`, with its items and a link to the next page.
 
-Another example of the response body of a collection, with extended capabilities:
+An example of the response body of a collection with extended capabilities:
 
 ```json
 {
@@ -294,7 +319,20 @@ Another example of the response body of a collection, with extended capabilities
   "pageUriTemplate": "https://example.org/v1/collections/masterpieces{?page}",
   "first": {
     "id": "https://example.org/v1/collections/masterpieces?page=1",
-    "type": "Page"
+    "type": "Page",
+    "name": "Masterpieces: page 1",
+    "items": [
+      {
+        "id": "https://example.org/v1/entities/1234",
+        "type": "HeritageObject",
+        "name": "The Night Watch"
+      }
+      // Other items...
+    ],
+    "next": {
+      "id": "https://example.org/v1/collections/masterpieces?page=2",
+      "type": "Page"
+    }
   },
   "last": {
     "id": "https://example.org/v1/collections/masterpieces?page=20",
@@ -327,7 +365,7 @@ Another example of the response body of a collection, with extended capabilities
 }
 ```
 
-The response indicates that this collection supports simple search, advanced search, facets and suggestions, and that its pages can be addressed by number.
+The response indicates that this collection supports simple search, advanced search, facets and suggestions, and that its pages can be addressed by number. It includes the first page in `first`.
 
 ## Endpoint: Retrieve a page in a collection
 
@@ -379,7 +417,7 @@ The response body _MUST_ contain at least the following properties:
 | `next`                       | Page                       | 0 or 1      | The next page in the collection. Not set if there is no next page.                                                                                                                                                                                                                                                                                                                               |
 | `next.id`                    | string                     | 1           | The identifier of the next page in the collection.                                                                                                                                                                                                                                                                                                                                               |
 | `next.type`                  | string                     | 1           | The type of the next page in the collection. It _MUST_ be `Page` or a specialisation.                                                                                                                                                                                                                                                                                                            |
-| `partOf`                     | CuratedCollection          | 1           | The collection to which the items contained by the page belong.                                                                                                                                                                                                                                                                                                                                  |
+| `partOf`                     | CuratedCollection          | 0 or 1      | The collection to which the items contained by the page belong. It _MUST_ be set unless the page is embedded in the `first` property of its collection: the collection that contains it is the collection it belongs to.                                                                                                                                                                         |
 | `partOf.id`                  | string                     | 1           | The identifier of the collection.                                                                                                                                                                                                                                                                                                                                                                |
 | `partOf.type`                | string                     | 1           | The type of the collection. It _MUST_ be `CuratedCollection` or a specialisation.                                                                                                                                                                                                                                                                                                                |
 | `partOf.name`                | string                     | 1           | The name of the collection.                                                                                                                                                                                                                                                                                                                                                                      |
@@ -408,13 +446,6 @@ An example of the response body:
       "id": "https://example.org/v1/entities/1234",
       "type": "HeritageObject",
       "name": "The Night Watch"
-      // Other properties...
-    },
-    {
-      "id": "https://example.org/v1/entities/5678",
-      "type": "HeritageObject",
-      "name": "Ford V8 Cabriolet"
-      // Other properties...
     }
     // Other items...
   ],
@@ -443,6 +474,8 @@ An example of the response body:
   }
 }
 ```
+
+The response indicates that this page contains items (`items`), is related to a previous page (`prev`) and a next page (`next`) and its items are part of a collection (`partOf`). The `partOf` refers to the first page of the collection and, because the integration layer knows it, to the last page.
 
 ### Facets on a page
 

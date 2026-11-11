@@ -564,7 +564,7 @@ Both implementations look the same to a presentation layer. The specification do
 
 An identifier is bound to the collection and to the search object. A presentation layer _MUST NOT_ use it with another collection or with another advanced search. If it does, the integration layer _MUST_ respond with a `400` status code.
 
-The identifier _MUST_ appear in every URI that navigates the search results: the `id` of the page, `prev.id`, `next.id`, `partOf.id`, `partOf.pageUriTemplate`, `partOf.first.id` and `partOf.last.id`. It _MUST_ also appear in the `first.id`, `last.id` and `pageUriTemplate` of the filtered collection.
+The identifier _MUST_ appear in every URI that navigates the search results: the `id` of the page, `prev.id`, `next.id`, `partOf.id`, `partOf.pageUriTemplate`, `partOf.first.id` and `partOf.last.id`. It _MUST_ also appear in the `id`, `first.id`, `first.next.id`, `last.id` and `pageUriTemplate` of the filtered collection.
 
 The `search` parameter and the simple search parameters (`q`, `orderBy`, `size`) are mutually exclusive. A presentation layer _MUST NOT_ combine them in one request. If it does, the integration layer _MUST_ respond with a `400` status code.
 
@@ -627,7 +627,7 @@ None.
 
 ### Response body
 
-The response is a `Page` if the collection is divided into pages; otherwise it is a `Collection` with its items inline.
+The response depends on the endpoint that the request addresses. A request to a collection returns a `Collection`. If that collection is divided into pages, it includes the first page in `first`, with the items of the first page. A request to a page returns that `Page`.
 
 ### Example
 
@@ -645,19 +645,82 @@ An example of the response of the integration layer:
 ```json
 {
   "@context": "https://example.org/v1/context.json",
-  "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc&page=1",
+  "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc",
+  "type": "CuratedCollection",
+  "name": "Masterpieces",
+  "totalItems": 42,
+  "pageUriTemplate": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc{&page}",
+  "first": {
+    "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc&page=1",
+    "type": "Page",
+    "name": "Masterpieces: page 1",
+    "items": [
+      {
+        "id": "https://example.org/v1/entities/1234",
+        "type": "HeritageObject",
+        "name": "The Night Watch"
+      }
+      // Other items...
+    ],
+    "next": {
+      "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc&page=2",
+      "type": "Page"
+    }
+  },
+  "last": {
+    "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc&page=3",
+    "type": "Page"
+  },
+  "partOf": {
+    "id": "https://example.org/v1/collections",
+    "type": "CuratedCollection",
+    "name": "Collections"
+  },
+  "capabilities": [
+    "https://specs.nde.nl/rest/v1/simple-search",
+    "https://specs.nde.nl/rest/v1/advanced-search",
+    "https://specs.nde.nl/rest/v1/facets",
+    "https://specs.nde.nl/rest/v1/suggestions"
+  ],
+  "queryables": {
+    "id": "https://example.org/v1/collections/masterpieces/queryables"
+  }
+}
+```
+
+The response indicates that the simple search has 42 results, that the collection includes its first page in `first`, and that the next page is page 2.
+
+An example request from a presentation layer for a page in the same search:
+
+```http
+GET /v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc&page=2
+Host: example.org
+```
+
+This tells the integration layer that the presentation layer is requesting page 2.
+
+An example of the response of the integration layer:
+
+```json
+{
+  "@context": "https://example.org/v1/context.json",
+  "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc&page=2",
   "type": "Page",
-  "name": "Masterpieces: page 1",
+  "name": "Masterpieces: page 2",
   "items": [
     {
-      "id": "https://example.org/v1/entities/1234",
+      "id": "https://example.org/v1/entities/5678",
       "type": "HeritageObject",
-      "name": "The Night Watch"
+      "name": "The Milkmaid"
     }
     // Other items...
   ],
+  "prev": {
+    "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc&page=1",
+    "type": "Page"
+  },
   "next": {
-    "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc&page=2",
+    "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc&page=3",
     "type": "Page"
   },
   "partOf": {
@@ -678,7 +741,7 @@ An example of the response of the integration layer:
 }
 ```
 
-The response indicates that the simple search has 42 results, that this is the first page, and that the next page is page 2.
+The response indicates that this is page 2 of the simple search, with a previous page and a next page. Its `partOf` is the filtered collection.
 
 ## Endpoint: Advanced search
 
@@ -703,13 +766,19 @@ The `search` path segment is a verb rather than a noun. This is an explicit exce
 
 None.
 
+### Request headers
+
+| Name           | Value              |
+| -------------- | ------------------ |
+| `Content-Type` | `application/json` |
+
 ### Request body
 
 The request body _MUST_ contain a JSON-formatted [search object](#search-object).
 
 ### Response body
 
-The response is a `Page` if the collection is divided into pages; otherwise it is a `Collection` with its items inline. The response URIs contain the [search identifier](#search-identifier).
+The response is the filtered `Collection`. If the collection is divided into pages, it includes the first page in `first`; otherwise it includes all matching items in `items`. The response URIs contain the [search identifier](#search-identifier).
 
 ### Example
 
@@ -738,40 +807,50 @@ An example of the response of the integration layer:
 ```json
 {
   "@context": "https://example.org/v1/context.json",
-  "id": "https://example.org/v1/collections/masterpieces?search=abc&page=1",
-  "type": "Page",
-  "name": "Masterpieces: page 1",
-  "items": [
-    {
-      "id": "https://example.org/v1/entities/1234",
-      "type": "HeritageObject",
-      "name": "The Night Watch"
+  "id": "https://example.org/v1/collections/masterpieces?search=abc",
+  "type": "CuratedCollection",
+  "name": "Masterpieces",
+  "totalItems": 42,
+  "pageUriTemplate": "https://example.org/v1/collections/masterpieces?search=abc{&page}",
+  "first": {
+    "id": "https://example.org/v1/collections/masterpieces?search=abc&page=1",
+    "type": "Page",
+    "name": "Masterpieces: page 1",
+    "items": [
+      {
+        "id": "https://example.org/v1/entities/1234",
+        "type": "HeritageObject",
+        "name": "The Night Watch"
+      }
+      // Other items...
+    ],
+    "next": {
+      "id": "https://example.org/v1/collections/masterpieces?search=abc&page=2",
+      "type": "Page"
     }
-    // Other items...
-  ],
-  "next": {
-    "id": "https://example.org/v1/collections/masterpieces?search=abc&page=2",
+  },
+  "last": {
+    "id": "https://example.org/v1/collections/masterpieces?search=abc&page=3",
     "type": "Page"
   },
   "partOf": {
-    "id": "https://example.org/v1/collections/masterpieces?search=abc",
+    "id": "https://example.org/v1/collections",
     "type": "CuratedCollection",
-    "name": "Masterpieces",
-    "totalItems": 42,
-    "pageUriTemplate": "https://example.org/v1/collections/masterpieces?search=abc{&page}",
-    "first": {
-      "id": "https://example.org/v1/collections/masterpieces?search=abc&page=1",
-      "type": "Page"
-    },
-    "last": {
-      "id": "https://example.org/v1/collections/masterpieces?search=abc&page=3",
-      "type": "Page"
-    }
+    "name": "Collections"
+  },
+  "capabilities": [
+    "https://specs.nde.nl/rest/v1/simple-search",
+    "https://specs.nde.nl/rest/v1/advanced-search",
+    "https://specs.nde.nl/rest/v1/facets",
+    "https://specs.nde.nl/rest/v1/suggestions"
+  ],
+  "queryables": {
+    "id": "https://example.org/v1/collections/masterpieces/queryables"
   }
 }
 ```
 
-The response indicates that the advanced search has 42 results, that this is the first page, and that the next page is page 2. The `search` parameter in the URIs of properties `id`, `next.id`, `partOf.id`, `partOf.first.id` and `partOf.last.id` is an identifier for a search object.
+The response indicates that the advanced search has 42 results, that the collection includes its first page in `first`, and that the next page is page 2. The `search` parameter in the URIs of properties `id`, `first.id`, `first.next.id`, `last.id` and `pageUriTemplate` is an identifier for a search object.
 
 ## Endpoint: Queryables
 
@@ -873,8 +952,8 @@ The steps below use a collection that is divided into pages as an example. If th
 
 1. **Check the capability.** The collection advertises the `https://specs.nde.nl/rest/v1/advanced-search` capability.
 2. **Retrieve the Queryables.** The presentation layer requests the collection's [Queryables resource](#queryables) to learn which properties a filter may use.
-3. **Submit the search.** A presentation layer sends a `POST` request with a [search object](#search-object) to the search endpoint of the collection, using the properties that the Queryables resource declares and the operators that the API's [conformance declaration](#conformance) lists. The integration layer runs the search and returns the first results as a `Page`, or as a `Collection` if it does not divide the collection into pages. It gives the search an identifier and includes it as the `search` parameter in every URI that refers to the search.
-4. **Retrieve further results.** If the collection is divided into pages, a presentation layer follows a page URI from the response, such as `next.id`. If the collection has a [`pageUriTemplate`](resources.md#collection), it can also expand that template with a page number to go straight to a page. It passes the `search` parameter unchanged. It does not send the search object again: the identifier already refers to it.
+3. **Submit the search.** A presentation layer sends a `POST` request with a [search object](#search-object) to the search endpoint of the collection, using the properties that the Queryables resource declares and the operators that the API's [conformance declaration](#conformance) lists. The integration layer runs the search and returns the filtered `Collection`. If the collection is divided into pages, the first results are in `first`; otherwise they are in `items`. It gives the search an identifier and includes it as the `search` parameter in every URI that refers to the search.
+4. **Retrieve further results.** If the collection is divided into pages, a presentation layer follows a page URI from the response, such as `first.next.id`. If the collection has a [`pageUriTemplate`](resources.md#collection), it can also expand that template with a page number to go straight to a page. It passes the `search` parameter unchanged. It does not send the search object again: the identifier already refers to it.
 5. **Retrieve facets (optional).** A presentation layer requests a [facet collection](facets.md) with the `context` parameter set to the identifier of the advanced search of the collection. The facet items and their counts then cover only the items that match the search. The `search` parameter of the facet collection refers to an advanced search of the facet collection itself, not to the context collection.
 6. **Start another search.** A new search is a new `POST` request with a new search object. It gets its own identifier. An identifier is bound to its collection and its search object; it cannot be used for another collection or another search.
 
@@ -898,7 +977,7 @@ sequenceDiagram
     Note over PL,IL: 3. Submit the search
     PL->>IL: POST /v1/collections/objects/search<br/>Search object
     Note over IL: Run the search and give it an identifier
-    IL-->>PL: Page with `search=abc` in its URIs
+    IL-->>PL: Collection with `search=abc` in its URIs, including the first page
 
     Note over PL,IL: 4. Retrieve further results
     PL->>IL: GET /v1/collections/objects?search=abc&page=2
@@ -910,5 +989,5 @@ sequenceDiagram
 
     Note over PL,IL: 6. Start another search
     PL->>IL: POST /v1/collections/objects/search<br/>A new search object
-    IL-->>PL: Page with `search=def` in its URIs
+    IL-->>PL: Collection with `search=def` in its URIs
 ```
