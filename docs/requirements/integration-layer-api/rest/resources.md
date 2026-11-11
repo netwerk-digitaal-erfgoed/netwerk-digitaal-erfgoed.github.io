@@ -11,7 +11,7 @@ The API of an integration layer is centered around resources. A resource represe
 
 ## Data model
 
-This specification defines resource types on several pages. This page describes the generic types from which all other resource types extend:
+This specification defines resource types on several pages. This page describes the generic types from which all other resource types extend.
 
 | Name       | Description                                                                                                                                                                                                                                                                                                                                                                                                                |
 | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -108,12 +108,18 @@ A Collection contains at least the following properties:
 | `name`                | string     | 1           | The name of the collection.                                                                                                                                                                                                                                        |
 | `totalItems`          | number     | 0 or 1      | The exact total number of items in the collection, being its further collections, its resources, or both. The property _MAY_ be omitted by the integration layer if the exact total is too costly to calculate. Mutually exclusive with `estimatedTotalItems`.     |
 | `estimatedTotalItems` | number     | 0 or 1      | An estimate of the total number of items in the collection. It can be higher or lower than the real total. The property _MAY_ be omitted by the integration layer if it has no estimate. Mutually exclusive with `totalItems`.                                     |
-| `items`               | array      | 0 or 1      | A list of the items in the collection. Not set if the Collection is divided into [pages](#page).                                                                                                                                                                   |
+| `items`               | array      | 0 or 1      | A list of the items in the collection. Not set if the Collection is divided into [pages](#page); the items of the first page are in `first`.                                                                                                                       |
 | `items[*]`            | Resource   | 1           | A [resource](resources.md#resource). A resource can be of [any type](#data-model), including `Collection` or a specialisation.                                                                                                                                     |
 | `pageUriTemplate`     | string     | 0 or 1      | A [URI template](https://www.rfc-editor.org/rfc/rfc6570.html) for the pages of the collection. It contains the `page` variable. Set only if the collection is divided into pages that can be addressed by number. See [Pagination](#pagination).                   |
-| `first`               | Page       | 0 or 1      | The first page in the collection. Not set if the collection is empty or if it is not divided into [pages](#page).                                                                                                                                                  |
+| `first`               | Page       | 0 or 1      | The first page in the collection, including its items and links. It has the properties of a [Page](#page), except `partOf`. Not set if the collection is empty or if it is not divided into pages.                                                                 |
 | `first.id`            | string     | 1           | The identifier of the first page in the collection.                                                                                                                                                                                                                |
 | `first.type`          | string     | 1           | The type of the first page in the collection. It _MUST_ be `Page` or a specialisation.                                                                                                                                                                             |
+| `first.name`          | string     | 1           | The name of the first page.                                                                                                                                                                                                                                        |
+| `first.items`         | array      | 1           | The items of the first page. A first page always has at least one item.                                                                                                                                                                                            |
+| `first.items[*]`      | Resource   | 1           | A [resource](resources.md#resource). A resource can be of [any type](#data-model), including `Collection` or a specialisation.                                                                                                                                     |
+| `first.next`          | Page       | 0 or 1      | The page after the first page. Not set if there is no next page.                                                                                                                                                                                                   |
+| `first.next.id`       | string     | 1           | The identifier of the next page.                                                                                                                                                                                                                                   |
+| `first.next.type`     | string     | 1           | The type of the next page. It _MUST_ be `Page` or a specialisation.                                                                                                                                                                                                |
 | `last`                | Page       | 0 or 1      | The last page in the collection. Not set if the collection is empty, if the collection is not divided into [pages](#page), or if the last page is unknown (e.g. in case of [cursor navigation](#page-navigation-and-cursor-navigation)).                           |
 | `last.id`             | string     | 1           | The identifier of the last page in the collection.                                                                                                                                                                                                                 |
 | `last.type`           | string     | 1           | The type of the last page in the collection. It _MUST_ be `Page` or a specialisation.                                                                                                                                                                              |
@@ -145,7 +151,7 @@ Every collection tree has one root: the collection that has no `partOf`. Every o
 
 An integration layer _MAY_ offer more than one collection tree. The [facet collections](facets.md#endpoint-retrieve-the-facet-collections-of-a-collection) and [suggestion collections](suggestions.md#endpoint-retrieve-the-suggestion-collections-of-a-collection) of a collection, for example, form trees of their own. Their root is not part of the collection tree of that collection — it has no `partOf` and uses `belongsTo` instead.
 
-A presentation layer walks a tree from its root. It requests the root, and for every item in a collection it recurses if the item's `type` is `Collection` or a specialisation of it, and renders the item as a resource otherwise. It does not need to know in advance whether a collection holds further collections or resources, or whether the collections it encounters are divided into pages. Every collection, including one that groups other collections, can be divided into pages, so a tree with many branches can be traversed a page at a time.
+A presentation layer walks a tree from its root. It requests the root, and for every item in `items` or `first.items` it recurses if the item's `type` is `Collection` or a specialisation of it, and processes the item as a resource otherwise. It does not need to know in advance whether a collection holds further collections or resources, or whether the collections it encounters are divided into pages. Every collection, including one that groups other collections, can be divided into pages, so a tree with many branches can be traversed a page at a time.
 
 ### Paths
 
@@ -172,7 +178,7 @@ The path identifiers themselves are a choice of the integration layer: it names 
 
 ### Example
 
-Example of the response body of the integration layer's root collection:
+Example of the response body of the integration layer's root curated collection:
 
 ```json
 {
@@ -198,7 +204,7 @@ Example of the response body of the integration layer's root collection:
 
 The response indicates that the root groups two further collections, 'Heritage objects' and 'Persons'.
 
-Example of the response body when the collection is divided into pages:
+Example of the response body when a collection is divided into pages:
 
 ```json
 {
@@ -209,7 +215,20 @@ Example of the response body when the collection is divided into pages:
   "totalItems": 195,
   "first": {
     "id": "https://example.org/v1/collections/objects?page=1",
-    "type": "Page"
+    "type": "Page",
+    "name": "Heritage objects: page 1",
+    "items": [
+      {
+        "id": "https://example.org/v1/entities/1234",
+        "type": "HeritageObject",
+        "name": "The Night Watch"
+      }
+      // Other items...
+    ],
+    "next": {
+      "id": "https://example.org/v1/collections/objects?page=2",
+      "type": "Page"
+    }
   },
   "partOf": {
     "id": "https://example.org/v1/collections",
@@ -220,7 +239,7 @@ Example of the response body when the collection is divided into pages:
 }
 ```
 
-The response indicates that this collection consists of 195 items, accessible via the `first` page.
+The response indicates that this collection consists of 195 items. It includes the first page in `first`, with its items and a link to the next page.
 
 ## Page
 
@@ -239,14 +258,14 @@ A Page contains at least the following properties:
 | `next`                       | Page       | 0 or 1      | The next page in the collection. Not set if there is no next page.                                                                                                                                                                                                    |
 | `next.id`                    | string     | 1           | The identifier of the next page in the collection.                                                                                                                                                                                                                    |
 | `next.type`                  | string     | 1           | The type of the next page in the collection. It _MUST_ be `Page` or a specialisation.                                                                                                                                                                                 |
-| `partOf`                     | Collection | 1           | The collection to which the items contained by the page belong.                                                                                                                                                                                                       |
+| `partOf`                     | Collection | 0 or 1      | The collection to which the items contained by the page belong. It _MUST_ be set unless the page is embedded in the `first` property of its collection: the collection that contains it is the collection it belongs to.                                              |
 | `partOf.id`                  | string     | 1           | The identifier of the collection.                                                                                                                                                                                                                                     |
 | `partOf.type`                | string     | 1           | The type of the collection. It _MUST_ be `Collection` or a specialisation.                                                                                                                                                                                            |
 | `partOf.name`                | string     | 1           | The name of the collection.                                                                                                                                                                                                                                           |
 | `partOf.totalItems`          | number     | 0 or 1      | The exact total number of items in the collection, being its further collections, its resources, or both. The property _MAY_ be omitted by the integration layer if the exact total is too costly to calculate. Mutually exclusive with `partOf.estimatedTotalItems`. |
 | `partOf.estimatedTotalItems` | number     | 0 or 1      | An estimate of the total number of items in the collection. It can be higher or lower than the real total. The property _MAY_ be omitted by the integration layer if it has no estimate. Mutually exclusive with `partOf.totalItems`.                                 |
 | `partOf.pageUriTemplate`     | string     | 0 or 1      | A [URI template](https://www.rfc-editor.org/rfc/rfc6570.html) for the pages of the collection. It contains the `page` variable. Set only if the pages can be addressed by number. See [Pagination](#pagination).                                                      |
-| `partOf.first`               | Page       | 1           | The first page in the collection.                                                                                                                                                                                                                                     |
+| `partOf.first`               | Page       | 1           | A reference to the first page in the collection.                                                                                                                                                                                                                      |
 | `partOf.first.id`            | string     | 1           | The identifier of the first page in the collection.                                                                                                                                                                                                                   |
 | `partOf.first.type`          | string     | 1           | The type of the first page in the collection. It _MUST_ be `Page` or a specialisation.                                                                                                                                                                                |
 | `partOf.last`                | Page       | 0 or 1      | The last page in the collection. Not set if the last page is unknown (e.g. in case of [cursor navigation](#page-navigation-and-cursor-navigation)).                                                                                                                   |
@@ -265,7 +284,7 @@ An integration layer _MAY_ divide any collection into pages. It does not have to
 
 A collection that is divided into pages has two properties that point to its pages:
 
-- `first`: the first page of the collection.
+- `first`: the first page of the collection, including its items.
 - `last`: the last page of the collection, if the integration layer knows it.
 
 A page has three properties that point to its place in the collection:
@@ -274,7 +293,11 @@ A page has three properties that point to its place in the collection:
 - `next`: the page after it, if there is one.
 - `partOf`: the collection that the page belongs to.
 
-With these properties, a presentation layer walks through a collection. It requests the collection and follows `first`. It then follows `next` until there is no `next` left, which means it has reached the end. It goes back with `prev`, or it jumps to the end with the collection's `last`.
+A collection that is divided into pages _MUST_ include the first page in `first`, with that page's items and, if there is one, its `next` link. This allows a presentation layer to retrieve the first page from the collection response, without a second request. The number of items and their order are determined by the collection, but can be changed by the presentation layer.
+
+In a collection response, only `first` contains items. `last` is a reference, and the `prev` and `next` links of a page are references too. With these properties, a presentation layer walks through a collection. It requests the collection and retrieves the first page from `first`. It then follows `first.next` until there is no `next` left, which means it has reached the end. It goes back with `prev`, or it jumps to the end with the collection's `last`.
+
+A collection that is empty is not divided into pages: it has no `first`, and its `items` is empty.
 
 The `prev` and the `next` of a page _MUST_ be pages of the same collection. They _MUST_ also point back at each other: if the `next` of one page is another page, the `prev` of that other page _MUST_ be the first one. The pages of a collection _MUST_ form one sequence without loops, so that a presentation layer can walk through them without getting stuck. The `first` of a collection _MUST_ be the page that has no `prev`. Its `last`, if it is set, _MUST_ be the page that has no `next`.
 
