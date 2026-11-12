@@ -69,7 +69,7 @@ A Resource, regardless of type, contains at least the following properties:
 
 The integration layer _MUST_ include `type` in the response body of every resource of the data model it returns, and `id` and `name` when they are known. The combination of these three properties allow a presentation layer to identify a resource.
 
-Not every document that the API returns is a resource of the data model. A [Queryables](search.md#queryables) resource is a JSON Schema document, and an [error](general-rules.md#error-handling) is a Problem Details document. Those documents follow their own standard, which defines their properties and their media type.
+Not every document that the API returns is a resource of the data model. A [Queryables](search.md#queryables) resource is a JSON Schema document, and an [error](rules.md#error-handling) is a Problem Details document. Those documents follow their own standard, which defines their properties and their media type.
 
 ### Example
 
@@ -213,6 +213,7 @@ Example of the response body when a collection is divided into pages:
   "type": "Collection",
   "name": "Heritage objects",
   "totalItems": 195,
+  "pageUriTemplate": "https://example.org/v1/collections/objects{?page}",
   "first": {
     "id": "https://example.org/v1/collections/objects?page=1",
     "type": "Page",
@@ -234,8 +235,7 @@ Example of the response body when a collection is divided into pages:
     "id": "https://example.org/v1/collections",
     "type": "Collection",
     "name": "Collections"
-  },
-  "pageUriTemplate": "https://example.org/v1/collections/objects{?page}"
+  }
 }
 ```
 
