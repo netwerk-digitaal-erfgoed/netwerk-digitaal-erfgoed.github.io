@@ -326,7 +326,7 @@ Access-Control-Allow-Origin: *
 
 ### Example: advanced search
 
-The [advanced search endpoint](search.md#endpoint-advanced-search) accepts a `POST` request with a JSON body. Such a request makes the browser send a preflight request before the actual search. The preflight must allow the `POST` method and the `Content-Type` header.
+The [advanced search endpoint](advanced-search.md#endpoint-advanced-search) accepts a `POST` request with a JSON body. Such a request makes the browser send a preflight request before the actual search. The preflight must allow the `POST` method and the `Content-Type` header.
 
 An example of a preflight request from a presentation layer:
 

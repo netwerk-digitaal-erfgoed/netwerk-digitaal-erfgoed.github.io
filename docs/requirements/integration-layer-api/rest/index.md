@@ -11,7 +11,7 @@ This specification defines how integration layers and presentation layers exchan
 
 ## Version
 
-This is **version 0.6.0** of the specification.
+This is **version 0.7.0** of the specification.
 
 It is the **initial development** version, version zero. Breaking changes are introduced within the same major version, following [semantic versioning for version zero](https://semver.org/#spec-item-4).
 

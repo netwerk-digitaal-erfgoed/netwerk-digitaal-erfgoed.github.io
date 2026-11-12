@@ -1,6 +1,6 @@
 ---
 slug: /integration-layer-api/rest/suggestions
-sidebar_position: 9
+sidebar_position: 10
 ---
 
 # Suggestions
@@ -119,7 +119,7 @@ A suggestion collection belongs to a context collection: the collection whose it
 
 The user's search in the context collection can narrow that set. For example, a suggestion collection can belong to a [facet collection](facets.md). The facet collection already contains only the facet items that match the search context of its parent collection. The suggestions must then be based on those same facet items, not on all values in the facet collection's default view. This is the **search context** of the suggestion collection.
 
-Only an [advanced search](search.md#endpoint-advanced-search) can serve as the search context, because an advanced search produces an identifier that the suggestion collection can refer to. A presentation layer that uses a [simple search](search.md#endpoint-simple-search) in the context collection must therefore turn it into an advanced search with the same conditions.
+Only an [advanced search](advanced-search.md#endpoint-advanced-search) can serve as the search context: an advanced search produces an identifier that the suggestion collection can refer to. A presentation layer that uses a [simple search](simple-search.md#endpoint-simple-search) in the context collection must therefore turn it into an advanced search with the same conditions.
 
 The presentation layer passes the identifier of that advanced search in the `context` query parameter when it retrieves the suggestion collection. The integration layer _MUST_ validate that the identifier identifies an advanced search of the context collection. If it does not, the integration layer _MUST_ respond with a `400` status code.
 
@@ -258,7 +258,7 @@ The endpoint retrieves the suggestion items of a suggestion collection that matc
 | `q`       | string    | 1           | A keyword query for filtering the suggestion items. The integration layer defines the minimum and maximum length and how the query is matched, e.g. by using prefix or infix search.                                                                                                                                                                                                       |
 | `size`    | number    | 0 or 1      | The maximum number of suggestion items to retrieve. The minimum is 1. The integration layer defines the maximum.                                                                                                                                                                                                                                                                           |
 | `orderBy` | string    | 0 or 1      | The sorting order of the suggestion items: a comma-separated list of sort criteria, in priority order. Each criterion is `property` or `property:order`, where `property` is `relevance` or `value` and `order` is `asc` or `desc`. Default: `relevance:desc` (most relevant suggestion first). The integration layer defines which property of the value it sorts by, such as the `name`. |
-| `context` | string    | 0 or 1      | An identifier for an [advanced search](search.md#endpoint-advanced-search) of the context collection. It selects the items on which the suggestion items are based. See the [search context](#search-context).                                                                                                                                                                             |
+| `context` | string    | 0 or 1      | An identifier for an [advanced search](advanced-search.md#endpoint-advanced-search) of the context collection. It selects the items on which the suggestion items are based. See the [search context](#search-context).                                                                                                                                                                    |
 
 ### Request body
 

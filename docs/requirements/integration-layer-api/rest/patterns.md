@@ -1,6 +1,6 @@
 ---
 slug: /integration-layer-api/rest/patterns
-sidebar_position: 10
+sidebar_position: 11
 ---
 
 # Interaction patterns

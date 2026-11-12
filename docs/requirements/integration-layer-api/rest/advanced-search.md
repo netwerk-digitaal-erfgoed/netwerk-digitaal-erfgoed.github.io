@@ -1,48 +1,34 @@
 ---
-slug: /integration-layer-api/rest/search
-sidebar_position: 7
+slug: /integration-layer-api/rest/advanced-search
+sidebar_position: 8
 ---
 
-# Search
+# Advanced search
 
 ## Introduction
 
-Search is crucial to help the users of presentation layers find information. A search is tied to a particular collection — the context collection — ensuring that results remain within the context of that collection. A presentation layer can search the items of that collection in two ways: with a **simple search** or with an **advanced search**. A simple search works well for a keyword query with a sort order. An advanced search is needed when the search includes filters, such as date ranges, geolocation or facet values.
-
-Both forms of search are optional. An integration layer _MAY_ implement simple search, advanced search, or both, depending on its requirements.
-
-## Simple search
-
-A simple search lets a user find items in a collection with a keyword query and a sort order. It is meant for quick, straightforward filtering.
-
-A simple search uses the `GET` method. Its `q`, `orderBy`, `size` and `page` query parameters are added to a collection endpoint.
-
-A collection that supports a simple search advertises the `https://specs.nde.nl/rest/v1/simple-search` capability.
-
-## Advanced search
-
 An advanced search lets a user narrow down the items of a collection with filters, such as date ranges, geolocation and facet values, combined with 'and' and 'or'. It can combine these filters with a keyword query, a sort order and a page size.
 
-An advanced search uses the `POST` method. The presentation layer sends its search criteria in a JSON body, the **search object**. It does not use the `GET` method: a query string is a poor fit for complex criteria: it has a limited length, and it must be URL-encoded, which makes the criteria hard to read and easy to get wrong.
+An advanced search is optional. An integration layer _MAY_ implement it, depending on its requirements. A keyword search without filters is available as a [simple search](simple-search.md).
 
 A collection that supports an advanced search advertises the `https://specs.nde.nl/rest/v1/advanced-search` capability. It also exposes a [Queryables resource](#queryables), which lists the properties that a filter may use.
 
-### Search object
+## Search object
 
 A search object is a JSON object. It contains the search criteria of an advanced search.
 
-The search object is an abstraction over query languages that developers may already know, such as Elasticsearch's query language or SQL. The abstraction is essential: an integration layer chooses its own backing store, and this specification cannot prescribe the query language of one search engine or database. For filters, the search object uses the standard [Common Query Language (CQL2)](https://docs.ogc.org/is/21-065r2/21-065r2.html); the other search criteria are defined by this specification. The search object is designed for a straightforward mapping to the native query language of a backing store.
+The search object is an abstraction over query languages that developers may already know, such as Elasticsearch's query language or SQL. The abstraction is essential: an integration layer chooses its own data store, and this specification cannot prescribe the query language of one search engine or database. For filters, the search object uses the standard [Common Query Language (CQL2)](https://docs.ogc.org/is/21-065r2/21-065r2.html); the other search criteria are defined by this specification. The search object is designed for a straightforward mapping to the native query language of a data store.
 
 A search object has the following properties:
 
 | Name                  | Data type | Cardinality | Description                                                                                                                                                                                                                                                                                                                                                                                                 |
 | --------------------- | --------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `q`                   | string    | 0 or 1      | A keyword query. It has the same meaning as the `q` query parameter of a [simple search](#endpoint-simple-search). When the search object also has a `filter`, an item _MUST_ match both.                                                                                                                                                                                                                   |
-| `orderBy`             | array     | 0 or 1      | An ordered list of sort criteria. The criteria apply in array order. If absent, the integration layer defines the order. It has the same meaning as the `orderBy` query parameter of a [simple search](#endpoint-simple-search).                                                                                                                                                                            |
+| `q`                   | string    | 0 or 1      | A keyword query. It has the same meaning as the `q` query parameter of a [simple search](simple-search.md#endpoint-simple-search). When the search object also has a `filter`, an item _MUST_ match both.                                                                                                                                                                                                   |
+| `orderBy`             | array     | 0 or 1      | An ordered list of sort criteria. The criteria apply in array order. If absent, the integration layer defines the order. It has the same meaning as the `orderBy` query parameter of a [simple search](simple-search.md#endpoint-simple-search).                                                                                                                                                            |
 | `orderBy[*]`          | object    | 1           | A sort criterion.                                                                                                                                                                                                                                                                                                                                                                                           |
 | `orderBy[*].property` | string    | 1           | The property to sort on. It _MUST_ be one of the properties that the collection supports for sorting. Which properties a collection supports, and what they mean, is documented with that collection.                                                                                                                                                                                                       |
 | `orderBy[*].order`    | string    | 1           | The direction of the sort. It _MUST_ be `asc` or `desc`.                                                                                                                                                                                                                                                                                                                                                    |
-| `size`                | number    | 0 or 1      | The maximum number of items to retrieve. It has the same meaning as the `size` query parameter of a [simple search](#endpoint-simple-search).                                                                                                                                                                                                                                                               |
+| `size`                | number    | 0 or 1      | The maximum number of items to retrieve. It has the same meaning as the `size` query parameter of a [simple search](simple-search.md#endpoint-simple-search).                                                                                                                                                                                                                                               |
 | `filter`              | object    | 0 or 1      | A CQL2 filter expression. See [Filters](#filters).                                                                                                                                                                                                                                                                                                                                                          |
 | `context`             | string    | 0 or 1      | An identifier for an [advanced search](#endpoint-advanced-search) of the context collection. It is used only by [facet collections](facets.md) and [suggestion collections](suggestions.md), to select the items on which their own items are based. The identifier _MUST_ identify an advanced search of that context collection; otherwise the integration layer _MUST_ respond with a `400` status code. |
 
@@ -67,11 +53,17 @@ The example searches the collection for items that match the keyword query `remb
 
 If the search object is invalid, or contains a filter with an operator or property that the API does not support, the integration layer _MUST_ respond with a `400` status code.
 
-### Filters
+:::note To be discussed
+
+Add support for OGC API's [`/sortables`](https://docs.ogc.org/is/23-058r2/23-058r2.html#rc_sortables) endpoint, to discover the properties that may be used to sort the items in a collection?
+
+:::
+
+## Filters
 
 A presentation layer can narrow down the items of a collection with filters. Filters are part of a [search object](#search-object). A presentation layer sends filters in the `filter` property of a search object to the advanced search endpoint.
 
-This specification uses the [Common Query Language (CQL2)](https://docs.ogc.org/is/21-065r2/21-065r2.html) for filters, in its JSON encoding. It has a [JSON Schema](https://schemas.opengis.net/cql2/1.0/cql2.json) which integration layers and presentation layers can use to validate a filter before executing or sending it. It also has an ecosystem of programming libraries for building, parsing and validating filters. An integration layer translates a CQL2 filter to the native query language of its backing store.
+This specification uses the [Common Query Language (CQL2)](https://docs.ogc.org/is/21-065r2/21-065r2.html) for filters, in its JSON encoding. It has a [JSON Schema](https://schemas.opengis.net/cql2/1.0/cql2.json) which integration layers and presentation layers can use to validate a filter before executing or sending it. It also has an ecosystem of programming libraries for building, parsing and validating filters. An integration layer translates a CQL2 filter to the native query language of its data store.
 
 Which filters a collection supports is described in two places. The [conformance declaration](#conformance) of the API lists the CQL2 operators that the API supports. The [Queryables resource](#queryables) of the collection lists the properties that a filter may use. Together they determine what a presentation layer can filter on.
 
@@ -91,7 +83,7 @@ All filter types use the same CQL2 syntax. They differ only in the operators tha
 
 A presentation layer _MUST_ only use operators that the API's [conformance declaration](#conformance) covers and properties that the collection's [Queryables resource](#queryables) declares. If it uses another operator or property, the integration layer _MUST_ respond with a `400` status code. Ignoring an unsupported filter would silently give the presentation layer more items than it asked for.
 
-#### Conformance
+### Conformance
 
 Which CQL2 operators the integration layer supports is declared in its conformance declaration. An integration layer that supports filters _MUST_ publish such a declaration. It lists the [CQL2 conformance classes](https://docs.ogc.org/is/21-065r2/21-065r2.html#_conformance) that apply.
 
@@ -108,7 +100,7 @@ The conformance declaration _MUST_ include `http://www.opengis.net/spec/cql2/1.0
 | Array Functions               | `http://www.opengis.net/spec/cql2/1.0/conf/array-functions`               | `a_contains`, `a_overlaps` and the other array predicates        |
 | Functions                     | `http://www.opengis.net/spec/cql2/1.0/conf/functions`                     | Custom functions                                                 |
 
-#### Filter expressions
+### Filter expressions
 
 The `filter` property holds one CQL2 expression. An expression is a JSON object. For example:
 
@@ -128,23 +120,27 @@ Put in the `filter` property of a search object, it matches items that have the 
 
 The integration layer _MUST_ validate the expression against the CQL2 JSON Schema, against the operators in the API's [conformance declaration](#conformance), and against the properties in the collection's [Queryables resource](#queryables). If the expression is invalid or contains an unsupported operator or property, the integration layer _MUST_ respond with a `400` status code.
 
-#### Operators
+### Operators
 
 CQL2 supports various operators. The table underneath lists examples of operators that an integration layer may support. It shows what each operator does in this API and which data types it applies to. The list is not exhaustive: an integration layer may also support other CQL2 operators and declare them in its [conformance declaration](#conformance).
 
 | CQL2 operator or function | Applies to                    | Meaning                                                                                 |
 | ------------------------- | ----------------------------- | --------------------------------------------------------------------------------------- |
-| `and`, `or`, `not`        | any                           | Combine or negate filter expressions.                                                   |
-| `=`                       | string, number, date, boolean | Equals the value.                                                                       |
-| `in`                      | string, number, date, boolean | Equals one of the values.                                                               |
-| `like`                    | string                        | Matches a pattern. `%` matches any sequence of characters; `_` matches one character.   |
-| `between`                 | number                        | Is equal to or greater than the first value and equal to or less than the second value. |
-| `>`, `>=`, `<`, `<=`      | number, date                  | Compares with the value.                                                                |
-| `a_contains`              | multi-valued property         | Contains every one of the values.                                                       |
-| `a_overlaps`              | multi-valued property         | Shares at least one value. Use `not a_overlaps` for 'contains none'.                    |
-| `s_within`                | location                      | Is inside a bounding box or polygon.                                                    |
+| `and`, `or`, `not`        | Any                           | Combine or negate filter expressions.                                                   |
+| `=`                       | String, number, date, boolean | Equals the value.                                                                       |
+| `in`                      | String, number, date, boolean | Equals one of the values.                                                               |
+| `like`                    | String                        | Matches a pattern. `%` matches any sequence of characters; `_` matches one character.   |
+| `between`                 | Number                        | Is equal to or greater than the first value and equal to or less than the second value. |
+| `>`, `>=`, `<`, `<=`      | Number, date                  | Compares with the value.                                                                |
+| `a_contains`              | Multi-valued property         | Contains every one of the values.                                                       |
+| `a_overlaps`              | Multi-valued property         | Shares at least one value. Use `not a_overlaps` for 'contains none'.                    |
+| `s_within`                | Location                      | Is inside a bounding box or polygon.                                                    |
 
 Operator support is the same for every collection: it follows from the conformance declaration, not from a capability of a collection. Property support differs per collection and is described by the collection's [Queryables resource](#queryables). A presentation layer _MUST NOT_ use an operator that the API does not declare, or a property that the collection's Queryables resource does not declare. If it does, the integration layer _MUST_ respond with a `400` status code.
+
+### Examples
+
+The examples below show a filter for each filter type and for combinations of filters.
 
 #### String
 
@@ -165,8 +161,6 @@ A text filter compares a string property. In CQL2, string properties are compare
 This filter matches items whose name starts with 'Rem'.
 
 Whether a string comparison is case-sensitive is defined by the integration layer. CQL2 also defines `casei` and `accenti` for case- and accent-insensitive comparison.
-
-For a filter on a string [dimension](facets.md#dimension), each value is the `id` of the facet item when it has one, and its `name` otherwise. See [Facet items](facets.md#facet-items).
 
 #### Number
 
@@ -329,7 +323,7 @@ A facet filter translates a selected facet item into a filter on the facet colle
 }
 ```
 
-This filter matches items of type 'Painting'. The facet collection's dimension is `additionalType`, and the facet item's `id` is the filter value.
+This filter matches items of type 'Painting'. The facet collection's dimension is `additionalType`. The filter value is the facet item's `id` when it has one, and its `name` otherwise. See [Facet items](facets.md#facet-items).
 
 #### Set
 
@@ -352,7 +346,7 @@ A set filter matches all or none of a set of values. The `a_contains` operator m
 
 This filter matches items that have both creators. Use `a_overlaps` instead to match items that have at least one of them.
 
-#### Examples of `and`, `or` and `not` combinations
+#### Combine or negate filters
 
 A filter with nested `and` and `not` conditions:
 
@@ -540,9 +534,9 @@ A filter can combine string conditions in the same way:
 
 The filter matches items whose name or description matches one of several string conditions.
 
-#### Translating filters
+### Translating filters
 
-CQL2 is independent of the backing store. The table shows the closest equivalent of each CQL2 operator. It is illustrative, not prescriptive: stores differ between versions, and an integration layer can preprocess data or evaluate an expression in application code when there is no native equivalent.
+CQL2 is independent of the data store of an integration layer. The table shows the closest equivalent of each CQL2 operator. It is illustrative, not prescriptive: data stores differ between versions, and an integration layer can preprocess data or evaluate an expression in application code when there is no native equivalent.
 
 | CQL2                      | Elasticsearch                                | Typesense `filter_by`                                                        | PostgreSQL                            |
 | ------------------------- | -------------------------------------------- | ---------------------------------------------------------------------------- | ------------------------------------- |
@@ -562,7 +556,7 @@ CQL2 is independent of the backing store. The table shows the closest equivalent
 | `s_within` with `Polygon` | `geo_shape` with a polygon                   | `property:(...)` polygon with the corners                                    | `ST_Within` with `ST_GeomFromGeoJSON` |
 | `casei`, `accenti`        | depends on the analyzer or normalizer        | case-insensitive by default                                                  | `ILIKE` or `lower()`                  |
 
-### Queryables
+## Queryables
 
 A Queryables resource describes the properties of a collection that a [filter](#filters) may refer to. It is a machine-readable list of property names and their data types. With it, a presentation layer can build a filter without guessing which properties exist.
 
@@ -572,7 +566,7 @@ The resource follows the [Queryables requirements class](https://docs.ogc.org/is
 
 A Queryables resource describes properties, not operators. Which CQL2 operators the API supports is declared once, in the API's [conformance declaration](#conformance). A collection that advertises the [advanced search](#endpoint-advanced-search) capability _MUST_ expose its Queryables resource.
 
-### Search identifier
+## Search identifier
 
 An advanced search needs an identifier, because a presentation layer cannot repeat the search criteria in later requests. It sends the criteria in the body of the `POST` request that starts the search, but it retrieves pages and facets with `GET` requests, which have no request body. The identifier lets the presentation layer refer to the same search in those requests.
 
@@ -601,190 +595,15 @@ A filtered collection is a view with its own `id`, `totalItems` and pages. Is it
 
 :::
 
-## Sorting
-
-A search result has an order. Sorting determines that order by arranging the matching items according to one or more criteria, in priority order. The first criterion determines the main order. Each following criterion decides the order of items that the previous criteria consider equal.
-
-A sort criterion has two parts: what to sort on, and the direction, ascending or descending. What to sort on can be how relevant an item is to the search, a value of the item itself, or another property that the collection defines.
-
-Sorting changes only the order of the results. It does not change which items match the search.
-
-If no order is specified, the integration layer defines a default order. Which properties a collection supports for sorting, and what they mean, is documented with that collection.
-
-:::note To be discussed
-
-Add support for OGC API's [`/sortables`](https://docs.ogc.org/is/23-058r2/23-058r2.html#rc_sortables) endpoint, to discover the properties that may be used to sort the items in a collection?
-
-:::
-
-## Simple search and advanced search compared
-
-| Aspect           | Simple search                                         | Advanced search                                                                                                     |
-| ---------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| How              | `GET` with `q`, `orderBy` and `size` query parameters | `POST` with a [search object](search.md#search-object)                                                              |
-| Capability       | `https://specs.nde.nl/rest/v1/simple-search`          | `https://specs.nde.nl/rest/v1/advanced-search`                                                                      |
-| Supports filters | No                                                    | Yes                                                                                                                 |
-| Pagination       | `GET` with the same query parameters                  | `GET` with the `search` parameter                                                                                   |
-| Cacheable        | Yes                                                   | Depends: a stateless identifier is reusable; a stateful one may expire, so responses cannot be cached indefinitely. |
-| Bookmarkable     | Yes                                                   | Depends: a stateless identifier keeps working; a stateful one may expire, so a bookmark can stop working.           |
-
-## Endpoint: Simple search
-
-A simple search is not a separate endpoint. It uses the endpoint that retrieves a collection or a page. For example, a simple search can be applied to a [curated collection](collections.md#endpoint-retrieve-a-collection) or to a [page in that collection](collections.md#endpoint-retrieve-a-page-in-a-collection).
-
-### HTTP request
-
-`GET /{version}/{...collections}?q={q}&orderBy={orderBy}&size={size}&page={page}`
-
-### Path parameters
-
-| Name             | Data type | Cardinality | Description                                                                       |
-| ---------------- | --------- | ----------- | --------------------------------------------------------------------------------- |
-| `version`        | string    | 1           | The version of the API. Example: `v1`.                                            |
-| `...collections` | string    | 1 or more   | The path identifier(s) of the context collection. Example: `collections/objects`. |
-
-### Query parameters
-
-| Name      | Data type | Cardinality | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| --------- | --------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `q`       | string    | 0 or 1      | A keyword query for filtering the items. The integration layer defines the minimum and maximum length and how the query is matched.                                                                                                                                                                                                                                                                                                                                                                                              |
-| `orderBy` | string    | 0 or 1      | The sorting order of the items: a comma-separated list of sort criteria, in priority order. Each criterion is `property` or `property:order`, where `property` is `relevance` or `value` and `order` is `asc` or `desc`. Example: `relevance:desc,value:asc`. `relevance` typically expresses how well an item matches the keyword query (`q`). An integration layer _MAY_ also apply its own relevance rules when `q` is missing. The integration layer defines which property `value` sorts on (e.g. the `name` of an entity). |
-| `size`    | number    | 0 or 1      | The maximum number of items to retrieve. The minimum is 1. The integration layer defines the maximum.                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| `page`    | string    | 0 or 1      | The page to retrieve. If the collection has a [`pageUriTemplate`](resources.md#collection), the value is a page number. Otherwise it is a cursor that the integration layer returned in a page URI. Required when retrieving a page. See [Pagination](resources.md#page-navigation-and-cursor-navigation).                                                                                                                                                                                                                       |
-
-### Request body
-
-None.
-
-### Response body
-
-The response depends on the endpoint that the request addresses. A request to a collection returns a `Collection`. If that collection is divided into pages, it includes the first page in `first`, with the items of the first page. A request to a page returns that `Page`.
-
-### Example
-
-An example request from a presentation layer:
-
-```http
-GET /v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc
-Host: example.org
-```
-
-This tells the integration layer that the presentation layer is searching for resources in the 'Masterpieces' collection that match the keyword 'rembrandt' and that matching resources must be ordered by relevance, descending, and then by value, ascending.
-
-An example of the response of the integration layer:
-
-```json
-{
-  "@context": "https://example.org/v1/context.json",
-  "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc",
-  "type": "CuratedCollection",
-  "name": "Masterpieces",
-  "totalItems": 42,
-  "pageUriTemplate": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc{&page}",
-  "first": {
-    "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc&page=1",
-    "type": "Page",
-    "name": "Masterpieces: page 1",
-    "items": [
-      {
-        "id": "https://example.org/v1/entities/1234",
-        "type": "HeritageObject",
-        "name": "The Night Watch"
-      }
-      // Other items...
-    ],
-    "next": {
-      "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc&page=2",
-      "type": "Page"
-    }
-  },
-  "last": {
-    "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc&page=3",
-    "type": "Page"
-  },
-  "partOf": {
-    "id": "https://example.org/v1/collections",
-    "type": "CuratedCollection",
-    "name": "Collections"
-  },
-  "capabilities": [
-    "https://specs.nde.nl/rest/v1/simple-search",
-    "https://specs.nde.nl/rest/v1/advanced-search",
-    "https://specs.nde.nl/rest/v1/facets",
-    "https://specs.nde.nl/rest/v1/suggestions"
-  ],
-  "queryables": {
-    "id": "https://example.org/v1/collections/masterpieces/queryables"
-  }
-}
-```
-
-The response indicates that the simple search has 42 results, that the collection includes its first page in `first`, and that the next page is page 2.
-
-An example request from a presentation layer for a page in the same search:
-
-```http
-GET /v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc&page=2
-Host: example.org
-```
-
-This tells the integration layer that the presentation layer is requesting page 2.
-
-An example of the response of the integration layer:
-
-```json
-{
-  "@context": "https://example.org/v1/context.json",
-  "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc&page=2",
-  "type": "Page",
-  "name": "Masterpieces: page 2",
-  "items": [
-    {
-      "id": "https://example.org/v1/entities/5678",
-      "type": "HeritageObject",
-      "name": "The Milkmaid"
-    }
-    // Other items...
-  ],
-  "prev": {
-    "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc&page=1",
-    "type": "Page"
-  },
-  "next": {
-    "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc&page=3",
-    "type": "Page"
-  },
-  "partOf": {
-    "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc",
-    "type": "CuratedCollection",
-    "name": "Masterpieces",
-    "totalItems": 42,
-    "pageUriTemplate": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc{&page}",
-    "first": {
-      "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc&page=1",
-      "type": "Page"
-    },
-    "last": {
-      "id": "https://example.org/v1/collections/masterpieces?q=rembrandt&orderBy=relevance:desc,value:asc&page=3",
-      "type": "Page"
-    }
-  }
-}
-```
-
-The response indicates that this is page 2 of the simple search, with a previous page and a next page. Its `partOf` is the filtered collection.
-
 ## Endpoint: Advanced search
 
 ### HTTP request
 
 `POST /{version}/{...collections}/search`
 
-:::note
+The endpoint uses the `POST` method. It does not use `GET`, because a query string is a poor fit for complex criteria. It has a limited length, and it must be URL-encoded, which makes the search criteria hard to read and easy to get wrong.
 
-The `search` path segment is a verb rather than a noun. This is an explicit exception to the resource identifiers, allowed by the [REST API Design Rules](https://logius-standaarden.github.io/API-Design-Rules/#/core/resource-operations).
-
-:::
+The `search` path segment of the endpoint is a verb rather than a noun. This is an explicit exception to the resource identifiers, allowed by the [REST API Design Rules](https://logius-standaarden.github.io/API-Design-Rules/#/core/resource-operations).
 
 ### Path parameters
 
