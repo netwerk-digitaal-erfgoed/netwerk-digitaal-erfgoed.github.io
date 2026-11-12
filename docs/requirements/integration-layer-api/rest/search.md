@@ -35,18 +35,18 @@ The search object is an abstraction over query languages that developers may alr
 
 A search object has the following properties:
 
-| Name                  | Data type | Cardinality | Description                                                                                                                                                                                                                                                                                                                                                                  |
-| --------------------- | --------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `q`                   | string    | 0 or 1      | A keyword query. It has the same meaning as the `q` query parameter of a [simple search](#endpoint-simple-search). When the search object also has a `filter`, an item _MUST_ match both.                                                                                                                                                                                    |
-| `orderBy`             | array     | 0 or 1      | An ordered list of sort criteria. The criteria apply in array order. If absent, the integration layer defines the order. It has the same meaning as the `orderBy` query parameter of a [simple search](#endpoint-simple-search).                                                                                                                                             |
-| `orderBy[*]`          | object    | 1           | A sort criterion.                                                                                                                                                                                                                                                                                                                                                            |
-| `orderBy[*].property` | string    | 1           | The property to sort on. It _MUST_ be one of the properties that the collection supports for sorting. Which properties a collection supports, and what they mean, is documented with that collection.                                                                                                                                                                        |
-| `orderBy[*].order`    | string    | 1           | The direction of the sort. It _MUST_ be `asc` or `desc`.                                                                                                                                                                                                                                                                                                                     |
-| `size`                | number    | 0 or 1      | The maximum number of items to retrieve. It has the same meaning as the `size` query parameter of a [simple search](#endpoint-simple-search).                                                                                                                                                                                                                                |
-| `filter`              | object    | 0 or 1      | A CQL2 filter expression. See [Filters](#filters).                                                                                                                                                                                                                                                                                                                           |
-| `context`             | string    | 0 or 1      | An identifier for an [advanced search](#endpoint-advanced-search) of the context collection. It is used only by facet collections and suggestion collections, to select the items on which their own items are based. The identifier _MUST_ identify an advanced search of that context collection; otherwise the integration layer _MUST_ respond with a `400` status code. |
+| Name                  | Data type | Cardinality | Description                                                                                                                                                                                                                                                                                                                                                                                                 |
+| --------------------- | --------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `q`                   | string    | 0 or 1      | A keyword query. It has the same meaning as the `q` query parameter of a [simple search](#endpoint-simple-search). When the search object also has a `filter`, an item _MUST_ match both.                                                                                                                                                                                                                   |
+| `orderBy`             | array     | 0 or 1      | An ordered list of sort criteria. The criteria apply in array order. If absent, the integration layer defines the order. It has the same meaning as the `orderBy` query parameter of a [simple search](#endpoint-simple-search).                                                                                                                                                                            |
+| `orderBy[*]`          | object    | 1           | A sort criterion.                                                                                                                                                                                                                                                                                                                                                                                           |
+| `orderBy[*].property` | string    | 1           | The property to sort on. It _MUST_ be one of the properties that the collection supports for sorting. Which properties a collection supports, and what they mean, is documented with that collection.                                                                                                                                                                                                       |
+| `orderBy[*].order`    | string    | 1           | The direction of the sort. It _MUST_ be `asc` or `desc`.                                                                                                                                                                                                                                                                                                                                                    |
+| `size`                | number    | 0 or 1      | The maximum number of items to retrieve. It has the same meaning as the `size` query parameter of a [simple search](#endpoint-simple-search).                                                                                                                                                                                                                                                               |
+| `filter`              | object    | 0 or 1      | A CQL2 filter expression. See [Filters](#filters).                                                                                                                                                                                                                                                                                                                                                          |
+| `context`             | string    | 0 or 1      | An identifier for an [advanced search](#endpoint-advanced-search) of the context collection. It is used only by [facet collections](facets.md) and [suggestion collections](suggestions.md), to select the items on which their own items are based. The identifier _MUST_ identify an advanced search of that context collection; otherwise the integration layer _MUST_ respond with a `400` status code. |
 
-`q` and `filter` are complementary. `q` is a keyword query: it matches text across a set of properties that the integration layer defines, and it produces the relevance score that an `orderBy` criterion can use. `filter` is a boolean condition over the properties that the Queryables resource declares; it selects items but does not affect their relevance. An integration layer _MUST_ combine them with a logical AND: an item is included only if it matches the keyword query and satisfies the filter. A text filter is not a substitute for `q`, because it targets one property and does not rank.
+`q` and `filter` are complementary. `q` is a keyword query: it matches text across a set of properties that the integration layer defines, and it produces the relevance score that an `orderBy` criterion can use. `filter` is a boolean condition over the properties that the Queryables resource declares; it selects items but does not affect their relevance. An integration layer _MUST_ combine them with a logical AND: an item is included only if it matches the keyword query and satisfies the filter.
 
 An example of a search object:
 
@@ -73,18 +73,19 @@ A presentation layer can narrow down the items of a collection with filters. Fil
 
 This specification uses the [Common Query Language (CQL2)](https://docs.ogc.org/is/21-065r2/21-065r2.html) for filters, in its JSON encoding. It has a [JSON Schema](https://schemas.opengis.net/cql2/1.0/cql2.json) which integration layers and presentation layers can use to validate a filter before executing or sending it. It also has an ecosystem of programming libraries for building, parsing and validating filters. An integration layer translates a CQL2 filter to the native query language of its backing store.
 
-Which filters a collection supports is described in two places. The [conformance declaration](#conformance) of the API lists the CQL2 operators that the API supports. The [Queryables resource](#queryables) of the collection lists the properties that a filter may use. Together they determine what a presentation layer can filter on. For example, a geolocation filter needs an operator such as `s_within` and a property with a geometry.
+Which filters a collection supports is described in two places. The [conformance declaration](#conformance) of the API lists the CQL2 operators that the API supports. The [Queryables resource](#queryables) of the collection lists the properties that a filter may use. Together they determine what a presentation layer can filter on.
 
 This specification describes the following filter types:
 
-1. **Text filter**: matching text with `=`, `in` or `like` (e.g. 'Name starts with "Rem"').
-1. **Date filter**: comparing dates with `=`, `in`, `>`, `>=`, `<` or `<=` (e.g. 'Date of creation is between 1900 and 1950').
-1. **Numeric filter**: comparing numbers with `=`, `in`, `>`, `>=`, `<`, `<=` or `between` (e.g. 'Number of pages is at least 300').
-1. **Geolocation filter**: matching a location with `s_within` and a bounding box or polygon (e.g. 'Location of creation is inside a bounding box around Delft').
-1. **Facet filter**: matching the dimension of one of the collection's facet collections with `=`, `in`, `a_contains` or `not a_overlaps`, depending on the dimension's type (e.g. 'Creator is "Rembrandt" or "Vincent van Gogh" and Type is "Painting"').
-1. **Set filter**: matching all or none of a set of values with `a_contains` or `not a_overlaps` (e.g. 'Creator includes both "Rembrandt" and "Vincent van Gogh"').
-
-A facet filter uses the [dimension](facets.md#dimension) of a facet collection: the queryable that the facet collection groups by. A presentation layer translates a selected facet item into a filter on that dimension. It uses the item's `id` or `name` as the value or, for a range value, its `min` and `max` as the bounds of the range. The dimension _MUST_ be a property that the collection's [Queryables resource](#queryables) declares.
+| Filter type | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | Example                                                              |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| String      | Matches text with `=`, `in` or `like`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | Name starts with "Rem"                                               |
+| Number      | Compares numbers with `=`, `in`, `>`, `>=`, `<`, `<=` or `between`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | Number of pages is at least 300                                      |
+| Date        | Compares dates with `=`, `in`, `>`, `>=`, `<` or `<=`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | Date of creation is between 1900 and 1950                            |
+| Boolean     | Compares a boolean with `=` or `in`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Item has an image                                                    |
+| Geolocation | Matches a location with a spatial operator such as `s_within`, using a geometry such as a bounding box or polygon.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | Location of creation is inside a bounding box around Delft           |
+| Facet       | Matches the dimension of one of the collection's facet collections with `=`, `in`, `a_contains` or `not a_overlaps`, depending on the dimension's type. A facet filter uses the [dimension](facets.md#dimension) of a facet collection: the queryable that the facet collection groups by. A presentation layer translates a selected facet item into a filter on that dimension. It uses the item's `id` or `name` as the value or, for a range value, its `min` and `max` as the bounds of the range. The dimension _MUST_ be a property that the collection's [Queryables resource](#queryables) declares. | Creator is "Rembrandt" or "Vincent van Gogh", and Type is "Painting" |
+| Set         | Matches all or none of a set of values with `a_contains` or `not a_overlaps`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | Creator includes both "Rembrandt" and "Vincent van Gogh"             |
 
 All filter types use the same CQL2 syntax. They differ only in the operators that apply and in the type of the operands that those operators expect.
 
@@ -118,9 +119,7 @@ The `filter` property holds one CQL2 expression. An expression is a JSON object.
     {
       "property": "creator"
     },
-    [
-      "https://example.org/v1/entities/1234"
-    ]
+    ["https://example.org/v1/entities/1234"]
   ]
 }
 ```
@@ -133,21 +132,21 @@ The integration layer _MUST_ validate the expression against the CQL2 JSON Schem
 
 CQL2 supports various operators. The table underneath lists examples of operators that an integration layer may support. It shows what each operator does in this API and which data types it applies to. The list is not exhaustive: an integration layer may also support other CQL2 operators and declare them in its [conformance declaration](#conformance).
 
-| CQL2 operator or function | Applies to                           | Meaning                                                                                 |
-| ------------------------- | ------------------------------------ | --------------------------------------------------------------------------------------- |
-| `and`, `or`, `not`        | any                                  | Combine or negate filter expressions.                                                   |
-| `=`                       | string, number, date, boolean        | Equals the value.                                                                       |
-| `in`                      | string, number, date, boolean        | Equals one of the values.                                                               |
-| `like`                    | string                               | Matches a pattern. `%` matches any sequence of characters; `_` matches one character.   |
-| `between`                 | number                               | Is equal to or greater than the first value and equal to or less than the second value. |
-| `>`, `>=`, `<`, `<=`      | number, date                         | Compares with the value.                                                                |
-| `a_contains`              | multi-valued property                | Contains every one of the values.                                                       |
-| `a_overlaps`              | multi-valued property                | Shares at least one value. Use `not a_overlaps` for 'contains none'.                    |
-| `s_within`                | location                             | Is inside a bounding box or polygon.                                                    |
+| CQL2 operator or function | Applies to                    | Meaning                                                                                 |
+| ------------------------- | ----------------------------- | --------------------------------------------------------------------------------------- |
+| `and`, `or`, `not`        | any                           | Combine or negate filter expressions.                                                   |
+| `=`                       | string, number, date, boolean | Equals the value.                                                                       |
+| `in`                      | string, number, date, boolean | Equals one of the values.                                                               |
+| `like`                    | string                        | Matches a pattern. `%` matches any sequence of characters; `_` matches one character.   |
+| `between`                 | number                        | Is equal to or greater than the first value and equal to or less than the second value. |
+| `>`, `>=`, `<`, `<=`      | number, date                  | Compares with the value.                                                                |
+| `a_contains`              | multi-valued property         | Contains every one of the values.                                                       |
+| `a_overlaps`              | multi-valued property         | Shares at least one value. Use `not a_overlaps` for 'contains none'.                    |
+| `s_within`                | location                      | Is inside a bounding box or polygon.                                                    |
 
 Operator support is the same for every collection: it follows from the conformance declaration, not from a capability of a collection. Property support differs per collection and is described by the collection's [Queryables resource](#queryables). A presentation layer _MUST NOT_ use an operator that the API does not declare, or a property that the collection's Queryables resource does not declare. If it does, the integration layer _MUST_ respond with a `400` status code.
 
-#### Strings
+#### String
 
 A text filter compares a string property. In CQL2, string properties are compared with `=`, `in` and `like`. The `like` operator uses `%` as a wildcard for any sequence of characters and `_` for exactly one character. A pattern such as `Rem%` matches values that start with 'Rem'; `%Rem%` matches values that contain 'Rem'. For example:
 
@@ -169,7 +168,7 @@ Whether a string comparison is case-sensitive is defined by the integration laye
 
 For a filter on a string [dimension](facets.md#dimension), each value is the `id` of the facet item when it has one, and its `name` otherwise. See [Facet items](facets.md#facet-items).
 
-#### Numbers
+#### Number
 
 A numeric filter compares a number property. CQL2's `=`, `in`, `>`, `>=`, `<`, `<=` and `between` apply. `between` includes both boundaries: an item that equals either boundary matches. For example:
 
@@ -188,7 +187,7 @@ A numeric filter compares a number property. CQL2's `=`, `in`, `>`, `>=`, `<`, `
 
 This filter matches items that have 200 to 300 pages.
 
-#### Dates
+#### Date
 
 A date filter compares a date property. In CQL2, a date value is a full date in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) `YYYY-MM-DD` format, written as `{ "date": "1900-01-01" }`.
 
@@ -244,7 +243,7 @@ A date range uses two comparisons, one for each boundary:
 
 This filter matches items that were created between 1 January 1900 and 31 December 1950.
 
-#### Booleans
+#### Boolean
 
 A boolean property is compared with `=` or `in`. For example:
 
@@ -284,6 +283,8 @@ A bounding box is a CQL2 `bbox` literal, in west, south, east, north order. For 
 
 This filter matches items that were created inside the box around the city centre of Delft, the Netherlands.
 
+A bounding box around a point can also be used to approximate a radius search. CQL2 has no standard radius search operator. Developers may know one from a search engine, but such operators are not portable: they differ in the unit of distance (for example metres, feet or degrees) and in the distance metric (straight-line distance in a projected coordinate system or distance over the Earth's surface). A bounding box (or a polygon — see below) is a portable approximation.
+
 A polygon is a GeoJSON `Polygon`. For example:
 
 ```json
@@ -297,10 +298,12 @@ A polygon is a GeoJSON `Polygon`. For example:
       "type": "Polygon",
       "coordinates": [
         [
-          [4.35, 52.005],
-          [4.35, 52.018],
-          [4.368, 52.0115],
-          [4.35, 52.005]
+          [4.3435, 52.0173],
+          [4.3484, 52.0176],
+          [4.3489, 52.0156],
+          [4.3477, 52.0145],
+          [4.3442, 52.0144],
+          [4.3435, 52.0173]
         ]
       ]
     }
@@ -308,29 +311,48 @@ A polygon is a GeoJSON `Polygon`. For example:
 }
 ```
 
-This filter matches items that were created inside the polygon.
+This filter matches items that were created inside a polygon of the Agnetapark in Delft, the Netherlands.
 
-To approximate a radius search, a presentation layer can use a bounding box around a point. For example:
+#### Facet
+
+A facet filter translates a selected facet item into a filter on the facet collection's [dimension](facets.md#dimension). For example, selecting the item 'Painting' in a 'Type' facet collection gives:
 
 ```json
 {
-  "op": "s_within",
+  "op": "=",
   "args": [
     {
-      "property": "locationCreated"
+      "property": "additionalType"
     },
-    {
-      "bbox": [4.345768, 52.016417, 4.346991, 52.017136]
-    }
+    "https://example.org/v1/entities/1122"
   ]
 }
 ```
 
-This filter matches items that were created inside the box in the Agnetapark in Delft, the Netherlands.
+This filter matches items of type 'Painting'. The facet collection's dimension is `additionalType`, and the facet item's `id` is the filter value.
 
-CQL2 has no standard radius search operator. Developers may know one from a search engine, but such operators are not portable: they differ in the unit of distance (for example metres, feet or degrees) and in the distance metric (straight-line distance in a projected coordinate system or distance over the Earth's surface). A bounding box or polygon is a portable approximation.
+#### Set
 
-#### Examples of filters
+A set filter matches all or none of a set of values. The `a_contains` operator matches items that have every value; `not a_overlaps` matches items that have none. For example:
+
+```json
+{
+  "op": "a_contains",
+  "args": [
+    {
+      "property": "creator"
+    },
+    [
+      "https://example.org/v1/entities/7890",
+      "https://example.org/v1/entities/9012"
+    ]
+  ]
+}
+```
+
+This filter matches items that have both creators. Use `a_overlaps` instead to match items that have at least one of them.
+
+#### Examples of `and`, `or` and `not` combinations
 
 A filter with nested `and` and `not` conditions:
 
@@ -419,11 +441,16 @@ Another example, with geolocation filters:
                 "type": "Polygon",
                 "coordinates": [
                   [
-                    [4.75, 52.25],
-                    [5.05, 52.25],
-                    [5.05, 52.45],
-                    [4.75, 52.45],
-                    [4.75, 52.25]
+                    [4.8858, 52.3854],
+                    [4.9006, 52.3792],
+                    [4.9135, 52.3735],
+                    [4.9142, 52.3652],
+                    [4.9045, 52.3588],
+                    [4.8902, 52.3578],
+                    [4.8785, 52.3635],
+                    [4.8758, 52.3738],
+                    [4.8805, 52.3818],
+                    [4.8858, 52.3854]
                   ]
                 ]
               }
@@ -470,7 +497,7 @@ Another example, with geolocation filters:
 }
 ```
 
-The filter matches items that are either inside a polygon around Amsterdam and have a name that starts with 'De', or lie inside a bounding box around Delft and have at least 300 pages.
+The filter matches items that are either inside a polygon of Amsterdam and have a name that starts with 'De', or lie inside a bounding box around Delft and have at least 300 pages.
 
 A filter can combine string conditions in the same way:
 
@@ -583,6 +610,12 @@ A sort criterion has two parts: what to sort on, and the direction, ascending or
 Sorting changes only the order of the results. It does not change which items match the search.
 
 If no order is specified, the integration layer defines a default order. Which properties a collection supports for sorting, and what they mean, is documented with that collection.
+
+:::note To be discussed
+
+Add support for OGC API's [`/sortables`](https://docs.ogc.org/is/23-058r2/23-058r2.html#rc_sortables) endpoint, to discover the properties that may be used to sort the items in a collection?
+
+:::
 
 ## Simple search and advanced search compared
 
@@ -955,7 +988,7 @@ The steps below use a collection that is divided into pages as an example. If th
 5. **Retrieve facets (optional).** A presentation layer requests each [facet collection](facets.md) separately, with the `context` parameter set to the identifier of the advanced search of the collection. It can set `size` and `orderBy` per request, which means every facet can show its own number of items in its own order. The facet items and their counts then cover only the items that match the search. The `search` parameter of the facet collection refers to an advanced search of the facet collection itself, not to the context collection.
 6. **Start another search.** A new search is a new `POST` request with a new search object. It gets its own identifier. An identifier is bound to its collection and its search object; it cannot be used for another collection or another search.
 
-Steps 1 and 2 are discovery, not part of the search itself. Their results change only when the collection changes. A presentation layer can retrieve them once, cache them and reuse them for later searches; the [caching](general-rules.md#caching) headers of the responses determine for how long.
+Steps 1 and 2 are discovery, not part of the search itself. Their results change only when the collection changes. A presentation layer can retrieve them once, cache them and reuse them for later searches; the [caching](rules.md#caching) headers of the responses determine for how long.
 
 The following sequence diagram shows the requests for this paginated example:
 
