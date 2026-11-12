@@ -67,12 +67,6 @@ The example searches the collection for items that match the keyword query `remb
 
 If the search object is invalid, or contains a filter with an operator or property that the API does not support, the integration layer _MUST_ respond with a `400` status code.
 
-:::note To do
-
-Think of a way to express the ID of a `facet` in a search object. A facet ID like `creators` is a shorthand for its full URI but currently does not have a designated property in a [facet collection](facets.md#endpoint-retrieve-a-facet-collection). Full URIs — such as `https://example.org/v1/collections/masterpieces/facets/creators` — are rather verbose.
-
-:::
-
 ### Filters
 
 A presentation layer can narrow down the items of a collection with filters. Filters are part of a [search object](#search-object). A presentation layer sends filters in the `filter` property of a search object to the advanced search endpoint.
@@ -87,8 +81,10 @@ This specification describes the following filter types:
 1. **Date filter**: comparing dates with `=`, `in`, `>`, `>=`, `<` or `<=` (e.g. 'Date of creation is between 1900 and 1950').
 1. **Numeric filter**: comparing numbers with `=`, `in`, `>`, `>=`, `<`, `<=` or `between` (e.g. 'Number of pages is at least 300').
 1. **Geolocation filter**: matching a location with `s_within` and a bounding box or polygon (e.g. 'Location of creation is inside a bounding box around Delft').
-1. **Facet filter**: matching the values of one of the collection's facets with `=`, `in`, `a_contains` or `not a_overlaps` (e.g. 'Creator is "Rembrandt" or "Vincent van Gogh" and Type is "Painting"').
+1. **Facet filter**: matching the dimension of one of the collection's facet collections with `=`, `in`, `a_contains` or `not a_overlaps`, depending on the dimension's type (e.g. 'Creator is "Rembrandt" or "Vincent van Gogh" and Type is "Painting"').
 1. **Set filter**: matching all or none of a set of values with `a_contains` or `not a_overlaps` (e.g. 'Creator includes both "Rembrandt" and "Vincent van Gogh"').
+
+A facet filter uses the [dimension](facets.md#dimension) of a facet collection: the queryable that the facet collection groups by. A presentation layer translates a selected facet item into a filter on that dimension. It uses the item's `id` or `name` as the value or, for a range value, its `min` and `max` as the bounds of the range. The dimension _MUST_ be a property that the collection's [Queryables resource](#queryables) declares.
 
 All filter types use the same CQL2 syntax. They differ only in the operators that apply and in the type of the operands that those operators expect.
 
@@ -117,12 +113,14 @@ The `filter` property holds one CQL2 expression. An expression is a JSON object.
 
 ```json
 {
-  "op": "=",
+  "op": "a_contains",
   "args": [
     {
       "property": "creator"
     },
-    "https://example.org/v1/entities/1234"
+    [
+      "https://example.org/v1/entities/1234"
+    ]
   ]
 }
 ```
@@ -138,8 +136,8 @@ CQL2 supports various operators. The table underneath lists examples of operator
 | CQL2 operator or function | Applies to                           | Meaning                                                                                 |
 | ------------------------- | ------------------------------------ | --------------------------------------------------------------------------------------- |
 | `and`, `or`, `not`        | any                                  | Combine or negate filter expressions.                                                   |
-| `=`                       | string, number, date, boolean, facet | Equals the value.                                                                       |
-| `in`                      | string, number, date, boolean, facet | Equals one of the values.                                                               |
+| `=`                       | string, number, date, boolean        | Equals the value.                                                                       |
+| `in`                      | string, number, date, boolean        | Equals one of the values.                                                               |
 | `like`                    | string                               | Matches a pattern. `%` matches any sequence of characters; `_` matches one character.   |
 | `between`                 | number                               | Is equal to or greater than the first value and equal to or less than the second value. |
 | `>`, `>=`, `<`, `<=`      | number, date                         | Compares with the value.                                                                |
@@ -169,7 +167,7 @@ This filter matches items whose name starts with 'Rem'.
 
 Whether a string comparison is case-sensitive is defined by the integration layer. CQL2 also defines `casei` and `accenti` for case- and accent-insensitive comparison.
 
-For a facet filter, each value is the `id` of the facet item when it has one, and its `name` otherwise. See [Facet items](facets.md#facet-items).
+For a filter on a string [dimension](facets.md#dimension), each value is the `id` of the facet item when it has one, and its `name` otherwise. See [Facet items](facets.md#facet-items).
 
 #### Numbers
 
@@ -369,7 +367,7 @@ A filter with nested `and` and `not` conditions:
         ]
       },
       {
-        "op": "in",
+        "op": "a_overlaps",
         "args": [
           {
             "property": "creator"
