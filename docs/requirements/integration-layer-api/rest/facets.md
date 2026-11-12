@@ -63,6 +63,7 @@ class FacetCollection["Facet Collection"] {
   name
   total items
   total estimated items
+  dimension
 }
 
 class FacetPage["Facet Page"] {
@@ -146,6 +147,12 @@ The following table lists some common facet collections:
 | Occupation         | The occupations of persons, e.g. 'Blacksmith', 'Mayor'.                                                    |
 | Publisher          | The heritage institutions that publish information about persons, e.g. 'Rijksmuseum', 'National Archives'. |
 | Part of collection | The collections a person belongs to, e.g. 'Notable Dutch artists'.                                         |
+
+### Dimension
+
+A facet collection groups the items of its context collection by a **dimension**: a queryable of the context collection. The dimension is usually a property of the items, such as `creator` or `dateCreated`. It can also be a derived value, such as a century derived from `dateCreated`, or a boolean derived from whether an item has an image. The dimension _MUST_ be one of the properties that the context collection's [Queryables resource](search.md#queryables) declares.
+
+The value of a facet item _MUST_ be usable in a filter on the dimension: as the operand itself, or, for a range value, as the bounds of the range. See [Filters](search.md#filters).
 
 ## Facet items
 
@@ -331,6 +338,7 @@ The response body _MUST_ contain at least the following properties:
 | `id`                  | string     | 1           | The identifier of the collection.                                                                                                                                                                                                                                |
 | `type`                | string     | 1           | The type of the collection. It _MUST_ be `FacetCollection` or a specialisation.                                                                                                                                                                                  |
 | `name`                | string     | 1           | The name of the collection.                                                                                                                                                                                                                                      |
+| `dimension`           | string     | 1           | The queryable of the context collection that this facet collection groups by. It _MUST_ be a property that the context collection's [Queryables resource](search.md#queryables) declares.                                                                        |
 | `totalItems`          | number     | 0 or 1      | The exact total number of facet items in the collection. Not set if the exact total is too costly to calculate. Mutually exclusive with `estimatedTotalItems`.                                                                                                   |
 | `estimatedTotalItems` | number     | 0 or 1      | An estimate of the total number of facet items in the collection. It can be higher or lower than the real total. Not set if there is no estimate. Mutually exclusive with `totalItems`.                                                                          |
 | `items`               | array      | 0 or 1      | A list of the facet items in the collection. Not set if the collection is divided into [pages](resources.md#page); the items of the first page are in `first`.                                                                                                   |
@@ -360,7 +368,7 @@ The response body _MUST_ contain at least the following properties:
 | `partOf.id`           | string     | 1           | The identifier of the collection.                                                                                                                                                                                                                                |
 | `partOf.type`         | string     | 1           | The type of the collection. It _MUST_ be `Collection` or a specialisation.                                                                                                                                                                                       |
 | `partOf.name`         | string     | 1           | The name of the collection.                                                                                                                                                                                                                                      |
-| `suggestions`         | Collection | 0 or 1      | The list of this facet collection's suggestion collections. _MUST_ be omitted if the facet collection does not offer suggestions. See [Suggestions](suggestions.md).                                                                                             |
+| `suggestions`         | Collection | 0 or 1      | The list of this facet collection's suggestion collections. It _MUST_ be omitted if the facet collection does not offer suggestions. See [Suggestions](suggestions.md).                                                                                          |
 | `suggestions.id`      | string     | 1           | The identifier of the list.                                                                                                                                                                                                                                      |
 | `suggestions.type`    | string     | 1           | The type of the list. It _MUST_ be `Collection` or a specialisation.                                                                                                                                                                                             |
 | `suggestions.name`    | string     | 1           | The name of the list.                                                                                                                                                                                                                                            |
@@ -387,6 +395,7 @@ An example of the response body of the integration layer if the facet collection
   "id": "https://example.org/v1/collections/objects/facets/centuries",
   "type": "FacetCollection",
   "name": "Made in century",
+  "dimension": "dateCreated",
   "totalItems": 3,
   "items": [
     {
@@ -445,6 +454,7 @@ An example of the response body of the integration layer if the facet collection
   "id": "https://example.org/v1/collections/objects/facets/creators",
   "type": "FacetCollection",
   "name": "Creator",
+  "dimension": "creator",
   "totalItems": 3,
   "items": [
     {
@@ -491,6 +501,7 @@ An example of the response body of the integration layer for the request above, 
   "id": "https://example.org/v1/collections/objects/facets/creators",
   "type": "FacetCollection",
   "name": "Creator",
+  "dimension": "creator",
   "totalItems": 2,
   "items": [
     {
@@ -526,6 +537,7 @@ An example of the response body of the integration layer for the request above, 
   "id": "https://example.org/v1/collections/objects/facets/creators",
   "type": "FacetCollection",
   "name": "Creator",
+  "dimension": "creator",
   "totalItems": 195,
   "pageUriTemplate": "https://example.org/v1/collections/objects/facets/creators{?page}",
   "first": {
@@ -589,6 +601,7 @@ An example of the response body of the integration layer if the facet collection
   "id": "https://example.org/v1/collections/objects/facets/collections",
   "type": "FacetCollection",
   "name": "Part of collection",
+  "dimension": "partOf",
   "totalItems": 2,
   "items": [
     {

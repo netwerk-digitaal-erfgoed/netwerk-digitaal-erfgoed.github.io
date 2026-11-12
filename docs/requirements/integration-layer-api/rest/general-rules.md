@@ -76,9 +76,9 @@ The integration layer must use media types to enable open and extensible content
 
 ## JSON-LD
 
-The integration layer uses JSON by default: JSON is easy to parse and is supported natively in most programming languages.
+The integration layer _MUST_ use JSON as its default format: JSON is easy to parse and is supported natively in most programming languages.
 
-The integration layer serialises the [resources of its data model](resources.md), such as collections, pages and entities, as [JSON-LD 1.1](https://www.w3.org/TR/json-ld11/), a format for linked data. JSON-LD is the default media type of those resources. Because JSON-LD is JSON, a presentation layer that only knows JSON can parse a JSON-LD response like any other JSON document.
+The integration layer _MUST_ serialise the [resources of its data model](resources.md), such as collections, pages and entities, as [JSON-LD 1.1](https://www.w3.org/TR/json-ld11/), a format for linked data. JSON-LD _MUST_ be the default media type of those resources. Because JSON-LD is JSON, a presentation layer that only knows JSON can parse a JSON-LD response like any other JSON document.
 
 1. The integration layer _MUST_ support `application/ld+json` and `application/json` in the `Accept` header: a presentation layer _MAY_ request either.
 1. If a presentation layer does not send the `Accept` header, or sends a media range that accepts `application/ld+json` (such as `*/*` or `application/*`), the integration layer _MUST_ serve those resources as JSON-LD.
@@ -137,7 +137,8 @@ Heritage information is available in one or more languages, such as Dutch or Eng
 
 :::note To be discussed
 
-How can a presentation layer discover the supported languages? Should we add a separate discovery endpoint (e.g. `/v1/languages`, returning a collection of languages)? Or should a presentation layer rely upon the [OpenAPI definition](#documentation), documenting the languages? The first one makes sense if we treat languages as 'data'. The second one makes sense if we treat languages as 'documentation'.
+1. How can a presentation layer discover the supported languages? Should we add a separate discovery endpoint (e.g. `/v1/languages`, returning a collection of languages)? Or should a presentation layer rely upon the [OpenAPI definition](#documentation), documenting the languages? The first one makes sense if we treat languages as 'data'. The second one makes sense if we treat languages as 'documentation'.
+2. Are the supported languages generic, for the entire API? Or tied to a collection?
 
 :::
 
