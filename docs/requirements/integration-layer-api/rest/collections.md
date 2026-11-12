@@ -11,7 +11,7 @@ A curated collection is a grouping of [entities](entities.md). It is the main wa
 
 For example: an integration layer may have a collection for all entities of type 'Heritage object'. The integration layer may also have a 'Masterpieces' collection with its finest art-related entities, and a 'Paintings from the 17th century' collection; 'The Night Watch' can be a part of both. The integration layer may also have a 'Great for kids' collection with entities that are interesting for children. The integration layer decides how the entities are selected and put into a collection: entities may be hand-picked, derived by a query, or assembled by aggregating other collections.
 
-An integration layer may add extra functionality to a curated collection. For example: users of a presentation layer may want to find entities in the 'Masterpieces' collection using faceted search or users may want to get suggestions to find entities in the 'Great for kids' collection using autocompletion. This specification defines two optional functionalities: [facets](facets.md) and [suggestions](suggestions.md).
+An integration layer may add extra functionality to a curated collection. For example: users of a presentation layer may want to find entities in the 'Masterpieces' collection using faceted search or users may want to get suggestions to find entities in the 'Great for kids' collection using autocompletion. This specification defines three optional functionalities: [search](search.md), [facets](facets.md) and [suggestions](suggestions.md).
 
 ## Data model
 

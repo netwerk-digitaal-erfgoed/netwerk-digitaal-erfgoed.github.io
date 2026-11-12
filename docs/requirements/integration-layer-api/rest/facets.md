@@ -782,7 +782,7 @@ Retrieving facets takes several requests. A presentation layer first discovers w
 4. **Retrieve further facet items (optional).** If a facet collection is divided into pages, its response includes the first page in `first`. A presentation layer follows a page URI such as `first.next.id`, or expands the [`pageUriTemplate`](resources.md#collection), to retrieve more facet items.
 5. **Search within a facet collection (optional).** The `q`, `size` and `orderBy` parameters filter and order the facet items themselves, independent of the search context.
 
-Steps 1 and 2 are discovery, not part of the retrieval itself. Their results change only when the collection changes. A presentation layer can retrieve them once, cache them and reuse them; the [caching](general-rules.md#caching) headers of the responses determine for how long.
+Steps 1 and 2 are discovery, not part of the retrieval itself. Their results change only when the collection changes. A presentation layer can retrieve them once, cache them and reuse them; the [caching](rules.md#caching) headers of the responses determine for how long.
 
 The following sequence diagram shows the requests for this example:
 

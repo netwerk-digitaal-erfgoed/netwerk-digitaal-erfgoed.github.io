@@ -1,5 +1,5 @@
 ---
-slug: /integration-layer-api/rest/general-rules
+slug: /integration-layer-api/rest/rules
 sidebar_position: 2
 ---
 
@@ -74,7 +74,7 @@ The integration layer must use media types to enable open and extensible content
 1. The integration layer _MUST_ send the media type of its response in the `Content-Type` header. Its value _MUST_ conform to the [HTTP semantics](https://www.rfc-editor.org/info/rfc9110/#section-8.3).
 1. The integration layer _MUST_ send the `Vary: Accept` header to indicate to a presentation layer that it supports content negotiation for media types. This tells a presentation layer that changing the value of the `Accept` header in a request will yield a different representation of a resource.
 
-## JSON-LD
+## JSON and JSON-LD
 
 The integration layer _MUST_ use JSON as its default format: JSON is easy to parse and is supported natively in most programming languages.
 
