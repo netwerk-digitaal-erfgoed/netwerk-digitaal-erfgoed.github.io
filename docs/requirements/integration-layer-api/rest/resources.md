@@ -139,7 +139,7 @@ A Collection contains at least the following properties:
 | `suggestions.id`      | string     | 1           | The identifier of the collection.                                                                                                                                                                                                                                  |
 | `suggestions.type`    | string     | 1           | The type of the collection. It _MUST_ be `Collection` or a specialisation.                                                                                                                                                                                         |
 | `suggestions.name`    | string     | 1           | The name of the collection.                                                                                                                                                                                                                                        |
-| `queryables`          | object     | 0 or 1      | The Queryables resource of this collection. It lists the properties that can be used in a filter. A collection that advertises the `advanced-search` capability _MUST_ set it. See [Queryables](advanced-search.md#queryables).                                             |
+| `queryables`          | object     | 0 or 1      | The Queryables resource of this collection. It lists the properties that can be used in a filter. A collection that advertises the `advanced-search` capability _MUST_ set it. See [Queryables](advanced-search.md#queryables).                                    |
 | `queryables.id`       | string     | 1           | The identifier of the Queryables resource.                                                                                                                                                                                                                         |
 | `capabilities`        | array      | 0 or 1      | The URIs of the capabilities the integration layer implements for this collection. It _MUST_ be omitted if the collection supports no capabilities. See [Capability discovery](#capability-discovery).                                                             |
 
@@ -461,18 +461,24 @@ A collection can do more than return a list of items. It can support a simple se
 
 This specification defines the following capabilities:
 
-| Capability URI                                 | Description                                                                       |
-| ---------------------------------------------- | --------------------------------------------------------------------------------- |
-| `https://specs.nde.nl/rest/v1/simple-search`   | The collection supports a [simple search](simple-search.md#endpoint-simple-search).      |
+| Capability URI                                 | Description                                                                                |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| `https://specs.nde.nl/rest/v1/simple-search`   | The collection supports a [simple search](simple-search.md#endpoint-simple-search).        |
 | `https://specs.nde.nl/rest/v1/advanced-search` | The collection supports an [advanced search](advanced-search.md#endpoint-advanced-search). |
-| `https://specs.nde.nl/rest/v1/facets`          | The collection supports [facets](facets.md).                                      |
-| `https://specs.nde.nl/rest/v1/suggestions`     | The collection supports [suggestions](suggestions.md).                            |
+| `https://specs.nde.nl/rest/v1/facets`          | The collection supports [facets](facets.md).                                               |
+| `https://specs.nde.nl/rest/v1/suggestions`     | The collection supports [suggestions](suggestions.md).                                     |
 
 Capabilities are a property of a single collection. A presentation layer _MUST NOT_ infer the capabilities of a collection from the capabilities of its ancestors in the collection tree.
 
 The `capabilities` property tells a presentation layer that a collection supports a feature. It does not tell it how to use that feature; the endpoints and query parameters of the collection do.
 
 Some capabilities come with a property that points to another resource. The `facets` property of a collection points to its list of facet collections; see [Facets](facets.md). The `suggestions` property points to its list of suggestion collections; see [Suggestions](suggestions.md). The `queryables` property points to its Queryables resource; see [Queryables](advanced-search.md#queryables).
+
+:::note To be discussed
+
+Is it necessary to expose the `capabilities`? A presentation layer can already infer the support of advanced search by inspecting the `queryables` properties, facets by inspecting `facets` and suggestions by inspecting `suggestions`. Only simple search needs a solution.
+
+:::
 
 ## Resource identifiers
 

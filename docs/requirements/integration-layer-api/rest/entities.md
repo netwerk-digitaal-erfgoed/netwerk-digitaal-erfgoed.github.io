@@ -111,7 +111,7 @@ The integration layer _MUST_ determine the `{entity}` in line with the following
 1. The `{entity}` _MUST_ be deterministic: when the integration layer processes the data of a data provider again, it must yield the same `{entity}`. The entity may have changed properties in between, but its source identifier — the identifier that the data provider assigned to it — stays the same: that is how the integration layer recognises the entity as the same one. The `{entity}` _MUST_ therefore be traceable to that source identifier. Otherwise a presentation layer cannot use the URI — for example, in the web address of a detail page, or when a user bookmarks, saves or favourites an entity.
 1. The `{entity}` _MUST_ not change when the version of the API changes: `/v1/entities/{entity}` may become `/v2/entities/{entity}`, but the `{entity}` stays the same.
 
-These requirements do not promise that an `{entity}` stays the same forever. An integration layer cannot guarantee that: it depends on the data provider, and the source identifier may itself change.
+These requirements do not promise that an `{entity}` stays the same forever. An integration layer cannot guarantee that: it depends on the data provider.
 
 The integration layer _MAY_ choose any approach that satisfies the requirements of this section. The following approaches are examples of what an `{entity}` may look like:
 

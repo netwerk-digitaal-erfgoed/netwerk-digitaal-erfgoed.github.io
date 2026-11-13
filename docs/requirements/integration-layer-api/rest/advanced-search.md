@@ -597,6 +597,8 @@ A filtered collection is a view with its own `id`, `totalItems` and pages. Is it
 
 ## Endpoint: Advanced search
 
+The endpoint searches a collection. The integration layer _MUST_ implement this endpoint for every collection that supports advanced search.
+
 ### HTTP request
 
 `POST /{version}/{...collections}/search`
@@ -704,7 +706,7 @@ The response indicates that the advanced search has 42 results, that the collect
 
 ## Endpoint: Queryables
 
-The endpoint returns the [Queryables resource](#queryables) of a collection: a JSON Schema document that lists the properties a filter may use, with their data types. A presentation layer requests it before it builds a filter.
+The endpoint returns the [Queryables resource](#queryables) of a collection: a JSON Schema document that lists the properties a filter may use, with their data types. A presentation layer requests it before it builds a filter. The integration layer _MUST_ implement this endpoint for every collection that supports advanced search.
 
 ### HTTP request
 
