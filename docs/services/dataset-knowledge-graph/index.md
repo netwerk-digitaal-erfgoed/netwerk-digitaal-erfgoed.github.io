@@ -512,6 +512,13 @@ Remember that the report covers the validated *sample* only (`samples-per-class`
 
 - **Datastory** for visual aggregate insights across all datasets: [datastories.demo.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph](https://datastories.demo.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph/index.html).
 - **SPARQL endpoint** for direct queries: `https://sparql.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph`.
+- **Query UI** with autocompletion and these sample queries: [qlever.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph](https://qlever.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph).
+
+### Dataset description
+
+The Knowledge Graph is itself a dataset in the [Dataset Register](../dataset-register/index.md), identified by `https://data.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph`. That IRI is also its registration URL: it redirects to a CONSTRUCT query that returns the description from the graph `https://data.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph/description`, as described in [Publishing dataset descriptions with a SPARQL CONSTRUCT query](/blog/2026/09/10/sparql-construct-dataset-description).
+
+The description is written by hand, in DCAT, in the [pipeline repository](https://github.com/netwerk-digitaal-erfgoed/dataset-knowledge-graph/blob/main/dataset-description.ttl). After every run, the pipeline publishes it with two properties added: `dct:modified`, the time the run ended, and `dcat:version`, the pipeline version that produced the summaries. Because every run reprocesses at least the datasets served from a SPARQL endpoint, `dct:modified` moves daily. The description fills the required and recommended properties of the [requirements for datasets](https://docs.nde.nl/requirements-datasets/), so it doubles as an example for your own.
 
 ## How summaries are produced
 
