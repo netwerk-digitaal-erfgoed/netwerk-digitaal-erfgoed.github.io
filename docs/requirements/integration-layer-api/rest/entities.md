@@ -73,23 +73,21 @@ The following table provides examples of common entity types:
 | Dataset          | A collection of data, e.g. data about heritage objects.                    |
 | Digital object   | A digital representation of an entity, e.g. an image of a heritage object. |
 
-### Recommended data models
+## Data modelling requirements
+
+An integration layer chooses the data model of its entities. It decides which entity types exist and which properties describe them, based on its domain and the presentation layers it serves. Whichever data model it chooses, the integration layer _MUST_ meet the following requirements:
+
+1. The integration layer _MUST_ expose information about the data provider of an entity, at least its ID and name. A presentation layer can then show where the information comes from, which helps users judge its reliability.
+1. The integration layer _MUST_ expose the entity URI that the data provider uses for the entity. A presentation layer can then show the URI to its users so that they can access the original information. It also allows a presentation layer to request the original information, in addition to the information that the integration layer provides.
+1. The integration layer _MUST_ expose information about the licence of an entity, at least its ID and name. A presentation layer can then show the conditions under which the information may be used.
+
+The requirements are conceptual: the integration layer decides which properties in its data model express them, and publishes those choices in its [type vocabulary](types.md) and [JSON-LD context](rules.md#json-and-json-ld).
+
+## Recommended data models
 
 :::note To do
 
 Describe the recommended data models (e.g. for a heritage object, a person, a place) using Schema.org concepts.
-
-:::
-
-:::note To do
-
-Explain data modelling requirements, e.g.:
-
-- An entity must have a publisher (e.g. `publisher`)
-- An entity must refer to the entity IRI of the data provider (e.g. `isBasedOn`)
-- An entity must have a licence (e.g. `license`)
-- An entity must have an ID that a presentation layer can use, e.g. for building SEO-friendly URLs or for bookmarking by users (e.g. `identifier`)
-- An entity must expose the [collections](collections.md) it is a member of. A presentation layer can then offer a 'more like this' or 'more from this collection' functionality.
 
 :::
 
