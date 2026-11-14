@@ -17,7 +17,7 @@ A collection that supports an advanced search advertises the `https://specs.nde.
 
 A search object is a JSON object. It contains the search criteria of an advanced search.
 
-The search object is an abstraction over query languages that developers may already know, such as Elasticsearch's query language or SQL. The abstraction is essential: an integration layer chooses its own data store, and this specification cannot prescribe the query language of one search engine or database. For filters, the search object uses the standard [Common Query Language (CQL2)](https://docs.ogc.org/is/21-065r2/21-065r2.html); the other search criteria are defined by this specification. The search object is designed for a straightforward mapping to the native query language of a data store.
+The search object is an abstraction over query languages that developers may already know, such as Elasticsearch's query language or SQL. The abstraction is essential: an integration layer chooses its own data store, and this specification cannot prescribe the query language of one search engine or database. For filters, the search object uses the [Common Query Language (CQL2)](https://docs.ogc.org/is/21-065r2/21-065r2.html); the other search criteria are defined by this specification. The search object is designed for a straightforward mapping to the native query language of a data store.
 
 A search object has the following properties:
 

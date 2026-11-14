@@ -348,13 +348,13 @@ An integration layer _MUST_ respond with a `400` status code if `page` has a val
 
 #### Page URI template
 
-With page navigation, a presentation layer can build the URI of any page itself. The collection tells it how with its [`pageUriTemplate`](#collection) property. The property is a [URI template](https://www.rfc-editor.org/rfc/rfc6570.html). The template contains the `page` variable. A presentation layer can replace it with a number. For example:
+With page navigation, a presentation layer can build the URI of any page itself. The collection tells it how with its [`pageUriTemplate`](#collection) property. The property is a [URI template](https://www.rfc-editor.org/rfc/rfc6570.html). The template contains the `page` variable. A presentation layer can expand it with a number. For example:
 
 ```
 https://example.org/v1/collections/objects{?page}
 ```
 
-Expanding the template with `3` gives `https://example.org/v1/collections/objects?page=3`. If the collection has a query, the template contains that query too and appends the page with `{&page}`:
+Expanding the template with `3` gives `https://example.org/v1/collections/objects?page=3`. If the URI has other query parameters, the template contains those too and appends the page with `{&page}`:
 
 ```
 https://example.org/v1/collections/objects?q=rembrandt{&page}
@@ -366,7 +366,7 @@ The value of the `page` variable is the number of the page. A presentation layer
 
 A collection that is divided into pages and uses page navigation _MUST_ set `pageUriTemplate`. The template _MUST_ be a valid URI template and _MUST_ contain the `page` variable. Expanding it with a number _MUST_ return that page of the same collection and the same result set. The first page _MUST_ be page `1`.
 
-A collection that uses cursor navigation _MUST NOT_ set `pageUriTemplate`. A cursor is a token that only the integration layer can make, so a presentation layer cannot construct one; it can only follow the page URIs that the integration layer returns. A collection that is not divided into pages _MUST NOT_ set the property either. A presentation layer therefore knows that a collection which is divided into pages but has no `pageUriTemplate` uses cursor navigation.
+A collection that uses cursor navigation _MUST NOT_ set `pageUriTemplate`. A cursor is a token that only the integration layer can make. A presentation layer cannot construct one; it can only follow the page URIs that the integration layer returns. A collection that is not divided into pages _MUST NOT_ set `pageUriTemplate` either.
 
 ### Example
 
@@ -414,7 +414,7 @@ Example of the response body with page navigation:
 }
 ```
 
-The response indicates that this page contains items (`items`), is related to a previous page (`prev`) and a next page (`next`) and its items are part of a collection (`partOf`). The `partOf` refers to the first page of the collection and, because the integration layer knows it, to the last page.
+The response indicates that this page contains items (`items`), is related to a previous page (`prev`) and a next page (`next`) and its items are part of a collection (`partOf`). The `partOf` refers to the first page of the collection and, because the integration layer knows it, to the last page (`last`).
 
 Example of the response body with cursor navigation:
 
@@ -488,6 +488,6 @@ A resource is identified by a URI. The requirements below apply to those URIs. T
 1. A collection resource _MUST_ be named with a plural noun. For example: `https://example.org/v1/collections/works-of-art`, not `https://example.org/v1/collections/work-of-art`.
 1. A URI _MUST NOT_ end with a trailing slash. For example: `https://example.org/v1/collections/works-of-art`, not `https://example.org/v1/collections/works-of-art/`.
 1. A path segment _MUST_ contain only lowercase letters, digits and hyphens. For example: `https://example.org/v1/collections/works-of-art`, not `https://example.org/v1/collections/Works-of-Art` or `https://example.org/v1/collections/works_of_art`.
-1. A query key _MUST_ use camel case. For example: `https://example.org/v1/collections/works-of-art?orderBy=dateCreated`, not `https://example.org/v1/collections/works-of-art?order-by=date-created`.
+1. A query parameter key _MUST_ use camel case. For example: `https://example.org/v1/collections/works-of-art?orderBy=value`, not `https://example.org/v1/collections/works-of-art?order-by=value`.
 
 Regardless of these requirements, a URI _MUST_ still be treated as an opaque string by a presentation layer. A presentation layer _MUST NOT_ rely on the pattern of a URI. The patterns help developers understand the API, not software to interact with it.
