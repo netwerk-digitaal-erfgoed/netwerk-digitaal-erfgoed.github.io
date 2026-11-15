@@ -22,7 +22,8 @@ The specification follows these considerations:
 1. **Use standard REST patterns**. The specification leverages common RESTful practices to simplify API development and consumption.
 2. **Adhere to Dutch government rules**. The specification adheres to the [REST API Design Rules](https://logius-standaarden.github.io/API-Design-Rules/) of the Dutch government to improve developer experience and interoperability.
 3. **Build on existing standards**. The specification is inspired by existing data models and API specifications in the digital heritage and geospatial ecosystems, like [Activity Streams](https://www.w3.org/TR/activitystreams-core/), [IIIF APIs](https://iiif.io/api/), [Linked Art Search API](https://linked.art/api/1.0/search/), and [Open Geospatial Consortium APIs](https://ogcapi.ogc.org/).
-4. **Support the goal of the NDE**. The specification makes specific choices to support the goal of the NDE: making digital heritage more accessible to end users. To reach this goal, the specification is tailored to facilitate the use of heritage information in presentation layers.
+4. **Stay agnostic and abstract**. The specification is an abstraction over the underlying data stores, query languages and technologies that integration layers use internally. It defines a standard API, but does not prescribe how an integration layer implements that API. This is crucial: integration layers differ in their data stores and software, and a presentation layer must be able to rely on the same API regardless of those choices.
+5. **Support the goal of the NDE**. The specification makes specific choices to support the goal of the NDE: making digital heritage more accessible to end users. To reach this goal, the specification is tailored to facilitate the use of heritage information in presentation layers.
 
 ## Discovery
 
