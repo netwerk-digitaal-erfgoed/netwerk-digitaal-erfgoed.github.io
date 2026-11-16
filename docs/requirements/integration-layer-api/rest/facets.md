@@ -167,7 +167,7 @@ This difference matters when several resources have the same name. In a 'Creator
 - **Use an entity for every person.** The facet has three items. All three items have the name 'Jan de Vries'. Every item has its own `id` and its own `count`. A user sees the same name three times, and sees nothing that tells the three items apart.
 - **Use one `FacetValue` for the name.** The facet has one item, called 'Jan de Vries'. The item has no `id`. Its `count` is the sum of the occurrences of the three persons together.
 
-An integration layer can make this choice for each facet collection separately. The choice is the same for every kind of value, since collections can have the same name as well.
+An integration layer can make this choice for each facet collection separately.
 
 A facet collection _MUST_ use the same kind of value for all its items. This makes sure a presentation layer can present every item in the same way. A 'Creator' facet therefore uses either entities or `FacetValue`s, not a mixture of the two.
 
@@ -300,7 +300,7 @@ An example of the response body of the integration layer:
 
 ## Endpoint: Retrieve a facet collection
 
-The endpoint retrieves a facet collection. The integration layer _MUST_ implement this endpoint if it supports facets.
+The endpoint retrieves a facet collection. The integration layer _MUST_ implement this endpoint for every facet collection.
 
 ### HTTP request
 
@@ -778,7 +778,7 @@ Retrieving facets takes several requests. A presentation layer first discovers w
 
 1. **Check the capability.** The context collection advertises the `https://specs.nde.nl/rest/v1/facets` capability.
 2. **Retrieve the facet collections.** A presentation layer requests the context collection's list of [facet collections](#endpoint-retrieve-the-facet-collections-of-a-collection). The [`facets` property](resources.md#collection) of the context collection points to this list.
-3. **Retrieve the facet collections to show.** A presentation layer requests each facet collection that it wants to display from its own endpoint, such as `creators` and `centuries`. It passes the search identifier in `context` if the facets must cover a search, and it can set `size` and `orderBy` per request. The requests are independent, which means the presentation layer can send them in parallel.
+3. **Retrieve the facet collections to show.** A presentation layer requests each facet collection that it wants to display from its own endpoint, such as `creators` and `centuries`. It passes the search identifier in `context` if the facets must cover a search, and it can set `size` and `orderBy` per request. The requests are independent — the presentation layer can send them in parallel.
 4. **Retrieve further facet items (optional).** If a facet collection is divided into pages, its response includes the first page in `first`. A presentation layer follows a page URI such as `first.next.id`, or expands the [`pageUriTemplate`](resources.md#collection), to retrieve more facet items.
 5. **Search within a facet collection (optional).** The `q`, `size` and `orderBy` parameters filter and order the facet items themselves, independent of the search context.
 
@@ -799,7 +799,7 @@ sequenceDiagram
     PL->>IL: GET /v1/collections/objects/facets
     IL-->>PL: List of facet collections
 
-    Note over PL,IL: 3. Retrieve the facets to show, in parallel
+    Note over PL,IL: 3. Retrieve the facets to show (optionally in parallel)
     par
         PL->>IL: GET /v1/collections/objects/facets/creators?context=abc&size=10
         IL-->>PL: `Creator` facet with its first page

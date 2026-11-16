@@ -21,8 +21,9 @@ The specification follows these considerations:
 
 1. **Use standard REST patterns**. The specification leverages common RESTful practices to simplify API development and consumption.
 2. **Adhere to Dutch government rules**. The specification adheres to the [REST API Design Rules](https://logius-standaarden.github.io/API-Design-Rules/) of the Dutch government to improve developer experience and interoperability.
-3. **Build on existing standards**. The specification is inspired by existing data models and API specifications in the digital heritage ecosystem, like [Activity Streams](https://www.w3.org/TR/activitystreams-core/), [IIIF APIs](https://iiif.io/api/), and [Linked Art Search API](https://linked.art/api/1.0/search/).
-4. **Support the goal of the NDE**. The specification makes specific choices to support the goal of the NDE: making digital heritage more accessible to end users. To reach this goal, the specification is tailored to facilitate the use of heritage information in presentation layers.
+3. **Build on existing standards**. The specification is inspired by existing data models and API specifications in the digital heritage and geospatial ecosystems, like [Activity Streams](https://www.w3.org/TR/activitystreams-core/), [IIIF APIs](https://iiif.io/api/), [Linked Art Search API](https://linked.art/api/1.0/search/), and [Open Geospatial Consortium APIs](https://ogcapi.ogc.org/).
+4. **Stay agnostic and abstract**. The specification is an abstraction over the underlying data stores, query languages and technologies that integration layers use internally. It defines a standard API, but does not prescribe how an integration layer implements that API. This is crucial: integration layers differ in their data stores and software, and a presentation layer must be able to rely on the same API regardless of those choices.
+5. **Support the goal of the NDE**. The specification makes specific choices to support the goal of the NDE: making digital heritage more accessible to end users. To reach this goal, the specification is tailored to facilitate the use of heritage information in presentation layers.
 
 ## Discovery
 
@@ -30,6 +31,7 @@ The specification follows these considerations:
 
 - Explain that the API specification uses discovery patterns; it makes API implementations dynamic and self-documenting. This is essential for a generic, extensible specification that can be used by all sorts of integration layers.
 - Specify the root endpoint of the API, e.g. `/v1`. This endpoint allows presentation layers to discover the entry points and capabilities of the API (e.g. `/v1/entities`, `/v1/collections`). Draw inspiration from [OGC API](https://docs.ogc.org/is/19-072/19-072.html#_65d42b57-7d32-4f4e-963b-ba0d4f190f27)?
+- Add support for OGC API's [conformance declaration](advanced-search.md#conformance) endpoint, to discover the CQL2 operators of the integration layer.
 - Specify how an integration layer can extend the capabilities of its API using the patterns in the specification, e.g. with custom functionality or resources. Add examples.
 
 :::

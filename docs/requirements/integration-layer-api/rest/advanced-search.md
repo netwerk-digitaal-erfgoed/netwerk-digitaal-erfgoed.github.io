@@ -17,7 +17,7 @@ A collection that supports an advanced search advertises the `https://specs.nde.
 
 A search object is a JSON object. It contains the search criteria of an advanced search.
 
-The search object is an abstraction over query languages that developers may already know, such as Elasticsearch's query language or SQL. The abstraction is essential: an integration layer chooses its own data store, and this specification cannot prescribe the query language of one search engine or database. For filters, the search object uses the standard [Common Query Language (CQL2)](https://docs.ogc.org/is/21-065r2/21-065r2.html); the other search criteria are defined by this specification. The search object is designed for a straightforward mapping to the native query language of a data store.
+The search object is an abstraction over query languages that developers may already know, such as Elasticsearch's query language or SQL. The abstraction is essential: an integration layer chooses its own data store, and this specification cannot prescribe the query language of one search engine or database. For filters, the search object uses the [Common Query Language (CQL2)](https://docs.ogc.org/is/21-065r2/21-065r2.html); the other search criteria are defined by this specification. The search object is designed for a straightforward mapping to the native query language of a data store.
 
 A search object has the following properties:
 
@@ -309,7 +309,7 @@ This filter matches items that were created inside a polygon of the Agnetapark i
 
 #### Facet
 
-A facet filter translates a selected facet item into a filter on the facet collection's [dimension](facets.md#dimension). For example, selecting the item 'Painting' in a 'Type' facet collection gives:
+A facet filter translates a selected facet item into a filter on the facet collection's [dimension](facets.md#dimension). For example:
 
 ```json
 {
@@ -323,7 +323,7 @@ A facet filter translates a selected facet item into a filter on the facet colle
 }
 ```
 
-This filter matches items of type 'Painting'. The facet collection's dimension is `additionalType`. The filter value is the facet item's `id` when it has one, and its `name` otherwise. See [Facet items](facets.md#facet-items).
+This filter matches items with type 'Painting', identified by its URI. The facet collection's dimension is `additionalType`. The filter value is the facet item's `id` when it has one, and its `name` otherwise. See [Facet items](facets.md#facet-items).
 
 #### Set
 
@@ -344,7 +344,7 @@ A set filter matches all or none of a set of values. The `a_contains` operator m
 }
 ```
 
-This filter matches items that have both creators. Use `a_overlaps` instead to match items that have at least one of them.
+This filter matches items that have both creators, identified by their URIs. Use `a_overlaps` instead to match items that have at least one of them.
 
 #### Combine or negate filters
 
@@ -517,15 +517,6 @@ A filter can combine string conditions in the same way:
           },
           "%Rembrandt%"
         ]
-      },
-      {
-        "op": "like",
-        "args": [
-          {
-            "property": "name"
-          },
-          "The Night%"
-        ]
       }
     ]
   }
@@ -536,7 +527,7 @@ The filter matches items whose name or description matches one of several string
 
 ### Translating filters
 
-CQL2 is independent of the data store of an integration layer. The table shows the closest equivalent of each CQL2 operator. It is illustrative, not prescriptive: data stores differ between versions, and an integration layer can preprocess data or evaluate an expression in application code when there is no native equivalent.
+CQL2 is independent of the data store of an integration layer. The table below shows the closest equivalent of each CQL2 operator. It is illustrative, not prescriptive: data stores differ between versions, and an integration layer can preprocess data or evaluate an expression in application code when there is no native equivalent.
 
 | CQL2                      | Elasticsearch                                | Typesense `filter_by`                                                        | PostgreSQL                            |
 | ------------------------- | -------------------------------------------- | ---------------------------------------------------------------------------- | ------------------------------------- |
@@ -560,7 +551,7 @@ CQL2 is independent of the data store of an integration layer. The table shows t
 
 A Queryables resource describes the properties of a collection that a [filter](#filters) may refer to. It is a machine-readable list of property names and their data types. With it, a presentation layer can build a filter without guessing which properties exist.
 
-A Queryables resource is a JSON Schema document, not a resource of the data model. A collection refers to it with a `queryables` property that holds its identifier.
+A Queryables resource is a JSON Schema document, not a resource of the [data model](resources.md). A collection refers to it with a `queryables` property that holds its identifier.
 
 The resource follows the [Queryables requirements class](https://docs.ogc.org/is/19-079r2/19-079r2.html). That standard defines the resource, its media type and the shape of its response.
 
@@ -597,13 +588,15 @@ A filtered collection is a view with its own `id`, `totalItems` and pages. Is it
 
 ## Endpoint: Advanced search
 
+The endpoint searches a collection. The integration layer _MUST_ implement this endpoint for every collection that supports advanced search.
+
 ### HTTP request
 
 `POST /{version}/{...collections}/search`
 
 The endpoint uses the `POST` method. It does not use `GET`, because a query string is a poor fit for complex criteria. It has a limited length, and it must be URL-encoded, which makes the search criteria hard to read and easy to get wrong.
 
-The `search` path segment of the endpoint is a verb rather than a noun. This is an explicit exception to the resource identifiers, allowed by the [REST API Design Rules](https://logius-standaarden.github.io/API-Design-Rules/#/core/resource-operations).
+The `search` path segment of the endpoint is a verb rather than a noun. This is an explicit exception to the naming of resources, allowed by the [REST API Design Rules](https://logius-standaarden.github.io/API-Design-Rules/#/core/resource-operations).
 
 ### Path parameters
 
@@ -704,7 +697,7 @@ The response indicates that the advanced search has 42 results, that the collect
 
 ## Endpoint: Queryables
 
-The endpoint returns the [Queryables resource](#queryables) of a collection: a JSON Schema document that lists the properties a filter may use, with their data types. A presentation layer requests it before it builds a filter.
+The endpoint returns the [Queryables resource](#queryables) of a collection: a JSON Schema document that lists the properties a filter may use, with their data types. A presentation layer requests it before it builds a filter. The integration layer _MUST_ implement this endpoint for every collection that supports advanced search.
 
 ### HTTP request
 
