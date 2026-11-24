@@ -133,7 +133,7 @@ The REST API is strict regardless of the severity the shapes declare, so it will
 Two probe outcomes are always a `sh:Warning`, on every path, because neither means the distribution is faulty:
 
 - `nde-probe:RateLimited` (HTTP `429`): the Register was throttled.
-- `nde-probe:AuthRequired` (HTTP `401` or `403`): access is restricted, for example to a file that is only available on request. The dataset stays valid; the report notes that the URL could not be retrieved.
+- `nde-probe:AuthRequired` (HTTP `401` or `403`) on a dataset that declares [`dct:accessRights`](https://docs.geostandaarden.nl/dcat/dcat-ap-nl30/#dataset-access-rights) `RESTRICTED` or `NON_PUBLIC`: refusing anonymous requests is then the declared policy, for example for files that are only available on request. Without that declaration a `401` or `403` is a reachability failure like any other, so a new registration is rejected.
 
 When a DCAT distribution has a `dcat:downloadURL`, its `dcat:mediaType` describes that file. A different `dcat:accessURL`, such as a landing page, is only checked for reachability, not for its `Content-Type`.
 
