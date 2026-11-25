@@ -46,7 +46,7 @@ endpoint to browse types, fields and arguments interactively.
 curl -X POST https://datasetregister.netwerkdigitaalerfgoed.nl/graphql \
   -H 'Content-Type: application/json' \
   -H 'Accept-Language: nl' \
-  --data '{"query":"{ datasets(query: \"kaarten\", perPage: 5) { total items { title { language value } publisher { name { value } } } facets { publisher { value count label { value } } format { value count } } } }"}'
+  --data '{"query":"{ datasets(query: \"kaarten\", perPage: 5) { pagination { total } items { title { language value } publisher { id label { value } } } facets { publisher(limit: 10) { buckets { value count label { value } } totalValues } format { buckets { value count } } } } }"}'
 ```
 
 Each result item carries the dataset’s title, description, publisher, formats, size and more, as
@@ -91,12 +91,23 @@ its **human-readable label resolved inline** as a multilingual string:
 
 ```graphql
 facets {
-  publisher { value count label { language value } }
-  terminology_source { value count label { language value } }
-  format { value count }
-  status { value count }
+  publisher { buckets { value count label { language value } } totalValues }
+  terminology_source { buckets { value count label { language value } } }
+  format { buckets { value count } }
+  status { buckets { value count } }
 }
 ```
+
+The value facets (`publisher`, `class`, `terminology_source`, `language`, `format` and `status`)
+return their `buckets`, highest count first, and `totalValues`: how many distinct values the facet
+holds, however many buckets come back. Each takes two optional arguments:
+
+- **`limit`** (1–100) returns only that many buckets. Without it, a facet returns up to 2000.
+- **`query`** returns only the values that match the text, such as the publishers whose label
+  matches `rijks`. Text shorter than 3 characters is ignored.
+
+The boolean check facets (such as `nde_schema_ap`) return a plain bucket list, and the `size`
+facet returns its bins as `buckets { min max count }`.
 
 Because labels arrive with the buckets, a client never has to perform a separate IRI-to-label
 lookup to render a facet or a result card.
