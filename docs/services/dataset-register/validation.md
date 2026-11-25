@@ -130,6 +130,13 @@ The REST API and the crawler differ in how strict they are about probe failures:
 
 The REST API is strict regardless of the severity the shapes declare, so it will not admit a dataset whose distributions are unreachable or mistyped at submit time. The crawler instead honours the shapes: promoting `nde-probe:probeReachable` / `nde-probe:probeFormatMatch` to `sh:Violation` in the [Requirements for Datasets](https://docs.nde.nl/requirements-datasets/) would make the crawler invalidate matching datasets too.
 
+Two probe outcomes are always a `sh:Warning`, on every path, because neither means the distribution is faulty:
+
+- `nde-probe:RateLimited` (HTTP `429`): the Register was throttled.
+- `nde-probe:AuthRequired` (HTTP `401` or `403`) on a dataset that declares [`dct:accessRights`](https://docs.geostandaarden.nl/dcat/dcat-ap-nl30/#dataset-access-rights) `RESTRICTED` or `NON_PUBLIC`: refusing anonymous requests is then the declared policy, for example for files that are only available on request. Without that declaration a `401` or `403` is a reachability failure like any other, so a new registration is rejected.
+
+When a DCAT distribution has a `dcat:downloadURL`, its `dcat:mediaType` describes that file. A different `dcat:accessURL`, such as a landing page, is only checked for reachability, not for its `Content-Type`.
+
 #### Grace window: transient vs. deterministic failures
 
 The crawler does not flag every probe failure immediately. Whether it waits out a grace window depends on whether the failure could plausibly resolve itself:
